@@ -1801,26 +1801,26 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     }
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(BuildProto *protos)
+int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos)
 {
     int id = -1;
     int power = 0;
 
     for (int i = 0; i < 128; i++)
     {
-        BuildProto *proto = &protos[i];
+        TBuildingProto *proto = &protos[i];
 
-        if ( proto->enable_mask & (1 << _owner) )
+        if ( proto->EnableMask & (1 << _owner) )
         {
-            if ( proto->model_id == 2 )
+            if ( proto->ModelID == 2 )
             {
-                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->energy )
+                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->Energy )
                 {
-                    int protoPow = proto->power;
+                    int protoPow = proto->Power;
 
                     for (int j = 0; j < 8; j++)
                     {
-                        if ( proto->sbacts[j].sbact_vehicle )
+                        if ( proto->Guns[j].VhclID )
                             protoPow += 10;
                     }
 
@@ -1886,7 +1886,7 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
     }
     else
     {
-        BuildProto *buildprotos = _world->getYW_buildProtos();
+        TBuildingProto *buildprotos = _world->getYW_buildProtos();
 
         int build_id = yparobo_func70__sub4__sub0__sub0(buildprotos);
 
@@ -1957,15 +1957,15 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
 
                         if ( _world->ypaworld_func148(&arg148) )
                         {
-                            BuildProto *proto = &buildprotos[build_id];
+                            TBuildingProto *proto = &buildprotos[build_id];
 
-                            if ( _roboBuildSpare >= proto->energy )
+                            if ( _roboBuildSpare >= proto->Energy )
                             {
-                                _roboBuildSpare -= proto->energy;
+                                _roboBuildSpare -= proto->Energy;
                             }
                             else
                             {
-                                _energy -= proto->energy - _roboBuildSpare;
+                                _energy -= proto->Energy - _roboBuildSpare;
                                 _roboBuildSpare = 0;
                             }
 
@@ -2003,26 +2003,26 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
     }
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub4__sub2__sub0(BuildProto *protos)
+int NC_STACK_yparobo::yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos)
 {
     int id = -1;
     int power = 0;
 
     for (int i = 0; i < 128; i++)
     {
-        BuildProto *proto = &protos[i];
+        TBuildingProto *proto = &protos[i];
 
-        if ( proto->enable_mask & (1 << _owner) )
+        if ( proto->EnableMask & (1 << _owner) )
         {
-            if ( proto->model_id == 1 )
+            if ( proto->ModelID == 1 )
             {
-                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->energy )
+                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->Energy )
                 {
-                    int protoPow = proto->power;
+                    int protoPow = proto->Power;
 
                     for (int j = 0; j < 8; j++)
                     {
-                        if ( proto->sbacts[j].sbact_vehicle )
+                        if ( proto->Guns[j].VhclID )
                             protoPow += 10;
                     }
 
@@ -2063,7 +2063,7 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
 
         if ( _roboPCells[ _roboBuildingCellID ].energy_power != -1 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
         {
-            BuildProto *buildprotos = _world->getYW_buildProtos();
+            TBuildingProto *buildprotos = _world->getYW_buildProtos();
 
             int bldid = yparobo_func70__sub4__sub2__sub0(buildprotos);
 
@@ -2129,15 +2129,15 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
 
                             if ( _world->ypaworld_func148(&arg148) )
                             {
-                                BuildProto *proto = &buildprotos[bldid];
+                                TBuildingProto *proto = &buildprotos[bldid];
 
-                                if ( _roboBuildSpare >= proto->energy )
+                                if ( _roboBuildSpare >= proto->Energy )
                                 {
-                                    _roboBuildSpare -= proto->energy;
+                                    _roboBuildSpare -= proto->Energy;
                                 }
                                 else
                                 {
-                                    _energy -= proto->energy - _roboBuildSpare;
+                                    _energy -= proto->Energy - _roboBuildSpare;
                                     _roboBuildSpare = 0;
                                 }
 
@@ -2177,26 +2177,26 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
     }
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub4__sub1__sub0(BuildProto *protos)
+int NC_STACK_yparobo::yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos)
 {
     int id = -1;
     int power = 0;
 
     for (int i = 0; i < 128; i++)
     {
-        BuildProto *proto = &protos[i];
+        TBuildingProto *proto = &protos[i];
 
-        if ( proto->enable_mask & (1 << _owner) )
+        if ( proto->EnableMask & (1 << _owner) )
         {
-            if ( proto->model_id == 3 )
+            if ( proto->ModelID == 3 )
             {
-                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->energy )
+                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->Energy )
                 {
-                    int protoPow = proto->power;
+                    int protoPow = proto->Power;
 
                     for (int j = 0; j < 8; j++)
                     {
-                        if ( proto->sbacts[j].sbact_vehicle )
+                        if ( proto->Guns[j].VhclID )
                             protoPow += 10;
                     }
 
@@ -2233,7 +2233,7 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
     }
     else
     {
-        BuildProto *buildprotos = _world->getYW_buildProtos();
+        TBuildingProto *buildprotos = _world->getYW_buildProtos();
 
         int build_id = yparobo_func70__sub4__sub1__sub0(buildprotos);
 
@@ -2304,15 +2304,15 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
 
                         if ( _world->ypaworld_func148(&arg148) )
                         {
-                            BuildProto *proto = &buildprotos[build_id];
+                            TBuildingProto *proto = &buildprotos[build_id];
 
-                            if ( _roboBuildSpare >= proto->energy )
+                            if ( _roboBuildSpare >= proto->Energy )
                             {
-                                _roboBuildSpare -= proto->energy;
+                                _roboBuildSpare -= proto->Energy;
                             }
                             else
                             {
-                                _energy -= proto->energy - _roboBuildSpare;
+                                _energy -= proto->Energy - _roboBuildSpare;
                                 _roboBuildSpare = 0;
                             }
 

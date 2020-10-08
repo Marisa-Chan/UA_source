@@ -479,14 +479,14 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
     for (int i = 0; i < 128; i++)
     {
-        if ( yw->BuildProtos[i].type_icon )
+        if ( yw->BuildProtos[i].TypeIcon )
         {
             sprintf(buf, "modify_building %d\n", i);
             fil->write(buf, strlen(buf));
 
             for (int j = 1; j < 8; j++)
             {
-                if ( yw->BuildProtos[i].enable_mask & (1 << j) )
+                if ( yw->BuildProtos[i].EnableMask & (1 << j) )
                     sprintf(buf, "    enable         = %d\n", j);
                 else
                     sprintf(buf, "    disable        = %d\n", j);

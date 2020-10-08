@@ -1460,11 +1460,11 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
     {
         int bldId = std::stol(opt, NULL, 0);
 
+        _o.BuildProtos[bldId] = TBuildingProto();
         _bld = &_o.BuildProtos[bldId];
-        _bld->clear();
-        _bld->energy = 50000;
-        _bld->type_icon = 65;
-        _bld->sndfx.volume = 120;
+        _bld->Energy = 50000;
+        _bld->TypeIcon = 65;
+        _bld->SndFX.volume = 120;
         return true;
     }
     else if (!StriCmp(word, "modify_building"))
@@ -1489,98 +1489,98 @@ int BuildProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1
     {
         if ( !StriCmp(p2, "building") )
         {
-            _bld->model_id = 0;
+            _bld->ModelID = 0;
         }
         else if ( !StriCmp(p2, "kraftwerk") )
         {
-            _bld->model_id = 1;
+            _bld->ModelID = 1;
         }
         else if ( !StriCmp(p2, "radar") )
         {
-            _bld->model_id = 2;
+            _bld->ModelID = 2;
         }
         else if ( !StriCmp(p2, "defcenter") )
         {
-            _bld->model_id = 3;
+            _bld->ModelID = 3;
         }
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
     else if ( !StriCmp(p1, "enable") )
     {
-        _bld->enable_mask |= 1 << std::stol(p2, NULL, 0);
+        _bld->EnableMask |= 1 << std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "disable") )
     {
-        _bld->enable_mask &= ~(1 << std::stol(p2, NULL, 0));
+        _bld->EnableMask &= ~(1 << std::stol(p2, NULL, 0));
     }
     else if ( !StriCmp(p1, "name") )
     {
-        _bld->name = p2;
-        std::replace(_bld->name.begin(), _bld->name.end(), '_', ' ');
+        _bld->Name = p2;
+        std::replace(_bld->Name.begin(), _bld->Name.end(), '_', ' ');
     }
     else if ( !StriCmp(p1, "power") )
     {
-        _bld->power = std::stol(p2, NULL, 0);
+        _bld->Power = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        _bld->energy = std::stol(p2, NULL, 0);
+        _bld->Energy = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_type") )
     {
-        _bld->sec_type = std::stol(p2, NULL, 0);
+        _bld->SecType = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "type_icon") )
     {
-        _bld->type_icon = p2[0];
+        _bld->TypeIcon = p2[0];
     }
     else if ( !StriCmp(p1, "snd_normal_sample") )
     {
-        _bld->sndfx.sample_name = p2;
+        _bld->SndFX.sample_name = p2;
     }
     else if ( !StriCmp(p1, "snd_normal_volume") )
     {
-        _bld->sndfx.volume = std::stol(p2, NULL, 0);
+        _bld->SndFX.volume = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "snd_normal_pitch") )
     {
-        _bld->sndfx.pitch = std::stol(p2, NULL, 0);
+        _bld->SndFX.pitch = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sbact_act") )
     {
-        _sbact = std::stol(p2, NULL, 0);
+        _gunID = std::stol(p2, NULL, 0);
     }
     else
     {
-        buildSbact *v19 = &_bld->sbacts[_sbact];
+        TBuildingProto::TGun &pGun = _bld->Guns.at(_gunID);
         if ( !StriCmp(p1, "sbact_vehicle") )
         {
-            v19->sbact_vehicle = std::stol(p2, NULL, 0);
+            pGun.VhclID = std::stol(p2, NULL, 0);
         }
         else if ( !StriCmp(p1, "sbact_pos_x") )
         {
-            v19->sbact_pos_x = std::stof(p2, 0);
+            pGun.Pos.x = std::stof(p2, 0);
         }
         else if ( !StriCmp(p1, "sbact_pos_y") )
         {
-            v19->sbact_pos_y = std::stof(p2, 0);
+            pGun.Pos.y = std::stof(p2, 0);
         }
         else if ( !StriCmp(p1, "sbact_pos_z") )
         {
-            v19->sbact_pos_z = std::stof(p2, 0);
+            pGun.Pos.z = std::stof(p2, 0);
         }
         else if ( !StriCmp(p1, "sbact_dir_x") )
         {
-            v19->sbact_dir_x = std::stof(p2, 0);
+            pGun.Dir.x = std::stof(p2, 0);
         }
         else if ( !StriCmp(p1, "sbact_dir_y") )
         {
-            v19->sbact_dir_y = std::stof(p2, 0);
+            pGun.Dir.y = std::stof(p2, 0);
         }
         else if ( !StriCmp(p1, "sbact_dir_z") )
         {
-            v19->sbact_dir_z = std::stof(p2, 0);
+            pGun.Dir.z = std::stof(p2, 0);
         }
         else
             return ScriptParser::RESULT_UNKNOWN;
@@ -2925,7 +2925,7 @@ bool LevelEnableParser::IsScope(ScriptParser::Parser &parser, const std::string 
         _o.VhclProtos[i].disable_enable_bitmask &= ~(1 << _fraction);
 
     for (int i = 0; i < 128; i++)
-        _o.BuildProtos[i].enable_mask &= ~(1 << _fraction);
+        _o.BuildProtos[i].EnableMask &= ~(1 << _fraction);
 
     return true;
 }
@@ -2947,7 +2947,7 @@ int LevelEnableParser::Handle(ScriptParser::Parser &parser, const std::string &p
     {
         int id = std::stol(p2, NULL, 0);
         if ( id >= 0 && id < 128 )
-            _o.BuildProtos[id].enable_mask |= (1 << _fraction);
+            _o.BuildProtos[id].EnableMask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
     }

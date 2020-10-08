@@ -3245,9 +3245,9 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
         else if ( bzda.field_4DC[ v3 ].i == 2 )
         {
             int v9 = bzda.field_4DC[ v3 ].d;
-            BuildProto *v10 = &yw->BuildProtos[v9];
+            TBuildingProto *v10 = &yw->BuildProtos[v9];
 
-            int v18 = dround(yw->sub_4498F4() * v10->energy / 100.0);
+            int v18 = dround(yw->sub_4498F4() * v10->Energy / 100.0);
             int v12;
 
             if ( yw->isNetGame )
@@ -3255,12 +3255,12 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
             else
                 v12 = v9 + 1500;
 
-            const char *v13 = get_lang_string(yw->string_pointers_p2, v12, v10->name.c_str());
+            const char *v13 = get_lang_string(yw->string_pointers_p2, v12, v10->Name.c_str());
 
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
-            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v10->type_icon, v13, v18);
+            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v10->TypeIcon, v13, v18);
         }
     }
 
@@ -7643,25 +7643,25 @@ int sub_4C3D6C(const void *a1, const void *a2)
     uint8_t aa1 = *(const uint8_t *)a1;
     uint8_t aa2 = *(const uint8_t *)a2;
 
-    BuildProto *v3 = &dword_5BAA60->BuildProtos[aa1];
-    BuildProto *v4 = &dword_5BAA60->BuildProtos[aa2];
+    TBuildingProto *v3 = &dword_5BAA60->BuildProtos[aa1];
+    TBuildingProto *v4 = &dword_5BAA60->BuildProtos[aa2];
 
     int v6, v8;
 
-    if ( v3->model_id == 1 )
+    if ( v3->ModelID == 1 )
         v6 = 0;
-    else if ( v3->model_id == 2 )
+    else if ( v3->ModelID == 2 )
         v6 = 2;
-    else if ( v3->model_id == 3 )
+    else if ( v3->ModelID == 3 )
         v6 = 1;
     else
         v6 = 10;
 
-    if ( v4->model_id == 1 )
+    if ( v4->ModelID == 1 )
         v8 = 0;
-    else if ( v4->model_id == 2 )
+    else if ( v4->ModelID == 2 )
         v8 = 2;
-    else if ( v4->model_id == 3 )
+    else if ( v4->ModelID == 3 )
         v8 = 1;
     else
         v8 = 10;
@@ -7670,8 +7670,8 @@ int sub_4C3D6C(const void *a1, const void *a2)
     {
         if ( v6 <= v8 )
         {
-            if ( v3->energy >= v4->energy )
-                return v3->energy > v4->energy;
+            if ( v3->Energy >= v4->Energy )
+                return v3->Energy > v4->Energy;
             else
                 return -1;
         }
@@ -7699,7 +7699,7 @@ void ypaworld_func64__sub17(NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 128; i++)
     {
-        if ( v6 & yw->BuildProtos[i].enable_mask )
+        if ( v6 & yw->BuildProtos[i].EnableMask )
         {
             bzda.field_3DC[v3] = i;
             v3++;
@@ -9339,7 +9339,7 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, 
             else
                 v11 = a6 + 1500;
 
-            const char *v12 = get_lang_string(yw->string_pointers_p2, v11, yw->BuildProtos[a6].name.c_str());
+            const char *v12 = get_lang_string(yw->string_pointers_p2, v11, yw->BuildProtos[a6].Name.c_str());
 
             pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v12, a4, a5);
         }
@@ -11388,7 +11388,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub7()
     }
     else if ( bzda.field_1D0 == 16 && bzda.field_8F4 != -1 )
     {
-        field_1b24.energy = dround(sub_4498F4() * BuildProtos[bzda.field_3DC[bzda.field_8F4]].energy);
+        field_1b24.energy = dround(sub_4498F4() * BuildProtos[bzda.field_3DC[bzda.field_8F4]].Energy);
     }
 }
 

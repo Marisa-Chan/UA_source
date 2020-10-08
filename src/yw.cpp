@@ -1114,8 +1114,8 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
     if ( a4 )
     {
-        yw->BuildProtos[a4].enable_mask = 0;
-        yw->BuildProtos[a4].enable_mask |= 1 << yw->GameShell->netPlayerOwner;
+        yw->BuildProtos[a4].EnableMask = 0;
+        yw->BuildProtos[a4].EnableMask |= 1 << yw->GameShell->netPlayerOwner;
     }
 
     char v11[128];
@@ -1171,7 +1171,7 @@ void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         yw->VhclProtos[a3a].disable_enable_bitmask = 0;
 
     if ( a4 )
-        yw->BuildProtos[a4].enable_mask = 0;
+        yw->BuildProtos[a4].EnableMask = 0;
 
     std::string v13 = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST!  ");
     v13 += gem.MsgDefault;
@@ -7774,7 +7774,7 @@ WeapProto *NC_STACK_ypaworld::getYW_weaponProtos()
     return WeaponProtos;
 }
 
-BuildProto *NC_STACK_ypaworld::getYW_buildProtos()
+TBuildingProto *NC_STACK_ypaworld::getYW_buildProtos()
 {
     return BuildProtos.data();
 }

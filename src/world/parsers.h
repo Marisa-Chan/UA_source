@@ -18,7 +18,7 @@ struct save_status;
 struct vhclSndFX;
 struct VhclProto;
 struct WeapProto;
-struct BuildProto;
+struct TBuildingProto;
 struct LevelDesc;
 struct MapRobo;
 struct MapGem;
@@ -207,13 +207,13 @@ protected:
 class BuildProtoParser : public ScriptParser::DataHandler
 {
 public:
-    BuildProtoParser(NC_STACK_ypaworld *o) : _o(*o), _bld(NULL), _sbact(-1) {} ;
+    BuildProtoParser(NC_STACK_ypaworld *o) : _o(*o), _bld(NULL), _gunID(-1) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    BuildProto *_bld;
-    int32_t _sbact;
+    TBuildingProto *_bld;
+    int32_t _gunID;
 };
 
 

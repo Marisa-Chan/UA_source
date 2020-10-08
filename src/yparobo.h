@@ -298,9 +298,9 @@ protected:
     void sub_4F4FF4(int a2, setTarget_msg *parg67);
     
     void yparobo_func71__sub0(update_msg *arg);
-    int yparobo_func70__sub4__sub2__sub0(BuildProto *protos);
-    int yparobo_func70__sub4__sub1__sub0(BuildProto *protos);
-    int yparobo_func70__sub4__sub0__sub0(BuildProto *protos);
+    int yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos);
+    int yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos);
+    int yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos);
 
 
 public:

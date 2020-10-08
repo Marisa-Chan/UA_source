@@ -46,7 +46,7 @@ struct subSec;
 struct secType;
 struct VhclProto;
 struct WeapProto;
-struct BuildProto;
+struct TBuildingProto;
 struct roboProto;
 struct map_event;
 struct uamessage_base;
@@ -1953,67 +1953,43 @@ struct WeapProto
     }
 };
 
-struct buildSbact
+
+
+struct TBuildingProto
 {
-    int sbact_vehicle;
-    int field_4;
-    float sbact_pos_x;
-    float sbact_pos_y;
-    float sbact_pos_z;
-    int field_14;
-    float sbact_dir_x;
-    float sbact_dir_y;
-    float sbact_dir_z;
-
-    buildSbact()
+    struct TGun
     {
-        clear();
-    }
+        int32_t VhclID;
+        vec3d Pos;
+        vec3d Dir;
 
-    void clear()
+        TGun()
+        {
+            VhclID = 0;
+            Pos = vec3d();
+            Dir = vec3d();
+        }
+    };
+
+    
+    uint8_t SecType;
+    uint8_t EnableMask;
+    uint8_t ModelID;
+    uint8_t Power;
+    uint8_t TypeIcon;
+    std::string Name;
+    int Energy;
+    vhclSndFX SndFX;
+    std::array<TGun, 8> Guns;
+
+    TBuildingProto()
     {
-        sbact_vehicle = 0;
-        field_4 = 0;
-        sbact_pos_x = 0.;
-        sbact_pos_y = 0.;
-        sbact_pos_z = 0.;
-        field_14 = 0;
-        sbact_dir_x = 0.;
-        sbact_dir_y = 0.;
-        sbact_dir_z = 0.;
-    }
-};
-
-struct BuildProto
-{
-    uint8_t sec_type;
-    uint8_t enable_mask;
-    uint8_t model_id;
-    uint8_t power;
-    uint8_t type_icon;
-    std::string name;
-    int energy;
-    vhclSndFX sndfx;
-    std::array<buildSbact, 8> sbacts;
-
-    BuildProto()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        sec_type = 0;
-        enable_mask = 0;
-        model_id = 0;
-        power = 0;
-        type_icon = 0;
-        name.clear();
-        energy = 0;
-        sndfx.clear();
-
-        for (auto &x : sbacts)
-            x.clear();
+        SecType = 0;
+        EnableMask = 0;
+        ModelID = 0;
+        Power = 0;
+        TypeIcon = 0;
+        Energy = 0;
     }
 };
 
@@ -2404,7 +2380,7 @@ public:
     virtual NC_STACK_ypabact *getYW_userHostStation();
     virtual NC_STACK_ypabact *getYW_userVehicle();
     virtual WeapProto *getYW_weaponProtos();
-    virtual BuildProto *getYW_buildProtos();
+    virtual TBuildingProto *getYW_buildProtos();
     virtual VhclProto *getYW_vhclProtos();
     virtual int getYW_lvlFinished();
     virtual int getYW_screenW();
@@ -2644,7 +2620,7 @@ public:
     secType *secTypes;
     VhclProto *VhclProtos;
     WeapProto *WeaponProtos;
-    std::vector<BuildProto> BuildProtos;
+    std::vector<TBuildingProto> BuildProtos;
     std::vector<roboProto> RoboProtos;
     yw_f80 field_80[8];
     int16_t build_hp_ref[256];

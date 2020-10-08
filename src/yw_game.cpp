@@ -2044,7 +2044,7 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
             scel.flag = 2;
             scel.v.y = (float)v5->field_4 / (float)v5->field_8;
 
-            pcell->type_id = yw->BuildProtos[ v5->blg_ID ].sec_type;
+            pcell->type_id = yw->BuildProtos[ v5->blg_ID ].SecType;
             pcell->comp_type = yw->secTypes[ pcell->type_id ].field_0;
 
             v22 = 1;
@@ -2506,8 +2506,8 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
     memset(&bvMsg, 0, sizeof(bvMsg));
 
     cellArea *cell = &cells[ sectors_maxX2 * y + x ];
-    BuildProto *bld = &BuildProtos[ blg_id ];
-    secType *sectp = &secTypes[ bld->sec_type ];
+    TBuildingProto *bld = &BuildProtos[ blg_id ];
+    secType *sectp = &secTypes[ bld->SecType ];
 
     int v43 = 1;
 
@@ -2516,9 +2516,9 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
     if ( x && y && sectors_maxX2 - 1 != x && sectors_maxY2 - 1 != y )
     {
         (*blg_map)(x, y) = blg_id;
-        (*typ_map)(x, y) = bld->sec_type;
+        (*typ_map)(x, y) = bld->SecType;
 
-        cell->type_id = bld->sec_type;
+        cell->type_id = bld->SecType;
         cell->energy_power = 0;
         cell->w_type = 3;
         cell->comp_type = sectp->field_0;
@@ -2544,8 +2544,8 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
             }
         }
 
-        if ( bld->model_id == 1 )
-            sb_0x456384__sub0(x, y, bld->power);
+        if ( bld->ModelID == 1 )
+            sb_0x456384__sub0(x, y, bld->Power);
 
         sub_44F958(cell, x, y, ownerid2);
 
@@ -2576,16 +2576,16 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
 
                 robo->setROBO_commCount(v39);
 
-                for (int i = 0; i < 8; i++)
+                for ( size_t i = 0; i < bld->Guns.size(); i++)
                 {
-                    if ( !bld->sbacts[i].sbact_vehicle )
+                    TBuildingProto::TGun &GunProto = bld->Guns[i];
+                    
+                    if ( !GunProto.VhclID )
                         break;
 
                     ypaworld_arg146 v33;
-                    v33.vehicle_id = bld->sbacts[i].sbact_vehicle;
-                    v33.pos.x = bld->sbacts[i].sbact_pos_x + x * 1200.0 + 600.0;
-                    v33.pos.y = bld->sbacts[i].sbact_pos_y;
-                    v33.pos.z = bld->sbacts[i].sbact_pos_z - (y * 1200.0 + 600.0);
+                    v33.vehicle_id = GunProto.VhclID;
+                    v33.pos = GunProto.Pos + vec3d(x * 1200.0 + 600.0, 0.0, -(y * 1200.0 + 600.0));
 
                     NC_STACK_ypabact *gun_obj = ypaworld_func146(&v33);
                     NC_STACK_ypagun *gunn = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
@@ -2595,11 +2595,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
                         gun_obj->_owner = ownerid2;
 
                         if (gunn)
-                        {
-                            vec3d basis = vec3d(bld->sbacts[i].sbact_dir_x, bld->sbacts[i].sbact_dir_y, bld->sbacts[i].sbact_dir_z);
-
-                            gunn->ypagun_func128(basis, false);
-                        }
+                            gunn->ypagun_func128(GunProto.Dir, false);
 
                         setState_msg v34;
                         v34.newStatus = BACT_STATUS_CREATE;
@@ -2609,9 +2605,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
                         gunn->SetStateInternal(&v34);
 
                         gun_obj->_scale_time = 500;
-                        gun_obj->_scale.x = 1.0;
-                        gun_obj->_scale.y = 1.0;
-                        gun_obj->_scale.z = 1.0;
+                        gun_obj->_scale = vec3d(1.0, 1.0, 1.0);
 
                         gun_obj->_host_station = robo;
                         gun_obj->_commandID = v39;
@@ -2621,11 +2615,9 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
                             gun_obj->_gid |= ownerid2 << 24;
 
                             bvMsg.vhcl[i].id = gun_obj->_gid;
-                            bvMsg.vhcl[i].base.x = bld->sbacts[i].sbact_dir_x;
-                            bvMsg.vhcl[i].base.y = bld->sbacts[i].sbact_dir_y;
-                            bvMsg.vhcl[i].base.z = bld->sbacts[i].sbact_dir_z;
+                            bvMsg.vhcl[i].base = GunProto.Dir;
                             bvMsg.vhcl[i].pos = gun_obj->_position;
-                            bvMsg.vhcl[i].protoID = bld->sbacts[i].sbact_vehicle;
+                            bvMsg.vhcl[i].protoID = GunProto.VhclID;
                         }
 
                         if ( commander )
@@ -2640,24 +2632,24 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
                         }
                     }
                 }
-            }
 
-            if ( isNetGame && v43 && robo )
-            {
-                bvMsg.msgID = UAMSG_BUILDINGVHCL;
-                bvMsg.tstamp = timeStamp;
-                bvMsg.owner = ownerid2;
+                if ( isNetGame )
+                {
+                    bvMsg.msgID = UAMSG_BUILDINGVHCL;
+                    bvMsg.tstamp = timeStamp;
+                    bvMsg.owner = ownerid2;
 
-                yw_arg181 v31;
-                v31.recvFlags = 2;
-                v31.recvID = 0;
-                v31.senderID = GameShell->callSIGN.c_str();
-                v31.senderFlags = 1;
-                v31.data = &bvMsg;
-                v31.dataSize = sizeof(bvMsg);
-                v31.garant = 1;
+                    yw_arg181 v31;
+                    v31.recvFlags = 2;
+                    v31.recvID = 0;
+                    v31.senderID = GameShell->callSIGN.c_str();
+                    v31.senderFlags = 1;
+                    v31.data = &bvMsg;
+                    v31.dataSize = sizeof(bvMsg);
+                    v31.garant = 1;
 
-                ypaworld_func181(&v31);
+                    ypaworld_func181(&v31);
+                }
             }
         }
     }
@@ -2872,7 +2864,7 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *yw, int dtime)
 
                 if ( yw->field_80[i].ownerID2 == yw->UserRobo->_owner )
                 {
-                    if ( yw->BuildProtos[a6].model_id )
+                    if ( yw->BuildProtos[a6].ModelID )
                     {
                         yw_arg159 arg159;
 
@@ -2880,11 +2872,11 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *yw, int dtime)
                         arg159.txt = 0;
                         arg159.field_4 = 65;
 
-                        if ( yw->BuildProtos[a6].model_id == 1 )
+                        if ( yw->BuildProtos[a6].ModelID == 1 )
                             arg159.field_C = 36;
-                        else if ( yw->BuildProtos[a6].model_id == 2 )
+                        else if ( yw->BuildProtos[a6].ModelID == 2 )
                             arg159.field_C = 38;
-                        else if ( yw->BuildProtos[a6].model_id == 3 )
+                        else if ( yw->BuildProtos[a6].ModelID == 3 )
                             arg159.field_C = 37;
                         else
                             arg159.field_C = 0;
@@ -4109,7 +4101,7 @@ void ypaworld_func151__sub0(NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 128; i++)
     {
-        sub_44C144(&yw->BuildProtos[i].sndfx);
+        sub_44C144(&yw->BuildProtos[i].SndFX);
     }
 }
 

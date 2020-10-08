@@ -359,7 +359,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, InputState
 
         float xpos = pGem->SecX * 1200.0 + 600.0;
         float ypos = -(pGem->SecY * 1200.0 + 600.0);
-        int v13 = yw->BuildProtos[pGem->BuildingID].sec_type;
+        int v13 = yw->BuildProtos[pGem->BuildingID].SecType;
         const char *v14 = get_lang_string(yw->string_pointers_p2, 158, "TECH UPGRADE");
 
         yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, xpos, ypos, 26, 144, 25, 
@@ -592,7 +592,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, InputState
 
         float xpos = pGate->SecX * 1200.0 + 600.0;
         float ypos = -(pGate->SecY * 1200.0 + 600.0);
-        int v13 = yw->BuildProtos[ pGate->ClosedBldID ].sec_type;
+        int v13 = yw->BuildProtos[ pGate->ClosedBldID ].SecType;
         const char *v14 = get_lang_string(yw->string_pointers_p2, 159, "BEAM GATE");
 
         yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, xpos, ypos, 26, 145, 25, 
@@ -1918,7 +1918,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
 
     VhclProto *vhcl = NULL;
     WeapProto *wpn  = NULL;
-    BuildProto *bld = NULL;
+    TBuildingProto *bld = NULL;
 
     if ( lastVhcl )
         vhcl = &yw->VhclProtos[lastVhcl];
@@ -1940,9 +1940,9 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
     else if ( bld )
     {
         if ( yw->field_727c )
-            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->name.c_str());
+            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->Name.c_str());
         else
-            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->name.c_str());
+            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->Name.c_str());
     }
 
     switch ( upg.upgradeType )
@@ -1998,9 +1998,9 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
             if ( bld )
             {
                 if ( yw->field_727c )
-                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->name.c_str());
+                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->Name.c_str());
                 else
-                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->name.c_str());
+                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->Name.c_str());
 
                 v13 = get_lang_string(yw->string_pointers_p2, 2464, "COMBINED UPGRADE:");
             }

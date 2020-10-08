@@ -2310,7 +2310,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             yw->VhclProtos[vhcl].disable_enable_bitmask = 0;
 
         if ( bld )
-            yw->BuildProtos[bld].enable_mask = 0;
+            yw->BuildProtos[bld].EnableMask = 0;
       
         uint16_t lastVhcl = 0;
         uint16_t lastBuild = 0;
