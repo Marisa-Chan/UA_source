@@ -2566,7 +2566,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
 
         if ( !a7 )
         {
-            if ( robo && v43 )
+            if ( robo && robo->_status != BACT_STATUS_DEAD && v43 )
             {
                 NC_STACK_ypagun *commander = NULL;
 
