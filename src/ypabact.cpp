@@ -3456,6 +3456,10 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
                 }
             }
         }
+        
+        if ( arg->flags & 4 )
+            wobj->setMISS_ignoreBuilds(1);
+            
 
         if ( arg->tgType != BACT_TGT_TYPE_UNIT )
         {

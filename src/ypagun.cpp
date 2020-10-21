@@ -505,18 +505,10 @@ void NC_STACK_ypagun::FightWithBact(bact_arg75 *arg)
             arg79.target.pbact = arg->target.pbact;
             arg79.weapon = _weapon;
             arg79.g_time = arg->g_time;
-            arg79.flags = 0;
+            arg79.flags = (!getBACT_inputting() ? 4 : 0);
 
             if ( LaunchMissile(&arg79) )
             {
-                int a5 = getBACT_inputting();
-
-                if ( !a5 )
-                {
-                    World::MissileList::reverse_iterator it = _missiles_list.rbegin();
-                    if ( it != _missiles_list.rend() )
-                        (*it)->setMISS_ignoreBuilds(1);
-                }
                 _gunFireCount = _gunFireTime;
 
                 setState_msg arg78;
