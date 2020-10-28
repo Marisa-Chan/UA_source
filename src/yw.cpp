@@ -6935,6 +6935,10 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
         write_modifers = 1;
         write_user = 1;
     }
+    
+    // Force to write last frame timestamp into history
+    if (_historyLastIsTimeStamp)
+        _history.Write( _historyLastFrame.MakeByteArray() );
 
     char filename[300];
     sprintf(filename, "%s", arg->saveFile);
