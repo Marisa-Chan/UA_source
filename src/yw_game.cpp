@@ -733,6 +733,7 @@ int NC_STACK_ypaworld::LVLoaderCommon(LevelDesc &mapp, int levelID, int a5)
     }
 
     _history.Clear();
+    _historyLastIsTimeStamp = false;
 
     audio_volume = SFXEngine::SFXe.getMasterVolume();
 
