@@ -74,8 +74,8 @@
 #define MMAX(a, b) ((a) > (b) ? (a) : (b))
 #define MMIN(a, b) ((a) < (b) ? (a) : (b))
 
-#define NANCARRY_LOG
-#define NDIV_CARRY_LOG
+//#define NANCARRY_LOG
+//#define NDIV_CARRY_LOG
 
 #ifndef NANCARRY_LOG
 
