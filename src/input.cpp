@@ -453,7 +453,7 @@ std::array<Input::KeyMapName, Input::KC_MAX> NC_STACK_input::KeyNamesTable {{
     {"f12", Input::KC_F12},         {"bs", Input::KC_BACKSPACE},
     {"tab", Input::KC_TAB},         {"clear", Input::KC_CLEAR},        
     {"return", Input::KC_RETURN},   {"ctrl", Input::KC_CTRL},    
-    {"shift", Input::KC_SHIFT},     {"alt", Input::KC_ALT},           
+    {"rshift", Input::KC_SHIFT},     {"alt", Input::KC_ALT},           
     {"pause", Input::KC_PAUSE},     {"pageup", Input::KC_PGUP},
     {"pagedown", Input::KC_PGDOWN}, {"end", Input::KC_END},            
     {"home", Input::KC_HOME},       {"select", Input::KC_SELECT},
@@ -507,7 +507,7 @@ std::array<Input::KeyMapName, Input::KC_MAX> NC_STACK_input::KeyNamesTable {{
 }};
 
 std::vector<Input::KeyMapName> NC_STACK_input::KeyAltNamesTable ({
-    {"rshift", Input::KC_SHIFT},    {"lshift", Input::KC_SHIFT},
+    {"shift", Input::KC_SHIFT},    {"lshift", Input::KC_SHIFT},
     {"lctrl", Input::KC_CTRL},      {"rctrl", Input::KC_CTRL},
     {"lalt", Input::KC_ALT},        {"ralt", Input::KC_CTRL},
 });
