@@ -7564,11 +7564,11 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     //path find for ground units (tank & car)
     int maxsteps = arg->steps_cnt;
 
-    for (int xx = 0; xx < _world->sectors_maxX2; xx++)
+    for (int xx = 0; xx < _world->_mapWidth; xx++)
     {
-        for (int yy = 0; yy < _world->sectors_maxY2; yy++)
+        for (int yy = 0; yy < _world->_mapHeight; yy++)
         {
-            cellArea &cll = _world->cells[xx + yy * _world->sectors_maxX2];
+            cellArea &cll = _world->_cells[xx + yy * _world->_mapWidth];
 
             cll.pf_flags = 0;
             cll.cost_to_this = 0;
@@ -7584,9 +7584,9 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     cellArea *target_pcell = NULL;
 
-    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < _world->sectors_maxX2 && to_sec_z < _world->sectors_maxY2 )
+    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < _world->_mapWidth && to_sec_z < _world->_mapHeight )
     {
-        target_pcell = &_world->cells[to_sec_x + to_sec_z * _world->sectors_maxX2];
+        target_pcell = &_world->_cells[to_sec_x + to_sec_z * _world->_mapWidth];
         target_pcell->pos_x = to_sec_x;
         target_pcell->pos_y = to_sec_z;
     }
@@ -7603,9 +7603,9 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     cellArea *start_pcell = NULL;
 
-    if ( from_sec_x >= 0 && from_sec_z >= 0 && from_sec_x < _world->sectors_maxX2 && from_sec_z < _world->sectors_maxY2 )
+    if ( from_sec_x >= 0 && from_sec_z >= 0 && from_sec_x < _world->_mapWidth && from_sec_z < _world->_mapHeight )
     {
-        start_pcell = &_world->cells[from_sec_x + from_sec_z * _world->sectors_maxX2];
+        start_pcell = &_world->_cells[from_sec_x + from_sec_z * _world->_mapWidth];
         start_pcell->pos_x = from_sec_x;
         start_pcell->pos_y = from_sec_z;
     }
@@ -7642,9 +7642,9 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 if ( t_x > 0 && t_x < _secMaxX - 1 && t_z > 0 && t_z < _secMaxY - 1 )
                 {
                     cellArea *cell_tzx = NULL;
-                    if ( t_x >= 0 && t_z >= 0 && t_x < _world->sectors_maxX2 && t_z < _world->sectors_maxY2 )
+                    if ( t_x >= 0 && t_z >= 0 && t_x < _world->_mapWidth && t_z < _world->_mapHeight )
                     {
-                        cell_tzx = &_world->cells[_world->sectors_maxX2 * t_z + t_x];
+                        cell_tzx = &_world->_cells[_world->_mapWidth * t_z + t_x];
                         cell_tzx->pos_x = t_x;
                         cell_tzx->pos_y = t_z;
                     }
@@ -7671,18 +7671,18 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                     {
                         cellArea *cell_tz = NULL;
 
-                        if (current_sec_x >= 0 && t_z >= 0 && current_sec_x < _world->sectors_maxX2 && t_z < _world->sectors_maxY2)
+                        if (current_sec_x >= 0 && t_z >= 0 && current_sec_x < _world->_mapWidth && t_z < _world->_mapHeight)
                         {
-                            cell_tz = &_world->cells[current_sec_x + _world->sectors_maxX2 * t_z];
+                            cell_tz = &_world->_cells[current_sec_x + _world->_mapWidth * t_z];
                             cell_tz->pos_x = current_sec_x;
                             cell_tz->pos_y = t_z;
                         }
 
                         cellArea *cell_tx = NULL;
 
-                        if (t_x >= 0 && current_sec_z >= 0 && t_x < _world->sectors_maxX2 && current_sec_z < _world->sectors_maxY2)
+                        if (t_x >= 0 && current_sec_z >= 0 && t_x < _world->_mapWidth && current_sec_z < _world->_mapHeight)
                         {
-                            cell_tx = &_world->cells[current_sec_z * _world->sectors_maxX2 + t_x];
+                            cell_tx = &_world->_cells[current_sec_z * _world->_mapWidth + t_x];
                             cell_tx->pos_x = t_x;
                             cell_tx->pos_y = current_sec_z;
                         }
@@ -7760,9 +7760,9 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     cellArea *iter_cell = NULL;
 
-    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < _world->sectors_maxX2 && to_sec_z < _world->sectors_maxY2 )
+    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < _world->_mapWidth && to_sec_z < _world->_mapHeight )
     {
-        iter_cell = &_world->cells[to_sec_x + _world->sectors_maxX2 * to_sec_z];
+        iter_cell = &_world->_cells[to_sec_x + _world->_mapWidth * to_sec_z];
         iter_cell->pos_x = to_sec_x;
         iter_cell->pos_y = to_sec_z;
     }

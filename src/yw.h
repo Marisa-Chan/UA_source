@@ -56,6 +56,11 @@ struct uamessage_vhclDataI;
 
 namespace World
 {
+   
+enum
+{
+    FRACTION_MAXCOUNT = 8,
+};
     
 enum BLIST_TYPES
 {
@@ -1614,7 +1619,7 @@ struct yw_field34
 
 struct yw_f30
 {
-    char owner;
+    uint8_t owner;
     uint8_t field_1;
 };
 
@@ -2097,12 +2102,6 @@ struct yw_174arg
     int make_changes;
 };
 
-struct yw_arg169
-{
-    UserData *usr;
-    const char *saveFile;
-};
-
 struct ypaworld_arg146
 {
     int vehicle_id;
@@ -2274,7 +2273,7 @@ public:
     virtual size_t ypaworld_func148(ypaworld_arg148 *arg);
     virtual void ypaworld_func149(ypaworld_arg136 *arg);
     virtual void ypaworld_func150(yw_arg150 *arg);
-    virtual void ypaworld_func151();
+    virtual void DeleteLevel();
     virtual void ypaworld_func153(bact_hudi *arg);
     virtual size_t ypaworld_func154(UserData *usr);
     virtual void ypaworld_func155(UserData *usr);
@@ -2291,8 +2290,8 @@ public:
     virtual size_t ypaworld_func166(const char **langname);
     virtual void ypaworld_func167(UserData *usr);
     virtual size_t ypaworld_func168(NC_STACK_ypabact *pbact);
-    virtual size_t ypaworld_func169(yw_arg169 *arg);
-    virtual size_t ypaworld_func170(yw_arg169 *arg);
+    virtual size_t LoadGame(const std::string &saveFile);
+    virtual size_t SaveGame(const std::string &saveFile);
     virtual size_t ypaworld_func171(yw_arg172 *arg);
     virtual size_t ypaworld_func172(yw_arg172 *arg);
     virtual size_t ypaworld_func173(UserData *usr);
@@ -2305,7 +2304,7 @@ public:
     virtual bool ypaworld_func181(void *arg);
     virtual void ypaworld_func182(void *arg);
     virtual size_t ypaworld_func183(yw_arg161 *arg);
-    virtual void ypaworld_func184(const World::History::Record &arg);
+    virtual void HistoryEventAdd(const World::History::Record &arg);
     virtual void ypaworld_func185(void *arg);
 
     NC_STACK_ypaworld();
@@ -2392,7 +2391,7 @@ public:
     virtual int getYW_invulnerable();
 
 protected:
-    int LVLoaderCommon(LevelDesc &mapp, int levelID, int a5);
+    int LevelCommonLoader(LevelDesc *mapp, int levelID, int a5);
     void FFeedback_Init();
     void FFeedback_StopAll();
     void FFeedback_VehicleChanged();
@@ -2442,8 +2441,8 @@ public:
     void sub_4D12D8(int id, int a3);
     void sub_4D1594(int id);
     void sub_4D1444(int id);
-    int ypaworld_func169__sub1(const std::string &filename);
-    void ypaworld_func169__sub2();
+    int LoadingParseSaveFile(const std::string &filename);
+    void LoadingUnitsRefresh();
     int ypaworld_func172__sub0(const std::string &fname, int parsers_mask);
     void listSaveDir(const std::string &saveDir);
     int yw_InitLevelNet();
@@ -2456,7 +2455,8 @@ public:
     int load_fonts_and_icons();
     int yw_LoadSet(int setID);
     
-    void sb_0x47b028(NC_STACK_ypabact *bct1, NC_STACK_ypabact *bct2, int a3);
+    //PRT - Position Robo Target
+    void RefreshUnitPRT(NC_STACK_ypabact *unit, NC_STACK_ypabact *robo, bool isRobo); 
     NC_STACK_ypabact * sb_0x47b028__sub0(uint32_t bactid); // CHECK IT
     
     void yw_processVhclDataMsgs(uamessage_vhclData *msg, NC_STACK_ypabact *host_node);
@@ -2484,7 +2484,7 @@ public:
     int sb_0x456384__sub0(int x, int y, int power);
     void sb_0x456384__sub0__sub0();
     
-    void sub_44F958(cellArea *cell, char secX, char secY, uint8_t owner);
+    void CellSetOwner(cellArea *cell, char secX, char secY, uint8_t owner);
     int ypaworld_func148__sub1(int id, int a4, int x, int y, int ownerID2, char blg_ID);
     
     void debug_info_draw(InputState *inpt);
@@ -2577,6 +2577,18 @@ public:
     void LoadKeyNames();
     
     
+    void InitGates();
+    void UpdatePowerEnergy();
+    void PowerStationErase(size_t id);
+    void CellSetNewOwner(int secX, int secY, cellArea *cell, yw_arg129 *a5, int newOwner);
+    void CellCheckHealth(cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6);
+    void InitBuddies();
+    void InitSuperItems();
+    bool LoadBlgMap(const std::string &mapName);
+    bool LoadHightMap(const std::string &mapName);
+    bool LoadOwnerMap(const std::string &mapName);
+    bool LoadTypeMap(const std::string &mapName);
+    
     
     int sb_0x44ca90__sub7(int event_loop_id);
     
@@ -2598,18 +2610,18 @@ public:
     
     UserData *GameShell;
     base_64arg *b64_parms;
-    int sectors_maxX;
-    int sectors_maxY;
-    int sectors_maxX2;
-    int sectors_maxY2;
-    cellArea *cells;
+    int _mapAbsMaxX;
+    int _mapAbsMaxY;
+    int _mapWidth;
+    int _mapHeight;
+    cellArea *_cells;
 
     float map_Width_meters;
     float map_Height_meters;
     yw_f30 *field_30;
-    yw_field34 *field_34;
-    int field_38;
-    int field_3c;
+    yw_field34 *_powerStations;
+    size_t _powerStationsCount;
+    int _lastUpdatedPowerStationID;
     int set_number;
     NC_STACK_base *additionalSet;
     World::RefBactList _unitsList;

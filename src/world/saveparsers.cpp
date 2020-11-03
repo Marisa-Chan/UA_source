@@ -502,7 +502,7 @@ int SaveGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, c
         int gemId = std::stoi(p2);
 
         if ( gemId >= 0 && gemId < (int)_o._Gems.size() )
-            _o.cells[_o.sectors_maxX2 * _o._Gems[gemId].SecY + _o._Gems[gemId].SecX].w_type = 0;
+            _o._cells[_o._mapWidth * _o._Gems[gemId].SecY + _o._Gems[gemId].SecX].w_type = 0;
         else
             printf("SaveGemParser::Handle : gemId = %d but _Gems.size() = %d\n", gemId, (int)_o._Gems.size());
     }
@@ -550,7 +550,7 @@ int SaveKwFactorParser::Handle(ScriptParser::Parser &parser, const std::string &
 
                     for (int i = 0; i < 256; i++)
                     {
-                        yw_field34 &kw = _o.field_34[i];
+                        yw_field34 &kw = _o._powerStations[i];
                         if ( kw.p_cell )
                         {
                             if ( secX == kw.x && secY == kw.y )
@@ -594,7 +594,7 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
     if ( _o.own_map )
     {
         uint8_t *pbuf = _o.own_map->data();
-        cellArea *v6 = _o.cells;
+        cellArea *v6 = _o._cells;
 
         for (int i = 0; i < (int)_o.own_map->size(); i++)
         {
@@ -628,7 +628,7 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
     if ( _o.blg_map )
     {
         uint8_t *pbuf = _o.blg_map->data();
-        cellArea *v6 = _o.cells;
+        cellArea *v6 = _o._cells;
 
         for (int i = 0; i < (int)_o.blg_map->size(); i++)
         {
@@ -642,8 +642,8 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
                 arg148.ownerID2 = v6->owner;
                 arg148.blg_ID = v8;
                 arg148.field_C = 1;
-                arg148.x = i % _o.sectors_maxX2;
-                arg148.y = i / _o.sectors_maxX2;
+                arg148.x = i % _o._mapWidth;
+                arg148.y = i / _o._mapWidth;
 
                 _o.ypaworld_func148(&arg148);
             }
@@ -671,8 +671,8 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
 
     if ( nrgmap )
     {
-        int smax = _o.sectors_maxY2 * _o.sectors_maxX2;
-        cellArea *v6 = _o.cells;
+        int smax = _o._mapHeight * _o._mapWidth;
+        cellArea *v6 = _o._cells;
         int n = 0;
 
         for (int i = 0; i < smax; i++)

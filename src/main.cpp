@@ -80,14 +80,12 @@ int sb_0x411324__sub0()
 
     LevelInfo *var_2d90 = ypaworld->getYW_levelInfo();
 
-    char buf[200];
-
     switch( var_2d90->State )
     {
     case 1:
     case 2:
     {
-        ypaworld->ypaworld_func151();
+        ypaworld->DeleteLevel();
 
         if ( dword_513638 || var_2d90->State == 2 )
         {
@@ -144,15 +142,9 @@ int sb_0x411324__sub0()
 
     case 4:
     {
-        ypaworld->ypaworld_func151();
+        ypaworld->DeleteLevel();
 
-        sprintf(buf, "save:%s/%d.rst", userdata.user_name.c_str(), var_2d90->LevelID);
-
-        yw_arg169 arg169;
-        arg169.saveFile = buf;
-        arg169.usr = &userdata;
-
-        if ( !ypaworld->ypaworld_func169(&arg169) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.rst", userdata.user_name, var_2d90->LevelID) ) )
             ypa_log_out("Warning, load error\n");
 
         INPe.QueryInput(&input_states);
@@ -161,13 +153,7 @@ int sb_0x411324__sub0()
 
     case 6:
     {
-        yw_arg169 arg169;
-        arg169.usr = &userdata;
-        arg169.saveFile = buf;
-
-        sprintf(buf, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
-
-        if ( !ypaworld->ypaworld_func170(&arg169) )
+        if ( !ypaworld->SaveGame( fmt::sprintf("save:%s/%d.sgm", userdata.user_name, 0) ) )
             ypa_log_out("Warning, Save error\n");
 
         INPe.QueryInput(&input_states);
@@ -176,14 +162,9 @@ int sb_0x411324__sub0()
 
     case 7:
     {
-        ypaworld->ypaworld_func151();
+        ypaworld->DeleteLevel();
 
-        yw_arg169 arg169;
-        arg169.usr = &userdata;
-        arg169.saveFile = buf;
-        sprintf(buf, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
-
-        if ( !ypaworld->ypaworld_func169(&arg169) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.user_name, 0) ) )
             ypa_log_out("Warning, load error\n");
 
         INPe.QueryInput(&input_states);
@@ -380,14 +361,7 @@ int sb_0x411324__sub1()
         if ( !sub_4107FC(&userdata) )
             return 0;
 
-        char a1[200];
-        yw_arg169 arg169;
-        arg169.saveFile = a1;
-        arg169.usr = &userdata;
-
-        sprintf(a1, "save:%s/%d.sgm", userdata.user_name.c_str(), 0);
-
-        if ( !ypaworld->ypaworld_func169(&arg169) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.user_name, 0) ) )
         {
             ypa_log_out("Error while loading level (level %d, User %s\n", a4->LevelID, userdata.user_name.c_str());
 
@@ -711,7 +685,7 @@ void sub_4113E8()
     {
         if ( dword_520400 == 2 )
         {
-            ypaworld->ypaworld_func151();
+            ypaworld->DeleteLevel();
             ypaworld->ypaworld_func155(&userdata);
         }
         else if ( dword_520400 == 1 )

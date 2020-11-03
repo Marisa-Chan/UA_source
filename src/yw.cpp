@@ -55,18 +55,18 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 {
     GameShell = NULL;
     b64_parms = NULL;
-    sectors_maxX = 0;
-    sectors_maxY = 0;
-    sectors_maxX2 = 0;
-    sectors_maxY2 = 0;
-    cells = NULL;
+    _mapAbsMaxX = 0;
+    _mapAbsMaxY = 0;
+    _mapWidth = 0;
+    _mapHeight = 0;
+    _cells = NULL;
 
     map_Width_meters = 0.0;
     map_Height_meters = 0.0;
     field_30 = NULL;
-    field_34 = NULL;
-    field_38 = 0;
-    field_3c = 0;
+    _powerStations = NULL;
+    _powerStationsCount = 0;
+    _lastUpdatedPowerStationID = 0;
     set_number = 0;
     additionalSet = NULL;
 //nlist bact_list;
@@ -623,10 +623,10 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     field_15e8 = stak.Get<int32_t>(YW_ATT_FADELENGTH, 600);
     field_15ec = stak.Get<int32_t>(YW_ATT_SKYVISLIMIT, 4200);
     field_15f0 = stak.Get<int32_t>(YW_ATT_SKYFADELENGTH, 1100);
-    sectors_maxX = stak.Get<int32_t>(YW_ATT_MAPMAX_X, 64);
-    sectors_maxY = stak.Get<int32_t>(YW_ATT_MAPMAX_Y, 64);
-    sectors_maxX2 = sectors_maxX;
-    sectors_maxY2 = sectors_maxY;
+    _mapAbsMaxX = stak.Get<int32_t>(YW_ATT_MAPMAX_X, 64);
+    _mapAbsMaxY = stak.Get<int32_t>(YW_ATT_MAPMAX_Y, 64);
+    _mapWidth = _mapAbsMaxX;
+    _mapHeight = _mapAbsMaxY;
     field_15f4 = stak.Get<int32_t>(YW_ATT_SKYHEIGHT, -550);
     field_15f8 = stak.Get<int32_t>(YW_ATT_SKYRENDER, 1);
     field_15fc = stak.Get<int32_t>(YW_ATT_DOENERGYRECALC, 1);
@@ -658,9 +658,9 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
         }
     }
 
-    cells = new cellArea[sectors_maxX * sectors_maxY];
+    _cells = new cellArea[_mapAbsMaxX * _mapAbsMaxY];
 
-    if ( !cells )
+    if ( !_cells )
     {
         ypa_log_out("yw_main.c/OM_NEW: alloc of cell area failed!\n");
         func1();
@@ -831,7 +831,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         field_1B6E = 1024 / arg->DTime;
         p_1_grp[0][0] = field_1B6E;
 
-        ypaworld_func184(World::History::Frame(timeStamp));
+        HistoryEventAdd(World::History::Frame(timeStamp));
 
         uint32_t v22 = profiler_begin();
 
@@ -844,9 +844,9 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             uint32_t v23 = profiler_begin();
 
-            for (int i = 0; i < sectors_maxY2 * sectors_maxX2; i++)
+            for (int i = 0; i < _mapHeight * _mapWidth; i++)
             {
-                cellArea *tmp = cells + i;
+                cellArea *tmp = _cells + i;
 
                 tmp->view_mask = 1 << tmp->owner;
             }
@@ -1352,9 +1352,9 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
     int secX = arg->pos.x / 1200.0;
     int secY = -arg->pos.z / 1200.0;
 
-    if ( secX > 0 && sectors_maxX2 - 1 > secX && secY > 0 && sectors_maxY2 - 1 > secY )
+    if ( secX > 0 && _mapWidth - 1 > secX && secY > 0 && _mapHeight - 1 > secY )
     {
-        cellArea *cell = &cells[secX + sectors_maxX2 * secY];
+        cellArea *cell = &_cells[secX + _mapWidth * secY];
 
         int v8 = (int)(arg->pos.x / 150.0) % 8;
 
@@ -1429,7 +1429,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
             ypaworld_func129__sub0(this, cell, arg);
 
-            sb_0x44fc60(this, cell, secX, secY, arg->field_14, arg);
+            CellCheckHealth(cell, secX, secY, arg->field_14, arg);
 
             if ( cell->w_type == 4 )
             {
@@ -1440,7 +1440,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     else
                         yw_ActivateWunderstein(cell, cell->w_id);                  
 
-                    ypaworld_func184( World::History::Upgrade(secX, secY, cell->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
+                    HistoryEventAdd( World::History::Upgrade(secX, secY, cell->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
                 }
             }
             else if ( cell->w_type == 7 )
@@ -1474,9 +1474,9 @@ size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
     arg->pos_x_cntr = arg->pos_x - arg->sec_x * 1200.0 + -600.0;
     arg->pos_y_cntr = arg->pos_z + arg->sec_z * 1200.0 + 600.0;
 
-    if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= sectors_maxX2 || arg->sec_z >= sectors_maxY2 )
+    if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= _mapWidth || arg->sec_z >= _mapHeight )
     {
-        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, sectors_maxX2, sectors_maxY2);
+        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, _mapWidth, _mapHeight);
         ypa_log_out("YWM_GETSECTORINFO ausserhalb!!!\n");
 
         arg->pcell = NULL;
@@ -1484,7 +1484,7 @@ size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
         return 0;
     }
 
-    arg->pcell = &cells[sectors_maxX2 * arg->sec_z + arg->sec_x];
+    arg->pcell = &_cells[_mapWidth * arg->sec_z + arg->sec_x];
     return 1;
 }
 
@@ -2125,7 +2125,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     int y = arg->y;
     int x = arg->x;
 
-    cellArea *cell = &cells[x + y * sectors_maxX2];
+    cellArea *cell = &_cells[x + y * _mapWidth];
 
     bool UserInSec = false;
 
@@ -2147,7 +2147,7 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     else if ( UserInSec  && !arg->field_C )
         return 0;
     else if ( cell->w_type == 2 )
-        sub_44F500(this, cell->w_id);
+        PowerStationErase(cell->w_id);
     else if ( (cell->w_type == 4 || cell->w_type == 5 || cell->w_type == 6) && !arg->field_C )
         return 0;
     else if ( cell->w_type == 7 && isNetGame )
@@ -2344,9 +2344,9 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
         int v12 = -v7 >> 16;
         int v29 = v6 >> 16;
 
-        if ( v29 >= 0 && v29 < sectors_maxX2 && v12 >= 0 && v12 < sectors_maxY2 )
+        if ( v29 >= 0 && v29 < _mapWidth && v12 >= 0 && v12 < _mapHeight )
         {
-            for ( NC_STACK_ypabact* &sect_bacts : cells[v29 + v12 * sectors_maxX2].unitsList )
+            for ( NC_STACK_ypabact* &sect_bacts : _cells[v29 + v12 * _mapWidth].unitsList )
             {
                 if ( sect_bacts != arg->unit && sect_bacts->_status != BACT_STATUS_DEAD )
                 {
@@ -2387,7 +2387,7 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func151()
+void NC_STACK_ypaworld::DeleteLevel()
 {
     sub_471AB8();
 
@@ -6028,36 +6028,36 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
     int ok = 0;
     LevelDesc mapp;
 
-    if ( LVLoaderCommon(mapp, arg->lvlID, arg->field_4) )
+    if ( LevelCommonLoader(&mapp, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(this, mapp.TypStr.c_str()) )
+        if ( LoadTypeMap(mapp.TypStr) )
         {
-            if ( cells_mark_owner(this, mapp.OwnStr.c_str()) )
+            if ( LoadOwnerMap( mapp.OwnStr) )
             {
-                if ( cells_mark_hight(this, mapp.HgtStr.c_str()) )
+                if ( LoadHightMap(mapp.HgtStr.c_str()) )
                 {
                     if ( yw_createRobos(mapp.Robos) )
                     {
-                        if ( sub_44B9B8(this, mapp.BlgStr.c_str()) )
+                        if ( LoadBlgMap(mapp.BlgStr) )
                         {
                             if ( _levelInfo->Mode != 1 )
                             {
                                 yw_InitSquads(mapp.Squads);
-                                yw_InitBuddies(this);
+                                InitBuddies();
 
-                                for (int yy = 0; yy < sectors_maxY2; yy++)
+                                for (int yy = 0; yy < _mapHeight; yy++)
                                 {
-                                    for (int xx = 0; xx < sectors_maxX2; xx++)
+                                    for (int xx = 0; xx < _mapWidth; xx++)
                                     {
-                                        cellArea *cell = &cells[xx + yy * sectors_maxX2];
-                                        sb_0x44fc60(this, cell, xx, yy, 255, NULL);
+                                        cellArea *cell = &_cells[xx + yy * _mapWidth];
+                                        CellCheckHealth(cell, xx, yy, 255, NULL);
                                     }
                                 }
 
                                 yw_InitTechUpgradeBuildings();
-                                yw_InitGates(this);
-                                yw_InitSuperItems(this);
-                                sub_44F748(this);
+                                InitGates();
+                                InitSuperItems();
+                                UpdatePowerEnergy();
                             }
 
                             if ( sb_0x451034(this) )
@@ -6072,7 +6072,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
     if ( !ok )
     {
         printf("Load level not OK\n");
-        ypaworld_func151();
+        DeleteLevel();
     }
 
     return ok;
@@ -6247,7 +6247,7 @@ void NC_STACK_ypaworld::ypaworld_func164()
             replayer->mfile = NULL;
         }
 
-        ypaworld_func151();
+        DeleteLevel();
 
         if ( replayer->oinf )
             nc_FreeMem(replayer->oinf);
@@ -6690,62 +6690,7 @@ size_t NC_STACK_ypaworld::ypaworld_func168(NC_STACK_ypabact *bact)
     return 1;
 }
 
-
-
-int ypaworld_func169__sub3(const char *a)
-{
-    FSMgr::FileHandle *fil = uaOpenFile(a, "r");
-
-    if ( !fil )
-        return 0;
-
-    delete fil;
-    return 1;
-}
-
-int get_lvlnum_from_save(const char *filename, int *lvlnum_out)
-{
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
-
-    if ( !fil )
-        return 0;
-
-    char v7[256];
-    while ( fil->gets(v7, 255) )
-    {
-        if ( !strnicmp(v7, "begin_levelnum", 14) )
-        {
-            while ( fil->gets(v7, 255) )
-            {
-                if ( !strnicmp(v7, "end", 3) )
-                    break; //Not found
-
-                char *v5 = strtok(v7, " \t");
-
-                if ( v5 )
-                {
-                    if ( !strnicmp(v5, "levelnum", 8) )
-                    {
-                        v5 = strtok(0, " \t=");
-
-                        if ( v5 )
-                        {
-                            *lvlnum_out = atoi(v5);
-                            delete fil;
-                            return 1;
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
-    delete fil;
-    return 0;
-}
-
-int NC_STACK_ypaworld::ypaworld_func169__sub1(const std::string &filename)
+int NC_STACK_ypaworld::LoadingParseSaveFile(const std::string &filename)
 {
     int lvlnum;
     ScriptParser::HandlersList parsers
@@ -6773,18 +6718,18 @@ int NC_STACK_ypaworld::ypaworld_func169__sub1(const std::string &filename)
     return ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
 }
 
-void NC_STACK_ypaworld::ypaworld_func169__sub2()
+void NC_STACK_ypaworld::LoadingUnitsRefresh()
 {
     for ( NC_STACK_ypabact* &station : _unitsList )
     {
-        sb_0x47b028(station, station, 1);
+        RefreshUnitPRT(station, station, true);
 
         for ( NC_STACK_ypabact* &commander : station->_kidList )
         {
-            sb_0x47b028(commander, station, 0);
+            RefreshUnitPRT(commander, station, false);
 
             for ( NC_STACK_ypabact* &slave : commander->_kidList )
-                sb_0x47b028(slave, station, 0);
+                RefreshUnitPRT(slave, station, false);
         }
     }
 
@@ -6800,48 +6745,51 @@ void NC_STACK_ypaworld::ypaworld_func169__sub2()
     }
 }
 
-size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
+size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
 {
-    int v5 = 0;
+    bool loadOK = false;
 
-    if ( !ypaworld_func169__sub3(arg->saveFile) )
+    if ( !uaFileExist(saveFile) )
         return 1;
 
-    if ( strstr(arg->saveFile, ".SGM") || strstr(arg->saveFile, ".sgm") )
+    if ( saveFile.find(".sgm") != std::string::npos || saveFile.find(".SGM") != std::string::npos )
     {
         _maxReloadConst = 0;
         _maxRoboEnergy = 0;
     }
 
-    char save_filename[300];
-    sprintf(save_filename, "%s", arg->saveFile);
-
     int lvlnum;
-    get_lvlnum_from_save(save_filename, &lvlnum);
+    
+    ScriptParser::HandlersList parsers
+    {
+        new World::Parsers::SaveLevelNumParser(this, &lvlnum),
+    };
+
+    ScriptParser::ParseFile(saveFile, parsers, 0);
 
     _extraViewNumber = -1;
     _extraViewEnable = false;
 
     LevelDesc mapp;
 
-    if ( LVLoaderCommon(mapp, lvlnum, 0) )
+    if ( LevelCommonLoader(&mapp, lvlnum, 0) )
     {
-        if ( cells_mark_type(this, mapp.TypStr.c_str()) )
+        if ( LoadTypeMap(mapp.TypStr) )
         {
-            if ( cells_mark_owner(this, mapp.OwnStr.c_str()) )
+            if ( LoadOwnerMap(mapp.OwnStr) )
             {
-                if ( cells_mark_hight(this, mapp.HgtStr.c_str()) )
+                if ( LoadHightMap(mapp.HgtStr) )
                 {
-                    if ( sub_44B9B8(this, mapp.BlgStr.c_str()) )
-                        v5 = 1;
+                    if ( LoadBlgMap(mapp.BlgStr) )
+                        loadOK = true;
                 }
             }
         }
     }
 
-    if ( !v5 )
+    if ( !loadOK )
     {
-        ypaworld_func151();
+        DeleteLevel();
         return 0;
     }
 
@@ -6851,7 +6799,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     bact_id = 0x10000;
     dword_5A7A80 = 0;
 
-    yw_InitSuperItems(this);
+    InitSuperItems();
 
     if ( copyof_typemap )
     {
@@ -6871,7 +6819,7 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     if ( own_map )
         copyof_ownermap = own_map->Copy();
 
-    if ( !ypaworld_func169__sub1(save_filename) )
+    if ( !LoadingParseSaveFile(saveFile) )
         return 0;
 
     dword_5A7A80++;
@@ -6880,22 +6828,22 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
     if ( UserRobo )
         dynamic_cast<NC_STACK_yparobo *>(UserRobo) ->setROBO_commCount(dword_5A7A80);
 
-    ypaworld_func169__sub2();
+    LoadingUnitsRefresh();
 
-    if ( strstr(arg->saveFile, ".fin") || strstr(arg->saveFile, ".FIN") )
-        yw_InitBuddies(this);
+    if ( saveFile.find(".fin") != std::string::npos || saveFile.find(".FIN") != std::string::npos )
+        InitBuddies();
 
-    for(int y = 0; y < sectors_maxY2; y++)
+    for(int y = 0; y < _mapHeight; y++)
     {
-        for(int x = 0; x < sectors_maxX2; x++)
+        for(int x = 0; x < _mapWidth; x++)
         {
-            cellArea *cell = &cells[x + y * sectors_maxX2];
-            sb_0x44fc60(this, cell, x, y, 255, 0);
+            cellArea *cell = &_cells[x + y * _mapWidth];
+            CellCheckHealth(cell, x, y, 255, NULL);
         }
     }
 
-    yw_InitGates(this);
-    sub_44F748(this);
+    InitGates();
+    UpdatePowerEnergy();
 
     if ( !sb_0x451034(this) )
         return 0;
@@ -6904,22 +6852,18 @@ size_t NC_STACK_ypaworld::ypaworld_func169(yw_arg169 *arg)
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
+size_t NC_STACK_ypaworld::SaveGame(const std::string &saveFile)
 {
-    int write_ok = 1;
+    bool write_ok = true;
 
-    if ( strstr(arg->saveFile, ".sgm") || strstr(arg->saveFile, ".SGM") )
-    {
-        char flname[300];
-        sprintf(flname, "save:%s/sgisold.txt", GameShell->user_name.c_str());
-        uaDeleteFile(flname);
-    }
+    if ( saveFile.find(".sgm") != std::string::npos || saveFile.find(".SGM") != std::string::npos )
+        uaDeleteFile( fmt::sprintf("save:%s/sgisold.txt", GameShell->user_name) );
 
     int write_modifers;
     int write_user;
     int write_level_statuses;
 
-    bool isfin_save = strstr(arg->saveFile, ".fin") || strstr(arg->saveFile, ".FIN");
+    bool isfin_save = saveFile.find(".fin") != std::string::npos || saveFile.find(".FIN") != std::string::npos;
 
     if ( isfin_save )
     {
@@ -6940,10 +6884,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     if (_historyLastIsTimeStamp)
         _history.Write( _historyLastFrame.MakeByteArray() );
 
-    char filename[300];
-    sprintf(filename, "%s", arg->saveFile);
-
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
+    FSMgr::FileHandle *fil = uaOpenFile( saveFile, "w");
 
     if ( !fil )
     {
@@ -6954,13 +6895,13 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
     if ( write_modifers )
     {
         if ( !yw_write_item_modifers(this, fil) )
-            write_ok = 0;
+            write_ok = false;
     }
 
     if ( write_user )
     {
         if ( !yw_write_user(fil, GameShell) )
-            write_ok = 0;
+            write_ok = false;
     }
 
     if ( write_ok )
@@ -6980,7 +6921,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
                         if ( yw_write_globals(this, fil) )
                         {
                             if ( yw_write_superbomb(this, fil) )
-                                write_ok = 1;
+                                write_ok = true;
                         }
                     }
                 }
@@ -6996,7 +6937,7 @@ size_t NC_STACK_ypaworld::ypaworld_func170(yw_arg169 *arg)
             {
                 if ( !yw_write_level_status(fil, this, i) )
                 {
-                    write_ok = 0;
+                    write_ok = false;
                     break;
                 }
             }
@@ -7388,14 +7329,14 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
             return;
     }
 
-    for (int i = 0; i < sectors_maxY2; i++)
+    for (int i = 0; i < _mapHeight; i++)
     {
-        for (int j = 0; j < sectors_maxX2; j++)
+        for (int j = 0; j < _mapWidth; j++)
         {
-            cellArea *v9 = cells + sectors_maxX2 * i + j;
+            cellArea *v9 = _cells + _mapWidth * i + j;
 
             if ( v9->owner == arg->bact->_owner )
-                sub_44F958(v9, j, i, arg->field_4);
+                CellSetOwner(v9, j, i, arg->field_4);
         }
     }
 
@@ -7405,11 +7346,11 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
     if ( UserRobo->_owner != arg->field_4 )
         return;
 
-    for (int i = 0; i < sectors_maxY2; i++)
+    for (int i = 0; i < _mapHeight; i++)
     {
-        for (int j = 0; j < sectors_maxX2; j++)
+        for (int j = 0; j < _mapWidth; j++)
         {
-            cellArea *v15 = cells + sectors_maxX2 * i + j;
+            cellArea *v15 = _cells + _mapWidth * i + j;
 
             if ( v15->w_type == 4 && v15->owner == UserRobo->_owner )
             {
@@ -7419,7 +7360,7 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
                 else
                     yw_ActivateWunderstein(v15, v15->w_id);
                 
-                ypaworld_func184( World::History::Upgrade(j, i, v15->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
+                HistoryEventAdd( World::History::Upgrade(j, i, v15->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
             }
 
         }
@@ -7517,22 +7458,15 @@ int ypaworld_func183__sub0(int lvlID, const char *userName)
 // Advanced Create Level
 size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 {
-    char buf[128];
-
     int v6;
 
     if ( LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, GameShell->user_name.c_str()) )
     {
-        sprintf(buf, "save:%s/%d.fin", GameShell->user_name.c_str(), arg->lvlID);
-
-        yw_arg169 v11;
-        v11.saveFile = buf;
-        v11.usr = GameShell;
-
-        v6 = ypaworld_func169(&v11);
+        std::string savename = fmt::sprintf("save:%s/%d.fin", GameShell->user_name, arg->lvlID);
+        v6 = LoadGame(savename);
 
         if ( !v6 )
-            ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", buf);
+            ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", savename.c_str());
 
         UserRobo->_energy = UserRobo->_energy_max;
 
@@ -7549,13 +7483,7 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 
     if ( v6 )
     {
-        yw_arg169 v11;
-        v11.usr = GameShell;
-        v11.saveFile = buf;
-
-        sprintf(buf, "save:%s/%d.rst", GameShell->user_name.c_str(), _levelInfo->LevelID);
-
-        if ( !ypaworld_func170(&v11) )
+        if ( !SaveGame(fmt::sprintf("save:%s/%d.rst", GameShell->user_name, _levelInfo->LevelID)) )
             ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", _levelInfo->LevelID, GameShell->user_name.c_str());
     }
 
@@ -7581,7 +7509,7 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func184(const World::History::Record &arg)
+void NC_STACK_ypaworld::HistoryEventAdd(const World::History::Record &arg)
 {
     switch ( arg.type )
     {
@@ -7596,7 +7524,7 @@ void NC_STACK_ypaworld::ypaworld_func184(const World::History::Record &arg)
     case World::History::TYPE_POWERST:
     case World::History::TYPE_UPGRADE:
         
-        if (_historyLastIsTimeStamp) // If 
+        if (_historyLastIsTimeStamp) // If
             _history.Write(_historyLastFrame.MakeByteArray());
             
         _history.Write(arg.MakeByteArray());
@@ -7715,22 +7643,22 @@ void NC_STACK_ypaworld::setYW_dontRender(int drndr)
 
 int NC_STACK_ypaworld::getYW_mapMaxX()
 {
-    return sectors_maxX;
+    return _mapAbsMaxX;
 }
 
 int NC_STACK_ypaworld::getYW_mapMaxY()
 {
-    return sectors_maxY;
+    return _mapAbsMaxY;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeX()
 {
-    return sectors_maxX2;
+    return _mapWidth;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeY()
 {
-    return sectors_maxY2;
+    return _mapHeight;
 }
 
 int NC_STACK_ypaworld::getYW_normVisLimit()

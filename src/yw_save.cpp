@@ -537,12 +537,12 @@ void yw_write_map(NC_STACK_ypaworld *yw, Common::PlaneBytes *map, const std::str
 
 void yw_write_ownermap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    Common::PlaneBytes *ownermap = new Common::PlaneBytes(yw->sectors_maxX2, yw->sectors_maxY2);
+    Common::PlaneBytes *ownermap = new Common::PlaneBytes(yw->_mapWidth, yw->_mapHeight);
 
     if ( ownermap )
     {
         for (uint32_t i = 0; i < ownermap->size(); i++)
-            (*ownermap)[i] = yw->cells[i].owner;
+            (*ownermap)[i] = yw->_cells[i].owner;
 
         fil->printf("\nbegin_ownermap\n");
         yw_write_map(yw, ownermap, "        ", fil);
@@ -561,16 +561,16 @@ void yw_write_buildmap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 void yw_write_energymap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    Common::PlaneBytes *energymap = new Common::PlaneBytes(yw->sectors_maxX2 * 3, yw->sectors_maxY2 * 3);
+    Common::PlaneBytes *energymap = new Common::PlaneBytes(yw->_mapWidth * 3, yw->_mapHeight * 3);
 
     if ( energymap )
     {
-        int sz = yw->sectors_maxY2 * yw->sectors_maxX2;
+        int sz = yw->_mapHeight * yw->_mapWidth;
         uint8_t *outbf = energymap->data();
 
         for (int i = 0; i < sz; i++)
         {
-            cellArea &cell = yw->cells[i];
+            cellArea &cell = yw->_cells[i];
 
             for (int j = 0; j < 3; j++)
             {
@@ -938,7 +938,7 @@ int yw_write_wunderinfo(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     size_t i = 0;
     for ( const MapGem &gem : yw->_Gems )
     {
-        if ( yw->cells[gem.SecX + gem.SecY * yw->sectors_maxX2].w_type != 4 )
+        if ( yw->_cells[gem.SecX + gem.SecY * yw->_mapWidth].w_type != 4 )
             fil->printf("    disablegem %d\n", i);
 
         i++;
@@ -957,7 +957,7 @@ int yw_write_kwfactor(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
     for (int i = 0; i < 256; i++)
     {
-        yw_field34 *kw = &yw->field_34[i];
+        yw_field34 *kw = &yw->_powerStations[i];
         if ( kw->p_cell )
         {
             sprintf(buf, "    kw = %d_%d_%d\n", kw->x, kw->y, kw->power_2);

@@ -517,8 +517,8 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 
                 if ( v10 )
                 {
-                    float a5 = (v10 % yw->sectors_maxX2) * 1200.0 + 600.0;
-                    float a6 = -((v10 / yw->sectors_maxX2) * 1200.0 + 600.0);
+                    float a5 = (v10 % yw->_mapWidth) * 1200.0 + 600.0;
+                    float a6 = -((v10 / yw->_mapWidth) * 1200.0 + 600.0);
 
                     sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, a5, a6, yw_GetColor(yw, i));
                 }
@@ -527,8 +527,8 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 
             if ( robo->_roboBuildingDuty )
             {
-                float v26 = -((robo->_roboBuildingCellID / yw->sectors_maxX2) * 1200.0 + 600.0);
-                float v28 = (robo->_roboBuildingCellID % yw->sectors_maxX2) * 1200.0 + 600.0;
+                float v26 = -((robo->_roboBuildingCellID / yw->_mapWidth) * 1200.0 + 600.0);
+                float v28 = (robo->_roboBuildingCellID % yw->_mapWidth) * 1200.0 + 600.0;
 
                 if ( (yw->timeStamp / 300) & 1 )
                     sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v28, v26, yw_GetColor(yw, 0));
@@ -536,8 +536,8 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 
             if ( robo->_roboVehicleDuty )
             {
-                float v22 = (robo->_roboVehicleCellID % yw->sectors_maxX2) * 1200.0 + 600.0;
-                float v27 = -(robo->_roboVehicleCellID / yw->sectors_maxX2 * 1200.0 + 600.0);
+                float v22 = (robo->_roboVehicleCellID % yw->_mapWidth) * 1200.0 + 600.0;
+                float v27 = -(robo->_roboVehicleCellID / yw->_mapWidth * 1200.0 + 600.0);
 
                 if ( (yw->timeStamp / 300) & 1 )
                 {
@@ -775,9 +775,9 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
         {
             FontUA::select_tileset(&pcur, v4);
 
-            for (int i = 0; i < yw->field_38; i++)
+            for (size_t i = 0; i < yw->_powerStationsCount; i++)
             {
-                yw_field34 *v7 = &yw->field_34[i];
+                yw_field34 *v7 = &yw->_powerStations[i];
 
                 if ( v7->p_cell )
                 {
@@ -815,7 +815,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
 
             for ( const MapGem &gem : yw->_Gems )
             {
-                cellArea *cell = &yw->cells[gem.SecY * yw->sectors_maxX2 + gem.SecX];
+                cellArea *cell = &yw->_cells[gem.SecY * yw->_mapWidth + gem.SecX];
                 if ( cell->view_mask & (1 << yw->UserRobo->_owner) )
                 {
                     int v13 = 1;
@@ -1620,11 +1620,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
     if ( v38 < 1 )
         v38 = 1;
 
-    if ( v43 >= yw->sectors_maxX2 )
-        v43 = yw->sectors_maxX2 - 1;
+    if ( v43 >= yw->_mapWidth )
+        v43 = yw->_mapWidth - 1;
 
-    if ( vii >= yw->sectors_maxY2 )
-        vii = yw->sectors_maxY2 - 1;
+    if ( vii >= yw->_mapHeight )
+        vii = yw->_mapHeight - 1;
 
     char *pcur = sb_0x4f8f64__sub2(yw, t1_cmdbuf_3);
 
@@ -1638,7 +1638,7 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
         {
             if ( v41 < 2048 )
             {
-                cellArea *v17 = &yw->cells[j + yw->sectors_maxX2 * v42];
+                cellArea *v17 = &yw->_cells[j + yw->_mapWidth * v42];
 
                 if ( robo_map.field_1EF & v17->view_mask )
                 {
@@ -1684,7 +1684,7 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
             {
                 if ( v41 < 2048 )
                 {
-                    cellArea *v25 = &yw->cells[m + l * yw->sectors_maxX2];
+                    cellArea *v25 = &yw->_cells[m + l * yw->_mapWidth];
 
                     if ( robo_map.field_1EF & v25->view_mask )
                     {
@@ -1723,7 +1723,7 @@ void sub_4C157C(NC_STACK_ypaworld *yw)
     float v1 = (robo_map.h - robo_map.field_250) * robo_map.field_1E4;
     float v3 = (robo_map.w - robo_map.field_24C) * robo_map.field_1E0;
 
-    float v6 = (yw->sectors_maxX2 * 1200.0);
+    float v6 = (yw->_mapWidth * 1200.0);
     int v20 = robo_map.w - robo_map.field_248;
 
     int v17 = ((robo_map.field_1D8 - v3 * 0.5) * v20) / v6;
@@ -1756,7 +1756,7 @@ void sub_4C157C(NC_STACK_ypaworld *yw)
 
 
     float v15 = -(robo_map.field_1DC + v1 * 0.5);
-    float v14 = (yw->sectors_maxY2 * 1200.0);
+    float v14 = (yw->_mapHeight * 1200.0);
 
     v20 = robo_map.h - robo_map.field_250;
     v19 = (v20 * v1 / v14);
@@ -2162,9 +2162,9 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
 
 int sub_4F60A4(NC_STACK_ypaworld *yw, int x, int y)
 {
-    if ( x >= 0 && x < yw->sectors_maxX2 && y >= 0 && y < yw->sectors_maxY2 )
+    if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        cellArea *v5 = &yw->cells[yw->sectors_maxX2 * y + x];
+        cellArea *v5 = &yw->_cells[yw->_mapWidth * y + x];
 
         if ( (robo_map.field_1EC & 3) && (robo_map.field_1EF & v5->view_mask) )
             return 0;
@@ -2177,9 +2177,9 @@ int sub_4F60A4(NC_STACK_ypaworld *yw, int x, int y)
 
 int sub_4F6048(NC_STACK_ypaworld *yw, int x, int y)
 {
-    if ( x >= 0 && x < yw->sectors_maxX2 && y >= 0 && y < yw->sectors_maxY2 )
+    if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        cellArea *v4 = &yw->cells[yw->sectors_maxX2 * y + x];
+        cellArea *v4 = &yw->_cells[yw->_mapWidth * y + x];
 
         if ( robo_map.field_1EF & v4->view_mask )
         {
@@ -2195,9 +2195,9 @@ int sub_4F6048(NC_STACK_ypaworld *yw, int x, int y)
 
 int sub_4F5FE0(NC_STACK_ypaworld *yw, int x, int y)
 {
-    if ( x >= 0 && x < yw->sectors_maxX2 && y >= 0 && y < yw->sectors_maxY2 )
+    if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        cellArea *v6 = &yw->cells[yw->sectors_maxX2 * y + x];
+        cellArea *v6 = &yw->_cells[yw->_mapWidth * y + x];
 
         if ( robo_map.field_1EF & v6->view_mask )
             return yw->secTypes[v6->type_id].field_3;
@@ -2213,10 +2213,10 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
     int v7 = y / 4;
     int v27 = y & 3;
 
-    if ( v9 < 0 || v9 >= yw->sectors_maxX2 || v7 < 0 || v7 >= yw->sectors_maxY2 )
+    if ( v9 < 0 || v9 >= yw->_mapWidth || v7 < 0 || v7 >= yw->_mapHeight )
         return 0;
 
-    cellArea *v12 = &yw->cells[v9 + v7 * yw->sectors_maxX2];
+    cellArea *v12 = &yw->_cells[v9 + v7 * yw->_mapWidth];
 
     if ( !(robo_map.field_1EF & v12->view_mask) )
         return 0;
@@ -2249,8 +2249,8 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
         if ( v8 )
         {
             v15 = v12;
-            v16 = v12 - yw->sectors_maxX2;
-            v17 = v12 - yw->sectors_maxX2;
+            v16 = v12 - yw->_mapWidth;
+            v17 = v12 - yw->_mapWidth;
         }
         else if ( v27 )
         {
@@ -2261,7 +2261,7 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
         else
         {
             v15 = v12 - 1;
-            v16 = v12 - yw->sectors_maxX2;
+            v16 = v12 - yw->_mapWidth;
             v17 = v16 - 1;
         }
 
@@ -2349,8 +2349,8 @@ char *sb_0x4f6650(NC_STACK_ypaworld *yw, char *cmdbuf, int x, int y)
 
 void sub_4C1814(NC_STACK_ypaworld *yw, int a2, int a3)
 {
-    float v15 = yw->sectors_maxX2 * 1200.0;
-    float v12 = yw->sectors_maxY2 * 1200.0;
+    float v15 = yw->_mapWidth * 1200.0;
+    float v12 = yw->_mapHeight * 1200.0;
 
     float v4 = a2 * robo_map.field_1E0;
     float v13 = v4 * 0.5;
@@ -6049,23 +6049,23 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
     int v24 = flt_51652C / 1200;
     int v23 = -flt_516528 / 1200;
 
-    if ( v22 >= yw->sectors_maxX2 )
-        v22 = yw->sectors_maxX2 - 1;
+    if ( v22 >= yw->_mapWidth )
+        v22 = yw->_mapWidth - 1;
     else if ( v22 < 1 )
         v22 = 1;
 
-    if ( v24 >= yw->sectors_maxX2 )
-        v24 = yw->sectors_maxX2 - 1;
+    if ( v24 >= yw->_mapWidth )
+        v24 = yw->_mapWidth - 1;
     else if ( v24 < 1 )
         v24 = 1;
 
-    if ( v6 >= yw->sectors_maxY2 )
-        v6 = yw->sectors_maxY2 - 1;
+    if ( v6 >= yw->_mapHeight )
+        v6 = yw->_mapHeight - 1;
     else if ( v6 < 1 )
         v6 = 1;
 
-    if ( v23 >= yw->sectors_maxY2 )
-        v23 = yw->sectors_maxY2 - 1;
+    if ( v23 >= yw->_mapHeight )
+        v23 = yw->_mapHeight - 1;
     else if ( v23 < 1 )
         v23 = 1;
 
@@ -6075,7 +6075,7 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
     {
         for (int j = v22; j <= v24; j++)
         {
-            cellArea *cll = &yw->cells[j + yw->sectors_maxX2 * i];
+            cellArea *cll = &yw->_cells[j + yw->_mapWidth * i];
 
             if ( robo_map.field_1EF & cll->view_mask )
             {
@@ -6244,7 +6244,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1D8 = (yw->sectors_maxX2 * 1200.0) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
+                robo_map.field_1D8 = (yw->_mapWidth * 1200.0) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
             }
             else
             {
@@ -6257,7 +6257,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1DC = robo_map.field_224 - (yw->sectors_maxY2 * 1200.0) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
+                robo_map.field_1DC = robo_map.field_224 - (yw->_mapHeight * 1200.0) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
             }
             else
             {
@@ -6421,7 +6421,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1D8 = yw->sectors_maxX2 * 1200.0 / (-1.0 * (float)robo_map.field_1CC) + robo_map.field_1D8;
+                    robo_map.field_1D8 = yw->_mapWidth * 1200.0 / (-1.0 * (float)robo_map.field_1CC) + robo_map.field_1D8;
                 }
                 break;
 
@@ -6430,7 +6430,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1D8 = yw->sectors_maxX2 * 1200.0 / (float)robo_map.field_1CC + robo_map.field_1D8;
+                    robo_map.field_1D8 = yw->_mapWidth * 1200.0 / (float)robo_map.field_1CC + robo_map.field_1D8;
                 }
                 break;
 
@@ -6439,7 +6439,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1DC = robo_map.field_1DC - yw->sectors_maxY2 * 1200.0 / (-1.0 * (float)robo_map.field_1D2);
+                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapHeight * 1200.0 / (-1.0 * (float)robo_map.field_1D2);
                 }
                 break;
 
@@ -6448,7 +6448,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1DC = robo_map.field_1DC - yw->sectors_maxY2 * 1200.0 / (float)robo_map.field_1D2;
+                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapHeight * 1200.0 / (float)robo_map.field_1D2;
                 }
                 break;
 
@@ -10173,17 +10173,17 @@ char * yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, char *cur)
         if ( v17 < 1 )
             v17 = 1;
 
-        if ( v16 >= yw->sectors_maxX2 )
-            v16 = yw->sectors_maxX2 - 1;
+        if ( v16 >= yw->_mapWidth )
+            v16 = yw->_mapWidth - 1;
 
-        if ( v14 >= yw->sectors_maxY2 )
-            v14 = yw->sectors_maxY2 - 1;
+        if ( v14 >= yw->_mapHeight )
+            v14 = yw->_mapHeight - 1;
 
         for (int i = v17; i <= v14; i++ )
         {
             for (int  j = v5; j <= v16; j++ )
             {
-                cellArea *v8 = &yw->cells[j + yw->sectors_maxX2 * i];
+                cellArea *v8 = &yw->_cells[j + yw->_mapWidth * i];
 
                 if ( robo_map.field_1EF & v8->view_mask )
                 {
@@ -10357,11 +10357,11 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
     if ( v29 < 1 )
         v29 = 1;
 
-    if ( v28 >= yw->sectors_maxX2 )
-        v28 = yw->sectors_maxX2 - 1;
+    if ( v28 >= yw->_mapWidth )
+        v28 = yw->_mapWidth - 1;
 
-    if ( v30 >= yw->sectors_maxY2 )
-        v30 = yw->sectors_maxY2 - 1;
+    if ( v30 >= yw->_mapHeight )
+        v30 = yw->_mapHeight - 1;
 
     int v38 = 0;
 
@@ -10371,7 +10371,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
         {
             if ( v38 < 512 ) // Units maximum?
             {
-                cellArea *v17 = &yw->cells[j + yw->sectors_maxX2 * i];
+                cellArea *v17 = &yw->_cells[j + yw->_mapWidth * i];
 
                 if ( robo_map.field_1EF & v17->view_mask )
                 {
@@ -11163,9 +11163,9 @@ void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
     int v10 = v23 >> v9;
     int v11 = v24 >> v9;
 
-    if ( v10 >= 1  &&  v11 >= 1  &&  sectors_maxX2 - 1 > v10  &&  sectors_maxY2 - 1 > v11 )
+    if ( v10 >= 1  &&  v11 >= 1  &&  _mapWidth - 1 > v10  &&  _mapHeight - 1 > v11 )
     {
-        cellArea *v12 = &cells[sectors_maxX2 * v11 + v10];
+        cellArea *v12 = &_cells[_mapWidth * v11 + v10];
 
         if ( field_1a58 & 1 )
         {
@@ -11330,7 +11330,7 @@ void NC_STACK_ypaworld::yw_3D_MouseSelect(ClickBoxInf *winp)
         int v12 = -arg149.isectPos.z / 1200.0;
         int v25 = arg149.isectPos.x / 1200.0;
 
-        field_1a60 = &cells[v12 * sectors_maxX2 + v25];
+        field_1a60 = &_cells[v12 * _mapWidth + v25];
         field_1a64 = v25;
         field_1A66 = v12;
         field_1a6c = arg149.isectPos;

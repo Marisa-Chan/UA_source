@@ -30,20 +30,20 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState 
 
     float v17, v16;
 
-    if ( yw->sectors_maxX2 == yw->sectors_maxY2 )
+    if ( yw->_mapWidth == yw->_mapHeight )
     {
         v17 = 1.0;
         v16 = 1.0;
     }
-    else if (yw->sectors_maxX2 < yw->sectors_maxY2)
+    else if (yw->_mapWidth < yw->_mapHeight)
     {
         v16 = 1.0;
-        v17 = (float)yw->sectors_maxX2 / (float)yw->sectors_maxY2;
+        v17 = (float)yw->_mapWidth / (float)yw->_mapHeight;
     }
-    else if (yw->sectors_maxX2 > yw->sectors_maxY2)
+    else if (yw->_mapWidth > yw->_mapHeight)
     {
         v17 = 1.0;
-        v16 = (float)yw->sectors_maxY2 / (float)yw->sectors_maxX2;
+        v16 = (float)yw->_mapHeight / (float)yw->_mapWidth;
     }
 
     brf->MapBlitParams.float4 = -1.0;
@@ -1151,15 +1151,15 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
 
     float v21, v22;
 
-    if ( yw->sectors_maxX2 > yw->sectors_maxY2 )
+    if ( yw->_mapWidth > yw->_mapHeight )
     {
         v21 = 1.0;
-        v22 = (float)yw->sectors_maxY2 / (float)yw->sectors_maxX2;
+        v22 = (float)yw->_mapHeight / (float)yw->_mapWidth;
     }
-    else if ( yw->sectors_maxY2 > yw->sectors_maxX2 )
+    else if ( yw->_mapHeight > yw->_mapWidth )
     {
         v22 = 1.0;
-        v21 = (float)yw->sectors_maxX2 / (float)yw->sectors_maxY2;
+        v21 = (float)yw->_mapWidth / (float)yw->_mapHeight;
     }
     else
     {
@@ -1167,8 +1167,8 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
         v22 = 1.0;
     }
 
-    float v19 = 1.0 / (float)yw->sectors_maxY2;
-    float v20 = 1.0 / (float)yw->sectors_maxX2;
+    float v19 = 1.0 / (float)yw->_mapHeight;
+    float v20 = 1.0 / (float)yw->_mapWidth;
 
     int v8, v9;
     if ( brf->ZoomFromGate )
@@ -1178,12 +1178,12 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
     }
     else
     {
-        v9 = yw->sectors_maxY2 / 2;
-        v8 = yw->sectors_maxX2 / 2;
+        v9 = yw->_mapHeight / 2;
+        v8 = yw->_mapWidth / 2;
     }
 
-    float v11 = 2.0 * ((float)v9 / (float)yw->sectors_maxY2) - 1.0;
-    float v12 = 2.0 * ((float)v8 / (float)yw->sectors_maxX2) - 1.0;
+    float v11 = 2.0 * ((float)v9 / (float)yw->_mapHeight) - 1.0;
+    float v12 = 2.0 * ((float)v8 / (float)yw->_mapWidth) - 1.0;
 
     brf->MapBlitStart.x1 = v12 - v20;
     brf->MapBlitStart.y1 = v11 - v19;
@@ -1280,8 +1280,8 @@ void yw_DebriefConqSector(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
         {
             if ( brf->VectorGfx[3] )
             {
-                float v20 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->sectors_maxX2;
-                float v21 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->sectors_maxY2;
+                float v20 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->_mapWidth;
+                float v21 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->_mapHeight;
 
                 float a3a = (float)arg->secX * v20 + brf->MapBlitEnd.x1 + v20 * 0.5;
                 float a4a = (float)arg->secY * v21 + brf->MapBlitEnd.y1 + v21 * 0.5;
@@ -1341,8 +1341,8 @@ void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::Histo
                     v25 = 1.0;
             }
 
-            float a9 = ((v12 / (float)yw->sectors_maxX2) / 2.0) * v25;
-            float a10 = ((v13 / (float)yw->sectors_maxY2) / 2.0) * v25;
+            float a9 = ((v12 / (float)yw->_mapWidth) / 2.0) * v25;
+            float a10 = ((v13 / (float)yw->_mapHeight) / 2.0) * v25;
 
             yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, own), NULL, NULL);
         }
@@ -1369,8 +1369,8 @@ void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
             else if ( v22 < 0.0 )
                 v22 = 0.0;
 
-            float a9 = ((v13 / (float)yw->sectors_maxX2) / 8.0) * v22;
-            float a10 = ((v14 / (float)yw->sectors_maxY2) / 8.0) * v22;
+            float a9 = ((v13 / (float)yw->_mapWidth) / 8.0) * v22;
+            float a10 = ((v14 / (float)yw->_mapHeight) / 8.0) * v22;
 
             yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, arg->owner), NULL, NULL);
         }
@@ -1397,28 +1397,28 @@ void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, BriefengScreen *brf, World:
 
 void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 {
-    float v3 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->sectors_maxX2;
-    float v4 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->sectors_maxY2;
+    float v3 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->_mapWidth;
+    float v4 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->_mapHeight;
 
     float v19 = v3 / 10.0;
     float v16 = v4 / 10.0;
 
     float v21 = brf->MapBlitEnd.y1 + v4 * 0.5;
 
-    for (int yy = 0; yy < yw->sectors_maxY2; yy++)
+    for (int yy = 0; yy < yw->_mapHeight; yy++)
     {
         float v23 = brf->MapBlitEnd.x1 + v3 * 0.5;
         
         uint8_t *ownmap = brf->OwnMap.Line(yy);
 
-        for (int xx = 0; xx < yw->sectors_maxX2; xx++)
+        for (int xx = 0; xx < yw->_mapWidth; xx++)
         {
             int owner = *ownmap;
 
             if ( owner != 0 )
             {
-                if ( xx > 0 && xx < yw->sectors_maxX2 - 1
-                        && yy > 0 && yy < yw->sectors_maxY2 - 1 )
+                if ( xx > 0 && xx < yw->_mapWidth - 1
+                        && yy > 0 && yy < yw->_mapHeight - 1 )
                 {
                     w3d_func198arg arg198;
                     w3d_func198arg arg198_1;

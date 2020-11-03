@@ -2301,7 +2301,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
 
         MapGem *gemProt = &yw->_Gems[upMsg->upgradeID];
-        cellArea *cl = &yw->cells[yw->sectors_maxX2 * gemProt->SecY + gemProt->SecX];
+        cellArea *cl = &yw->_cells[yw->_mapWidth * gemProt->SecY + gemProt->SecX];
 
         int vhcl, bld;
         sub_47C1EC(yw, gemProt, &vhcl, &bld);
@@ -2340,7 +2340,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             break;
         }
 
-        yw->ypaworld_func184( World::History::Upgrade(gemProt->SecX, gemProt->SecY, owner, gemProt->Type, lastVhcl, 0, lastBuild) );
+        yw->HistoryEventAdd( World::History::Upgrade(gemProt->SecX, gemProt->SecY, owner, gemProt->Type, lastVhcl, 0, lastBuild) );
 
         if ( cl->w_type != 4 )
         {
@@ -3850,31 +3850,31 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     LevelDesc proto;
     bool loadOK = false;
 
-    if ( LVLoaderCommon(proto, arg->lvlID, arg->field_4) )
+    if ( LevelCommonLoader(&proto, arg->lvlID, arg->field_4) )
     {
-        if ( cells_mark_type(this, proto.TypStr.c_str()) )
+        if ( LoadTypeMap(proto.TypStr) )
         {
-            if ( cells_mark_owner(this, proto.OwnStr.c_str()) )
+            if ( LoadOwnerMap(proto.OwnStr) )
             {
-                if ( cells_mark_hight(this, proto.HgtStr.c_str()) )
+                if ( LoadHightMap(proto.HgtStr) )
                 {
                     if ( yw_NetSetHostStations(proto.Robos) )
                     {
-                        if ( sub_44B9B8(this, proto.BlgStr.c_str()) )
+                        if ( LoadBlgMap(proto.BlgStr) )
                         {
-                            for (int y = 0; y < sectors_maxY2; y++)
+                            for (int y = 0; y < _mapHeight; y++)
                             {
-                                for (int x = 0; x < sectors_maxX2; x++)
+                                for (int x = 0; x < _mapWidth; x++)
                                 {
-                                    cellArea *cell = &cells[x + y * sectors_maxX2];
-                                    sb_0x44fc60(this, cell, x, y, 255, 0);
+                                    cellArea *cell = &_cells[x + y * _mapWidth];
+                                    CellCheckHealth(cell, x, y, 255, NULL);
                                 }
                             }
 
                             yw_InitTechUpgradeBuildings();
-                            yw_InitGates(this);
-                            yw_InitSuperItems(this);
-                            sub_44F748(this);
+                            InitGates();
+                            InitSuperItems();
+                            UpdatePowerEnergy();
 
                             if ( sb_0x451034(this) )
                                 loadOK = true;
@@ -3888,7 +3888,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     if ( !loadOK )
     {
         log_netlog("Unable to init network level (1)\n");
-        ypaworld_func151();
+        DeleteLevel();
         return 0;
     }
 

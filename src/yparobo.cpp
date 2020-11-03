@@ -7,6 +7,7 @@
 #include "yparobo.h"
 
 #include "yw_net.h"
+#include "fmtlib/printf.h"
 
 #include <math.h>
 
@@ -6030,25 +6031,14 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
                 _position = _old_pos;
                 _roboYPos = _old_pos.y;
 
-                char a1a[200];
-                sprintf(a1a, "save:%s/%d.fin", _world->GameShell->user_name.c_str(), _world->_levelInfo->LevelID);
-
-                yw_arg169 v23;
-                v23.usr = _world->GameShell;
-                v23.saveFile = a1a;
-
-                if ( !_world->ypaworld_func170(&v23) )
+                if ( !_world->SaveGame( fmt::sprintf("save:%s/%d.fin", _world->GameShell->user_name, _world->_levelInfo->LevelID) ) )
                     ypa_log_out("Warning, final sgm save error\n");
 
                 _position = tt;
 
                 if ( _world->GameShell )
-                {
-                    char v18[300];
-                    sprintf(v18, "save:%s/%d.rst", _world->GameShell->user_name.c_str(), _world->_levelInfo->LevelID);
-
-                    uaDeleteFile(v18);
-                }
+                    uaDeleteFile( fmt::sprintf("save:%s/%d.rst", _world->GameShell->user_name, _world->_levelInfo->LevelID) );
+                
                 _status_flg |= BACT_STFLAG_CLEAN;
 
                 Die();

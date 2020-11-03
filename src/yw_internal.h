@@ -96,15 +96,8 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw);
 void sub_4EAC80(NC_STACK_ypaworld *yw);
 
 
-int cells_mark_type(NC_STACK_ypaworld *yw, const char *a2);
-int cells_mark_owner(NC_STACK_ypaworld *yw, const char *a2);
-int cells_mark_hight(NC_STACK_ypaworld *yw, const char *a2);
 
-int sub_44B9B8(NC_STACK_ypaworld *yw, const char *a3);
-void yw_InitBuddies(NC_STACK_ypaworld *yw);
-void yw_InitGates(NC_STACK_ypaworld *yw);
-void yw_InitSuperItems(NC_STACK_ypaworld *yw);
-void sub_44F748(NC_STACK_ypaworld *yw);
+
 int sb_0x451034(NC_STACK_ypaworld *yw);
 void splashScreen_OutText(NC_STACK_ypaworld *yw, NC_STACK_display *w3d, const char *txt, int x, int y);
 void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags);
@@ -118,8 +111,8 @@ void sub_44BF34(vhclSndFX *sndfx);
 
 
 void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2);
-void sb_0x44fc60(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6);
-void  sub_44F500(NC_STACK_ypaworld *yw, int id);
+
+
 
 
 void ypaworld_func148__sub0(NC_STACK_ypaworld *yw, int x, int y);
