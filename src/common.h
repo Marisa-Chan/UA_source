@@ -25,36 +25,37 @@ template<typename T> inline T MIN(T a, T b)	{ return (a < b) ? a : b; }
 template<typename T> inline T MAX(T a, T b)	{ return (a > b) ? a : b; }
 
 
-struct Point;
 struct Rect;
 struct PointRect;
 
-struct Point
+template <typename T>
+struct TPoint
 {
-    int x;
-    int y;
+    typedef TPoint<T> __Point;
+    T x;
+    T y;
 
-    Point() : x(0), y(0) {};
-    Point(int x1, int y1) : x(x1), y(y1) {};
+    TPoint() : x(0), y(0) {};
+    TPoint(T x1, T y1) : x(x1), y(y1) {};
 
-    bool  operator==(const Point &p)    const { return x == p.x && y == p.y; }
-    bool  operator!=(const Point &p)    const { return x != p.x || y != p.y; }
-    Point operator+(const Point &delta) const { return Point(x + delta.x, y + delta.y); }
-    Point operator-(const Point &delta) const { return Point(x - delta.x, y - delta.y); }
+    bool  operator==(const __Point &p)    const { return x == p.x && y == p.y; }
+    bool  operator!=(const __Point &p)    const { return x != p.x || y != p.y; }
+    __Point operator+(const __Point &delta) const { return TPoint(x + delta.x, y + delta.y); }
+    __Point operator-(const __Point &delta) const { return TPoint(x - delta.x, y - delta.y); }
     
-    Point operator-() const { return Point(-x, -y); } // -Point
+    __Point operator-() const { return __Point(-x, -y); } // -Point
 
-    void operator+=(const Point &delta) {
+    void operator+=(const __Point &delta) {
             x += delta.x;
             y += delta.y;
     }
 
-    void operator-=(const Point &delta) {
+    void operator-=(const __Point &delta) {
             x -= delta.x;
             y -= delta.y;
     }
 
-    Point Invert() const { return Point( -x, -y ); }
+    __Point Invert() const { return TPoint( -x, -y ); }
     
     operator SDL_Rect() const
     {
@@ -66,6 +67,8 @@ struct Point
         return tmp;
     }
 };
+
+typedef TPoint<int> Point;
 
 struct Rect
 {
