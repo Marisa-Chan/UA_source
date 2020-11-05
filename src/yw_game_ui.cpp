@@ -1206,25 +1206,9 @@ int sb_0x4f8f64__sub3__sub0(NC_STACK_ypaworld *yw, cellArea *cell)
     return enrg;
 }
 
-// Get string width in pixel
-int sub_4513E0(const char *strr, TileMap *charset)
+char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const std::string &labl, int tileset_id, char *cur, int a4, int a5)
 {
-    int i = 0;
-
-    int wdth = 0;
-
-    while (strr[i])
-    {
-        wdth += charset->map[ (uint8_t)strr[i] ].w;
-        i++;
-    }
-
-    return wdth;
-}
-
-char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const char *labl, int tileset_id, char *cur, int a4, int a5)
-{
-    int v8 = sub_4513E0(labl, yw->tiles[tileset_id]);
+    int v8 = yw->tiles[tileset_id]->GetWidth(labl);
 
     float a2a = -(a5 * 1200.0);
     float a1a = a4 * 1200.0;
@@ -1244,12 +1228,8 @@ char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const char *labl, int tile
         FontUA::set_center_xpos(&pcur, robo_map.field_200 + v9);
         FontUA::set_center_ypos(&pcur, robo_map.field_204 + v10);
 
-        const char *vvv = labl;
-        while (*vvv)
-        {
-            FontUA::store_s8(&pcur, *vvv);
-            vvv++;
-        }
+        for ( uint8_t c : labl )
+            FontUA::store_s8(&pcur, c);
     }
 
     return pcur;
@@ -1503,13 +1483,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
             }
 
             if ( v85 )
-            {
-                char a1a[32];
-
-                sprintf(a1a, "%d / %d", 2 * v81, 2 * yw->beamenergy);
-
-                pcur = sb_0x4f8f64__sub3__sub1(yw, a1a, 0x1F, pcur, gate.SecX, gate.SecY);
-            }
+                pcur = sb_0x4f8f64__sub3__sub1(yw,  fmt::sprintf("%d / %d", 2 * v81, 2 * yw->beamenergy), 0x1F, pcur, gate.SecX, gate.SecY);
         }
     }
     return pcur;
@@ -2749,9 +2723,8 @@ void create_info_log(NC_STACK_ypaworld *yw)
     {
         if ( yw->timeStamp )
         {
-            char a1a[32];
-            sprintf(a1a, "<%02d:%02d:%02d>", (yw->timeStamp >> 10) / 60 / 60 % 24, (yw->timeStamp >> 10) / 60 % 60, (yw->timeStamp >> 10) % 60);
-            sprintf(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 12, "GAME CONTINUED AT TIME INDEX %s."), a1a);
+            std::string tmp = fmt::sprintf("<%02d:%02d:%02d>", (yw->timeStamp >> 10) / 60 / 60 % 24, (yw->timeStamp >> 10) / 60 % 60, (yw->timeStamp >> 10) % 60);
+            sprintf(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 12, "GAME CONTINUED AT TIME INDEX %s."), tmp.c_str());
         }
         else
             strcpy(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 6, "WELCOME TO YOUR PERSONAL AMOK!"));
@@ -2773,7 +2746,7 @@ void create_exit_menu(NC_STACK_ypaworld *yw)
     dword_5C8B7C = (yw->font_default_h / 2) + yw->font_default_h;
     dword_5C8B84 = yw->font_default_h / 4;
 
-    int tmp = sub_4513E0("WWWWWWW", yw->tiles[0]);
+    int tmp = yw->tiles[0]->GetWidth("WWWWWWW");
 
     GuiList::tInit args;
     args.title = get_lang_string(yw->string_pointers_p2, 53, "GAME PAUSED");
@@ -2810,7 +2783,7 @@ void create_exit_menu(NC_STACK_ypaworld *yw)
 
 void sb_0x451034__sub5(NC_STACK_ypaworld *yw)
 {
-    int v2 = sub_4513E0("WWWWWWW", yw->tiles[0]) * 3.5 + 16;
+    int v2 = yw->tiles[0]->GetWidth("WWWWWWW") * 3.5 + 16;
 
     GuiList::tInit args;
     args.title = " ";
@@ -2855,7 +2828,7 @@ void sb_0x451034__sub5(NC_STACK_ypaworld *yw)
 
 void sb_0x451034__sub9(NC_STACK_ypaworld *yw)
 {
-    const char *off_51825C[14] =
+    const std::array<std::string, 14> off_51825C
     {
         "wireless/bar.sklt",
         "wireless/compass.sklt",
@@ -2883,7 +2856,7 @@ void sb_0x451034__sub9(NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 14; i++)
     {
-        wis->sklts[i] = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(off_51825C[i])}});
+        wis->sklts[i] = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, off_51825C.at(i)}});
 
         if ( wis->sklts[i] )
             wis->sklts_intern[i] = wis->sklts[i]->GetSkelet();
@@ -4777,7 +4750,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, InputState *inpt)
 
 
 
-char * sub_4E1D6C(NC_STACK_ypaworld *yw, char *cur, int x, int y, uint8_t icon, uint8_t icon2, uint8_t icon3, float a6, float a7, const char *a8)
+char * sub_4E1D6C(NC_STACK_ypaworld *yw, char *cur, int x, int y, uint8_t icon, uint8_t icon2, uint8_t icon3, float a6, float a7, const std::string &a8)
 {
     char *pcur = cur;
 
@@ -4821,16 +4794,16 @@ char * sub_4E1D6C(NC_STACK_ypaworld *yw, char *cur, int x, int y, uint8_t icon, 
         }
     }
 
-    if ( a8 )
+    if ( !a8.empty() )
     {
         FontUA::select_tileset(&pcur, 31);
 
         FontUA::set_center_xpos(&pcur, x + up_panel.field_1DC + 4);
         FontUA::set_ypos(&pcur, 0);
 
-        strcpy(pcur, a8);
+        memcpy(pcur, a8.data(), a8.size());
 
-        pcur += strlen(a8);
+        pcur += a8.size();
     }
     return pcur;
 }
@@ -4895,22 +4868,22 @@ char * ypaworld_func64__sub7__sub7__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
         a6a = a7 * a7a;
     }
 
-    char a1a[32];
+    std::string a1a;
 
     if ( a3 >= 0 )
     {
         if ( a5 )
         {
-            sprintf(a1a, "+%d   (%d%%)", a5, (int)(a7 * 100.0) );
+            a1a = fmt::sprintf("+%d   (%d%%)", a5, (int)(a7 * 100.0) );
         }
         else
         {
-            sprintf(a1a, "%d", 0);
+            a1a = fmt::sprintf("%d", 0);
         }
     }
     else
     {
-        sprintf(a1a, "%d", -a5);
+        a1a = fmt::sprintf("%d", -a5);
     }
 
     return sub_4E1D6C(yw, cur, x, y, icon, v11, 57, a6a, a7a, a1a);
@@ -4939,8 +4912,8 @@ char * ypaworld_func64__sub7__sub7__sub0__sub1(NC_STACK_ypaworld *yw, char *cur,
         v16 = 68;
     }
 
-    char a1a[32];
-    char *v9 = a1a;
+    float a6a = (float)a6 / (float)a7;
+    std::string a1a = fmt::sprintf("%d", a6 / 100);
 
     int v10;
 
@@ -4953,13 +4926,10 @@ char * ypaworld_func64__sub7__sub7__sub0__sub1(NC_STACK_ypaworld *yw, char *cur,
         v10 = 54;
 
         if ( yw->timeStamp / 300 & 1 )
-            v9 = NULL;
+            a1a = "";
     }
 
-    float a6a = (float)a6 / (float)a7;
-    sprintf(a1a, "%d", a6 / 100);
-
-    return sub_4E1D6C(yw, cur, x, y, v16, v10, 0, a6a, 0.0, v9);
+    return sub_4E1D6C(yw, cur, x, y, v16, v10, 0, a6a, 0.0, a1a);
 }
 
 
@@ -5004,10 +4974,7 @@ char * ypaworld_func64__sub7__sub7__sub0__sub2(NC_STACK_ypaworld *yw, char *cur,
         a6a = 0.0;
     }
 
-    char a1a[32];
-    sprintf(a1a, "%d", a6 / 100);
-
-    return sub_4E1D6C(yw, cur, a3, a2, v18, 56, v9, a6a, a7a, a1a);
+    return sub_4E1D6C(yw, cur, a3, a2, v18, 56, v9, a6a, a7a,  fmt::sprintf("%d", a6 / 100) );
 }
 
 char * ypaworld_func64__sub7__sub7__sub0__sub3(NC_STACK_ypaworld *yw, char *cur, int x, int y, char a4, int a5, int a6, int a7)
@@ -5048,10 +5015,7 @@ char * ypaworld_func64__sub7__sub7__sub0__sub3(NC_STACK_ypaworld *yw, char *cur,
         a6a = 0.0;
     }
 
-    char a1a[32];
-    sprintf(a1a, "%d", a6 / 100);
-
-    return sub_4E1D6C(yw, cur, x, y, v18, 56, v9, a6a, a7a, a1a);
+    return sub_4E1D6C(yw, cur, x, y, v18, 56, v9, a6a, a7a,  fmt::sprintf("%d", a6 / 100) );
 }
 
 char * ypaworld_func64__sub7__sub7__sub0(NC_STACK_ypaworld *yw)
@@ -5529,12 +5493,9 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
 
         FontUA::select_tileset(&pcur, 0);
 
-        char a1a[32];
-        sprintf(a1a, " %d", yw->_kidsCount + 1);
-
         FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
 
-        pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, a1a, 4 * yw->tiles[0]->map[65].w, 32);
+        pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, fmt::sprintf(" %d", yw->_kidsCount + 1) , 4 * yw->tiles[0]->map[65].w, 32);
 
         FontUA::store_u8(&pcur, ' ');
 
@@ -6601,11 +6562,7 @@ void ypaworld_func64__sub7__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 
 int ypaworld_func64__sub7__sub6__sub0(int a1, const char *a2)
 {
-    char a1a[300];
-
-    sprintf(a1a, "save:%s/%d.rst", a2, a1);
-
-    FSMgr::FileHandle *fil = uaOpenFile(a1a, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/%d.rst", a2, a1), "r");
 
     if ( !fil )
         return 0;
@@ -6639,7 +6596,7 @@ void NC_STACK_ypaworld::sub_47DB04(char a2)
     GameShell->sentAQ = 0;
 }
 
-char * sub_451714(TileMap *, char *cur, const char *a3, int a2, uint8_t a4)
+char * sub_451714(TileMap *, char *cur, const std::string &txt, int a2, uint8_t a4)
 {
     char *pcur = cur;
 
@@ -6660,7 +6617,7 @@ char * sub_451714(TileMap *, char *cur, const char *a3, int a2, uint8_t a4)
             v6 -= 255;
         }
 
-        FontUA::add_txt(&pcur, a2, 4, a3);
+        FontUA::add_txt(&pcur, a2, 4, txt);
     }
     return pcur;
 }
@@ -6668,7 +6625,7 @@ char * sub_451714(TileMap *, char *cur, const char *a3, int a2, uint8_t a4)
 
 char *sub_4DA8DC(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char *a5)
 {
-    const char *v5 = a5;
+    std::string v5 = a5;
 
     char *pcur = cur;
 
@@ -7769,7 +7726,7 @@ void ypaworld_func64__sub15(NC_STACK_ypaworld *yw)
     }
 }
 
-void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, const char *flname, NC_STACK_ypabact *unit, int a5)
+void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, const std::string &flname, NC_STACK_ypabact *unit, int a5)
 {
     SFXEngine::SFXe.sub_423DD8(&smpls->field_4);
 
@@ -7780,8 +7737,7 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
 
     smpls->field_0 = -1;
 
-    char rsr[256];
-    strcpy(rsr, get_prefix_replacement("rsrc"));
+    std::string oldRsrc = get_prefix_replacement("rsrc");
 
     set_prefix_replacement("rsrc", "data:");
 
@@ -7807,7 +7763,7 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
 
     NC_STACK_wav *v23 = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, filename}} );
 
-    set_prefix_replacement("rsrc", rsr);
+    set_prefix_replacement("rsrc", oldRsrc);
 
     if ( v23 )
     {
@@ -8513,10 +8469,7 @@ void ypaworld_func159__sub0(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, int a
                 else
                     v16 = rand() % v11 + 1;
 
-                char a1[48];
-                sprintf(a1, "%x%x%x%x%x.wav", v14, vo_type, v13, v10, v16);
-
-                ypaworld_func159__sub0__sub0(yw, &yw->samples[v5], a1, unit, a4);
+                ypaworld_func159__sub0__sub0(yw, &yw->samples[v5], fmt::sprintf("%x%x%x%x%x.wav", v14, vo_type, v13, v10, v16), unit, a4);
             }
         }
     }
@@ -8647,36 +8600,30 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
 {
     char *pcur = byte_5A7650;
 
-    char a1a[512];
-
     if ( yw->isNetGame )
     {
         if ( yw->field_81CB.field_0 )
         {
-            const char *v5;
             int v6;
-
+            std::string str;
+            
             if ( yw->field_81CB.field_0 == 1 )
             {
-                v5 = get_lang_string(yw->string_pointers_p2, 2468, "2468 == *** VICTORY IS YOURS ***");
-                sprintf(a1a,  v5 );
-
+                str = get_lang_string(yw->string_pointers_p2, 2468, "2468 == *** VICTORY IS YOURS ***");
                 v6 = 40000;
             }
             else if ( yw->field_81CB.field_0 > 1 && yw->field_81CB.field_0 <= 4 )
             {
-                v5 = get_lang_string(yw->string_pointers_p2, 2469, "2469 == *** %s HAS BEEN DEFEATED ***");
-                sprintf(a1a, v5, yw->field_81CB.field_8);
+                str = fmt::sprintf( get_lang_string(yw->string_pointers_p2, 2469, "2469 == *** %s HAS BEEN DEFEATED ***") , yw->field_81CB.field_8);
 
                 v6 = 20000;
             }
             else
             {
                 v6 = 0;
-                v5 = NULL;
             }
 
-            if ( v5 && yw->timeStamp - yw->field_81CB.field_4 < v6 )
+            if ( !str.empty() && yw->timeStamp - yw->field_81CB.field_4 < v6 )
             {
                 if ( yw->timeStamp / 300 & 1 )
                 {
@@ -8686,7 +8633,7 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
 
                     FontUA::set_txtColor(&pcur, 255, 255, 255);
 
-                    pcur = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pcur, a1a, yw->screen_width);
+                    pcur = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pcur, str, yw->screen_width);
                 }
             }
             else
@@ -8926,7 +8873,7 @@ void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *v
 
 
 
-char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag)
+char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const std::string &txt1, const std::string &txt2, int flag)
 {
     int wnd_xpos = 0;
     int wnd_xpos2 = 0;
@@ -8957,7 +8904,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
 
     v51 -= (wis->field_9A + wis->field_96 + v49) / 2;
 
-    if ( a10 )
+    if ( !txt1.empty() )
     {
         int v19 = (wis->field_96 / 2) + v51;
         int v20 = v50;
@@ -8969,7 +8916,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
             FontUA::set_center_xpos(&pcur, v51);
             FontUA::set_center_ypos(&pcur, v50 - (yw->font_default_h / 2));
 
-            pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, a10, 100, 4);
+            pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, txt1, 100, 4);
         }
     }
 
@@ -9010,7 +8957,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
 
     v51 += wis->field_9A + v49;
 
-    if ( a11 )
+    if ( !txt2.empty() )
     {
         int v37 = v51 - (wis->field_9A / 2);
         int v38 = v50;
@@ -9022,7 +8969,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
             FontUA::set_center_xpos(&pcur, v51);
             FontUA::set_center_ypos(&pcur, v50 - (yw->font_default_h / 2));
 
-            pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, a11, 100, 8);
+            pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, txt2, 100, 8);
         }
     }
 
@@ -9045,12 +8992,7 @@ char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_
         a6a = vhcl->energy;
     }
 
-    char a1a[32];
-    sprintf(a1a, "%d", (a6a + 99) / 100);
-
-    const char *v11 = get_lang_string(yw->string_pointers_p2, 35, "HP");
-
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, v11, a1a);
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, get_lang_string(yw->string_pointers_p2, 35, "HP"), fmt::sprintf("%d", (a6a + 99) / 100));
 }
 
 
@@ -9063,17 +9005,12 @@ char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
     else
         v10 = vhcl->shield;
 
-    char a1a[32];
-    sprintf(a1a, "%d%%", v10);
-
-    const char *v11 = get_lang_string(yw->string_pointers_p2, 36, "AMR");
-
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, v11, a1a, 2);
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, get_lang_string(yw->string_pointers_p2, 36, "AMR"), fmt::sprintf("%d%%", v10), 2);
 }
 
 
 
-char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const char *name, float xpos, float ypos)
+char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const std::string &name, float xpos, float ypos)
 {
     char *pcur = cur;
 
@@ -9204,15 +9141,14 @@ char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         else
             v12 = 100;
 
-        char a1a[32];
+        std::string txt2;
 
         if ( v12 == 100 )
-            sprintf(a1a, get_lang_string(yw->string_pointers_p2, 34, "OK"));
+            txt2 = get_lang_string(yw->string_pointers_p2, 34, "OK");
         else
-            sprintf(a1a, "%d%%", v12);
+            txt2 = fmt::sprintf("%d%%", v12);
 
-        const char *v14 = get_lang_string(yw->string_pointers_p2, 33, "RLD");
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, v14, a1a);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, get_lang_string(yw->string_pointers_p2, 33, "RLD"), txt2);
     }
     return pcur;
 }
@@ -9223,16 +9159,14 @@ char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
 
     if ( weap )
     {
-        char buf[64];
+        std::string txt2;
 
         if ( vhcl->num_weapons <= 1 )
-            sprintf(buf, "%d", weap->energy / 100);
+            txt2 = fmt::sprintf("%d", weap->energy / 100);
         else
-            sprintf(buf, "%d x%d", weap->energy / 100, vhcl->num_weapons);
+            txt2 = fmt::sprintf("%d x%d", weap->energy / 100, vhcl->num_weapons);
 
-        const char *v12 = get_lang_string(yw->string_pointers_p2, 32, "DMG");
-
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, v12, buf, 1 | 2);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, get_lang_string(yw->string_pointers_p2, 32, "DMG"), txt2, 1 | 2);
     }
 
     return pcur;

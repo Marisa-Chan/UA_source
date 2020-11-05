@@ -399,7 +399,7 @@ void recorder_stoprec(NC_STACK_ypaworld *yw);
 
 void ypaworld_func163__sub1(NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
 
-char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const char *a10, const char *a11, int flag = 0);
+char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const std::string &txt1, const std::string &txt2, int flag = 0);
 void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2);
 
 
