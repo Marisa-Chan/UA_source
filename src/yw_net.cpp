@@ -11,6 +11,7 @@
 #include "ypamissile.h"
 #include "font.h"
 #include "windp.h"
+#include "fmtlib/printf.h"
 
 #define C_2PI_127       0.04947390005653217698   // (2PI / 127)
 #define C_127_2PI       20.21267777267070764265  // (127 / 2PI)
@@ -102,11 +103,8 @@ void NC_STACK_ypaworld::SendCRC(int lvlid)
     crc = fileCrc32("data:scripts/flaks.scr", crc);
     crc = fileCrc32("data:scripts/net_ypa.scr", crc);
     crc = fileCrc32("data:scripts/inetrobo.scr", crc);
-
-    char buf[300];
-    sprintf(buf, "levels:multi/L%02d%02d.ldf", lvlid, lvlid);
-
-    crc = fileCrc32(buf, crc);
+    
+    crc = fileCrc32( fmt::sprintf("levels:multi/L%02d%02d.ldf", lvlid, lvlid) , crc);
 
     GameShell->netCRC = crc;
 
@@ -152,11 +150,7 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
                     usr->netCRC != 0 )
             {
                 err = true;
-
-                char bf[300];
-                sprintf(bf, "%s %s", yw->GameShell->players2[i].name, get_lang_string(yw->string_pointers_p2, 2404, "HAS OTHER FILES THAN YOU") );
-
-                strs[errmsg] = bf;
+                strs[errmsg] = fmt::sprintf("%s %s", yw->GameShell->players2[i].name, get_lang_string(yw->string_pointers_p2, 2404, "HAS OTHER FILES THAN YOU") );
                 errmsg++;
             }
         }
@@ -1083,7 +1077,7 @@ NC_STACK_ypabact * yw_netFindReorderUnit(NC_STACK_ypabact *bact_host, uint32_t I
     return NULL;
 }
 
-size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
+size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *err)
 {
     uamessage_base *bMsg = (uamessage_base *)msg->data;
     uint32_t msgID = bMsg->msgID;
@@ -1243,7 +1237,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             {
                 log_netlog("NV: No master for created shadow object!\n");
                 yw->ypaworld_func144(bacto);
-                strcpy(err, msg->senderID);
+                *err = msg->senderID;
 
                 break;
             }
@@ -1284,14 +1278,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( !bctt )
         {
             log_netlog("\n+++ DV: Havent found vehicle %d (%ds)\n", dvMsg->id, yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
 
         if ( !(bctt->_status_flg & BACT_STFLAG_DEATH1) )
         {
             log_netlog("+++ DV: Release a non-logic-dead vehicle %d! (%ds)\n", dvMsg->id, yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
 
@@ -1301,7 +1295,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         {
             yw->ypaworld_func144(bctt->_kidList.front());
             log_netlog("+++ DV: Released vehicle with slave! (%ds)\n", yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
         }
 
         while(bctt->_missiles_list.begin() != bctt->_missiles_list.end())
@@ -1314,7 +1308,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             yw->NetReleaseMissiles(bctt);
 
             log_netlog("+++ DV: Released vehicle with weapons! (%ds)\n", yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
         }
 
         yw->ypaworld_func144(bctt);
@@ -1324,7 +1318,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( dvMsg->type != BACT_TYPES_MISSLE && yw_netGetUnitsCount(host_node) != (vnumb - 1) )
         {
             log_netlog("\n+++ DV: Vehiclecount changed more than 1! (%ds)\n", yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
     }
@@ -1353,7 +1347,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( !oldLeader )
         {
             log_netlog("\n+++ NC: Havent found vehicle %d (%ds)\n", nlMsg->id, yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
 
@@ -1375,7 +1369,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( yw_netGetUnitsCount(host_node) != unitscnt )
         {
             log_netlog("\n+++ NC: Vehiclecount changed! (%ds)\n", yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
     }
@@ -1414,7 +1408,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         {
             log_netlog("\n+++ NW: Havent found vehicle %d (%ds)\n", nwMsg->id, yw->timeStamp / 1000);
             yw->ypaworld_func144(weapo);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
 
@@ -1457,7 +1451,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 if ( !ownerhost )
                 {
                     log_netlog("\n+++ NW: false targetowner %d for weapon\n", nwMsg->targetOwner);
-                    strcpy(err, msg->senderID);
+                    *err = msg->senderID;
                     break;
                 }
 
@@ -1512,7 +1506,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
         if ( !bct )
         {
             log_netlog("\n+++ SS: Havent found vehicle %d (%ds)\n", ssMsg->id, yw->timeStamp / 1000);
-            strcpy(err, msg->senderID);
+            *err = msg->senderID;
             break;
         }
 
@@ -1597,7 +1591,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( !fndBact )
             {
                 log_netlog("\n+++ D: Havent found weapon %d (%ds)\n", ddMsg->id, yw->timeStamp / 1000);
-                strcpy(err, msg->senderID);
+                *err = msg->senderID;
                 break;
             }
 
@@ -1609,7 +1603,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( !fndBact )
             {
                 log_netlog("\n+++ D: Havent found vehicle %d (%ds)\n", ddMsg->id, yw->timeStamp / 1000);
-                strcpy(err, msg->senderID);
+                *err = msg->senderID;
                 break;
             }
         }
@@ -1677,7 +1671,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 else
                     log_netlog("\n+++ D: No master given for my slaves (%ds)\n", yw->timeStamp / 1000);
 
-                strcpy(err, msg->senderID);
+                *err = msg->senderID;
             }
         }
 
@@ -1947,7 +1941,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( !fndbct )
             {
                 log_netlog("\n+++ V: Havent found weapon %d of rifleman %d (%ds)\n", vwMsg->id, vwMsg->launcher, yw->timeStamp / 1000);
-                strcpy(err, msg->senderID);
+                *err = msg->senderID;
                 break;
             }
         }
@@ -1957,7 +1951,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
             if ( !fndbct )
             {
                 log_netlog("\n+++ V: Havent found vehicle %d (%ds)\n", vwMsg->id, yw->timeStamp / 1000);
-                strcpy(err, msg->senderID);
+                *err = msg->senderID;
                 break;
             }
         }
@@ -2225,11 +2219,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, char *err)
                 {
                     if ( yw->netGameStarted )
                     {
-                        char bff[256];
-                        sprintf(bff, "%s: %s", msg->senderID, msgMsg->message);
+                        std::string bff = fmt::sprintf("%s: %s", msg->senderID, msgMsg->message);
 
                         yw_arg159 arg159;
-                        arg159.txt = bff;
+                        arg159.txt = bff.c_str();
                         arg159.field_C = 93;
                         arg159.field_4 = 10;
                         arg159.unit = NULL;
@@ -3370,7 +3363,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
     }
 
     uint32_t msgcount = 0;
-    char err_sender[200];
+    std::string err_sender;
 
     windp_recvMsg recvMsg;
 
@@ -3549,7 +3542,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                     uint32_t msgID = ((uamessage_base *)recvMsg.data)->msgID;
                     HNDL_MSG[ msgcnt ] = msgID;
 
-                    size_t msg_size = yw_handleNormMsg(yw, &recvMsg, err_sender);
+                    size_t msg_size = yw_handleNormMsg(yw, &recvMsg, &err_sender);
 
                     if ( !msg_size )
                     {
@@ -3575,7 +3568,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
                 const char *crpt = yw_corruptionCheck(usr);
                 if ( crpt )
-                    strncpy(err_sender, crpt, 200);
+                    err_sender = crpt;
             }
             break;
 
@@ -3583,15 +3576,15 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                 break;
             }
 
-            if ( err_sender[0] )
+            if ( !err_sender.empty() )
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    if (strcasecmp(usr->players2[i].name, err_sender) == 0)
+                    if (StriCmp(usr->players2[i].name, err_sender) == 0)
                     {
                         if ( !usr->players2[i].w84upd )
                         {
-                            log_netlog("Drastic Error: Request Update from %s\n", err_sender);
+                            log_netlog("Drastic Error: Request Update from %s\n", err_sender.c_str());
 
                             uamessage_requpdate updMsg;
                             updMsg.msgID = UAMSG_REQUPDATE;
@@ -3602,7 +3595,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                             ywMsg.dataSize = sizeof(updMsg);
                             ywMsg.recvFlags = 1;
                             ywMsg.garant = 1;
-                            ywMsg.recvID = err_sender;
+                            ywMsg.recvID = err_sender.c_str();
                             yw->ypaworld_func181(&ywMsg);
 
                             usr->players2[i].w84upd = 2000;
@@ -4268,11 +4261,10 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     yw->netStartTime -= inpt.Period;
     if ( yw->netStartTime > 0 )
     {
-        char tmpstr[128];
-        sprintf(tmpstr, "(%d)", yw->netStartTime / 1000);
+        std::string timeStr = fmt::sprintf("(%d)", yw->netStartTime / 1000);
 
         FontUA::copy_position(&cur);
-        FontUA::add_txt(&cur, yw->screen_width / 3 - 1, 1, tmpstr);
+        FontUA::add_txt(&cur, yw->screen_width / 3 - 1, 1, timeStr);
         FontUA::next_line(&cur);
     }
 
@@ -4312,9 +4304,8 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
             }
             else
             {
-                char tmpstr[128];
-                strcpy(tmpstr, "     ");
-                strcpy( &tmpstr[3], wting[i]->name);
+                std::string tmpstr = "   ";
+                tmpstr += wting[i]->name;
 
                 FontUA::copy_position(&cur);
                 FontUA::add_txt(&cur, yw->screen_width - 1, 1, tmpstr);
@@ -4423,7 +4414,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
 {
     bool toDraw = false;
 
-    char t[16][300];
+    std::string t[16];
 
     UserData *usr = yw->GameShell;
 
@@ -4462,42 +4453,42 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         case 1:
             if ( usr->isHost )
             {
-                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2405, "HOST: LATENCY PROBLEMS."));
-                sprintf(t[1], "%s %d", get_lang_string(ypaworld__string_pointers, 2423, "PLEASE WAIT"), usr->netProblemCount);
+                t[0] = get_lang_string(ypaworld__string_pointers, 2405, "HOST: LATENCY PROBLEMS.");
+                t[1] = fmt::sprintf("%s %d", get_lang_string(ypaworld__string_pointers, 2423, "PLEASE WAIT"), usr->netProblemCount);
                 numelm = 2;
             }
             else
             {
-                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2406, "CLIENT: LATENCY PROBLEMS."));
-                sprintf(t[1], "%s %d", get_lang_string(ypaworld__string_pointers, 2424, "PLEASE WAIT"), usr->netProblemCount);
+                t[0] = get_lang_string(ypaworld__string_pointers, 2406, "CLIENT: LATENCY PROBLEMS.");
+                t[1] = fmt::sprintf("%s %d", get_lang_string(ypaworld__string_pointers, 2424, "PLEASE WAIT"), usr->netProblemCount);
                 numelm = 2;
             }
             break;
 
         case 3:
-            strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE"));
-            sprintf(t[1], "%s %d", get_lang_string(ypaworld__string_pointers, 2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCount / 1000);
+            t[0] = get_lang_string(ypaworld__string_pointers, 2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE");
+            t[1] = fmt::sprintf("%s %d", get_lang_string(ypaworld__string_pointers, 2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCount / 1000);
             numelm = 2;
             break;
 
         case 4:
-            strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2427, "FOLLOWING PLAYERES WERE REMOVED"));
-            strcpy(t[1], get_lang_string(ypaworld__string_pointers, 2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
+            t[0] = get_lang_string(ypaworld__string_pointers, 2427, "FOLLOWING PLAYERES WERE REMOVED");
+            t[1] = fmt::sprintf(get_lang_string(ypaworld__string_pointers, 2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
             numelm = 2;
 
             for(int i = 0; i < 8; i++)
             {
                 if (usr->players[i].isKilled & 2)
                 {
-                    strcpy(t[numelm], usr->players[i].name);
+                    t[numelm] = usr->players[i].name;
                     numelm++;
                 }
             }
             break;
 
         case 5:
-            strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2429, "NO CONNECTION TO FOLLOWING PLAYERS"));
-            strcpy(t[1], get_lang_string(ypaworld__string_pointers, 2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
+            t[0] = get_lang_string(ypaworld__string_pointers, 2429, "NO CONNECTION TO FOLLOWING PLAYERS");
+            t[1] = fmt::sprintf(get_lang_string(ypaworld__string_pointers, 2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
             numelm = 2;
 
             for(int i = 0; i < 8; i++)
@@ -4508,7 +4499,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
                     {
                         if ( StriCmp(usr->players[i].name, usr->callSIGN) )
                         {
-                            strcpy(t[numelm], usr->players[i].name);
+                            t[numelm] = usr->players[i].name;
                             numelm++;
                         }
                     }
@@ -4529,20 +4520,20 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
 
             if ( usr->netAllOk == 1 )
             {
-                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2409, "NETWORK IS NOW OK"));
+                t[0] = get_lang_string(ypaworld__string_pointers, 2409, "NETWORK IS NOW OK");
             }
             else if ( usr->netAllOk == 2 )
             {
-                strcpy(t[0], get_lang_string(ypaworld__string_pointers, 2408, "THERE WAS NO CHANCE TO SOLVE THIS PROBLEM"));
+                t[0] = get_lang_string(ypaworld__string_pointers, 2408, "THERE WAS NO CHANCE TO SOLVE THIS PROBLEM");
             }
             else if ( usr->netAllOk == 3 )
             {
-                strcpy(t[0], "   ");
+                t[0] = "   ";
                 toDraw = false;
             }
             else
             {
-                strcpy(t[0], "???");
+                t[0] = "???";
             }
         }
     }

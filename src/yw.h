@@ -2085,7 +2085,7 @@ struct yw_arg181
     int dataSize;
     const char *senderID;
     int senderFlags;
-    char *recvID;
+    const char *recvID;
     int recvFlags;
     int garant;
 };

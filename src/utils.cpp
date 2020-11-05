@@ -66,7 +66,7 @@ int dround(double val)
     return val + 0.5;
 }
 
-uint32_t fileCrc32(const char *filename, uint32_t _crc)
+uint32_t fileCrc32(const std::string &filename, uint32_t _crc)
 {
     uint32_t crc = _crc;
 

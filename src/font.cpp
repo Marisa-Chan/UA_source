@@ -269,12 +269,12 @@ void FontUA::op17(char **pos, int16_t arg)
     FontUA::store_s16(pos, arg);
 }
 
-void FontUA::add_txt(char **pos, int16_t block_width, uint16_t flag, const char *string)
+void FontUA::add_txt(char **pos, int16_t block_width, uint16_t flag, const std::string &string)
 {
     FontUA::store_u16(pos, 18);
     FontUA::store_s16(pos, block_width);
     FontUA::store_u16(pos, flag);
-    FontUA::store_string(pos, string);
+    FontUA::store_string(pos, string.c_str());
 }
 
 void FontUA::copy_position(char **pos)

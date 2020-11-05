@@ -59,7 +59,7 @@ void reset_tileset(char **pos, uint8_t tileset);
 //Op 17:
 void op17(char **pos, int16_t arg);
 //Op 18: Add text for output
-void add_txt(char **pos, int16_t block_width, uint16_t flag, const char *string);
+void add_txt(char **pos, int16_t block_width, uint16_t flag, const std::string &string);
 //Op 19: Copy current output xy position for text output
 void copy_position(char **pos);
 //Op 20: Set flag bitfield for text output
