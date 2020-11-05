@@ -220,6 +220,14 @@ int TileMap::GetWidth(uint8_t c) const
     return map[c].w;
 }
 
+int TileMap::GetWidth(const std::string &str) const
+{
+    int wdth = 0;
+    for (uint8_t c : str)
+        wdth += map[c].w;
+    return wdth;
+}
+
 Common::Point TileMap::GetSize(uint8_t c) const
 {
     return Common::Point(map[c].w, h);

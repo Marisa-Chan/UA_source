@@ -49,6 +49,7 @@ struct TileMap
     void Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c);
     
     int GetWidth(uint8_t c) const;
+    int GetWidth(const std::string &str) const;
     Common::Point GetSize(uint8_t c) const;
 };
 
