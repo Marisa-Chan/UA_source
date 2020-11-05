@@ -5898,16 +5898,11 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 //Make screenshot
 void sub_4476AC(NC_STACK_ypaworld *yw)
 {
-    char a1a[256];
-    sprintf(a1a, "env:snaps/f_%04d", yw->field_2424);
-
-    yw->field_2424++;
-
     NC_STACK_win3d *w3d = GFXEngine::GFXe.getC3D();
 
-    const char *v7 = a1a;
-
-    w3d->display_func274(&v7);
+    w3d->SaveScreenshot(fmt::sprintf("env:snaps/f_%04d", yw->field_2424));
+    
+    yw->field_2424++;
 }
 
 //FIXME

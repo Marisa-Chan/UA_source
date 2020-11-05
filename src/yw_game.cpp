@@ -28,9 +28,7 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw)
     else
         v3 = "disk512.ilbm";
 
-    char rsrc_def[128];
-
-    strcpy(rsrc_def, get_prefix_replacement("rsrc"));
+    std::string oldRsrc = get_prefix_replacement("rsrc");
 
     set_prefix_replacement("rsrc", "data:mc2res");
 
@@ -38,7 +36,7 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw)
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(v3)},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
-    set_prefix_replacement("rsrc", rsrc_def);
+    set_prefix_replacement("rsrc", oldRsrc);
 
     return disk;
 }
@@ -694,15 +692,13 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
         draw_splashScreen(this, diskScreenImage);
 
 
-    char rsr[256];
-
-    strcpy(rsr, get_prefix_replacement("rsrc"));
+    std::string oldRsrc = get_prefix_replacement("rsrc");
 
     set_prefix_replacement("rsrc", "data:fonts");
 
     int v19 = load_fonts_and_icons();
 
-    set_prefix_replacement("rsrc", rsr);
+    set_prefix_replacement("rsrc", oldRsrc);
 
     if ( !v19 )
         return 0;
@@ -751,10 +747,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
         sb_0x44ca90__sub5(this);
 
-        char a1[32];
-        sprintf(a1, "data:set%d", mapp->SetID);
-
-        set_prefix_replacement("rsrc", a1);
+        set_prefix_replacement("rsrc", fmt::sprintf("data:set%d", mapp->SetID));
 
         sb_0x44ca90__sub2(this, mapp);
 
@@ -1944,11 +1937,9 @@ NC_STACK_ypabact *NC_STACK_ypaworld::yw_createUnit( int model_id)
 
 void sub_44BF34(vhclSndFX *sndfx)
 {
-    char rsr[256];
-
     if ( !sndfx->wavs[0] && !sndfx->single_sample )
     {
-        strcpy(rsr, get_prefix_replacement("rsrc"));
+        std::string oldRsrc = get_prefix_replacement("rsrc");
 
         set_prefix_replacement("rsrc", "data:");
 
@@ -1989,7 +1980,7 @@ void sub_44BF34(vhclSndFX *sndfx)
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name.c_str());
         }
 
-        set_prefix_replacement("rsrc", rsr);
+        set_prefix_replacement("rsrc", oldRsrc);
     }
 }
 
@@ -4219,10 +4210,7 @@ int recorder_startrec(NC_STACK_ypaworld *yw)
     rcrd->field_34 = 0;
     rcrd->ainf_size = 0;
 
-    char a1[256];
-    sprintf(a1, "env:snaps/m%02d%04d.raw", yw->_levelInfo->LevelID, rcrd->seqn);
-
-    FSMgr::FileHandle *fil = uaOpenFile(a1, "wb");
+    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("env:snaps/m%02d%04d.raw", yw->_levelInfo->LevelID, rcrd->seqn), "wb");
     if ( !fil )
     {
         rcrd->mfile = NULL;
@@ -4296,17 +4284,11 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
             yw->ypaworld_func159(&info_msg);
         }
 
-
-        char a1[256];
-        sprintf(a1, "env:snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id);
-
-        yw->screenshot_seq_frame_id++;
-
         NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
 
-        const char *v13 = a1;
-
-        win3d->display_func274(&v13);
+        win3d->SaveScreenshot( fmt::sprintf("env:snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id) );
+        
+        yw->screenshot_seq_frame_id++;
     }
     else if ( inpt->KbdLastHit == Input::KC_NUMDIV && (inpt->ClickInf.flag & 0x100 || yw->easy_cheat_keys) )
     {

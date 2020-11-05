@@ -195,7 +195,7 @@ public:
     virtual void display_func271(IDVPair *stak) {};
     virtual void display_func272(IDVPair *) {};
     virtual UA_PALETTE * display_func273(int paletteId);
-    virtual void display_func274(const char **);
+    virtual void SaveScreenshot(const std::string & screenName);
 
     NC_STACK_display() {
         memset(&stack__display, 0, sizeof(stack__display));

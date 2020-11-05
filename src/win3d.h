@@ -145,7 +145,7 @@ public:
     virtual void FreeTexture(ResBitmap *arg);
     virtual void display_func271(IDVPair *stak);
     virtual void display_func272(IDVPair *);
-    virtual void display_func274(const char **name);
+    virtual void SaveScreenshot(const std::string & screenName);
     virtual void windd_func320(IDVPair *);
     virtual void windd_func321(IDVPair *);
     virtual void windd_func322(windd_dlgBox *dlgBox);

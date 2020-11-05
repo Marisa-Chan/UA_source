@@ -293,7 +293,7 @@ UA_PALETTE * NC_STACK_display::display_func273(int paletteId)
     return &stack__display.field_300[paletteId];
 }
 
-void NC_STACK_display::display_func274(const char **)
+void NC_STACK_display::SaveScreenshot(const std::string & screenName)
 {
     dprintf("MAKE ME %s(Save pcx screenshot)\n","display_func274");
 }

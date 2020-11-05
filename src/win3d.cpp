@@ -2128,7 +2128,7 @@ void NC_STACK_win3d::display_func272(IDVPair *)
 
 
 
-void win3d_func274__sub0(__NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
+void win3d_func274__sub0(FSMgr::FileHandle *fil)
 {
     int bf_w = 0, bf_h = 0;
 
@@ -2136,10 +2136,7 @@ void win3d_func274__sub0(__NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
 
     if (buf && bf_w && bf_h)
     {
-        char txtbuf[128];
-
-        sprintf(txtbuf, "P6\n#YPA screenshot\n%d %d\n255\n", bf_w, bf_h);
-        fil->write(txtbuf, strlen(txtbuf));
+        fil->printf("P6\n#YPA screenshot\n%d %d\n255\n", bf_w, bf_h);
 
         int lwidth = 3 * bf_w;
 
@@ -2165,19 +2162,12 @@ void win3d_func274__sub0(__NC_STACK_win3d *w3d, FSMgr::FileHandle *fil)
     }
 }
 
-void NC_STACK_win3d::display_func274(const char **name)
+void NC_STACK_win3d::SaveScreenshot(const std::string & screenName)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    char filename[128];
-
-    strcpy(filename, *name);
-    strcat(filename, ".ppm");
-
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "wb");
+    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("%s.ppm", screenName), "wb");
     if ( fil )
     {
-        win3d_func274__sub0(w3d, fil);
+        win3d_func274__sub0(fil);
         delete fil;
     }
 }
