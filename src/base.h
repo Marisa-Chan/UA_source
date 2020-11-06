@@ -329,7 +329,7 @@ protected:
     int READ_KIDS(IFFile *mfile);
 
 public:
-    static NC_STACK_base *READ_BAS_FILE(const char *fname);
+    static NC_STACK_base *READ_BAS_FILE(const std::string &fname);
 
 
 public:

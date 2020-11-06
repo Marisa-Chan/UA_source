@@ -1071,7 +1071,7 @@ bool FileHandle::ReadLine(std::string *out)
 	{
 		ok = true;
 		(*out) += buf;
-		if (out->back() == '\n')
+		if (out->back() == '\n' || out->back() == '\r')
 			break;
 	}
 	return ok;

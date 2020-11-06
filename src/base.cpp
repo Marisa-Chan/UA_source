@@ -1343,7 +1343,7 @@ int NC_STACK_base::getBASE_embdRsrc()
 
 
 
-NC_STACK_base *NC_STACK_base::READ_BAS_FILE(const char *fname)
+NC_STACK_base *NC_STACK_base::READ_BAS_FILE(const std::string &fname)
 {
     NC_STACK_base *result = NULL;
 
