@@ -753,7 +753,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
         if ( yw_LoadSet(mapp->SetID) )
         {
-            if ( yw_loadSky(this, mapp->SkyStr.c_str()) )
+            if ( yw_loadSky(this, mapp->SkyStr) )
                 ok = 1;
         }
     }

@@ -6560,7 +6560,7 @@ void ypaworld_func64__sub7__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 
 
 
-int ypaworld_func64__sub7__sub6__sub0(int a1, const char *a2)
+int ypaworld_func64__sub7__sub6__sub0(int a1, const std::string &a2)
 {
     FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/%d.rst", a2, a1), "r");
 
@@ -6748,9 +6748,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
 
             if ( GameShell )
             {
-                field_1604 = sub_47B388(0, GameShell->user_name.c_str()) != 0;
+                field_1604 = sub_47B388(0, GameShell->user_name) != 0;
 
-                if ( ypaworld_func64__sub7__sub6__sub0(_levelInfo->LevelID, GameShell->user_name.c_str()) )
+                if ( ypaworld_func64__sub7__sub6__sub0(_levelInfo->LevelID, GameShell->user_name) )
                     field_1608 = 1;
                 else
                     field_1608 = 0;

@@ -469,17 +469,15 @@ void NC_STACK_ypaworld::LoadKeyNames()
 }
 
 
-int yw_loadSky(NC_STACK_ypaworld *yw, const char *skyname)
+int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
 {
-    char buf[256];
-    strcpy(buf, "data:");
-    strcat(buf, skyname);
+    std::string skyfilename = fmt::sprintf("data:%s", skyname);
 
-    NC_STACK_base *sky = NC_STACK_base::READ_BAS_FILE(buf);
+    NC_STACK_base *sky = NC_STACK_base::READ_BAS_FILE(skyfilename);
     yw->sky_loaded_base = sky;
     if ( !sky )
     {
-        ypa_log_out("Couldn't create %s\n", buf);
+        ypa_log_out("Couldn't create %s\n", skyfilename.c_str());
         return 0;
     }
 
@@ -712,7 +710,7 @@ void UserData::GameShellUiOpenNetwork()
 
 
 
-void sb_0x46ca74__sub0(const char *a1, const char *a2)
+void sb_0x46ca74__sub0(const std::string &a1, const std::string &a2)
 {
     FSMgr::FileHandle *f1 = uaOpenFile(a1, "r");
     if ( f1 )
@@ -740,10 +738,7 @@ void  UserData::sb_0x46ca74()
     if ( field_1612 )
     {
         if ( StriCmp(usernamedir, user_name) )
-        {
-            oldsave = fmt::sprintf("save:%s", usernamedir);
-            sub_46D0F8(oldsave.c_str());
-        }
+            sub_46D0F8(fmt::sprintf("save:%s", usernamedir));
     }
     else
     {
@@ -909,45 +904,17 @@ void sub_44A1FC(NC_STACK_ypaworld *yw)
 
         if ( fil )
         {
-            char buf[512];
-
-            if ( fil->gets(buf, 512) )
+            std::string line;
+            if ( fil->ReadLine(&line) )
             {
-                char *pos = buf;
-                char *val = NULL;
-
-                while( *pos )
+                Stok parse(line, "\t ,");
+                std::string token;
+                while( parse.GetNext(&token) )
                 {
-                    if ( strchr("\t ,", *pos) )
-                    {
-                        if (val)
-                        {
-                            *pos = 0;
-
-                            uint32_t tmp = strtol(val, 0, 10);
-
-                            if (tmp < 256)
-                                yw->LevelNet->mapInfos[tmp].field_0 = 2;
-
-                            val = NULL;
-                        }
-                    }
-                    else
-                    {
-                        if (!val)
-                            val = pos;
-                    }
-                    pos++;
-                }
-
-                if (val)
-                {
-                    uint32_t tmp = strtol(val, 0, 10);
+                    uint32_t tmp = std::stol(token, 0, 10);
 
                     if (tmp < 256)
                         yw->LevelNet->mapInfos[tmp].field_0 = 2;
-
-                    val = NULL;
                 }
             }
 
@@ -981,8 +948,7 @@ void UserData::sb_0x46cdf8()
 
     if ( field_1612 )
     {
-        a1a = fmt::sprintf("save:%s", usernamedir);
-        sub_46D0F8(a1a.c_str());
+        sub_46D0F8(fmt::sprintf("save:%s", usernamedir));
     }
     else
     {
@@ -1367,27 +1333,19 @@ int sub_4EDCC4(NC_STACK_ypaworld *yw)
     return yw->_levelInfo->State != 8;
 }
 
-int sub_47B388(int a1, const char *a2)
+int sub_47B388(int a1, const std::string &a2)
 {
-    char buf[300];
-
-    sprintf(buf, "save:%s/%d.sgm", a2, a1);
-
-    FSMgr::FileHandle *fil = uaOpenFile(buf, "r");
+    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/%d.sgm", a2, a1), "r");
     if ( !fil )
         return 0;
 
     delete fil;
-
     return 1;
 }
 
 int UserData::ypaworld_func158__sub0__sub7()
 {
-    char buf[300];
-
-    sprintf(buf, "save:%s/sgisold.txt",user_name.c_str());
-    FSMgr::FileHandle *fl = uaOpenFile(buf, "r");
+    FSMgr::FileHandle *fl = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt",user_name), "r");
     if ( !fl )
         return 0;
 
@@ -1779,23 +1737,20 @@ void UserData::ypaworld_func158__sub0__sub1()
 
 void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 {
-    char a1a[260];
-
     UserData *usr = yw->GameShell;
 
-    char rsr[256];
-    strcpy(rsr, get_prefix_replacement("rsrc"));
+    std::string oldRsrc = get_prefix_replacement("rsrc");
 
     set_prefix_replacement("rsrc", "data:");
 
-
+    std::string wavName;
     if ( usr->default_lang_dll )
-        sprintf(a1a, "sounds/speech/%s/9%d.wav", usr->default_lang_dll->c_str(), arg);
+        wavName = fmt::sprintf("sounds/speech/%s/9%d.wav", usr->default_lang_dll, arg);
     else
-        sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
+        wavName = fmt::sprintf("sounds/speech/language/9%d.wav", arg);
 
-    if ( !uaFileExist(std::string("rsrc:") + a1a) )
-        sprintf(a1a, "sounds/speech/language/9%d.wav", arg);
+    if ( !uaFileExist(std::string("rsrc:") + wavName) )
+        wavName = fmt::sprintf("sounds/speech/language/9%d.wav", arg);
 
     if ( usr->field_ADA )
     {
@@ -1805,7 +1760,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
         usr->field_ADA = 0;
     }
 
-    usr->field_ADA = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(a1a)}});
+    usr->field_ADA = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, wavName}});
     if ( usr->field_ADA )
     {
         SFXEngine::SFXe.sub_423DB0(&usr->field_782);
@@ -1819,7 +1774,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
         SFXEngine::SFXe.startSound(&usr->field_782, 0);
     }
 
-    set_prefix_replacement("rsrc", rsr);
+    set_prefix_replacement("rsrc", oldRsrc);
 }
 
 void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
@@ -2216,12 +2171,11 @@ void UserData::sub_46C914()
         for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
             it++;
 
-        char a1a[300];
-        sprintf(a1a, "%s/user.txt", it->name.c_str());
+        std::string a1a = fmt::sprintf("%s/user.txt", it->name);
 
         yw_arg172 arg172;
 
-        arg172.usertxt = a1a;
+        arg172.usertxt = a1a.c_str();
         arg172.field_4 = it->name.c_str();
         arg172.field_8 = 255;
         arg172.usr = this;
@@ -2246,10 +2200,8 @@ void UserData::sub_46C914()
     }
 }
 
-void sub_46D0F8(const char *path)
+void sub_46D0F8(const std::string &path)
 {
-    char a1a[200];
-
     FSMgr::DirIter dir = uaOpenDir(path);
     if ( dir )
     {
@@ -2257,11 +2209,8 @@ void sub_46D0F8(const char *path)
 
         while ( dir.getNext(&v5) )
         {
-            if ( v5->getType() == FSMgr::iNode::NTYPE_FILE || (strcmp(v5->getName().c_str(), ".") && strcmp(v5->getName().c_str(), "..")) )
-            {
-                sprintf(a1a, "%s/%s", path, v5->getName().c_str());
-                uaDeleteFile(a1a);
-            }
+            if ( v5->getType() == FSMgr::iNode::NTYPE_FILE || (v5->getName().compare(".") && v5->getName().compare("..")) )
+                uaDeleteFile(fmt::sprintf("%s/%s", path, v5->getName()));
         }
     }
 }
@@ -2292,9 +2241,9 @@ void UserData::sub_46C748()
 
             std::string a1 = fmt::sprintf("save:%s", it->name);
 
-            sub_46D0F8(a1.c_str());
+            sub_46D0F8(a1);
 
-            uaDeleteDir(a1.c_str());
+            uaDeleteDir(a1);
 
             profiles.erase(it);
 
@@ -2410,7 +2359,6 @@ int ypaworld_func158__sub0__sub6(char a1)
 void UserData::GameShellUiHandleInput()
 {
     int v3 = 0;
-    char v306[300];
 
     if ( _input->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
         SFXEngine::SFXe.startSound(&samples1_info, 3);
@@ -2570,7 +2518,7 @@ void UserData::GameShellUiHandleInput()
     {
         if ( !field_3426 )
         {
-            if ( sub_47B388(0, user_name.c_str()) )
+            if ( sub_47B388(0, user_name) )
                 field_3426 = 1;
             else
                 field_3426 = 2;
@@ -3278,24 +3226,20 @@ void UserData::GameShellUiHandleInput()
     }
 
     NC_STACK_button::Slider *v67 = video_button->button_func74(1159);
-    sprintf(v306, "%d", v67->value);
-
-    video_button->button_func71(1158, v306);
-
+    
+    video_button->button_func71(1158, fmt::sprintf("%d", v67->value));
     field_0x13a4 = v67->value;
 
     v67 = video_button->button_func74(1152);
-    sprintf(v306, "%d", v67->value);
 
-    video_button->button_func71(1153, v306);
+    video_button->button_func71(1153, fmt::sprintf("%d", v67->value));
     field_0x13b4 = v67->value;
 
     SFXEngine::SFXe.setMasterVolume(field_0x13b4);
 
     v67 = video_button->button_func74(1154);
-    sprintf(v306, "%d", v67->value);
 
-    video_button->button_func71(1155, v306);
+    video_button->button_func71(1155, fmt::sprintf("%d", v67->value));
     field_0x13b8 = v67->value;
 
     SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
@@ -4477,7 +4421,7 @@ void UserData::GameShellUiHandleInput()
     }
     else
     {
-        const char *v280;
+        std::string v280;
 
         if ( netSelMode )
         {
@@ -4489,13 +4433,10 @@ void UserData::GameShellUiHandleInput()
             {
                 char *v278 = p_ypaworld->field_75E2;
                 const char *v279 = get_lang_string(ypaworld__string_pointers, 2437, "YOUR TCP/IP ADDRESS");
-                sprintf(v306, "%s  %s", v279, v278);
+                v280 = fmt::sprintf("%s  %s", v279, v278);
             }
             else
-            {
-                strcpy(v306, " ");
-            }
-            v280 = v306;
+                v280 = " ";
         }
 
         network_button->button_func71(1228, v280);
@@ -4895,7 +4836,6 @@ void UserData::GameShellUiHandleInput()
 
         for (int i = 0; i < 4; i++)
         {
-            char v339[12];
             int v370;
 
             int v304 = p_ypaworld->windp->GetPlayerData(&v368);
@@ -4939,6 +4879,8 @@ void UserData::GameShellUiHandleInput()
 
             network_button->button_func71(btID, name);
 
+            std::string v339("     "); // 5 spaces
+            
             if ( v304 )
             {
                 int v305;
@@ -4967,30 +4909,16 @@ void UserData::GameShellUiHandleInput()
                     v339[0] = 'V';
                     break;
                 default:
-                    v339[0] = ' ';
                     break;
                 }
                 if ( players2[v368.ID].trbl && ((glblTime / 300) & 1) )
                     v339[1] = 'f';
-                else
-                    v339[1] = ' ';
 
                 if ( players2[v368.ID].rdyStart )
                     v339[2] = 'h';
-                else
-                    v339[2] = ' ';
 
                 if ( players2[v368.ID].cd )
                     v339[3] = 'i';
-                else
-                    v339[3] = ' ';
-
-                v339[4] = ' ';
-                v339[5] = 0;
-            }
-            else
-            {
-                strcpy(v339, "     ");
             }
 
             network_button->button_func71(v370, v339);

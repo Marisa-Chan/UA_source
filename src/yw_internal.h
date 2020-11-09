@@ -39,7 +39,7 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, I
 void set_keys_vals(NC_STACK_ypaworld *yw);
 void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr);
 
-int yw_loadSky(NC_STACK_ypaworld *yw, const char *skyname);
+int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname);
 //void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params);
 
 void fill_videmodes_list(UserData *usr);
@@ -75,7 +75,7 @@ NC_STACK_bitmap * sub_44816C(NC_STACK_bitmap *src, const char *name);
 
 void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr);
 
-void sub_46D0F8(const char *path);
+void sub_46D0F8(const std::string &path);
 
 int init_prototypes(NC_STACK_ypaworld *yw);
 
@@ -317,7 +317,7 @@ void ypaworld_func64__sub15(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub16(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub17(NC_STACK_ypaworld *yw);
 
-int sub_47B388(int a1, const char *a2);
+int sub_47B388(int a1, const std::string &a2);
 
 void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg);
 void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw);
