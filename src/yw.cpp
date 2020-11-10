@@ -533,14 +533,14 @@ void yw_setInitScriptLoc(NC_STACK_ypaworld *yw)
 
     if (fil)
     {
-        char buf[512];
-        if ( fil->gets(buf, 512) )
+        std::string line;
+        if ( fil->ReadLine(&line) )
         {
-            char *en = strpbrk(buf, "\n;");
-            if (en)
-                *en = 0;
+            size_t en = line.find_first_of("\n;");
+            if (en != std::string::npos)
+                line.erase(en);
 
-            yw->initScriptLoc = buf;
+            yw->initScriptLoc = line;
             ok = true;
         }
 
@@ -1118,12 +1118,10 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         yw->BuildProtos[a4].EnableMask |= 1 << yw->GameShell->netPlayerOwner;
     }
 
-    char v11[128];
-
-    strcpy(v11, get_lang_string(yw->string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n"));
+    std::string v11 = get_lang_string(yw->string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
 
     yw_arg159 v14;
-    v14.txt = v11;
+    v14.txt = v11.c_str();
     v14.unit = 0;
     v14.field_4 = 48;
 
@@ -2406,18 +2404,15 @@ void NC_STACK_ypaworld::DeleteLevel()
     {
         if ( GameShell )
         {
-            char buf[300];
-            sprintf(buf, "save:%s/sgisold.txt", GameShell->user_name.c_str());
-
-            FSMgr::FileHandle *fil = uaOpenFile(buf, "w");
+            FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt", GameShell->user_name), "w");
 
             if ( fil )
                 delete fil;
 
-            sprintf(buf, "%s/user.txt", GameShell->user_name.c_str());
+            std::string buf = fmt::sprintf("%s/user.txt", GameShell->user_name);
 
             yw_arg172 arg171;
-            arg171.usertxt = buf;
+            arg171.usertxt = buf.c_str();
             arg171.field_4 = GameShell->user_name.c_str();
             arg171.usr = GameShell;
             arg171.field_10 = 0;
@@ -2429,8 +2424,7 @@ void NC_STACK_ypaworld::DeleteLevel()
 
             if ( fil )
             {
-                strcpy(buf, GameShell->user_name.c_str());
-                fil->write(buf, strlen(buf));
+                fil->printf(GameShell->user_name);
                 delete fil;
             }
         }
@@ -2852,8 +2846,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
     if ( yw->LevelNet->bg_n )
     {
-        char buf[256];
-        strcpy(buf, get_prefix_replacement("rsrc"));
+        std::string oldRsrc = get_prefix_replacement("rsrc");
 
         set_prefix_replacement("rsrc", "levels:");
 
@@ -2972,7 +2965,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
             }
         }
 
-        set_prefix_replacement("rsrc", buf);
+        set_prefix_replacement("rsrc", oldRsrc);
 
         if ( !v37 )
         {
@@ -6338,7 +6331,7 @@ char * sb_0x471428__sub0(char *a1, const char *a2)
     return a1;
 }
 
-int simple_lang_parser(NC_STACK_ypaworld *yw, const char *filename)
+int simple_lang_parser(NC_STACK_ypaworld *yw, const std::string &filename)
 {
     FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
     if ( !fil )
@@ -6467,10 +6460,9 @@ int simple_lang_parser(NC_STACK_ypaworld *yw, const char *filename)
     return 1;
 }
 
-int load_lang_lng(NC_STACK_ypaworld *yw, const char *lang)
+int load_lang_lng(NC_STACK_ypaworld *yw, const std::string &lang)
 {
-    char buf[128];
-    sprintf(buf, "locale:%s.lng", lang);
+    std::string buf = fmt::sprintf("locale:%s.lng", lang);
 
     if ( !simple_lang_parser(yw, buf) )
     {
@@ -6964,10 +6956,7 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
         return 0;
     }
 
-    char a1a[300];
-    sprintf(a1a, "save:%s", arg->usertxt);
-
-    FSMgr::FileHandle *sfil = uaOpenFile(a1a, "w");
+    FSMgr::FileHandle *sfil = uaOpenFile(fmt::sprintf("save:%s", arg->usertxt), "w");
 
     if ( !sfil )
         return 1;
@@ -7071,8 +7060,6 @@ int NC_STACK_ypaworld::ypaworld_func172__sub0(const std::string &fname, int pars
 // Load user save
 size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
 {
-    char a1a[300];
-
     UserData *usr = arg->usr;
 
     if ( arg->field_8 & 0x10 )
@@ -7083,11 +7070,11 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
         }
         else
         {
-            sprintf(a1a, "%s/user.txt", usr->user_name.c_str());
+            std::string tmpStr = fmt::sprintf("%s/user.txt", usr->user_name);
 
             yw_arg172 v12;
             v12.usr = usr;
-            v12.usertxt = a1a;
+            v12.usertxt = tmpStr.c_str();
             v12.field_10 = 0;
             v12.field_4 = usr->user_name.c_str();
             v12.field_8 = 255;
@@ -7101,10 +7088,7 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
     if ( arg->field_8 & 0x80 )
         _levelInfo->Buddies.clear();
 
-    char buf[300];
-    sprintf(buf, "save:%s", arg->usertxt);
-
-    if ( !ypaworld_func172__sub0(buf, arg->field_8) )
+    if ( !ypaworld_func172__sub0(fmt::sprintf("save:%s", arg->usertxt), arg->field_8) )
     {
         ypa_log_out("Error while loading information from %s\n", arg->usertxt);
         return 0;
@@ -7437,11 +7421,7 @@ void NC_STACK_ypaworld::ypaworld_func182(void *arg)
 
 int ypaworld_func183__sub0(int lvlID, const char *userName)
 {
-    char buf[300];
-
-    sprintf(buf, "save:%s/%d.fin", userName, lvlID);
-
-    FSMgr::FileHandle *fil = uaOpenFile(buf, "r");
+    FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%d.fin", userName, lvlID) , "r");
 
     if ( !fil )
         return 0;
