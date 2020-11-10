@@ -93,13 +93,9 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState 
 
 int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
 {
-    char rsr[256];
-    strcpy(rsr, get_prefix_replacement("rsrc"));
+    std::string oldRsrc = get_prefix_replacement("rsrc");
 
-    char a1a[256];
-    sprintf(a1a, "data:set%d:", setID);
-
-    set_prefix_replacement("rsrc", a1a);
+    set_prefix_replacement("rsrc", fmt::sprintf("data:set%d:", setID));
 
     if ( setID != yw->set_number && setID != 46 )
     {
@@ -115,7 +111,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
         if ( !yw->additionalSet )
         {
             ypa_log_out("yw_MBLoadSet(): loading set object %d failed\n", setID);
-            set_prefix_replacement("rsrc", rsr);
+            set_prefix_replacement("rsrc", oldRsrc);
             return 0;
         }
 
@@ -180,7 +176,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
         delete fil;
     }
 
-    set_prefix_replacement("rsrc", rsr);
+    set_prefix_replacement("rsrc", oldRsrc);
 
     return 1;
 }
@@ -471,11 +467,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, InputState
         {
             const char *v11 = get_lang_string(yw->string_pointers_p2, squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name.c_str());
 
-            char a1[128];
-            sprintf(a1, "%d %s", squad->Count, v11);
-
             yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 36, 
-                                                a1 ),  
+                                                fmt::sprintf("%d %s", squad->Count, v11) ),  
                                    brf->AddObjectsFlag);
         }
     }
@@ -532,11 +525,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, InputState
         {
             const char *v11 = get_lang_string(yw->string_pointers_p2, squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name.c_str());
 
-            char title[128];
-            sprintf(title, "%d %s", squad->Count, v11);
-
             yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 25, 
-                                                title ),  
+                                                fmt::sprintf("%d %s", squad->Count, v11) ),  
                                    brf->AddObjectsFlag);
         }
     }
