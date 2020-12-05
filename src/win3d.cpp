@@ -104,8 +104,6 @@ void NC_STACK_win3d::initfirst()
         target.driverdata   = 0;
 
         gfxMode *mode;
-        char buf[64];
-
         if (SDL_GetClosestDisplayMode(0, &target, &closest) )
         {
             mode = new gfxMode;
@@ -114,8 +112,7 @@ void NC_STACK_win3d::initfirst()
             mode->mode = closest;
             mode->bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
             mode->windowed = false;
-            sprintf(buf, "%d x %d", mode->w, mode->h);
-            mode->name = buf;
+            mode->name = fmt::sprintf("%d x %d", mode->w, mode->h);
 
             mode->sortid = (closest.w & 0x7FFF) << 7 | (closest.h & 0x7FFF);
 
@@ -131,8 +128,7 @@ void NC_STACK_win3d::initfirst()
             mode->mode = deskMode;
             mode->bpp = SDL_BYTESPERPIXEL(corrected) * 8;
             mode->windowed = true;
-            sprintf(buf, "Windowed %d x %d", mode->w, mode->h);
-            mode->name = buf;
+            mode->name = fmt::sprintf("Windowed %d x %d", mode->w, mode->h);
 
             mode->sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
 
@@ -543,22 +539,23 @@ gfxMode *sub_41F68C()
     return graphicsModes.front();
 }
 
-gfxMode *windd_func0__sub0(const char *file)
+gfxMode *windd_func0__sub0(const std::string &file)
 {
-    char buf[128];
     FSMgr::FileHandle *fil = uaOpenFile(file, "r");
 
     if ( fil )
     {
-        if ( fil->gets(buf, 128) )
+        std::string line;
+        if ( fil->ReadLine(&line) )
         {
-            char *eol = strpbrk(buf, "\n\r");
-            if ( eol )
-                *eol = 0;
+            size_t pos = line.find_first_of("\n\r");
+            
+            if (pos != std::string::npos)
+                line.erase(pos);
 
             for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
             {
-                if ( strcasecmp((*it)->name.c_str(), buf) == 0 )
+                if ( StriCmp((*it)->name, line) == 0 )
                     return *it;
             }
         }
@@ -742,21 +739,25 @@ void sub_42D410(__NC_STACK_win3d *obj, int curID, int force)
 }
 
 
-int NC_STACK_win3d::load_font(const char *fontname)
+int NC_STACK_win3d::LoadFontByDescr(const std::string &fontname)
 {
-    char buf[128];
+    std::vector<std::string> splt = Stok::Split(fontname, ",");
 
-    strcpy(buf, fontname);
-
-    const char *facename = strtok(buf, ",");
-    const char *s_height = strtok(0, ",");
+    std::string facename;
+    std::string s_height;
+    
+    if (splt.size() > 0)
+        facename = splt[0];
+    
+    if (splt.size() > 1)
+        s_height = splt[1];
     //const char *s_weight = strtok(0, ",");
     //const char *s_charset = strtok(0, ",");
 
     int height;//, weight, charset;
-    if ( facename && s_height )//&& s_weight && s_charset )
+    if ( !facename.empty() && !s_height.empty() )//&& s_weight && s_charset )
     {
-        height = atoi(s_height);
+        height = std::stoi(s_height);
         //weight = atoi(s_weight);
         //charset = atoi(s_charset);
     }
@@ -914,7 +915,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     fpsLimitter(win3d_keys[17].Get<int>());
 
-    load_font("MS Sans Serif,12,400,0");
+    LoadFontByDescr("MS Sans Serif,12,400,0");
 
     FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
     if ( fil )

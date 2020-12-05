@@ -7,19 +7,19 @@
 #include <SDL2/SDL_timer.h>
 
 
-int read_yes_no_status(const char *file, int result)
+int read_yes_no_status(const std::string &file, int result)
 {
-    char buf[128];
-
     FSMgr::FileHandle *fil = uaOpenFile(file, "r");
     if ( fil )
     {
-        if ( fil->gets(buf, 128) )
+        std::string line;
+        if ( fil->ReadLine(&line) )
         {
-            char *lend = strpbrk(buf, "; \n\r");
-            if ( lend )
-                *lend = 0;
-            result = StrGetBool(buf);
+            size_t en = line.find_first_of("; \n\r");
+            if (en != std::string::npos)
+                line.erase(en);
+            
+            result = StrGetBool(line);
         }
         delete fil;
     }

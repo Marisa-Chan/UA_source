@@ -8,7 +8,7 @@
 
 
 
-char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag)
+char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, char *in, uint8_t postf_char, int flag)
 {
     int v27 = 0;
     if ( flag & FLAG_WITH_CLOSE )
@@ -22,9 +22,8 @@ char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, co
     if ( postf_char )
         v29 = yw->tiles[0]->map[postf_char].w;
 
-    char buf[128];
-    strcpy(buf, " ");
-    strcat(buf, title);
+    std::string buf = " ";
+    buf += title;
 
     char *tmp = in;
 

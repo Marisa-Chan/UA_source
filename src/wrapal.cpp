@@ -359,7 +359,7 @@ walmus::~walmus()
     hndl = NULL;
 }
 
-bool walmus::open(const char *fname)
+bool walmus::open(const std::string &fname)
 {
     if ( SDL_LockMutex(_mutex) == 0)
     {

@@ -32,13 +32,9 @@ struct __attribute__((packed)) PCM_fmt
 
 rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const std::string &filname)
 {
-    char buf[256];
     rsrc *res = NULL;
 
-    strcpy(buf, "rsrc:");
-    strcat(buf, filname.c_str());
-
-    FSMgr::FileHandle *fil = uaOpenFile(buf, "rb");
+    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("rsrc:%s", filname), "rb");
 
     if ( fil )
     {

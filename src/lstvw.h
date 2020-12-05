@@ -33,7 +33,7 @@ public:
     void Detach();
     void Attach(GuiBaseList &);
 
-    static char * FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const char *title, char *in, uint8_t postf_char, int flag);
+    static char * FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, char *in, uint8_t postf_char, int flag);
 
     GuiBase() : flags(0), iconString(NULL), postDraw(NULL), AttachedTo(NULL) {};
 

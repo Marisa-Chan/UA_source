@@ -114,7 +114,7 @@ class walmus: public CTsmpl
 public:
     void init();
 
-    bool open(const char *fname);
+    bool open(const std::string &fname);
     size_t getLen();
 
 protected:

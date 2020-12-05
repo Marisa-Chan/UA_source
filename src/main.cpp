@@ -23,7 +23,7 @@
 int dword_513638 = 0;
 int dword_51362C = 0;
 int dword_513630 = 0;
-char buildDate[256];
+std::string buildDate;
 
 int gfx_inited = 0;
 int tform_inited = 0;
@@ -53,11 +53,9 @@ int sub_4107FC(UserData *usr)
 
 void sub_410628()
 {
-    char buf[300];
-    sprintf(buf, "%s/user.txt", userdata.user_name.c_str());
-
+    std::string buf = fmt::sprintf("%s/user.txt", userdata.user_name);
     yw_arg172 arg171;
-    arg171.usertxt = buf;
+    arg171.usertxt = buf.c_str();
     arg171.field_4 = userdata.user_name.c_str();
     arg171.usr = &userdata;
     arg171.field_8 = 255;
@@ -68,8 +66,7 @@ void sub_410628()
     FSMgr::FileHandle *fil = uaOpenFile("env:user.def", "w");
     if ( fil )
     {
-        strcpy(buf, userdata.user_name.c_str());
-        fil->write(buf, strlen(buf));
+        fil->write(userdata.user_name.c_str(), userdata.user_name.size());
         delete fil;
     }
 }
@@ -605,11 +602,10 @@ int yw_initGameWithSettings()
 
     if ( user_def )
     {
-        char v11[300];
+        std::string line;
+        user_def->ReadLine(&line);
 
-        user_def->gets(v11, 300);
-
-        a1 = fmt::sprintf("save:%s/user.txt", v11);
+        a1 = fmt::sprintf("save:%s/user.txt", line);
 
         FSMgr::FileHandle *user_txt = uaOpenFile(a1, "r");
 
@@ -617,8 +613,8 @@ int yw_initGameWithSettings()
         {
             delete user_txt;
 
-            userdata.user_name = v11;
-            a1 = fmt::sprintf("%s/user.txt", v11);
+            userdata.user_name = line;
+            a1 = fmt::sprintf("%s/user.txt", line);
         }
         else
         {
@@ -703,7 +699,7 @@ void sub_4113E8()
 
 int WinMain__sub0__sub1()
 {
-    strcpy(buildDate, "Jul 09 1998  23:52:47");
+    buildDate = "Jul 09 1998  23:52:47";
 //    strcpy(buildDate, __DATE__);
 //    strcat(buildDate, " ");
 //    strcat(buildDate, __TIME__);

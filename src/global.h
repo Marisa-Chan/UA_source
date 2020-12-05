@@ -13,8 +13,6 @@
 
 #include "glob_funcs.h"
 
-EXTR char cmdline_copy[512];
-
 
 EXTR g_engines engines;
 

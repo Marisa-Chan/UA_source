@@ -194,7 +194,7 @@ public:
 
 
     static void initfirst();
-    int load_font(const char *fontname);
+    int LoadFontByDescr(const std::string &fontname);
     void matrixAspectCorrection(mat3x3 &inout, bool invert);
     void getAspectCorrection(float &cW, float &cH, bool invert);
 

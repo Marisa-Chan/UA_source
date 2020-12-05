@@ -102,7 +102,7 @@
 #endif
 
 
-int read_yes_no_status(const char *file, int result);
+int read_yes_no_status(const std::string &file, int result);
 
 float SWAP32F(float f);
 
