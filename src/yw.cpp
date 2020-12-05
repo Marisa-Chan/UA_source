@@ -2747,7 +2747,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
         while ( windp->GetPlayerData(&v68) )
         {
-            strncpy(GameShell->players2[v68.ID].name, v68.name, 64);
+            strncpy(GameShell->players2[v68.ID].name, v68.name.c_str(), 64);
             v68.ID++;
         }
         usr->update_time_norm = 400;
@@ -6498,7 +6498,7 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
         else
             v11 = get_lang_string(string_pointers_p2, 16, "Arial,8,400,0");
 
-        win3d->load_font(v11);
+        win3d->LoadFontByDescr(v11);
         Gui::UA::LoadFont(v11);
 
         return 1;
@@ -7232,12 +7232,12 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     if ( screen_width >= 512 )
     {
-        win3d->load_font( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+        win3d->LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
         Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
     }
     else
     {
-        win3d->load_font( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+        win3d->LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
         Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
     }
 
@@ -7407,10 +7407,25 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
 }
 
 
-bool NC_STACK_ypaworld::ypaworld_func181(void *arg)
+bool NC_STACK_ypaworld::ypaworld_func181(yw_arg181 *arg)
 {
-    dprintf("MAKE ME %s\n","ypaworld_func181");
-    return true;
+    if (GameShell->noSent)
+        return false;
+    
+    arg->data->tstamp = timeStamp;
+    
+    if ( GameShell->netPlayerOwner )
+    {
+        if ( arg->recvFlags == 2 && arg->data->msgID != UAMSG_VHCLENERGY )
+        {
+            arg->data->msgCnt = GameShell->msgcount;
+            GameShell->msgcount++; 
+        }
+    }
+    
+    arg->senderFlags = 1;
+    arg->senderID = GameShell->callSIGN.c_str();
+    return windp->SendMessage(arg);
 }
 
 

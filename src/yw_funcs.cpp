@@ -2591,7 +2591,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         }
         break;
 
-        case 3: //level
+        case NETSCREEN_CHOOSE_MAP: //level
             if ( i < usr->map_descriptions_count )
             {
                 mapINFO *lvl = &yw->LevelNet->mapInfos[ usr->map_descriptions[i].id ];
@@ -2679,7 +2679,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         if (brk)
             break;
 
-        if (usr->netSelMode == 3)
+        if (usr->netSelMode == NETSCREEN_CHOOSE_MAP)
         {
             int tmp = i;
             i = cnt;
@@ -2838,7 +2838,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             FontUA::next_line(&cmd);
         }
 
-        if (usr->netSelMode == 3)
+        if (usr->netSelMode == NETSCREEN_CHOOSE_MAP)
         {
             int tmp = i;
             i = cnt;

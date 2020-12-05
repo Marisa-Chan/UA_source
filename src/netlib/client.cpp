@@ -645,4 +645,26 @@ void ZNDClient::BroadcastData(void *data, uint32_t sz, uint8_t flags, uint8_t ch
     Send_PushData(snd);
 }
 
+uint64_t ZNDClient::GetMyID()
+{
+    if ( !cME.IsOnline() )
+        return 0;
+    return cME.ID;
+}
+
+std::string ZNDClient::GetMyName()
+{
+    if ( !cME.IsOnline() )
+        return std::string();
+    return cME.name;
+}
+
+uint64_t ZNDClient::GetMySesID()
+{
+    if ( !cME.IsOnline() )
+        return 0;
+    return cME.sesID;
+}
+
+
 }

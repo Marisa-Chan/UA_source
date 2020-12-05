@@ -3769,7 +3769,7 @@ void UserData::GameShellUiHandleInput()
         network_listvw.maxShownEntries = 12;
         field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
         break;
-    case 3:
+    case NETSCREEN_CHOOSE_MAP:
         nInputMode = 0;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
@@ -3862,7 +3862,7 @@ void UserData::GameShellUiHandleInput()
 
         switch ( netSelMode )
         {
-        case 0:
+        case NETSCREEN_MODE_SELECT:
             if ( r.code == 1200 )
             {
                 yw_NetOKProvider();
@@ -3873,7 +3873,7 @@ void UserData::GameShellUiHandleInput()
             }
             break;
 
-        case 1:
+        case NETSCREEN_SESSION_SELECT:
             if ( r.code == 1200 )
             {
                 yw_JoinNetGame();
@@ -3883,7 +3883,7 @@ void UserData::GameShellUiHandleInput()
                 isHost = 1;
                 netSel = -1;
                 network_listvw.firstShownEntries = 0;
-                netSelMode = 3;
+                netSelMode = NETSCREEN_CHOOSE_MAP;
             }
             else if ( r.code == 1250 )
             {
@@ -3891,19 +3891,57 @@ void UserData::GameShellUiHandleInput()
             }
             break;
 
-        case 2:
+        case NETSCREEN_ENTER_NAME:
             if ( r.code == 1200 )
             {
                 if ( !netName.empty() )
                 {
                     callSIGN = netName;
-
-                    netSelMode = 1;
-                    netSel = -1;
-                    network_listvw.firstShownEntries = 0;
+                    p_YW->windp->SetWantedName(netName);
+                    
                     netName = "";
+                    
+                    switch ( p_YW->windp->GetMode() )
+                    {
+                        case 1:
+                            isHost = 1;
+                            netSel = -1;
+                            network_listvw.firstShownEntries = 0;
+                            netSelMode = NETSCREEN_CHOOSE_MAP;
+                            
+                            p_YW->GuiWinOpen( &network_listvw );
+                            break;
+                            
+                        case 2:
+                            if ( p_YW->windp->Connect("127.0.0.1") )
+                            {
+                                if (p_YW->windp->HasLobby())
+                                {
+                                    netSelMode = NETSCREEN_SESSION_SELECT;
+                                    netSel = -1;
+                                    network_listvw.firstShownEntries = 0;
 
-                    p_YW->GuiWinOpen( &network_listvw );
+                                    p_YW->GuiWinOpen( &network_listvw );
+                                }
+                                else
+                                {
+                                    JoinLobbyLessGame();
+                                }
+                            }
+                            else
+                            {
+                                printf("Can't connect: Time OUT\n");
+                            }
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                    
+                    
+                    
+                    
+                    
                 }
             }
             else if ( r.code == 1201 )
@@ -3935,10 +3973,10 @@ void UserData::GameShellUiHandleInput()
             }
             break;
 
-        case 3:
+        case NETSCREEN_CHOOSE_MAP:
             if ( r.code == 1200 )
             {
-                sub_46B328();
+                AfterMapChoose();
             }
             else if ( r.code == 1250 )
             {
@@ -4130,7 +4168,7 @@ void UserData::GameShellUiHandleInput()
             case 1:
                 nInputMode = 0;
                 break;
-            case 3:
+            case NETSCREEN_CHOOSE_MAP:
             {
                 int v227 = p_ypaworld->windp->CountPlayers(NULL);
 
@@ -4171,7 +4209,7 @@ void UserData::GameShellUiHandleInput()
             {
                 uint32_t v233;
 
-                if ( netSelMode == 2 )
+                if ( netSelMode == NETSCREEN_ENTER_NAME )
                     v233 = 32;
                 else
                     v233 = 38;
@@ -4217,11 +4255,11 @@ void UserData::GameShellUiHandleInput()
             {
                 switch ( netSelMode )
                 {
-                case 0:
+                case NETSCREEN_MODE_SELECT:
                     yw_NetOKProvider();
                     break;
 
-                case 1:
+                case NETSCREEN_SESSION_SELECT:
                     if ( network_listvw.numEntries )
                     {
                         yw_JoinNetGame();
@@ -4235,12 +4273,12 @@ void UserData::GameShellUiHandleInput()
                     }
                     break;
 
-                case 2:
+                case NETSCREEN_ENTER_NAME:
                     if ( !netName.empty() )
                     {
                         callSIGN = netName;
 
-                        netSelMode = 1;
+                        netSelMode = NETSCREEN_SESSION_SELECT;
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
                         netName.clear();
@@ -4248,8 +4286,8 @@ void UserData::GameShellUiHandleInput()
                     }
                     break;
 
-                case 3:
-                    sub_46B328();
+                case NETSCREEN_CHOOSE_MAP:
+                    AfterMapChoose();
                     break;
                 case 4:
                     if ( !netName.empty() )
@@ -4301,7 +4339,7 @@ void UserData::GameShellUiHandleInput()
                 case 2:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
                     break;
-                case 3:
+                case NETSCREEN_CHOOSE_MAP:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
                     break;
                 case 4:
@@ -4509,6 +4547,7 @@ void UserData::GameShellUiHandleInput()
         break;
 
     case 1:
+    {
         if ( p_ypaworld->windp->GetProvType() != 4 || !modemAskSession )
         {
             network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 402, "NEW"));
@@ -4539,7 +4578,8 @@ void UserData::GameShellUiHandleInput()
         {
             network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 421, "SEARCH"));
         }
-        break;
+    }
+    break;
 
     case 2:
         network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER"));
@@ -4557,14 +4597,14 @@ void UserData::GameShellUiHandleInput()
 //        }
         break;
 
-    case 3:
+    case NETSCREEN_CHOOSE_MAP:
         if ( remoteMode )
         {
             v410.butID = 1205;
             network_button->button_func67(&v410);
         }
 
-        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVE"));
+        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVEL"));
 
         network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 431, "8"));
 

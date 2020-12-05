@@ -608,4 +608,20 @@ void ZNDSingle::BroadcastData(void *data, uint32_t sz, uint8_t flags, uint8_t ch
     }
 }
 
+uint64_t ZNDSingle::GetMyID()
+{
+    return ME.ID;
+}
+
+std::string ZNDSingle::GetMyName()
+{
+    return ME.name;
+}
+
+uint64_t ZNDSingle::GetMySesID()
+{
+    return ME.sesID;
+}
+
+
 }

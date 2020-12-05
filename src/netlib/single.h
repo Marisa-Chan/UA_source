@@ -23,6 +23,11 @@ public:
 
     void SendData(uint64_t to, void *data, uint32_t sz, uint8_t flags = 0, uint8_t channel = CHANNEL_USR);
     void BroadcastData(void *data, uint32_t sz, uint8_t flags = 0, uint8_t channel = CHANNEL_USR);
+    
+    uint64_t GetMyID();
+    std::string GetMyName();
+    
+    uint64_t GetMySesID();
 
 protected:
     static int _RecvThread(void *data);

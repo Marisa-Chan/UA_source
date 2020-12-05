@@ -44,6 +44,15 @@ void NC_STACK_windp::_clear()
         providers[i].clear();
 
     connType = 0;
+    
+    _hasLobby = false;
+    _myName = "";
+    
+    _nextUsersGet = 0;
+    _nextSessionsGet = 0;
+    
+    _sesID = 0;
+    _sesName = "";
 
     version_ident = "";
     version_check = 0;
@@ -118,6 +127,129 @@ size_t NC_STACK_windp::SetMode(bool hosting)
     return 1;
 }
 
+size_t NC_STACK_windp::GetMode()
+{
+    return connType;
+}
+
+void NC_STACK_windp::SetWantedName(const std::string &name)
+{
+    _myName = name;
+}
+
+std::string NC_STACK_windp::GetMyName()
+{
+    return _myName;
+}
+
+bool NC_STACK_windp::Connect(const std::string &connString)
+{
+    if (connType != 2)
+        return false;
+    
+    IPaddress server;
+    if ( SDLNet_ResolveHost(&server, connString.c_str(), 61234) != 0)
+        return false;
+    
+    zcli->Start(_myName, server);
+    
+    uint32_t deadTime = SDL_GetTicks() + CONF_CONN_WAIT;
+    bool waitConn = true;
+    
+    while (waitConn)
+    {
+        SDL_Delay(5);
+
+        if (SDL_GetTicks() > deadTime)
+        {
+            zcli->Stop();
+            return false;
+        }
+        
+        for(ZNDNet::Event *evt = zcli->Events_Pop(); evt != NULL; evt = zcli->Events_Pop())
+        {
+            switch( evt->type )
+            {
+                case ZNDNet::EVENT_CONNECTED:
+                    {
+                        ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
+                        _myName = dat->name;
+                        _hasLobby = dat->value == 1 ? true : false;
+                        _myID = dat->id;
+                        
+                        if (_hasLobby)
+                            waitConn = false;
+                    }
+                    break;
+                
+                case ZNDNet::EVENT_SESSION_JOIN:
+                {
+                    ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
+                    _sesID = dat->id;
+                    _sesName = dat->name;
+                    waitConn = false;
+                }
+                break;
+
+                case ZNDNet::EVENT_DISCONNECT:
+                case ZNDNet::EVENT_CONNERR:
+                    {
+                        zcli->Stop();
+                        return false;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            delete evt;
+        }
+    }
+    
+    ReloadUsersList();
+    ReloadSessionsList();
+    
+    return true;
+}
+
+bool NC_STACK_windp::IsConnected()
+{
+    if (connType != 2)
+        return false;
+    
+    return zcli->GetStatus() == ZNDNet::NetUser::STATUS_CONNECTED;
+}
+
+bool NC_STACK_windp::HasLobby()
+{
+    if (!IsConnected())
+        return false;
+    
+    return _hasLobby;
+}
+
+bool NC_STACK_windp::IsJoined()
+{
+    if (connType != 2)
+        return false;
+    
+    return zcon->GetMySesID() != 0;
+}
+
+
+bool NC_STACK_windp::Host(const std::string &gameName, int playerNum)
+{
+    if (connType != 1)
+        return false;
+    
+    zhost->Start(_myName, 61234, gameName, playerNum);
+    _myID = zhost->GetMyID();
+    
+    ReloadUsersList();
+    return true;
+}
+
+
 
 size_t NC_STACK_windp::EnumSessions(IDVPair *stak)
 {
@@ -128,17 +260,20 @@ size_t NC_STACK_windp::EnumSessions(IDVPair *stak)
 
 size_t NC_STACK_windp::GetSessionName(windp_getNameMsg *sessName)
 {
-    //get session name
-    printf("%s\n", __PRETTY_FUNCTION__);
-    if (sessName->id == 0)
+    if (sessName->id < _rawSessions.size())
     {
-        sessName->name = "80|Not a real session";
+        sessName->name = _rawSessions.at(sessName->id).name;
         return 1;
     }
     return 0;
 }
 
-size_t NC_STACK_windp::JoinSession(const char *sessName)
+std::string NC_STACK_windp::GetCurrentSessionName()
+{
+    return _sesName;
+}
+
+size_t NC_STACK_windp::JoinSession(const std::string &sessName)
 {
     //join session
     printf("%s\n", __PRETTY_FUNCTION__);
@@ -205,29 +340,115 @@ size_t NC_STACK_windp::EnumPlayers(IDVPair *stak)
 size_t NC_STACK_windp::GetPlayerData(windp_arg79 *arg)
 {
     //get player data
-    printf("%s\n", __PRETTY_FUNCTION__);
-    if (arg->ID == 0)
+    if (arg->ID >= _rawUsers.size())
+        return 0;
+    
+    ZNDNet::UserInfo &usr = _rawUsers.at(arg->ID);
+    arg->name = usr.name;
+    arg->flags = usr.ID == _myID ? 1 : 0;
+    return 1;
+}
+
+bool NC_STACK_windp::SendMessage(yw_arg181 *arg)
+{
+    if (!zcon)
+        return false;
+    
+    if (arg->recvFlags == 2)
+        zcon->BroadcastData(arg->data, arg->dataSize, (arg->garant ? ZNDNet::PKT_FLAG_GARANT : 0));
+    else
     {
-        arg->name = (char *)"Test User NAME";
-        arg->flags = 1;
-        return 1;
+        uint64_t id = GetUserID(arg->recvID);
+        if (!id)
+            return false;
+        
+        zcon->SendData(id, arg->data, arg->dataSize, (arg->garant ? ZNDNet::PKT_FLAG_GARANT : 0));
     }
-
-    return 0;
+    
+    return true;
 }
 
-size_t NC_STACK_windp::SendMessage(IDVPair *stak)
+bool NC_STACK_windp::RecvMessage(windp_recvMsg *recv)
 {
-    // send msg
-    printf("%s\n", __PRETTY_FUNCTION__);
-    return 0;
-}
+    ZNDNet::Event *evt = zcon->Events_Pop(); 
+    
+    if (!evt)
+        return false;
+    
+    recv->msgType = RECVMSG_NONE;
+    
+    bool continueRecv = true;
+    
+    switch( evt->type )
+    {
+        case ZNDNet::EVENT_SESSION_LIST:
+        {
+            if (zcli)
+                zcli->GetSessions(_rawSessions);
+        }
+        break;
+        
+        case ZNDNet::EVENT_SESSION_JOIN:
+        {
+            ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
+            _sesID = dat->id;
+            _sesName = dat->name;
+        }
+        break;
+        
+        case ZNDNet::EVENT_USER_ADD:
+        {
+            ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
+            zcon->GetUsers(_rawUsers);
+            
+            recv->msgType = RECVMSG_CREATEPLAYER;
+            recv->senderName = dat->name;
+        }
+        break;
 
-size_t NC_STACK_windp::RecvMessage(windp_recvMsg *recv)
-{
-    // recv msg
-    //printf("%s\n", __PRETTY_FUNCTION__);
-    return 0;
+        case ZNDNet::EVENT_USER_LEAVE:
+        {
+            ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
+            zcon->GetUsers(_rawUsers); 
+            
+            recv->msgType = RECVMSG_DESTROYPLAYER;
+            recv->senderName = dat->name;
+        }
+        break;
+        
+        case ZNDNet::EVENT_DATA:
+        {
+            ZNDNet::EventData *dat = (ZNDNet::EventData *)evt;
+            
+            recv->msgType = RECVMSG_NORMAL;
+            recv->_data.assign(dat->data, dat->data + dat->size);
+            recv->data = recv->_data.data();
+            recv->size = recv->_data.size();
+            recv->senderName = GetUserName(dat->from);
+            recv->cast = dat->cast;
+        }
+        break;
+        
+        case ZNDNet::EVENT_USER_LIST:
+        {
+            zcon->GetUsers(_rawUsers);                
+        }
+        break;
+
+        case ZNDNet::EVENT_DISCONNECT:
+        case ZNDNet::EVENT_CONNERR:
+        {
+            zcon->Stop();
+            continueRecv = false;
+        }
+        break;
+
+        default:
+            break;
+    }
+    delete evt;
+    
+    return continueRecv;
 }
 
 size_t NC_STACK_windp::FlushBuffer(windp_arg82 &stak)
@@ -264,7 +485,7 @@ size_t NC_STACK_windp::CountPlayers(IDVPair *stak)
 {
     // get num players
     printf("%s\n", __PRETTY_FUNCTION__);
-    return 0;
+    return _rawUsers.size();
 }
 
 bool NC_STACK_windp::GetRemoteStart(windp_arg87 *arg)
@@ -320,11 +541,43 @@ size_t NC_STACK_windp::GetStats(int *stak)
 
 int NC_STACK_windp::getNumPlayers()
 {
-    return 0;
+    return _rawUsers.size();
+}
+
+void NC_STACK_windp::ReloadUsersList()
+{
+    if (connType > 0 && zcon && SDL_GetTicks() > _nextUsersGet)
+    {
+        _nextUsersGet = SDL_GetTicks() + CONF_USERS_GET_TIME;
+        zcon->GetUsers(_rawUsers);
+    }
+}
+
+void NC_STACK_windp::ReloadSessionsList()
+{
+    if (connType > 0 && zcli && SDL_GetTicks() > _nextSessionsGet)
+    {
+        _nextSessionsGet = SDL_GetTicks() + CONF_SESS_GET_TIME;
+        zcli->GetSessions(_rawSessions);
+    }
 }
 
 
+uint64_t NC_STACK_windp::GetUserID(const std::string &name)
+{
+    for(const ZNDNet::UserInfo& inf : _rawUsers)
+        if (name.compare(inf.name) == 0)
+            return inf.ID;
+    return 0;
+}
 
+std::string NC_STACK_windp::GetUserName(uint64_t id)
+{
+    for(const ZNDNet::UserInfo& inf : _rawUsers)
+        if (inf.ID == id)
+            return inf.name;
+    return "";
+}
 
 
 
@@ -383,10 +636,49 @@ void UserData::yw_FractionInit()
     FreeFraction &= ~frkt;
 }
 
-void UserData::sub_46B328()
+void UserData::AfterMapChoose()
 {
     if ( netSel < 0 )
         return;
+    
+    switch ( p_YW->windp->GetMode() )
+    {
+        case 1:
+        {
+            std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_ypaworld->buildDate);
+            p_YW->windp->Host(bff, 4);
+            
+            p_YW->isNetGame = 1;
+            netSel = -1;
+            netSelMode = 4;
+            netName = "";
+            netNameCurPos = 0;
+            network_listvw.firstShownEntries = 0;
+            network_listvw.selectedEntry = 0;
+
+
+            std::string myName = p_YW->windp->GetMyName();
+
+            strcpy(players2[ 0 ].name, myName.c_str());
+
+            yw_FractionInit();
+
+            rdyStart = 1;
+            players2[0].rdyStart = 1;
+            players2[0].cd = 1;
+            cd = 1;
+            last_cdchk = glblTime;
+        }
+        break;
+            
+        case 2:
+            
+            break;
+        
+        default:
+            break;
+    }
+    return;
 
     if ( p_ypaworld->windp->GetSessionStatus() )
     {
@@ -505,10 +797,9 @@ void UserData::sub_46B328()
 
         p_ypaworld->windp->FlushBuffer(flushmsg);
 
-        char bff[300];
-        sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate.c_str());
+        std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_ypaworld->buildDate);
 
-        p_ypaworld->windp->SetSessionName(bff);
+        p_ypaworld->windp->SetSessionName(bff.c_str());
     }
     else if ( remoteMode )
     {
@@ -626,14 +917,13 @@ void UserData::sub_46B328()
     {
         if (isHost)
         {
-            char bff[300];
-            sprintf(bff, "%d%s%s%s%s", netLevelID, "|", callSIGN.c_str(), "|", p_ypaworld->buildDate.c_str());
+            std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_ypaworld->buildDate);
 
             if (p_ypaworld->windp->GetProvType() == 4) //MODEM!!!!
                 p_ypaworld->_win3d->windd_func320(NULL);
 
             windp_openSessionMsg os;
-            os.name = bff;
+            os.name = bff.c_str();
             os.maxplayers = 4;
 
             size_t res = p_ypaworld->windp->CreateSession(&os);
@@ -676,36 +966,257 @@ void UserData::sub_46B328()
 
 void UserData::yw_NetOKProvider()
 {
-    if (netSel >= 0)
+    if ( netSel == 0 || netSel == 1 )
     {
-        if ( netSel == 0 || netSel == 1 )
+        p_ypaworld->_win3d->windd_func320(NULL);
+
+        if ( p_ypaworld->windp->SetMode(netSel == 0) )
         {
-            p_ypaworld->_win3d->windd_func320(NULL);
+            netSelMode = NETSCREEN_ENTER_NAME;
+            netSel = -1;
+            network_listvw.firstShownEntries = 0;
+            network_listvw.selectedEntry = 0;
 
-            if ( p_ypaworld->windp->SetMode(netSel == 0) )
-            {
-                netSelMode = 2;
-                netSel = -1;
-                network_listvw.firstShownEntries = 0;
-                network_listvw.selectedEntry = 0;
+            p_YW->GuiWinClose( &network_listvw );
 
-                p_YW->GuiWinClose( &network_listvw );
+            netName = callSIGN;
 
-                netName = callSIGN;
-
-                netNameCurPos = netName.size();
-            }
-
-            p_ypaworld->_win3d->windd_func321(NULL);
-
-            update_time_norm = 200;
-            flush_time_norm = 200;
+            netNameCurPos = netName.size();
         }
+
+        p_ypaworld->_win3d->windd_func321(NULL);
+
+        update_time_norm = 200;
+        flush_time_norm = 200;
     }
 }
 
 void UserData::yw_JoinNetGame()
 {
+    if ( p_ypaworld->windp->GetProvType() != 4 || modemAskSession )
+    {
+        windp_getNameMsg gName;
+        gName.id = netSel;
+
+        if ( p_ypaworld->windp->GetSessionName(&gName) )
+        {
+            if ( p_ypaworld->windp->GetProvType() == 4 )
+                p_ypaworld->_win3d->windd_func320(NULL);
+
+            if ( p_ypaworld->windp->JoinSession(gName.name) )
+            {
+                if ( p_ypaworld->windp->GetProvType() == 4 )
+                    p_ypaworld->_win3d->windd_func321(NULL);
+
+                netName = "";
+                netNameCurPos = 0;
+                netLevelID = 0;
+
+                std::string buf = gName.name;
+
+                for (size_t i = 0; i < buf.length(); i++)
+                {
+                    if (buf[i] == '"')
+                    {
+                        buf.resize(i);
+
+                        netLevelID = atoi(buf.c_str());
+                        break;
+                    }
+                }
+                network_listvw.firstShownEntries = 0;
+                netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
+
+                windp_arg79 plData;
+                plData.ID = 0;
+                plData.mode = 0;
+                while ( p_ypaworld->windp->GetPlayerData(&plData) )
+                {
+                    buf = plData.name;
+
+                    if ( !StriCmp(plData.name, callSIGN) )
+                    {
+                        buf += "X";
+                    }
+
+                    strncpy(players2[plData.ID].name, buf.c_str(), sizeof(players2[plData.ID].name));
+
+
+                    plData.ID++;
+                }
+
+                windp_createPlayerMsg crPlayerMsg;
+                crPlayerMsg.name = callSIGN.c_str();
+                crPlayerMsg.flags = 1;
+
+                if ( p_ypaworld->windp->CreatePlayer(&crPlayerMsg) )
+                {
+                    p_ypaworld->isNetGame = 1;
+                    netSel = -1;
+                    netSelMode = 4;
+                    netName = "";
+                    netNameCurPos = 0;
+                    network_listvw.firstShownEntries = 0;
+                    network_listvw.selectedEntry = 0;
+                    isHost = 0;
+
+                    int plid = p_ypaworld->windp->getNumPlayers();
+
+                    strncpy(players2[plid - 1].name, callSIGN.c_str(), sizeof(players2[plid - 1].name));
+
+                    yw_FractionInit();
+
+                    players2[plid - 1].cd = 1;
+                    cd = 1;
+                    last_cdchk = glblTime;
+
+                    uamessage_cd cdMsg;
+                    cdMsg.cd = cd;
+                    cdMsg.msgID = UAMSG_CD;
+                    cdMsg.rdy = -1;
+                    cdMsg.owner = 0;
+
+                    yw_arg181 ywMsg;
+                    ywMsg.dataSize = sizeof(cdMsg);
+                    ywMsg.recvFlags = 2;
+                    ywMsg.recvID = 0;
+                    ywMsg.data = &cdMsg;
+                    ywMsg.garant = 1;
+
+                    p_YW->ypaworld_func181(&ywMsg);
+                }
+
+                plData.mode = 0;
+                plData.ID = 0;
+
+                while ( p_ypaworld->windp->GetPlayerData(&plData) && StriCmp(plData.name, callSIGN) )
+                    plData.ID++;
+
+                rdyStart = 0;
+                players2[plData.ID].rdyStart = 0;
+
+                p_ypaworld->SendCRC(netLevelID);
+            }
+            else
+            {
+                if ( p_ypaworld->windp->GetProvType() == 4 )
+                    p_ypaworld->_win3d->windd_func320(NULL);
+
+                //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
+                printf("%s: %s\n", get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
+
+                if ( p_ypaworld->windp->GetProvType() == 4 )
+                {
+                    netSel = -1;
+                    sub_46D698();
+                }
+                else
+                {
+                    p_ypaworld->windp->EnumSessions(NULL);
+                }
+            }
+        }
+    }
+    else
+    {
+        if ( p_ypaworld->windp->GetProvType() == 4 )
+            p_ypaworld->_win3d->windd_func320(NULL);
+
+        if ( p_ypaworld->windp->EnumSessions(NULL) )
+        {
+            modemAskSession = 1;
+        }
+
+        if ( p_ypaworld->windp->GetProvType() == 4 )
+            p_ypaworld->_win3d->windd_func321(NULL);
+    }
+}
+
+void UserData::JoinLobbyLessGame()
+{
+    if (p_YW->windp->IsConnected())
+    {
+        uint32_t waitForSession = SDL_GetTicks() + 1000;
+        while (SDL_GetTicks() < waitForSession && !p_YW->windp->IsJoined())
+            SDL_Delay(10);
+        
+        if (p_YW->windp->IsJoined())
+        {
+            netName = "";
+            netNameCurPos = 0;
+            netLevelID = 0;
+
+            std::string buf = p_YW->windp->GetCurrentSessionName();
+            printf("%s\n", buf.c_str());
+
+            for (size_t i = 0; i < buf.length(); i++)
+            {
+                if (buf[i] == '|')
+                {
+                    buf.resize(i);
+
+                    netLevelID = std::stoi(buf);
+                    break;
+                }
+            }
+            network_listvw.firstShownEntries = 0;
+            netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
+
+            windp_arg79 plData;
+            plData.ID = 0;
+            plData.mode = 0;
+            while ( p_ypaworld->windp->GetPlayerData(&plData) )
+            {
+                buf = plData.name;
+
+                if ( !StriCmp(plData.name, callSIGN) )
+                {
+                    buf += "X";
+                }
+
+                strncpy(players2[plData.ID].name, buf.c_str(), sizeof(players2[plData.ID].name));
+
+
+                plData.ID++;
+            }
+                
+            p_ypaworld->isNetGame = 1;
+            netSel = -1;
+            netSelMode = 4;
+            netName = "";
+            netNameCurPos = 0;
+            network_listvw.firstShownEntries = 0;
+            network_listvw.selectedEntry = 0;
+            isHost = 0;
+            
+            int plid = p_ypaworld->windp->getNumPlayers();
+
+            strncpy(players2[plid - 1].name, callSIGN.c_str(), sizeof(players2[plid - 1].name));
+
+            yw_FractionInit();
+
+            players2[plid - 1].cd = 1;
+            cd = 1;
+            last_cdchk = glblTime;
+
+            uamessage_cd cdMsg;
+            cdMsg.cd = cd;
+            cdMsg.msgID = UAMSG_CD;
+            cdMsg.rdy = -1;
+            cdMsg.owner = 0;
+
+            yw_arg181 ywMsg;
+            ywMsg.dataSize = sizeof(cdMsg);
+            ywMsg.recvFlags = 2;
+            ywMsg.recvID = 0;
+            ywMsg.data = &cdMsg;
+            ywMsg.garant = 1;
+
+            p_YW->ypaworld_func181(&ywMsg);
+        }
+    }
+    return;
+    
     if ( p_ypaworld->windp->GetProvType() != 4 || modemAskSession )
     {
         windp_getNameMsg gName;
@@ -856,7 +1367,7 @@ int yw_DestroyPlayer(NC_STACK_ypaworld *yw, const char *playerName)
 
     while ( yw->windp->GetPlayerData(&getPlDat_msg) )
     {
-        if ( !strcasecmp(getPlDat_msg.name, playerName) )
+        if ( !StriCmp(getPlDat_msg.name, playerName) )
         {
             plID = getPlDat_msg.ID;
             break;
@@ -1008,23 +1519,23 @@ void UserData::yw_NetPrintStartInfo()
             switch ( id )
             {
             case FREE_FRACTION_RESISTANCE:
-                log_netlog("    %s and plays Resistance\n", arg79.name);
+                log_netlog("    %s and plays Resistance\n", arg79.name.c_str());
                 break;
 
             case FREE_FRACTION_MIKO:
-                log_netlog("    %s and plays Mykonier\n", arg79.name);
+                log_netlog("    %s and plays Mykonier\n", arg79.name.c_str());
                 break;
 
             case FREE_FRACTION_TAER:
-                log_netlog("    %s and plays Taerkasten\n", arg79.name);
+                log_netlog("    %s and plays Taerkasten\n", arg79.name.c_str());
                 break;
 
             case FREE_FRACTION_GHORKOV:
-                log_netlog("    %s and plays Ghorkov\n", arg79.name);
+                log_netlog("    %s and plays Ghorkov\n", arg79.name.c_str());
                 break;
 
             default:
-                log_netlog("    %s and plays an unknown race\n", arg79.name);
+                log_netlog("    %s and plays an unknown race\n", arg79.name.c_str());
                 break;
             }
 

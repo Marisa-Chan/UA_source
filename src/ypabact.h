@@ -201,6 +201,13 @@ struct setState_msg
     int newStatus;
     int setFlags;
     int unsetFlags;
+    
+    setState_msg()
+    {
+        newStatus = 0;
+        setFlags = 0;
+        unsetFlags = 0;
+    }
 };
 
 struct update_msg
@@ -599,6 +606,7 @@ public:
     uint8_t _owner;
     char _aggr;
     char _status;
+    uint64_t paddiong;
     int _status_flg; //Additional status flags
 //    int field_3DA;
     char _primTtype;
