@@ -242,7 +242,7 @@ size_t NC_STACK_ypabact::func0(IDVList &stak)
                         viewMsg.classID = _bact_type;
                         viewMsg.id = _gid;
 
-                        if ( viewMsg.classID == 4 )
+                        if ( viewMsg.classID == BACT_TYPES_MISSLE )
                         {
                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
                             viewMsg.launcher = miss->getMISS_launcher()->_gid;
