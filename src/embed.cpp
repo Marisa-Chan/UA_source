@@ -114,7 +114,7 @@ size_t NC_STACK_embed::func6(IFFile **file)
     {
         if ( embd_obj )
         {
-            std::string classname = embd_obj->GetClassName();
+            std::string classname = embd_obj->ClassName();
             std::string resname = embd_obj->getRsrc_name();
 
             mfile->pushChunk(0, TAG_EMRS, -1);

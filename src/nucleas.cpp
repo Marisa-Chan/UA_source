@@ -239,7 +239,7 @@ int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
     if ( mfile->pushChunk(TAG_OBJT, TAG_FORM, -1) )
         return 0;
 
-    std::string clsname = obj->GetClassName();
+    std::string clsname = obj->ClassName();
 
     if ( mfile->pushChunk(0, TAG_CLID, clsname.length() + 1) )
         return 0;

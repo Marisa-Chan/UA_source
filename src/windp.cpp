@@ -349,7 +349,7 @@ size_t NC_STACK_windp::GetPlayerData(windp_arg79 *arg)
     return 1;
 }
 
-bool NC_STACK_windp::SendMessage(yw_arg181 *arg)
+bool NC_STACK_windp::Send(yw_arg181 *arg)
 {
     if (!zcon)
         return false;
@@ -368,7 +368,7 @@ bool NC_STACK_windp::SendMessage(yw_arg181 *arg)
     return true;
 }
 
-bool NC_STACK_windp::RecvMessage(windp_recvMsg *recv)
+bool NC_STACK_windp::Recv(windp_recvMsg *recv)
 {
     ZNDNet::Event *evt = zcon->Events_Pop(); 
     

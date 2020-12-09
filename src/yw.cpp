@@ -7425,7 +7425,7 @@ bool NC_STACK_ypaworld::ypaworld_func181(yw_arg181 *arg)
     
     arg->senderFlags = 1;
     arg->senderID = GameShell->callSIGN.c_str();
-    return windp->SendMessage(arg);
+    return windp->Send(arg);
 }
 
 

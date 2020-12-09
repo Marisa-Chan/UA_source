@@ -53,7 +53,7 @@ public:
     };
     virtual ~NC_STACK_area() {};
     
-    virtual const std::string &GetClassName() const {
+    virtual const std::string &ClassName() const {
         return description._classname;
     };
 

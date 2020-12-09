@@ -481,7 +481,7 @@ public:
     NC_STACK_ypabact();
     virtual ~NC_STACK_ypabact() {};
     
-    virtual const std::string &GetClassName() const {
+    virtual const std::string &ClassName() const {
         return description._classname;
     };
 
