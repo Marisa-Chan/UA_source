@@ -157,8 +157,8 @@ public:
     virtual size_t EnumPlayers(IDVPair *stak);
     virtual size_t GetPlayerData(windp_arg79 *stak);
 
-    bool SendMessage(yw_arg181 *arg);
-    bool RecvMessage(windp_recvMsg *recv);
+    bool Send(yw_arg181 *arg);
+    bool Recv(windp_recvMsg *recv);
     virtual size_t FlushBuffer(windp_arg82 &stak);
 
     virtual size_t GetCaps(IDVPair *stak);
@@ -180,7 +180,7 @@ public:
     };
     virtual ~NC_STACK_windp() {};
     
-    virtual const std::string &GetClassName() const {
+    virtual const std::string &ClassName() const {
         return description._classname;
     };
 

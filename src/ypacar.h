@@ -17,7 +17,7 @@ public:
     NC_STACK_ypacar();
     virtual ~NC_STACK_ypacar() {};
 
-    virtual const std::string &GetClassName() const {
+    virtual const std::string &ClassName() const {
         return description._classname;
     };
 

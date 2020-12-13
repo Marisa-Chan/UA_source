@@ -3367,7 +3367,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
     windp_recvMsg recvMsg;
 
-    while ( yw->windp->RecvMessage(&recvMsg) )
+    while ( yw->windp->Recv(&recvMsg) )
     {
         if (recvMsg.msgType != RECVMSG_NONE)
         {

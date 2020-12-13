@@ -15,7 +15,7 @@ public:
     NC_STACK_embed() {};
     virtual ~NC_STACK_embed() {};
     
-    virtual const std::string &GetClassName() const {
+    virtual const std::string &ClassName() const {
         return description._classname;
     };
 
