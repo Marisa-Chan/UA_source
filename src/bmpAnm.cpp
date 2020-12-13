@@ -321,7 +321,7 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
 
                     for (int i = 0; i < nm_cnt; i++)
                     {
-                        frames[i].bitmObj = Nucleus::CInit<NC_STACK_bitmap>( {
+                        frames[i].bitmObj = Nucleus::CTFInit<NC_STACK_bitmap>(arg->className, {
                             {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(pbmpAnm_titles[i])},
                             {NC_STACK_rsrc::RSRC_ATT_DONTCOPY, (int32_t)1}} );
 
@@ -373,8 +373,8 @@ int bmpanim_func64__sub1__sub1(void *fil, bmpAnim_t1 *arg)
             if (fread_bmp(uv, 2, 1, fil) != 1)
                 return 0;
 
-            v5->tu = uv[0] / 256.0;
-            v5->tv = uv[1] / 256.0;
+            v5->tu = (float)uv[0] / 256.0;
+            v5->tv = (float)uv[1] / 256.0;
             v5++;
         }
 

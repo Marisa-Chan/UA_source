@@ -2094,10 +2094,10 @@ bool NC_STACK_win3d::AllocTexture(ResBitmap *bitm)
         }
         else
         {
-            SDL_Surface *conv = SDL_ConvertSurface(bitm->swTex, stack__win3d.pixfmt, 0);
+            SDL_Surface *conv = ConvertSDLSurface(bitm->swTex, stack__win3d.pixfmt);
             
             SDL_LockSurface(conv);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, conv->pixels);
             SDL_UnlockSurface(conv);
             
             SDL_FreeSurface(conv);
@@ -2461,6 +2461,11 @@ SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
 
 SDL_Surface *NC_STACK_win3d::ConvertToScreenFormat(SDL_Surface *src)
 {
+    return ConvertSDLSurface(src, stack__win3d.screenSurface->format);
+}
+
+SDL_Surface * NC_STACK_win3d::ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt)
+{
 #if (SDL_COMPILEDVERSION == SDL_VERSIONNUM(2, 0, 12))
     /***
      * Workaround for bug with convertation of surface with palette introduced
@@ -2468,7 +2473,11 @@ SDL_Surface *NC_STACK_win3d::ConvertToScreenFormat(SDL_Surface *src)
      ***/
     if (src->format->BytesPerPixel == 1)
     {
-        SDL_Surface *tmp = CreateSurfaceScreenFormat(src->w, src->h);
+#if SDL_VERSION_ATLEAST(2,0,5)
+        SDL_Surface *tmp = SDL_CreateRGBSurfaceWithFormat(0, src->w, src->h, fmt->BitsPerPixel, fmt->format);
+#else
+        SDL_Surface *tmp = SDL_CreateRGBSurface(0, src->w, src->h, fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
+#endif
         SDL_BlendMode blend = SDL_BLENDMODE_NONE;
         SDL_GetSurfaceBlendMode(src, &blend);
         SDL_SetSurfaceBlendMode(src, SDL_BLENDMODE_NONE);
@@ -2477,9 +2486,9 @@ SDL_Surface *NC_STACK_win3d::ConvertToScreenFormat(SDL_Surface *src)
         return tmp;
     }
     else
-        return SDL_ConvertSurface(src, stack__win3d.screenSurface->format, 0);
+        return SDL_ConvertSurface(src, fmt, 0);
 #else
-    return SDL_ConvertSurface(src, stack__win3d.screenSurface->format, 0);
+    return SDL_ConvertSurface(src, fmt, 0);
 #endif
 }
 

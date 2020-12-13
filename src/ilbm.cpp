@@ -412,7 +412,8 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
             if (!pal)
                 pal = engines.display___win3d->GetPalette();
             
-            if (alphaPalette && convertColor)
+            //if (alphaPalette && convertColor)
+            if (alphaPalette)
             {
                 UA_PALETTE tmp;
                 engines.display___win3d->ConvAlphaPalette(&tmp, *pal, transp);
@@ -487,7 +488,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
     {
         if ( mfile )
         {
-            stak.Add(BMD_ATT_CONVCOLOR, 1);
+            stak.Add(BMD_ATT_CONVCOLOR, (int32_t)1);
 
             mfile->parse();
             mfile->skipChunk();

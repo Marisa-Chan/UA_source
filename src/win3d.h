@@ -206,6 +206,8 @@ public:
     virtual SDL_PixelFormat *GetScreenFormat();
     virtual SDL_Surface *CreateSurfaceScreenFormat(int width, int height);
     virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src);
+    
+    static SDL_Surface *ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt);
 
 protected:
     int initPolyEngine();
