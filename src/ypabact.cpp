@@ -52,7 +52,7 @@ NC_STACK_ypabact::NC_STACK_ypabact()
     _radar = 0;
     _owner = 0;
     _aggr = 0;
-    _status = 0;
+    _status = BACT_STATUS_NOPE;
     _status_flg = 0;
     _primTtype = 0;
     _secndTtype = 0;
@@ -3222,7 +3222,7 @@ void NC_STACK_ypabact::Die()
 
 void NC_STACK_ypabact::SetState(setState_msg *arg)
 {
-    if ( (_bact_type == BACT_TYPES_TANK || _bact_type == BACT_TYPES_CAR) && arg->newStatus == 2 )
+    if ( (_bact_type == BACT_TYPES_TANK || _bact_type == BACT_TYPES_CAR) && arg->newStatus == BACT_STATUS_DEAD )
     {
         setState_msg newarg;
         newarg.unsetFlags = 0;

@@ -764,13 +764,13 @@ void yw_netUpdDataVhcl(vhclUpdData *dat, NC_STACK_ypabact *bact, char owner, NC_
 
     if ( bact->_status_flg & BACT_STFLAG_DEATH2 )
     {
-        sstt.newStatus = 0;
+        sstt.newStatus = BACT_STATUS_NOPE;
         sstt.unsetFlags = 0;
         sstt.setFlags = BACT_STFLAG_DEATH2;
     }
     else if ( bact->_status_flg & BACT_STFLAG_FIRE )
     {
-        sstt.newStatus = 0;
+        sstt.newStatus = BACT_STATUS_NOPE;
         sstt.unsetFlags = 0;
         sstt.setFlags = BACT_STFLAG_FIRE;
     }
@@ -1698,7 +1698,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         {
             setState_msg sst;
             sst.unsetFlags = 0;
-            sst.newStatus = 0;
+            sst.newStatus = BACT_STATUS_NOPE;
             sst.setFlags = BACT_STFLAG_DEATH2;
             fndBact->SetStateInternal(&sst);
         }
