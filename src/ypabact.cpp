@@ -6895,7 +6895,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     ypabact_func117(upd);
 
-    for ( NC_STACK_ypamissile* &misl : _missiles_list )
+    for ( NC_STACK_ypamissile* misl : Utils::IterateListCopy<NC_STACK_ypamissile *>(_missiles_list) )
     {
         misl->setMISS_launcher(this);
         misl->Update(upd);
@@ -6914,7 +6914,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     upd->units_count = 0;
 
-    for (NC_STACK_ypabact* &bct : _kidList)
+    for (NC_STACK_ypabact* bct : _kidList.safe_iter())
     {
         bct->NetUpdate(upd);
         upd->units_count++;

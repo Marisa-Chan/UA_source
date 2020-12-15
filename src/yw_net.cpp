@@ -1514,7 +1514,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         ststate.newStatus = ssMsg->newStatus;
         ststate.setFlags = ssMsg->setFlags;
         ststate.unsetFlags = ssMsg->unsetFlags;
-        bct->SetState(&ststate);
+        bct->SetStateInternal(&ststate);
     }
     break;
 

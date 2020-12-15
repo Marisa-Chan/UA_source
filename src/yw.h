@@ -612,11 +612,11 @@ public:
     int update_time_norm;
     int flush_time_norm;
     int kickTime;
-    uint32_t latencyCheck;
-    uint32_t netProblemCount;
+    int32_t latencyCheck;
+    int32_t netProblemCount;
     uint32_t netAllOkCount;
     uint32_t deadCheck;
-    uint32_t sendScore;
+    int32_t sendScore;
     netType2 players[8];
     netType1 players2[4];
     NC_STACK_button *confirm_button;
