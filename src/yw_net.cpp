@@ -3237,7 +3237,7 @@ const char *yw_corruptionCheck(UserData *usr)
 
         for ( NC_STACK_ypabact* &station : ywo->_unitsList )
         {
-            if ( station->_owner != usr->netPlayerOwner )
+            if ( station->_owner != 0 && station->_owner != usr->netPlayerOwner )
             {
                 for ( NC_STACK_ypabact* &comm : station->_kidList )
                 {

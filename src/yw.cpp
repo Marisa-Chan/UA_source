@@ -899,11 +899,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             uint32_t v37 = profiler_begin();
 
-            for ( World::RefBactList::iterator it = _unitsList.begin(); it != _unitsList.end(); )
+            for ( NC_STACK_ypabact *unit : _unitsList.safe_iter() )
             {
-                NC_STACK_ypabact *unit = *it;
-                it++;
-                
                 if (isNetGame && unit != UserRobo && unit->_bact_type == BACT_TYPES_ROBO)
                     unit->NetUpdate(&field_1b24);
                 else
