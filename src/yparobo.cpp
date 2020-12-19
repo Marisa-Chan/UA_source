@@ -826,7 +826,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 
         if ( _world->isNetGame )
         {
-            uamessage_startBeam ebMsg;
+            uamessage_endBeam ebMsg;
             ebMsg.msgID = UAMSG_ENDBEAM;
             ebMsg.owner = _owner;
             ebMsg.id = _gid;

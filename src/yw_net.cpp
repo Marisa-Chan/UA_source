@@ -2057,7 +2057,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             stm.unsetFlags = 0;
             stm.setFlags = 0;
 
-            cm->SetState(&stm);
+            cm->SetStateInternal(&stm);
             cm->_status = BACT_STATUS_DEAD;
 
             SFXEngine::SFXe.sub_424000(&cm->_soundcarrier, 3);
