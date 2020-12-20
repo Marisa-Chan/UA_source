@@ -781,7 +781,7 @@ void yw_netUpdDataVhcl(vhclUpdData *dat, NC_STACK_ypabact *bact, char owner, NC_
         sstt.newStatus = dat->status;
     }
 
-    bact->SetState(&sstt);
+    bact->SetStateInternal(&sstt);
 }
 
 
@@ -1202,7 +1202,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         sstate.setFlags = 0;
         sstate.unsetFlags = 0;
 
-        bacto->SetState(&sstate);
+        bacto->SetStateInternal(&sstate);
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(nvMsg->owner);
 
