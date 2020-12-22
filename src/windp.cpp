@@ -166,7 +166,7 @@ bool NC_STACK_windp::Connect(const std::string &connString)
             return false;
         }
         
-        for(ZNDNet::Event *evt = zcli->Events_Pop(); evt != NULL; evt = zcli->Events_Pop())
+        for(ZNDNet::Event *evt = zcli->Events_PopSystem(); evt != NULL; evt = zcli->Events_PopSystem())
         {
             switch( evt->type )
             {
@@ -297,6 +297,11 @@ size_t NC_STACK_windp::GetSessionData(IDVPair *stak)
 size_t NC_STACK_windp::CloseSession(IDVPair *stak)
 {
     //close session
+    if (connType == 1)
+    {
+        if (zhost)
+            zhost->CloseSession(0);
+    }
     printf("%s\n", __PRETTY_FUNCTION__);
     return 0;
 }
@@ -476,6 +481,22 @@ size_t NC_STACK_windp::LockSession(int *arg)
 
 size_t NC_STACK_windp::Reset(IDVPair *stak)
 {
+    if (zcli)
+    {
+        zcli->SendDisconnect();
+        zcli->Stop();
+        delete zcli;
+    }
+    else if (zhost)
+    {
+        zhost->CloseSession(0);
+        zhost->Stop();
+        delete zhost;
+    }
+    
+    zcon = NULL;
+    zcli = NULL;
+    zhost = NULL;
     // reset
     printf("%s\n", __PRETTY_FUNCTION__);
     return 0;
@@ -484,7 +505,7 @@ size_t NC_STACK_windp::Reset(IDVPair *stak)
 size_t NC_STACK_windp::CountPlayers(IDVPair *stak)
 {
     // get num players
-    printf("%s\n", __PRETTY_FUNCTION__);
+    //printf("%s\n", __PRETTY_FUNCTION__);
     return _rawUsers.size();
 }
 

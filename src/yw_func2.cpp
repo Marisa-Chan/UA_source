@@ -3913,7 +3913,21 @@ void UserData::GameShellUiHandleInput()
                             break;
                             
                         case 2:
-                            if ( p_YW->windp->Connect("127.0.0.1") )
+                        {
+                            std::string connStr("127.0.0.1");
+                            
+                            char * clpbrd = SDL_GetClipboardText();
+                            if (clpbrd)
+                            {
+                                IPaddress tmp;
+                                if (SDLNet_ResolveHost(&tmp, clpbrd, 0) == 0)
+                                    connStr = clpbrd;
+                                SDL_free(clpbrd);
+                            }
+                            
+                            fmt::printf("Connectiong to: %s\n", connStr);
+                            
+                            if ( p_YW->windp->Connect(connStr) )
                             {
                                 if (p_YW->windp->HasLobby())
                                 {
@@ -4629,9 +4643,9 @@ void UserData::GameShellUiHandleInput()
             network_button->button_func71(1226, " ");
 
         if ( isHost )
-        {
+        {  // Change map 
             v410.butID = 1205;
-            network_button->button_func66(&v410);
+            //network_button->button_func66(&v410);
         }
 
         if ( rdyStart )

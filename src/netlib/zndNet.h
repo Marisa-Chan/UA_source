@@ -103,13 +103,14 @@ class ZNDNet
 {
 // Methods
 public:
-    ~ZNDNet();
+    virtual ~ZNDNet();
 
     Event *Events_Pop();
     void   Events_ClearByType(uint32_t type);
     void   Events_Clear();
     Event *Events_PeekByType(uint32_t type);
     Event *Events_WaitForMsg(uint32_t type, uint32_t time = 0);
+    Event *Events_PopSystem(); // Without data events
 
     void   Stop(); // Don't call it from internal threads!
 

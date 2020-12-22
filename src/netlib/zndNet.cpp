@@ -385,6 +385,32 @@ Event *ZNDNet::Events_WaitForMsg(uint32_t type, uint32_t time)
     return NULL;
 }
 
+Event *ZNDNet::Events_PopSystem()
+{
+    if ( eEventList.empty() )
+        return NULL;
+
+    if (SDL_LockMutex(eEventMutex) == 0)
+    {
+        for(EventList::iterator it = eEventList.begin(); it != eEventList.end(); it++)
+        {
+            Event *evt = *it;
+            if (evt->type != EVENT_DATA)
+            {
+                eEventDataSize -= evt->size;
+                eEventList.erase(it);
+                eEventWaitLock--;
+                SDL_UnlockMutex(eEventMutex);
+                return evt;
+            }
+        }
+
+        SDL_UnlockMutex(eEventMutex);
+    }
+
+    return NULL;
+}
+
 void ZNDNet::Confirm_Clear(const IPaddress &addr)
 {
     for (SendingList::iterator it = confirmQueue.begin(); it != confirmQueue.end(); )
