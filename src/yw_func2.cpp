@@ -3946,6 +3946,7 @@ void UserData::GameShellUiHandleInput()
                             {
                                 printf("Can't connect: Time OUT\n");
                             }
+                        }
                             break;
                             
                         default:
