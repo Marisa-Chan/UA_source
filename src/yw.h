@@ -409,15 +409,6 @@ enum
     ENVMODE_HELP = 10
 };
 
-enum
-{
-    NETSCREEN_MODE_SELECT = 0,
-    NETSCREEN_SESSION_SELECT = 1, // Only on dedicated server
-    NETSCREEN_ENTER_NAME  = 2,
-    NETSCREEN_CHOOSE_MAP  = 3,
-    
-};
-
 struct EnvAction
 {
     enum
@@ -439,6 +430,16 @@ struct EnvAction
 class UserData
 {
 friend class World::Parsers::ShellSoundParser;
+
+public:
+    enum
+    {
+        NETSCREEN_MODE_SELECT = 0,
+        NETSCREEN_SESSION_SELECT = 1, // Only on dedicated server
+        NETSCREEN_ENTER_NAME  = 2,
+        NETSCREEN_CHOOSE_MAP  = 3,
+        NETSCREEN_INSESSION = 4,
+    };
 
 public:
     struct TInputConf

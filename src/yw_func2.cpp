@@ -1592,19 +1592,19 @@ void UserData::sub_4DE248(int id)
     case 1201:
         switch ( netSelMode )
         {
-        case 0:
+        case NETSCREEN_MODE_SELECT:
             p_ypaworld->sub_4811E8(0x8E);
             break;
-        case 1:
+        case NETSCREEN_SESSION_SELECT:
             p_ypaworld->sub_4811E8(0x91);
             break;
-        case 2:
+        case NETSCREEN_ENTER_NAME:
             p_ypaworld->sub_4811E8(0x8F);
             break;
-        case 3:
+        case NETSCREEN_CHOOSE_MAP:
             p_ypaworld->sub_4811E8(0x90);
             break;
-        case 4:
+        case NETSCREEN_INSESSION:
             p_ypaworld->sub_4811E8(0x92);
             break;
         default:
@@ -1613,11 +1613,11 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1202:
-        if ( netSelMode == 1 )
+        if ( netSelMode == NETSCREEN_SESSION_SELECT )
         {
             p_ypaworld->sub_4811E8(0x6E);
         }
-        else if ( netSelMode == 4 )
+        else if ( netSelMode == NETSCREEN_INSESSION )
         {
             p_ypaworld->sub_4811E8(0x6F);
         }
@@ -1630,14 +1630,14 @@ void UserData::sub_4DE248(int id)
     case 1205:
         switch ( netSelMode )
         {
-        case 1:
+        case NETSCREEN_SESSION_SELECT:
             p_ypaworld->sub_4811E8(0x94);
             break;
-        case 2:
+        case NETSCREEN_ENTER_NAME:
             p_ypaworld->sub_4811E8(0x93);
             break;
-        case 3:
-        case 4:
+        case NETSCREEN_CHOOSE_MAP:
+        case NETSCREEN_INSESSION:
             p_ypaworld->sub_4811E8(0x95);
             break;
         default:
@@ -1812,7 +1812,7 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
 
     usr->msgBuffLine++;
 
-    if ( usr->netSelMode == 4 )
+    if ( usr->netSelMode == UserData::NETSCREEN_INSESSION )
     {
         int v22 = usr->msgBuffLine - 6;
 
@@ -2363,12 +2363,12 @@ void UserData::GameShellUiHandleInput()
     if ( _input->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
         SFXEngine::SFXe.startSound(&samples1_info, 3);
 
-    if ( netSelMode )
+    if ( netSelMode != NETSCREEN_MODE_SELECT )
         yw_HandleNetMsg(p_ypaworld);
 
     NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(p_ypaworld->_win3d);
 
-    if ( netSelMode == 1 )
+    if ( netSelMode == NETSCREEN_SESSION_SELECT )
     {
         if ( p_ypaworld->windp->GetProvType() == 4 )
         {
@@ -3757,13 +3757,13 @@ void UserData::GameShellUiHandleInput()
 
     switch ( netSelMode )
     {
-    case 0:
+    case NETSCREEN_MODE_SELECT:
         nInputMode = 0;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
         field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
         break;
-    case 1:
+    case NETSCREEN_SESSION_SELECT:
         nInputMode = 0;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
@@ -3775,12 +3775,12 @@ void UserData::GameShellUiHandleInput()
         network_listvw.maxShownEntries = 12;
         field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
         break;
-    case 2:
+    case NETSCREEN_ENTER_NAME:
         field_1C36 = 0;
         network_listvw.maxShownEntries = 12;
         nInputMode = 1;
         break;
-    case 4:
+    case NETSCREEN_INSESSION:
         nInputMode = 1;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 6;
@@ -3999,7 +3999,7 @@ void UserData::GameShellUiHandleInput()
             }
             break;
 
-        case 4:
+        case NETSCREEN_INSESSION:
             if ( r.code == 1200 )
             {
                 if ( isHost )
@@ -4032,7 +4032,7 @@ void UserData::GameShellUiHandleInput()
                     msgBuffLine = 0;
                     lastSender[0] = 0;
                     netName = "";
-                    netSelMode = 3;
+                    netSelMode = NETSCREEN_CHOOSE_MAP;
                 }
             }
             else if ( r.code == 1208 )
@@ -4179,8 +4179,8 @@ void UserData::GameShellUiHandleInput()
 
             switch ( netSelMode )
             {
-            case 0:
-            case 1:
+            case NETSCREEN_MODE_SELECT:
+            case NETSCREEN_SESSION_SELECT:
                 nInputMode = 0;
                 break;
             case NETSCREEN_CHOOSE_MAP:
@@ -4283,7 +4283,7 @@ void UserData::GameShellUiHandleInput()
                     {
                         isHost = 1;
                         netSel = -1;
-                        netSelMode = 3;
+                        netSelMode = NETSCREEN_CHOOSE_MAP;
                         network_listvw.firstShownEntries = 0;
                     }
                     break;
@@ -4304,7 +4304,7 @@ void UserData::GameShellUiHandleInput()
                 case NETSCREEN_CHOOSE_MAP:
                     AfterMapChoose();
                     break;
-                case 4:
+                case NETSCREEN_INSESSION:
                     if ( !netName.empty() )
                     {
                         uamessage_message msgMsg;
@@ -4345,19 +4345,19 @@ void UserData::GameShellUiHandleInput()
             {
                 switch ( netSelMode )
                 {
-                case 0:
+                case NETSCREEN_MODE_SELECT:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
                     break;
-                case 1:
+                case NETSCREEN_SESSION_SELECT:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
                     break;
-                case 2:
+                case NETSCREEN_ENTER_NAME:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
                     break;
                 case NETSCREEN_CHOOSE_MAP:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
                     break;
-                case 4:
+                case NETSCREEN_INSESSION:
                     p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
                     break;
                 default:
@@ -4374,7 +4374,7 @@ void UserData::GameShellUiHandleInput()
 
     if ( isHost )
     {
-        if ( netSelMode == 4 && envAction.action != EnvAction::ACTION_NETPLAY )
+        if ( netSelMode == NETSCREEN_INSESSION && envAction.action != EnvAction::ACTION_NETPLAY )
         {
             if ( (int)p_ypaworld->windp->CountPlayers(NULL)   <   p_ypaworld->LevelNet->mapInfos[ netLevelID ].robos_count )
             {
@@ -4465,9 +4465,9 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1217;
     network_button->button_func67(&v410);
 
-    if ( (netSelMode != 1 || p_ypaworld->windp->GetProvType() != 3)
-            && (netSelMode != 1 || modemAskSession != 1 || p_ypaworld->windp->GetProvType() != 4)
-            && netSelMode )
+    if ( (netSelMode != NETSCREEN_SESSION_SELECT || p_ypaworld->windp->GetProvType() != 3)
+            && (netSelMode != NETSCREEN_SESSION_SELECT || modemAskSession != 1 || p_ypaworld->windp->GetProvType() != 4)
+            && netSelMode != NETSCREEN_MODE_SELECT )
     {
         v410.butID = 1228;
         network_button->button_func67(&v410);
@@ -4476,7 +4476,7 @@ void UserData::GameShellUiHandleInput()
     {
         std::string v280;
 
-        if ( netSelMode )
+        if ( netSelMode != NETSCREEN_MODE_SELECT )
         {
             v280 = get_lang_string(ypaworld__string_pointers, 2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
         }
@@ -4498,7 +4498,7 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func66(&v410);
     }
 
-    if ( !nInputMode && netSelMode != 2 )
+    if ( !nInputMode && netSelMode != NETSCREEN_ENTER_NAME )
     {
         v410.butID = 1200;
         network_button->button_func67(&v410);
@@ -4511,7 +4511,7 @@ void UserData::GameShellUiHandleInput()
         v393.xpos = -1;
         v393.butID = 1200;
 
-        if ( netSelMode == 2 )
+        if ( netSelMode == NETSCREEN_ENTER_NAME )
         {
             v393.width = dword_5A50B6;
             v393.ypos = 3 * (word_5A50C2 + p_ypaworld->font_default_h);
@@ -4548,7 +4548,7 @@ void UserData::GameShellUiHandleInput()
 
     switch ( netSelMode )
     {
-    case 0:
+    case NETSCREEN_MODE_SELECT:
         v410.field_4 = 0;
         v410.butID = 1205;
 
@@ -4561,7 +4561,7 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 426, "3"));
         break;
 
-    case 1:
+    case NETSCREEN_SESSION_SELECT:
     {
         if ( p_ypaworld->windp->GetProvType() != 4 || !modemAskSession )
         {
@@ -4596,7 +4596,7 @@ void UserData::GameShellUiHandleInput()
     }
     break;
 
-    case 2:
+    case NETSCREEN_ENTER_NAME:
         network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER"));
 
         network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 434, "11"));
@@ -4626,7 +4626,7 @@ void UserData::GameShellUiHandleInput()
         network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 432, "9"));
         break;
 
-    case 4:
+    case NETSCREEN_INSESSION:
         v410.butID = 1225;
         network_button->button_func66(&v410);
 

@@ -671,7 +671,7 @@ void UserData::AfterMapChoose()
             
             p_YW->isNetGame = 1;
             netSel = -1;
-            netSelMode = 4;
+            netSelMode = NETSCREEN_INSESSION;
             netName = "";
             netNameCurPos = 0;
             network_listvw.firstShownEntries = 0;
@@ -707,7 +707,7 @@ void UserData::AfterMapChoose()
 
         int numpl = p_ypaworld->windp->CountPlayers(NULL);
 
-        netSelMode = 4;
+        netSelMode = NETSCREEN_INSESSION;
         netName = "";
         netNameCurPos = 0;
         network_listvw.firstShownEntries = 0;
@@ -828,7 +828,7 @@ void UserData::AfterMapChoose()
 
         int numpl = p_ypaworld->windp->CountPlayers(NULL);
 
-        netSelMode = 4;
+        netSelMode = NETSCREEN_INSESSION;
         netName = "";
         netNameCurPos = 0;
         network_listvw.firstShownEntries = 0;
@@ -964,7 +964,7 @@ void UserData::AfterMapChoose()
         {
             p_ypaworld->isNetGame = 1;
             netSel = -1;
-            netSelMode = 4;
+            netSelMode = NETSCREEN_INSESSION;
             netName = "";
             netNameCurPos = 0;
             network_listvw.firstShownEntries = 0;
@@ -1074,7 +1074,7 @@ void UserData::yw_JoinNetGame()
                 {
                     p_ypaworld->isNetGame = 1;
                     netSel = -1;
-                    netSelMode = 4;
+                    netSelMode = NETSCREEN_INSESSION;
                     netName = "";
                     netNameCurPos = 0;
                     network_listvw.firstShownEntries = 0;
@@ -1203,7 +1203,7 @@ void UserData::JoinLobbyLessGame()
                 
             p_ypaworld->isNetGame = 1;
             netSel = -1;
-            netSelMode = 4;
+            netSelMode = NETSCREEN_INSESSION;
             netName = "";
             netNameCurPos = 0;
             network_listvw.firstShownEntries = 0;
@@ -1298,7 +1298,7 @@ void UserData::JoinLobbyLessGame()
                 {
                     p_ypaworld->isNetGame = 1;
                     netSel = -1;
-                    netSelMode = 4;
+                    netSelMode = NETSCREEN_INSESSION;
                     netName = "";
                     netNameCurPos = 0;
                     network_listvw.firstShownEntries = 0;
@@ -1417,15 +1417,15 @@ void UserData::yw_netcleanup()
 
     p_ypaworld->windp->FlushBuffer(flushmsg);
 
-    if( netSelMode == 4 || p_ypaworld->netGameStarted )
+    if( netSelMode ==NETSCREEN_INSESSION || p_ypaworld->netGameStarted )
         yw_DestroyPlayer( p_ypaworld, callSIGN.c_str() );
 
-    if( ( netSelMode == 4 && isHost) || p_ypaworld->netGameStarted )
+    if( ( netSelMode == NETSCREEN_INSESSION && isHost) || p_ypaworld->netGameStarted )
         p_ypaworld->windp->CloseSession(NULL);
 
     p_ypaworld->windp->Reset(NULL);
 
-    netSelMode = 0;
+    netSelMode = NETSCREEN_MODE_SELECT;
 
     p_ypaworld->isNetGame = 0;
 

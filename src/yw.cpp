@@ -834,7 +834,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         HistoryEventAdd(World::History::Frame(timeStamp));
 
         uint32_t v22 = profiler_begin();
-
+        
         if ( isNetGame )
             yw_NetMsgHndlLoop(this);
 
@@ -2732,11 +2732,11 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
             usr->players2[v68.ID].rdyStart = 1;
             usr->rdyStart = 1;
-            usr->netSelMode = 3;
+            usr->netSelMode = UserData::NETSCREEN_CHOOSE_MAP;
         }
         else
         {
-            usr->netSelMode = 4;
+            usr->netSelMode = UserData::NETSCREEN_INSESSION;
         }
 
         v68.mode = 0;
@@ -5668,7 +5668,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     else
     {
         usr->yw_netcleanup();
-        usr->netSelMode = 0;
+        usr->netSelMode = UserData::NETSCREEN_MODE_SELECT;
     }
 
     usr->netSel = -1;
@@ -5972,7 +5972,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
     if ( sub_449678(usr->_input, Input::KC_NUMMUL) )
         sub_4476AC(this);
 
-    if ( usr->netSelMode == 4 )
+    if ( usr->netSelMode == UserData::NETSCREEN_INSESSION )
     {
         yw_CheckCRCs(this);
         usr->yw_CheckCDs();

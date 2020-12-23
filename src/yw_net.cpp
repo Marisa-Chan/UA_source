@@ -3395,7 +3395,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                 case RECVMSG_CREATEPLAYER:
                 {
 
-                    if ( usr->isHost && usr->remoteMode && usr->netSelMode == 4 )
+                    if ( usr->isHost && usr->remoteMode && usr->netSelMode == UserData::NETSCREEN_INSESSION )
                     {
                         if ( usr->netLevelID > 0 && usr->netLevelID < 256 )
                         {

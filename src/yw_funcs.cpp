@@ -2591,7 +2591,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         }
         break;
 
-        case NETSCREEN_CHOOSE_MAP: //level
+        case UserData::NETSCREEN_CHOOSE_MAP: //level
             if ( i < usr->map_descriptions_count )
             {
                 mapINFO *lvl = &yw->LevelNet->mapInfos[ usr->map_descriptions[i].id ];
@@ -2679,7 +2679,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         if (brk)
             break;
 
-        if (usr->netSelMode == NETSCREEN_CHOOSE_MAP)
+        if (usr->netSelMode == UserData::NETSCREEN_CHOOSE_MAP)
         {
             int tmp = i;
             i = cnt;
@@ -2695,7 +2695,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             uint8_t prefixChar;
             uint8_t postfixChar;
 
-            if ( usr->netSel != i || usr->netSelMode == 4 || usr->netSelMode == 2 )
+            if ( usr->netSel != i || usr->netSelMode == UserData::NETSCREEN_INSESSION || usr->netSelMode == UserData::NETSCREEN_ENTER_NAME )
             {
                 fontID = 0;
                 spaceChar = 102;
@@ -2715,7 +2715,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
             switch(usr->netSelMode)
             {
-            case 0:
+            case UserData::NETSCREEN_MODE_SELECT:
                 items[0].fontID = fontID;
                 items[0].spaceChar = spaceChar;
                 items[0].prefixChar = prefixChar;
@@ -2726,7 +2726,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 itemsCount = 1;
                 break;
 
-            case 1:
+            case UserData::NETSCREEN_SESSION_SELECT:
                 items[0].fontID = fontID;
                 items[0].spaceChar = spaceChar;
                 items[0].prefixChar = prefixChar;
@@ -2754,7 +2754,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 itemsCount = 3;
                 break;
 
-            case 3:
+            case UserData::NETSCREEN_CHOOSE_MAP:
             {
                 TileMap *tiles = GFXEngine::GFXe.getTileset(8);
 
@@ -2807,8 +2807,8 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             }
             break;
 
-            case 2:
-            case 4:
+            case UserData::NETSCREEN_ENTER_NAME:
+            case UserData::NETSCREEN_INSESSION:
                 items[0].width = usr->network_listvw.entryWidth - 2 * usr->p_ypaworld->font_default_w__b;
                 items[0].fontID = fontID;
                 items[0].spaceChar = spaceChar;
@@ -2826,7 +2826,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             FontUA::select_tileset(&cmd, 0);
             FontUA::store_u8(&cmd, 123);
 
-            if ( usr->netSel != i || usr->netSelMode == 4 || usr->netSelMode == 2 )
+            if ( usr->netSel != i || usr->netSelMode == UserData::NETSCREEN_INSESSION || usr->netSelMode == UserData::NETSCREEN_ENTER_NAME )
                 FontUA::set_txtColor(&cmd, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b );
             else
                 FontUA::set_txtColor(&cmd, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b );
@@ -2838,7 +2838,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             FontUA::next_line(&cmd);
         }
 
-        if (usr->netSelMode == NETSCREEN_CHOOSE_MAP)
+        if (usr->netSelMode == UserData::NETSCREEN_CHOOSE_MAP)
         {
             int tmp = i;
             i = cnt;
@@ -2846,7 +2846,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         }
     }
 
-    if ( usr->netSelMode == 3)
+    if ( usr->netSelMode == UserData::NETSCREEN_CHOOSE_MAP)
         i = cnt + 1;
 
     if (usr->network_listvw.maxShownEntries < i)
@@ -3121,7 +3121,7 @@ void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr)
     case ENVMODE_NETPLAY:
         usr->network_button->button_func70(0);
 
-        if ( usr->netSelMode != 2 )
+        if ( usr->netSelMode != UserData::NETSCREEN_ENTER_NAME )
             ypaworld_func158__network_list_draw(yw, usr);
         break;
 
@@ -3349,7 +3349,7 @@ void UserData::clear()
     field_0x1c34 = 0;
 
     field_1C36 = 0;
-    netSelMode = 0;
+    netSelMode = NETSCREEN_MODE_SELECT;
     netSel = 0;
     nInputMode = 0;
     netName.clear();
