@@ -2592,7 +2592,7 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *yw)
     }
 
     GuiList::tInit args;
-    args.resizeable = true;
+    args.resizeable = false;
     args.numEntries = 8;
     args.shownEntries = 8;
     args.firstShownEntry = 0;
