@@ -20,6 +20,7 @@ public:
         FLAG_WND_HSCROLL = (1 << 4),
         
         FLAG_WND_RESIZEABLE   = (1 << 8),
+        FLAG_WND_UNMOVE       = (1 << 9),
     };
 public:
     
@@ -70,18 +71,18 @@ public:
 
     
 protected:
-    enum
-    {
-        GLYPH_LU = 'u',
-        GLYPH_MU = 'v',
-        GLYPH_RU = 'w',
-        GLYPH_LM = '{',
-        GLYPH_MM = ' ',
-        GLYPH_RM = '}',
-        GLYPH_LD = 'x',
-        GLYPH_MD = 'y',
-        GLYPH_RD = 'z'
-    };
+    size_t  _TSET_U = TILESET_DEFAULT; // up
+    size_t  _TSET_M = TILESET_DEFAULT; // mid
+    size_t  _TSET_D = TILESET_DEFAULT; // down
+    uint8_t _GLYPH_LU = 'u'; // Left-up
+    uint8_t _GLYPH_MU = 'v'; // Mid-up
+    uint8_t _GLYPH_RU = 'w'; // Right-up
+    uint8_t _GLYPH_LM = '{'; // Left-mid
+    uint8_t _GLYPH_MM = ' '; // Mid-mid
+    uint8_t _GLYPH_RM = '}'; // Right-mid
+    uint8_t _GLYPH_LD = 'x'; // Left-down
+    uint8_t _GLYPH_MD = 'y'; // Mid-down
+    uint8_t _GLYPH_RD = 'z'; // Right-down
 };
 }
 

@@ -217,3 +217,4 @@ bool StrGetBool(const std::string &str)
 {
     return !StriCmp(str, "yes") || !StriCmp(str, "true") || !StriCmp(str, "on");
 }
+

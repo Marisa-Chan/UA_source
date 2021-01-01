@@ -57,6 +57,11 @@ struct TPoint
 
     __Point Invert() const { return TPoint( -x, -y ); }
     
+    operator bool() const
+    {
+        return x == 0 && y == 0;
+    }
+    
     operator SDL_Rect() const
     {
         SDL_Rect tmp;
@@ -450,7 +455,6 @@ typedef PlaneVector<uint8_t> PlaneBytes;
  * line parameter will be modified
  **/
 bool ClipLine(const Rect &clip, Rect *line);
-
 
 class BitMan : protected std::vector<uint32_t>
 {

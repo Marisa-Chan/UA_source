@@ -18,6 +18,8 @@
 
 #include "gui/widget.h"
 #include "gui/uawidgets.h"
+#include "gui/uamsgbox.h"
+#include "gui/uaempty.h"
 
 
 int dword_513638 = 0;
@@ -796,6 +798,10 @@ int main(int argc, char *argv[])
     
     Gui::Root::Instance.SetHwCompose(true);
     ypaworld->LoadGuiFonts();
+    ypaworld->CreateNewGuiElements();
+    
+    
+     
     
     // New gui test windows
     /*Gui::UAWindow *smpl = new Gui::UAWindow("Test1", Common::PointRect(100, 100, 200, 300), 
@@ -805,9 +811,9 @@ int main(int argc, char *argv[])
     smpl->SetEnable(true);
     smpl->SetAlpha(190);
 
-    Gui::Root::Instance.AddWidget(smpl);
+    Gui::Root::Instance.AddWidget(smpl);*/    
     
-    Gui::UAWindow *smpl2 = new Gui::UAWindow("Test2", Common::PointRect(115, 120, 50, 60), 
+   /* Gui::UAWindow *smpl2 = new Gui::UAWindow("Test2", Common::PointRect(115, 120, 50, 60), 
         Gui::UAWindow::FLAG_WND_RESIZEABLE | 
         Gui::UAWindow::FLAG_WND_VSCROLL | 
         Gui::UAWindow::FLAG_WND_CLOSE |
@@ -817,7 +823,9 @@ int main(int argc, char *argv[])
     smpl2->SetEnable(true);
     smpl2->SetAlpha(190);
     
-    Gui::Root::Instance.AddWidget(smpl2);*/
+    smpl->AddChild(smpl2);*/
+    
+   
     
 
 //    int fps = 0;
@@ -870,6 +878,8 @@ int main(int argc, char *argv[])
 //        }
 
     }
+    
+    ypaworld->DeleteNewGuiElements();
     
     Gui::UA::Deinit();
     sub_4113E8();

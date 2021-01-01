@@ -1,5 +1,6 @@
 #include "uawindow.h"
-
+#include "../engine_miles.h"
+#include "../yw.h"
 
 namespace Gui
 {
@@ -60,34 +61,41 @@ UAWindow::~UAWindow()
 
 void UAWindow::Draw(SDL_Surface *surface, const Common::Rect &dirt)
 {   
-    TileMap *def   = _UATiles[TILESET_DEFAULT];
+    TileMap *tiles;
     
     // Draw window box
     // Top
-    def->Draw(surface, Common::Point(0, 0), GLYPH_LU );
+    tiles   = _UATiles[_TSET_U];    
     
-    Common::Rect out(def->GetWidth(GLYPH_LU), 0, GetWidth() - def->GetWidth(GLYPH_RU), def->h);
-    def->Fill(surface, out, GLYPH_MU);
+    tiles->Draw(surface, Common::Point(0, 0), _GLYPH_LU );
     
-    def->Draw(surface, Common::Point(out.right, 0), GLYPH_RU );
+    Common::Rect out(tiles->GetWidth(_GLYPH_LU), 0, GetWidth() - tiles->GetWidth(_GLYPH_RU), tiles->h);
+    tiles->Fill(surface, out, _GLYPH_MU);
+    
+    tiles->Draw(surface, Common::Point(out.right, 0), _GLYPH_RU );
+    
     
     // Mid
-    out = Common::Rect(0, def->h, def->GetWidth(GLYPH_LM), GetHeight() - def->h);
-    def->Fill(surface, out, GLYPH_LM);
+    tiles   = _UATiles[_TSET_M];
+    
+    out = Common::Rect(0, tiles->h, tiles->GetWidth(_GLYPH_LM), GetHeight() - tiles->h);
+    tiles->Fill(surface, out, _GLYPH_LM);
     out.left = out.right;
-    out.right = GetWidth() - def->GetWidth(GLYPH_RM);
-    def->Fill(surface, out, GLYPH_MM);
+    out.right = GetWidth() - tiles->GetWidth(_GLYPH_RM);
+    tiles->Fill(surface, out, _GLYPH_MM);
     out.left = out.right;
     out.right = GetWidth();
-    def->Fill(surface, out, GLYPH_RM);
+    tiles->Fill(surface, out, _GLYPH_RM);
     
     // Bot
-    def->Draw(surface, Common::Point(0, out.bottom), GLYPH_LD);
+    tiles   = _UATiles[_TSET_D];
     
-    out = Common::Rect(def->GetWidth(GLYPH_LD), out.bottom, GetWidth() - def->GetWidth(GLYPH_RD), GetHeight());
-    def->Fill(surface, out, GLYPH_MD);
+    tiles->Draw(surface, Common::Point(0, out.bottom), _GLYPH_LD);
     
-    def->Draw(surface, Common::Point(out.right, out.top), GLYPH_RD);
+    out = Common::Rect(tiles->GetWidth(_GLYPH_LD), out.bottom, GetWidth() - tiles->GetWidth(_GLYPH_RD), GetHeight());
+    tiles->Fill(surface, out, _GLYPH_MD);
+    
+    tiles->Draw(surface, Common::Point(out.right, out.top), _GLYPH_RD);
     
     // Title text
     DrawText(surface, std::string(" ") + _title, 0, _UATextColor, _titleRect);
@@ -108,7 +116,7 @@ void UAWindow::MouseDown(Common::Point pos, Common::Point scrPos, int button)
             _inResizing = true;
             _rszPnt = _rect.Size() - pos;
         }
-        else if (_areaTitle.IsIn(pos))
+        else if (_areaTitle.IsIn(pos) && (_flagsWindow & FLAG_WND_UNMOVE) == 0)
         {
             Root::Instance.StartDragging(this);
         }
@@ -132,8 +140,8 @@ void UAWindow::MouseMove(Common::Point pos, Common::Point scrPos, int button)
 
 void UAWindow::Resize(Common::Point sz)
 {
-    TileMap *def = _UATiles[TILESET_DEFAULT];
-    sz.x = Common::MAX(sz.x, def->GetWidth(GLYPH_LM) + def->GetWidth(GLYPH_RM) + _closeBtn->GetWidth() * 3);
+    TileMap *def = _UATiles[_TSET_M];
+    sz.x = Common::MAX(sz.x, def->GetWidth(_GLYPH_LM) + def->GetWidth(_GLYPH_RM) + _closeBtn->GetWidth() * 3);
     sz.y = Common::MAX(sz.y, def->h * 2);
     
     Widget::Resize(sz);
@@ -143,18 +151,18 @@ void UAWindow::Resize(Common::Point sz)
 
 void UAWindow::Update()
 {
-    _areaTitle = Common::Rect(0, 0, _rect.Width(), _UATiles[TILESET_DEFAULT]->h);
-    _areaResize = Common::Rect(_rect.Width() - _UATiles[TILESET_MAPHORZ]->GetWidth('G'), _rect.Height() - _UATiles[TILESET_MAPHORZ]->h, _rect.Width(), _rect.Height());
+    _areaTitle = Common::Rect(0, 0, GetWidth(), _UATiles[_TSET_U]->h);
+    _areaResize = Common::Rect(GetWidth() - _UATiles[TILESET_MAPHORZ]->GetWidth('G'), GetHeight() - _UATiles[TILESET_MAPHORZ]->h, GetWidth(), GetHeight());
 
-    _client.left = _UATiles[TILESET_DEFAULT]->GetWidth(GLYPH_LM);
+    _client.left = _UATiles[_TSET_M]->GetWidth(_GLYPH_LM);
     _client.top = _areaTitle.bottom;
-    _client.right = GetWidth() - _UATiles[TILESET_DEFAULT]->GetWidth(GLYPH_RM);
-    _client.bottom = GetHeight() - _UATiles[TILESET_DEFAULT]->GetWidth(GLYPH_RM); // Yes, we use width
+    _client.right = GetWidth() - _UATiles[_TSET_M]->GetWidth(_GLYPH_RM);
+    _client.bottom = GetHeight() - _UATiles[_TSET_M]->GetWidth(_GLYPH_RM); // Yes, we use width
     
     int rpos = GetWidth();
     
     if ((_flagsWindow & (FLAG_WND_CLOSE | FLAG_WND_HELP | FLAG_WND_MAXM)) == 0)
-        rpos -= _UATiles[TILESET_DEFAULT]->GetWidth(GLYPH_RU);
+        rpos -= _UATiles[_TSET_U]->GetWidth(_GLYPH_RU);
     
     if (_flagsWindow & FLAG_WND_CLOSE)
     {
@@ -189,7 +197,7 @@ void UAWindow::Update()
     else if (_maxmBtn->IsEnabled())
         _maxmBtn->SetEnable(false);
     
-    _titleRect = Common::Rect(_UATiles[TILESET_DEFAULT]->GetWidth(GLYPH_LU), 0, rpos, _areaTitle.bottom);
+    _titleRect = Common::Rect(_UATiles[_TSET_U]->GetWidth(_GLYPH_LU), 0, rpos, _areaTitle.bottom);
         
     if (_flagsWindow & FLAG_WND_VSCROLL)
     {

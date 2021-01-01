@@ -1,11 +1,13 @@
 #include "uacommon.h"
-
+#include "../utils.h"
+#include "../yw.h"
 
 namespace Gui
 {
     
 std::array<TileMap *, UA::TILESET_MAX> UA::_UATiles;
 SDL_Color UA::_UATextColor;
+SDL_Color UA::_UAButtonTextColor;
 TTF_Font *UA::_UATTF = NULL;
 int UA::_UAFontH = 0;
 NC_STACK_ypaworld *UA::yw = NULL;

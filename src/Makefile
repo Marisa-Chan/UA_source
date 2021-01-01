@@ -55,6 +55,8 @@ OBJS =  \
 	gui/root.cpp\
 	gui/uabutton.cpp\
 	gui/uacommon.cpp\
+	gui/uaempty.cpp\
+	gui/uamsgbox.cpp\
 	gui/uascroll.cpp\
 	gui/uawindow.cpp\
 	gui/widget.cpp\

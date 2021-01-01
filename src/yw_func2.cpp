@@ -12,6 +12,8 @@
 
 #include <math.h>
 
+#include "gui/uamsgbox.h"
+
 extern char **ypaworld__string_pointers;
 extern int word_5A50C2;
 extern int word_5A50AC;
@@ -1876,6 +1878,20 @@ void sub_4EDCD8(NC_STACK_ypaworld *yw)
     yw->brief.Stage = 2;
 }
 
+void UserData::ShowMenuMsgBox(int code, const std::string &txt1, const std::string &txt2, bool okOnly)
+{
+    _menuMsgBoxCode = code;
+    
+    Gui::UAMessageBox *bx = _menuMsgBox->GetMsgBox();
+    bx->SetInform(okOnly);
+    bx->Result = 0;
+    bx->SetTexts(txt1, txt2);
+    
+    _menuMsgBox->ToFront();
+    _menuMsgBox->SetEnable(true);
+}
+
+
 void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
 {
     field_0x2fb4 = a2;
@@ -2643,6 +2659,48 @@ void UserData::GameShellUiHandleInput()
         _input->chr = 0;
         _input->HotKeyID = -1;
     }
+    
+    
+    if (_menuMsgBox->GetMsgBox()->Result)
+    {
+        if (_menuMsgBox->GetMsgBox()->Result == 1)
+        {
+            switch ( _menuMsgBoxCode )
+            {
+            case 17:
+                {
+
+                    fmt::printf("Connectiong to: %s\n", _connString);
+
+                    if ( p_YW->windp->Connect(_connString) )
+                    {
+                        if (p_YW->windp->HasLobby())
+                        {
+                            netSelMode = NETSCREEN_SESSION_SELECT;
+                            netSel = -1;
+                            network_listvw.firstShownEntries = 0;
+
+                            p_YW->GuiWinOpen( &network_listvw );
+                        }
+                        else
+                        {
+                            JoinLobbyLessGame();
+                        }
+                    }
+                    else
+                    {
+                        printf("Can't connect: Time OUT\n");
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        
+        _menuMsgBox->GetMsgBox()->Result = 0;
+    }
+    
 
     if ( envMode == ENVMODE_TITLE && _input->HotKeyID == 43 )
         p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
@@ -3897,66 +3955,42 @@ void UserData::GameShellUiHandleInput()
                 if ( !netName.empty() )
                 {
                     callSIGN = netName;
-                    p_YW->windp->SetWantedName(netName);
-                    
                     netName = "";
-                    
-                    switch ( p_YW->windp->GetMode() )
-                    {
-                        case 1:
-                            isHost = 1;
-                            netSel = -1;
-                            network_listvw.firstShownEntries = 0;
-                            netSelMode = NETSCREEN_CHOOSE_MAP;
-                            
-                            p_YW->GuiWinOpen( &network_listvw );
-                            break;
-                            
-                        case 2:
-                        {
-                            std::string connStr("127.0.0.1");
-                            
-                            char * clpbrd = SDL_GetClipboardText();
-                            if (clpbrd)
-                            {
-                                IPaddress tmp;
-                                if (SDLNet_ResolveHost(&tmp, clpbrd, 0) == 0)
-                                    connStr = clpbrd;
-                                SDL_free(clpbrd);
-                            }
-                            
-                            fmt::printf("Connectiong to: %s\n", connStr);
-                            
-                            if ( p_YW->windp->Connect(connStr) )
-                            {
-                                if (p_YW->windp->HasLobby())
-                                {
-                                    netSelMode = NETSCREEN_SESSION_SELECT;
-                                    netSel = -1;
-                                    network_listvw.firstShownEntries = 0;
+                }
+                
+                p_YW->windp->SetWantedName(callSIGN);
 
-                                    p_YW->GuiWinOpen( &network_listvw );
-                                }
-                                else
-                                {
-                                    JoinLobbyLessGame();
-                                }
-                            }
-                            else
-                            {
-                                printf("Can't connect: Time OUT\n");
-                            }
+                switch ( p_YW->windp->GetMode() )
+                {
+                    case 1:
+                        isHost = 1;
+                        netSel = -1;
+                        network_listvw.firstShownEntries = 0;
+                        netSelMode = NETSCREEN_CHOOSE_MAP;
+
+                        p_YW->GuiWinOpen( &network_listvw );
+                        break;
+
+                    case 2:
+                    {
+                        std::string connStr("127.0.0.1");
+
+                        char * clpbrd = SDL_GetClipboardText();
+                        if (clpbrd)
+                        {
+                            IPaddress tmp;
+                            if (SDLNet_ResolveHost(&tmp, clpbrd, 0) == 0)
+                                connStr = clpbrd;
+                            SDL_free(clpbrd);
                         }
-                            break;
-                            
-                        default:
-                            break;
+
+                        _connString = connStr;
+                        ShowMenuMsgBox(17, get_lang_string(ypaworld__string_pointers, 421, "Connect to"), connStr, false);
                     }
-                    
-                    
-                    
-                    
-                    
+                        break;
+
+                    default:
+                        break;
                 }
             }
             else if ( r.code == 1201 )

@@ -215,6 +215,20 @@ void TileMap::Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t 
     SDLWRAP::DrawFill(img->GetSwTex(), map[c], surface, rect);
 }
 
+void TileMap::FillColumn(SDL_Surface *surface, const Common::Rect &rect, uint8_t c)
+{
+    Common::PointRect sPRect = map[c];
+    sPRect.w = 1;
+    SDLWRAP::DrawFill(img->GetSwTex(), sPRect, surface, rect);
+}
+
+void TileMap::FillColumn(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c)
+{
+    Common::PointRect sPRect = map[c];
+    sPRect.w = 1;
+    SDLWRAP::DrawFill(img->GetSwTex(), sPRect, surface, rect);
+}
+
 int TileMap::GetWidth(uint8_t c) const
 {
     return map[c].w;
@@ -233,3 +247,19 @@ Common::Point TileMap::GetSize(uint8_t c) const
     return Common::Point(map[c].w, h);
 }
 
+namespace GFX
+{
+
+    
+SDL_Color Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+{
+    SDL_Color tmp;
+    tmp.a = a;
+    tmp.r = r;
+    tmp.g = g;
+    tmp.b = b;
+    return tmp;
+}
+
+
+}

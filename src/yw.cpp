@@ -13,6 +13,7 @@
 #include "windp.h"
 #include "yw_net.h"
 #include "gui/uacommon.h"
+#include "gui/uamsgbox.h"
 
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
@@ -3563,7 +3564,6 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     usr->sub_bar_button->Hide();
 
-
     usr->confirm_button = Nucleus::CInit<NC_STACK_button>( {
         {NC_STACK_button::BTN_ATT_X, (int32_t)0},
         {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
@@ -5704,7 +5704,7 @@ void ypaworld_func157__sub0(NC_STACK_ypaworld *yw)
 void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 {
     if ( usr->field_0x0 )
-    {
+    {       
         if ( usr->confirm_button )
         {
             usr->confirm_button->Hide();
@@ -7809,10 +7809,8 @@ int NC_STACK_ypaworld::TestVehicle(int protoID, int job)
 
 void NC_STACK_ypaworld::UpdateGuiSettings()
 {
-    Gui::UA::_UATextColor.a = 255;
-    Gui::UA::_UATextColor.r = iniColors[60].r;
-    Gui::UA::_UATextColor.g = iniColors[60].g;
-    Gui::UA::_UATextColor.b = iniColors[60].b;
+    Gui::UA::_UATextColor = iniColors[60];
+    Gui::UA::_UAButtonTextColor = iniColors[68];
 
     
 
@@ -7824,6 +7822,7 @@ void NC_STACK_ypaworld::LoadGuiFonts()
 {
     std::string old = SetPathKeys("rsrc", "data:set46");
 
+    Gui::UA::_UATiles[Gui::UA::TILESET_46DEFAULT] = yw_LoadFont("default.font"); //0
     Gui::UA::_UATiles[Gui::UA::TILESET_46MAPC16] = yw_LoadFont("mapcur16.font"); //18
     Gui::UA::_UATiles[Gui::UA::TILESET_46MAPC32] = yw_LoadFont("mapcur32.font"); //19
     Gui::UA::_UATiles[Gui::UA::TILESET_46ENERGY] = yw_LoadFont("energy.font"); //30
@@ -7838,4 +7837,17 @@ void NC_STACK_ypaworld::LoadGuiFonts()
     Gui::UA::_UATiles[Gui::UA::TILESET_MAPVERT1]    = yw_LoadFont("mapvert1.font"); //13
 
     SetPathKeys("rsrc", old);    
+}
+
+void NC_STACK_ypaworld::CreateNewGuiElements()
+{
+    GameShell->_menuMsgBox = new Gui::UABlockMsgBox(Gui::UAMessageBox::TYPE_INMENU);
+    GameShell->_menuMsgBox->SetEnable(false);
+    Gui::Root::Instance.AddWidget(GameShell->_menuMsgBox);
+}
+
+void NC_STACK_ypaworld::DeleteNewGuiElements()
+{
+    delete GameShell->_menuMsgBox;
+    GameShell->_menuMsgBox = NULL;
 }

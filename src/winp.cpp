@@ -271,15 +271,14 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
     break;
 
     case SDL_MOUSEBUTTONDOWN:
-        if ( !Gui::Root::Instance.MouseDown(Common::Point(event->button.x, event->button.y), event->button.button) )
+    {
+        Common::Point corrPos = SDLWRAP::MousePosNorm(Common::Point(event->button.x, event->button.y));
+        if ( !Gui::Root::Instance.MouseDown(corrPos, event->button.button) )
         {
             if (event->button.button == SDL_BUTTON_LEFT)
             {
                 _mLstate = true;
-                _mLDpos.x = event->button.x;
-                _mLDpos.y = event->button.y;
-
-                _mLDpos = SDLWRAP::MousePosNorm(_mLDpos);
+                _mLDpos = corrPos;
 
                 _mLDcnt++;
 
@@ -288,10 +287,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
             else if (event->button.button == SDL_BUTTON_RIGHT)
             {
                 _mRstate = true;
-                _mRDpos.x = event->button.x;
-                _mRDpos.y = event->button.y;
-
-                _mRDpos = SDLWRAP::MousePosNorm(_mRDpos);
+                _mRDpos = corrPos;
 
                 _mRDcnt++;
 
@@ -300,29 +296,25 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
             else if (event->button.button == SDL_BUTTON_MIDDLE)
             {
                 _mMstate = true;
-                _mMDpos.x = event->button.x;
-                _mMDpos.y = event->button.y;
-
-                _mMDpos = SDLWRAP::MousePosNorm(_mMDpos);
+                _mMDpos = corrPos;
 
                 _mMDcnt++;
 
                 KeyDown(Input::KC_MMB);
             }
         }
-
-        break;
+    }
+    break;
 
     case SDL_MOUSEBUTTONUP:
-        if ( !Gui::Root::Instance.MouseUp(Common::Point(event->button.x, event->button.y), event->button.button) )
+    {
+        Common::Point corrPos = SDLWRAP::MousePosNorm(Common::Point(event->button.x, event->button.y));
+        if ( !Gui::Root::Instance.MouseUp(corrPos, event->button.button) )
         {
             if (event->button.button == SDL_BUTTON_LEFT)
             {
                 _mLstate = false;
-                _mLUpos.x = event->button.x;
-                _mLUpos.y = event->button.y;
-
-                _mLUpos = SDLWRAP::MousePosNorm(_mLUpos);
+                _mLUpos = corrPos;
 
                 _mLUcnt++;
 
@@ -334,10 +326,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
             else if (event->button.button == SDL_BUTTON_RIGHT)
             {
                 _mRstate = false;
-                _mRUpos.x = event->button.x;
-                _mRUpos.y = event->button.y;
-
-                _mRUpos = SDLWRAP::MousePosNorm(_mRUpos);
+                _mRUpos = corrPos;
 
                 _mRUcnt++;
 
@@ -346,27 +335,27 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
             else if (event->button.button == SDL_BUTTON_MIDDLE)
             {
                 _mMstate = false;
-                _mMUpos.x = event->button.x;
-                _mMUpos.y = event->button.y;
-
-                _mMUpos = SDLWRAP::MousePosNorm(_mMUpos);
+                _mMUpos = corrPos;
 
                 _mMUcnt++;
 
                 KeyUp(Input::KC_MMB);
             }
         }
-
-        break;
+    }
+    break;
 
     case SDL_MOUSEMOTION:
-        if ( !Gui::Root::Instance.MouseMove(Common::Point(event->button.x, event->button.y)) )
+    {
+        Common::Point corrPos = SDLWRAP::MousePosNorm(Common::Point(event->button.x, event->button.y));
+        if ( !Gui::Root::Instance.MouseMove(corrPos) )
         {
-            _mPos = SDLWRAP::MousePosNorm( Common::Point(event->motion.x, event->motion.y) );
+            _mPos = corrPos;
             _mMoveQuery = Common::Point(event->motion.xrel, event->motion.yrel);
             
         }
-        break;
+    }
+    break;
 
     default:
         break;

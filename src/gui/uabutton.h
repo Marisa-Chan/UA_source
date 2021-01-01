@@ -30,7 +30,17 @@ public:
     virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button);
     virtual void MouseMove(Common::Point pos, Common::Point scrPos, int button);
     
+protected:
+    virtual void OnBtnPress();
+    virtual void OnBtnClick();
+    
 public:
+    int32_t    Tag          = 0;
+    
+    
+    TFOnWidget  _fOnPress     = NULL;
+    void *      _fOnPressData = NULL;
+    
     TFOnWidget  _fOnClick     = NULL;
     void *      _fOnClickData = NULL;
     
@@ -49,9 +59,9 @@ public:
     
     void SetText(const std::string &txt) { _text = txt; }
     void SetTileSets(int up, int down, int lock);    
+    void SetColor(SDL_Color clr);
     
     virtual void Resize(Common::Point sz);
-    using Widget::Resize;
 
     virtual void Draw(SDL_Surface *surface, const Common::Rect &dirt);
     

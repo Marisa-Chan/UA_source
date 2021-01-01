@@ -23,7 +23,10 @@ void UABaseButton::MouseDown(Common::Point pos, Common::Point scrPos, int button
         _btnFlags &= ~FLAG_PRESSED;
 
         if ( IsLOn(pos) && button & MICE_LEFT)
+        {
             _btnFlags |= FLAG_PRESSED;
+            OnBtnPress();
+        }
     }
     
     Widget::MouseDown(pos, scrPos, button);
@@ -35,14 +38,26 @@ void UABaseButton::MouseUp(Common::Point pos, Common::Point scrPos, int button)
     {
         if ( button & MICE_LEFT)
         {
-            if ((_btnFlags & FLAG_PRESSED) && _fOnClick)
-                _fOnClick(this, _fOnClickData);                
+            if ((_btnFlags & FLAG_PRESSED))
+                OnBtnClick();
                 
             _btnFlags &= ~FLAG_PRESSED;
         }
     }
     
     Widget::MouseUp(pos, scrPos, button);
+}
+
+void UABaseButton::OnBtnPress()
+{
+    if (_fOnPress)
+        _fOnPress(this, _fOnPressData);
+}
+
+void UABaseButton::OnBtnClick()
+{
+    if (_fOnClick)
+        _fOnClick(this, _fOnClickData);
 }
 
 
@@ -73,10 +88,12 @@ UATextButton::UATextButton(Widget *parent, const std::string &txt, const Common:
 
 void UATextButton::Init()
 {
-    _color.a = 255;
-    _color.r = 255;
-    _color.g = 255;
-    _color.b = 255;
+    _color = GFX::Color();
+}
+
+void UATextButton::SetColor(SDL_Color clr)
+{
+    _color = clr;
 }
 
 void UATextButton::Draw(SDL_Surface *surface, const Common::Rect &dirt)

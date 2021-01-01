@@ -804,6 +804,24 @@ void DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, con
     }
 }
 
+void Draw(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, Common::Point dPoint)
+{
+    SDL_Rect Ssrc = sRect;
+    SDL_Rect Sdst = dPoint;
+    SDL_BlitSurface(src, &Ssrc, dst, &Sdst);
+}
+
+void Draw(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, Common::PointRect dRect)
+{
+    SDL_Rect Ssrc = sRect;
+    if (Ssrc.w > dRect.w)
+        Ssrc.w = dRect.w;
+    if (Ssrc.h > dRect.h)
+        Ssrc.h = dRect.h;
+    SDL_Rect Sdst = dRect;
+    SDL_BlitSurface(src, &Ssrc, dst, &Sdst);
+}
+
 Common::Point MousePosNorm(Common::Point in)
 {
     if (sW != curW || sH != curH)

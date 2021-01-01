@@ -85,7 +85,7 @@ public:
     bool MouseMove(Common::Point pos);
     bool MouseUp(Common::Point pos, int button);
 
-    void WidgetToFront(Widget *w);
+    void RootWidgetToFront(Widget *w);
     void ChangeFocus(Widget *w);
     void StartDragging(Widget *w);
     void StopHoldingMouse();
@@ -93,7 +93,7 @@ public:
     void SetScreenSize(Common::Point sz);
     Common::Point GetScreenSize();
 
-    Widget *FindByPos(const Common::Point &pos);
+    Widget *FindByPos(const Common::Point &pos, bool stopOnModal = false);
     Widget *FindByID(uint32_t id, bool enabled = true);
     
     uint32_t TimerAdd(uint32_t wID, uint32_t time, uint32_t code = Timer::CODE_ANY);
@@ -110,10 +110,10 @@ protected:
     Root() {};
     ~Root();
     
-    Widget *_FindByPos(WidgetList &lst, const Common::Point& pos);
+    Widget *_FindByPos(WidgetList &lst, const Common::Point& pos, bool stopOnModal = false);
     Widget *_FindByID(WidgetList &lst, uint32_t id, bool enabled = true);
-    void DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point parentOffset, Widget *w);
-
+    void DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point parentOffset, Widget *w, uint32_t alph = 255);
+        
     WidgetList& GetLayerList(int l);
     
     bool CheckEnable(Widget *w);
@@ -140,6 +140,7 @@ protected:
     WidgetList          _normal;
     WidgetList      _foreground;
     WidgetList      _background;
+    WidgetList          _modals;
     Widget*            _focused = NULL;
     Widget*             _miceOn = NULL;
     Widget*           _dragging = NULL;

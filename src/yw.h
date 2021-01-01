@@ -32,6 +32,8 @@
 #include "world/parsers.h"
 #include "world/saveparsers.h"
 
+#include "gui/uamsgbox.h"
+
 
 
 #define YW_RENDER_SECTORS_DEF   5
@@ -621,7 +623,10 @@ public:
     netType2 players[8];
     netType1 players2[4];
     NC_STACK_button *confirm_button;
+    Gui::UABlockMsgBox *_menuMsgBox = NULL;
     int field_0x2fb4;
+    int _menuMsgBoxCode = 0;
+    std::string _connString;
 
     EnvAction envAction;
 
@@ -698,6 +703,7 @@ public:
     void GameShellUiOpenNetwork();
     int ypaworld_func158__sub0__sub7();
     void sub_46D9E0(int a2, const char *txt1, const char *txt2, int a5);
+    void ShowMenuMsgBox(int code, const std::string &txt1, const std::string &txt2, bool OkOnly);
     void sub_46D2B4();
     void InputConfCopyToBackup();
     void InputConfigRestoreDefault();
@@ -1500,6 +1506,11 @@ struct rgbiColor
         b = 0;
         i = 0;
         color = 0;
+    }
+    
+    operator SDL_Color()
+    {
+        return GFX::Color(r, g, b, 255);
     }
 };
 
@@ -2506,6 +2517,8 @@ public:
     
     void UpdateGuiSettings();
     void LoadGuiFonts();
+    void CreateNewGuiElements();
+    void DeleteNewGuiElements();
     
     void HistoryAktCreate(NC_STACK_ypabact *bact);
     void HistoryAktKill(NC_STACK_ypabact *bact);

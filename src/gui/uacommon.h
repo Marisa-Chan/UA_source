@@ -4,20 +4,33 @@
 #include <array>
 #include <inttypes.h>
 #include <SDL2/SDL.h>
+
 #include "../common.h"
 #include "../engine_gfx.h"
-#include "../yw.h"
 
 #include "widget.h"
 
+class NC_STACK_ypaworld;
+
 namespace Gui
 {
+
+class UABaseButton;
+class UAOneTileButton;
+class UATextButton;
+class UATileButton;
+class UAEmpty;
+class UAScroll;
+class UAWindow;    
+class UAMessageBox;
+class UABlockMsgBox;
     
 class UA
 {
 public:
     enum TILESETS
     {
+        TILESET_46DEFAULT,//0
         TILESET_46MAPC16, //18
         TILESET_46MAPC32, //19
         TILESET_46ENERGY, //30
@@ -35,6 +48,7 @@ public:
     };
     static std::array<TileMap *, TILESET_MAX> _UATiles;
     static SDL_Color _UATextColor;
+    static SDL_Color _UAButtonTextColor;
     static TTF_Font *_UATTF;
     
     static NC_STACK_ypaworld *yw;

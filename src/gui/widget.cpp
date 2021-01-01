@@ -33,25 +33,42 @@ void Widget::AddChild(Widget *child, bool top)
 {
     child->Unparent();
     child->_parent = this;
+    
+    if (child->_modal)
+    {
+        top = true;
+        _modals.push_front(child);
+    }
 
     if (top)
         _childs.push_front(child);
     else
         _childs.push_back(child);
+    
+    child->OnAttachDetach(true);
 }
 
 void Widget::RemoveChild(Widget *child)
 {
+    _modals.remove(child);
     _childs.remove(child);
     child->_parent = NULL;
+    
+    child->OnAttachDetach(false);
 }
 
 void Widget::Unparent()
 {
     if (_rooted != Root::LAYER_UNK)
+    {
         Root::Instance.RemoveWidget(this);
+        OnAttachDetach(false);
+    }
     else if (_parent)
+    {
         _parent->RemoveChild(this); //Will clean this field
+        OnAttachDetach(false);
+    }
 }
 
 bool Widget::IsOn(const Common::Point &pos) const
@@ -158,7 +175,7 @@ Common::Rect Widget::GetWidgetVisibleRect() const
     return tmp;
 }
 
-Widget *Widget::FindChildLPos(const Common::Point &pos)
+Widget *Widget::FindChildLPos(const Common::Point &pos, bool stopOnModal)
 {
     if ( !IsEnabled() || !GetSizeRect().IsIn(pos) )
         return NULL;
@@ -173,6 +190,25 @@ Widget *Widget::FindChildLPos(const Common::Point &pos)
         else
             inCli = false;
     }
+    
+    if (stopOnModal && !_modals.empty())
+    {
+        for(auto w : _modals)
+        {
+            if (w->IsEnabled())
+            {
+                if (w->_flags & FLAG_PRIVATE)
+                { 
+                    if (w->_rect.IsIn(pos))
+                        return w->FindChildLPos(pos - w->_rect.Pos(), stopOnModal);
+                }
+                else if ( inCli && w->_rect.IsIn(cliPos) )
+                    return w->FindChildLPos(cliPos - w->_rect.Pos(), stopOnModal);
+                
+                return this;
+            }
+        }
+    }
 
     for(auto w : _childs)
     {
@@ -181,18 +217,18 @@ Widget *Widget::FindChildLPos(const Common::Point &pos)
             if (w->_flags & FLAG_PRIVATE)
             { 
                 if (w->_rect.IsIn(pos))
-                    return w->FindChildLPos(pos - w->_rect.Pos());
+                    return w->FindChildLPos(pos - w->_rect.Pos(), stopOnModal);
             }
             else if ( inCli && w->_rect.IsIn(cliPos) )
-                return w->FindChildLPos(cliPos - w->_rect.Pos());
+                return w->FindChildLPos(cliPos - w->_rect.Pos(), stopOnModal);
         }
     }
     return this;
 }
 
-Widget *Widget::FindByPos(const Common::Point &pos)
+Widget *Widget::FindByPos(const Common::Point &pos, bool stopOnModal)
 {
-    return FindChildLPos(ScreenCoordToWidget(pos));
+    return FindChildLPos(ScreenCoordToWidget(pos), stopOnModal);
 }
 
 
@@ -289,6 +325,14 @@ bool Widget::GetPrivate() const
     return (_flags & FLAG_PRIVATE) != 0;
 }
 
+void Widget::ToFront()
+{
+    if (IsRooted())
+        Root::Instance.RootWidgetToFront(this);
+    else if (_parent)
+        _parent->_childs.MoveToFirst(this);
+}
+
 void Widget::SetClientRect(Common::Rect r)
 {
     r.ClipBy( Common::Rect(_rect.Size()) );
@@ -304,14 +348,12 @@ void Widget::Resize(Common::Point sz)
         sz.y = 0;
     
     _rect.SetSize( sz );
+    
     if (_fOnResize)
         _fOnResize(this, _fOnResizeData, sz);
     
     for(Widget *w : _childs)
-    {
-        if (w->IsEnabled() && w->_fOnParentResize)
-            w->_fOnParentResize(w, w->_fOnParentResizeData, sz);
-    }
+        w->OnParentResize(sz);
 }
 
 void Widget::MouseDown(Common::Point pos, Common::Point scrPos, int button)
@@ -355,6 +397,27 @@ int Widget::GetWidth() const
 int Widget::GetHeight() const
 {
     return _rect.Height();
+}
+
+Common::Point Widget::GetSpace() const
+{
+    if (IsRooted())
+        return Root::Instance.GetScreenSize();
+    else if (_parent)
+        return _parent->GetSize();
+    return Common::Point();        
+}
+
+void Widget::OnAttachDetach(bool attach)
+{
+    if (_fOnAttachDetach)
+        _fOnAttachDetach(this, _fOnAttachDetachData, attach);
+}
+
+void Widget::OnParentResize(Common::Point newSz)
+{
+    if (_fOnParentResize)
+        _fOnParentResize(this, _fOnParentResizeData, newSz);
 }
 
 }

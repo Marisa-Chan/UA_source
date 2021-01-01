@@ -32,10 +32,19 @@ void Root::AddWidget(Widget *w, bool top)
 
     w->Unparent();
     w->_rooted = LAYER_NORMAL;
+    
+    if (w->_modal)
+    {
+        top = true;
+        _modals.push_front(w);
+    }    
+    
     if (top)
         _normal.push_front(w);
     else
         _normal.push_back(w);
+    
+    w->OnAttachDetach(true);
     
     if (w->IsEnabled() && w->_fOnHideShow) // If it's already enabled do call hide/show
         w->_fOnHideShow(w, w->_fOnHideShowData, true);
@@ -61,6 +70,8 @@ void Root::RemoveWidget(Widget *w)
     if (!w->IsRooted())
         return;
     
+    _modals.remove(w);
+    
     GetLayerList(w->_rooted).remove(w);
 
     if (_miceOn == w)
@@ -73,6 +84,8 @@ void Root::RemoveWidget(Widget *w)
         _dragging = NULL;
 
     w->_rooted = LAYER_UNK;
+    
+    w->OnAttachDetach(false);
     
     if (w->IsEnabled() && w->_fOnHideShow) // If enabled do call hide/show
         w->_fOnHideShow(w, w->_fOnHideShowData, false);
@@ -133,7 +146,7 @@ void Root::ModAlpha(SDL_Surface *surf, Common::Rect space, uint8_t alpha)
                     for (int x = space.left; x < space.right; x++)
                     {
                         uint32_t clr = *pixels;
-                        uint32_t a = (((clr & amask) >> ashift) * alpha / 255) << ashift;
+                        uint32_t a = ((uint32_t)((clr & amask) >> ashift) * (uint32_t)alpha / 255) << ashift;
                         *pixels = (clr & anmask) | a;
 
                         ++pixels;
@@ -146,16 +159,19 @@ void Root::ModAlpha(SDL_Surface *surf, Common::Rect space, uint8_t alpha)
     }
 }
 
-void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point parentOffset, Widget *w)
+void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point parentOffset, Widget *w, uint32_t alph)
 {
-    if (w && w->IsEnabled() && w->_alpha != 0 && !space.IsEmpty())
+    uint32_t effA = ((uint32_t)w->_alpha * alph) / 255;
+    if (w && w->IsEnabled() && effA != 0 && !space.IsEmpty())
     {
         Common::Rect widgetSpace = w->_rect;
         widgetSpace.Translate(parentOffset);
         widgetSpace.ClipBy(space);
         if (!widgetSpace.IsEmpty())
         {
-            if (!_dirtSurface || _dirtSurface->w < w->_rect.Width() || _dirtSurface->h < w->_rect.Height())
+            bool drawWidget = (w->_flags & Widget::FLAG_NODRAW) == 0;
+            if ( drawWidget &&
+                 (!_dirtSurface || _dirtSurface->w < w->_rect.Width() || _dirtSurface->h < w->_rect.Height()))
             {
                 int mW;
                 int mH;
@@ -177,7 +193,9 @@ void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point par
             Common::Rect dirtRect = widgetSpace;
             dirtRect.Translate(-parentOffset);
             dirtRect.Translate(-w->GetPos());
-            w->Draw(_dirtSurface, dirtRect);
+            
+            if (drawWidget)
+                w->Draw(_dirtSurface, dirtRect);
 
             SDL_Rect dstRect;
             SDL_Rect srcRect;
@@ -191,10 +209,13 @@ void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point par
             srcRect.w = dirtRect.Width();
             srcRect.h = dirtRect.Height();
 
-            if (w->_alpha != 255)
-                ModAlpha(_dirtSurface, srcRect, w->_alpha);
-            
-            SDL_BlitSurface(_dirtSurface, &srcRect, screen, &dstRect);
+            if (drawWidget)
+            {
+                if (effA != 255)
+                    ModAlpha(_dirtSurface, srcRect, effA);
+                
+                SDL_BlitSurface(_dirtSurface, &srcRect, screen, &dstRect);
+            }
 
             parentOffset += w->_rect.Pos();
             
@@ -213,9 +234,9 @@ void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point par
             for(auto it = w->_childs.rbegin(); it != w->_childs.rend(); it++)
             {
                 if ( (*it)->_flags & Widget::FLAG_PRIVATE )
-                    DrawWidget(screen, widgetSpace, parentOffset, *it);
+                    DrawWidget(screen, widgetSpace, parentOffset, *it, effA);
                 else if ( !clientSpace.IsEmpty() )
-                    DrawWidget(screen, clientSpace, clientOffset, *it);
+                    DrawWidget(screen, clientSpace, clientOffset, *it, effA);
             }
                 
         }
@@ -226,35 +247,43 @@ void Root::HwPrepareWidget(Widget *w)
 {
     if (w && w->IsEnabled() && w->_alpha != 0 && !w->_rect.IsEmpty())
     {
-        if (!w->_hwSurface || w->_hwSurface->w != w->_rect.Width() || w->_hwSurface->h != w->_rect.Height())
-        {
-            if (w->_hwSurface)
-                SDL_FreeSurface(w->_hwSurface);
-            
-            w->_hwSurface = CreateScreenFmtSurface(w->_rect.Width(), w->_rect.Height());
-        }
+        bool drawWidget = (w->_flags & Widget::FLAG_NODRAW) == 0;
         
-        Common::Rect widgetSpace(w->_rect.Size());
-
-        w->Draw( w->_hwSurface, widgetSpace );
-
-        Common::Point clientOffset(0, 0);
-        Common::Rect clientSpace = widgetSpace;
-
-        if (w->_flags & Widget::FLAG_CLIENT)
+        if ( drawWidget || !w->_childs.empty() )
         {
-            Common::Rect s = w->_client;
-            clientSpace.ClipBy(s);
+            if (!w->_hwSurface || w->_hwSurface->w != w->_rect.Width() || w->_hwSurface->h != w->_rect.Height())
+            {
+                if (w->_hwSurface)
+                    SDL_FreeSurface(w->_hwSurface);
 
-            clientOffset += w->_client.Pos();
-        }
+                w->_hwSurface = CreateScreenFmtSurface(w->_rect.Width(), w->_rect.Height());
+            }
 
-        for(auto it = w->_childs.rbegin(); it != w->_childs.rend(); it++)
-        {
-            if ( (*it)->_flags & Widget::FLAG_PRIVATE )
-                DrawWidget(w->_hwSurface, widgetSpace, Common::Point(0, 0), *it);
-            else if ( !clientSpace.IsEmpty() )
-                DrawWidget(w->_hwSurface, clientSpace, clientOffset, *it);
+            Common::Rect widgetSpace(w->_rect.Size());
+
+            if (drawWidget)
+                w->Draw( w->_hwSurface, widgetSpace );
+            else
+                SDL_FillRect( w->_hwSurface, NULL, SDL_MapRGBA(w->_hwSurface->format, 0, 0, 0, 0));
+
+            Common::Point clientOffset(0, 0);
+            Common::Rect clientSpace = widgetSpace;
+
+            if (w->_flags & Widget::FLAG_CLIENT)
+            {
+                Common::Rect s = w->_client;
+                clientSpace.ClipBy(s);
+
+                clientOffset += w->_client.Pos();
+            }
+
+            for(auto it = w->_childs.rbegin(); it != w->_childs.rend(); it++)
+            {
+                if ( (*it)->_flags & Widget::FLAG_PRIVATE )
+                    DrawWidget(w->_hwSurface, widgetSpace, Common::Point(0, 0), *it);
+                else if ( !clientSpace.IsEmpty() )
+                    DrawWidget(w->_hwSurface, clientSpace, clientOffset, *it);
+            }
         }
     }
 }
@@ -282,13 +311,14 @@ bool Root::MouseDown(Common::Point pos, int button)
     else
     {       
         if (firstBtn)
-            UpdateWidgetOnMice( FindByPos(pos) );
+            UpdateWidgetOnMice( FindByPos(pos, true) );
 
         if (_miceOn)
         {
             if (!_miceOn->IsFocused() && button == MICE_LEFT)
             {
-                WidgetToFront(_miceOn);
+                if (!(_miceOn->_flags & Widget::FLAG_NOBRING))
+                    RootWidgetToFront(_miceOn);
                 ChangeFocus(_miceOn);
             }
             
@@ -324,7 +354,7 @@ bool Root::MouseUp(Common::Point pos, int button)
             _dragging = NULL;
             
             
-            UpdateWidgetOnMice( FindByPos(pos) );
+            UpdateWidgetOnMice( FindByPos(pos, true) );
         }
         return true;
     }
@@ -334,14 +364,15 @@ bool Root::MouseUp(Common::Point pos, int button)
         {
             if (!_miceOn->IsFocused())
             {
-                WidgetToFront(_miceOn);
+                if (!(_miceOn->_flags & Widget::FLAG_NOBRING))
+                    RootWidgetToFront(_miceOn);
                 ChangeFocus(_miceOn);
             }
 
             _miceOn->MouseUp(_miceOn->ScreenCoordToWidget(pos), pos, btn);
             
             if (!_buttons)
-                UpdateWidgetOnMice( FindByPos(pos) );
+                UpdateWidgetOnMice( FindByPos(pos, true) );
 
             return true;
         }
@@ -363,7 +394,7 @@ bool Root::MouseMove(Common::Point pos)
     else
     {
         if (!_buttons)
-            UpdateWidgetOnMice( FindByPos(pos) );
+            UpdateWidgetOnMice( FindByPos(pos, true) );
 
         if (_miceOn)
         {
@@ -374,7 +405,7 @@ bool Root::MouseMove(Common::Point pos)
     return false;
 }
 
-void Root::WidgetToFront(Widget *w)
+void Root::RootWidgetToFront(Widget *w)
 {
     Widget *root = w->GetRoot();
 
@@ -386,23 +417,36 @@ void Root::WidgetToFront(Widget *w)
 }
 
 
-Widget *Root::_FindByPos(WidgetList &lst, const Common::Point &pos)
+Widget *Root::_FindByPos(WidgetList &lst, const Common::Point &pos, bool stopOnModal)
 {
     for(auto w : lst)
     {
         if (w->IsEnabled() && w->GetScreenVisibleRect().IsIn(pos))
-            return w->FindByPos(pos);
+            return w->FindByPos(pos, stopOnModal);
     }
     return NULL;
 }
 
-Widget *Root::FindByPos(const Common::Point &pos)
+Widget *Root::FindByPos(const Common::Point &pos, bool stopOnModal)
 {
-    Widget *w = _FindByPos(_foreground, pos);
+    if (stopOnModal && !_modals.empty())
+    {
+        for(auto w : _modals)
+        {
+            if (w->IsEnabled())
+            {
+                if (w->GetScreenVisibleRect().IsIn(pos))
+                    return w->FindByPos(pos, stopOnModal);
+                return NULL;
+            }
+        }
+    }
+            
+    Widget *w = _FindByPos(_foreground, pos, stopOnModal);
     if (w)
         return w;
 
-    w = _FindByPos(_normal, pos);
+    w = _FindByPos(_normal, pos, stopOnModal);
     if (w)
         return w;
 
@@ -464,6 +508,15 @@ void Root::StartDragging(Widget *w)
 void Root::SetScreenSize(Common::Point sz)
 {
     _screenSize = sz;
+    
+    for(Widget *& w : _foreground)
+        w->OnParentResize(sz);
+    
+    for(Widget *& w : _normal)
+        w->OnParentResize(sz);
+    
+    for(Widget *& w : _background)
+        w->OnParentResize(sz);
 }
 
 Common::Point Root::GetScreenSize()
@@ -712,7 +765,6 @@ void Root::HwRenderWidget(Widget *w)
         glEnd();
     }
 }
-
 
 
 WidgetList::iterator WidgetList::find(Widget *w)

@@ -48,6 +48,10 @@ struct TileMap
     void Fill(SDL_Surface *surface, const Common::Rect &rect, uint8_t c);
     void Fill(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c);
     
+    //Special fill use 1pix column
+    void FillColumn(SDL_Surface *surface, const Common::Rect &rect, uint8_t c);
+    void FillColumn(SDL_Surface *surface, const Common::PointRect &rect, uint8_t c);
+    
     int GetWidth(uint8_t c) const;
     int GetWidth(const std::string &str) const;
     Common::Point GetSize(uint8_t c) const;
@@ -114,5 +118,12 @@ public:
 private:
     NC_STACK_win3d *cls3D;
 };
+
+namespace GFX
+{
+
+SDL_Color Color(uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, uint8_t a = 255);
+
+}
 
 #endif // ENGINE_GFX_H_INCLUDED
