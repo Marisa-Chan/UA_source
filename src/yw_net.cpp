@@ -1131,7 +1131,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
     }
     else
     {
-        if ( msgID != UAMSG_FRACTION && msgID != UAMSG_MESSAGE && msgID != UAMSG_WELCOME && msgID != UAMSG_READY && msgID != UAMSG_LOAD )
+        if ( msgID != UAMSG_FRACTION && msgID != UAMSG_MESSAGE && msgID != UAMSG_WELCOME && msgID != UAMSG_READY && msgID != UAMSG_LOAD && msgID != UAMSG_CD )
             log_netlog("Warning, no or false owner (%d) specified for msg %d\n", owner, msgID);
         tv481 = 0;
     }
