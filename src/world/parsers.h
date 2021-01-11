@@ -213,7 +213,7 @@ public:
 protected:
     NC_STACK_ypaworld &_o;
     TBuildingProto *_bld;
-    int32_t _gunID;
+    size_t _gunID;
 };
 
 

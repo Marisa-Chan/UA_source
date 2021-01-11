@@ -1465,6 +1465,7 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
         _bld->Energy = 50000;
         _bld->TypeIcon = 65;
         _bld->SndFX.volume = 120;
+        _bld->Guns.clear();
         return true;
     }
     else if (!StriCmp(word, "modify_building"))
@@ -1550,6 +1551,8 @@ int BuildProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1
     else if ( !StriCmp(p1, "sbact_act") )
     {
         _gunID = std::stol(p2, NULL, 0);
+        if (_gunID >= _bld->Guns.size())
+            _bld->Guns.resize(_gunID + 1);
     }
     else
     {

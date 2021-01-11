@@ -2007,7 +2007,7 @@ struct TBuildingProto
     std::string Name;
     int Energy;
     vhclSndFX SndFX;
-    std::array<TGun, 8> Guns;
+    std::vector<TGun> Guns;
 
     TBuildingProto()
     {

@@ -2604,7 +2604,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
                         gun_obj->_host_station = robo;
                         gun_obj->_commandID = v39;
 
-                        if ( isNetGame )
+                        if ( isNetGame && i < 8 )
                         {
                             gun_obj->_gid |= ownerid2 << 24;
 

@@ -1819,9 +1819,9 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos)
                 {
                     int protoPow = proto->Power;
 
-                    for (int j = 0; j < 8; j++)
+                    for (TBuildingProto::TGun &gun : proto->Guns)
                     {
-                        if ( proto->Guns[j].VhclID )
+                        if ( gun.VhclID )
                             protoPow += 10;
                     }
 
@@ -2021,9 +2021,9 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos)
                 {
                     int protoPow = proto->Power;
 
-                    for (int j = 0; j < 8; j++)
+                    for (TBuildingProto::TGun &gun : proto->Guns)
                     {
-                        if ( proto->Guns[j].VhclID )
+                        if ( gun.VhclID )
                             protoPow += 10;
                     }
 
@@ -2195,9 +2195,9 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos)
                 {
                     int protoPow = proto->Power;
 
-                    for (int j = 0; j < 8; j++)
+                    for (TBuildingProto::TGun &gun : proto->Guns)
                     {
-                        if ( proto->Guns[j].VhclID )
+                        if ( gun.VhclID )
                             protoPow += 10;
                     }
 
