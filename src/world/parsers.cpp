@@ -3116,7 +3116,7 @@ Common::PlaneBytes *MapAsPlaneBytes::ReadMapAsPlaneBytes(ScriptParser::Parser &p
     parser.ReadLine(&buf);
 
     std::string tmp;
-    Stok stok(buf, " \r\n");
+    Stok stok(buf, " \t\r\n");
     stok.GetNext(&tmp);
     int w = std::stol(tmp, NULL, 0);
     stok.GetNext(&tmp);
