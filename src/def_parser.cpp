@@ -21,36 +21,36 @@ bool Parser::ParseNextLine(std::string *p1, std::string *p2)
     while ( loop )
     {
     	if ( !ReadLine(&buf) )
-			return p1read;
+            return p1read;
 
         size_t line_start = buf.find(";#!");
         if (line_start != std::string::npos)
             buf = buf.substr(line_start + 3);
         
-		size_t line_end = buf.find_first_of(";\n\r");
-		if (line_end != std::string::npos)
-			buf.erase(line_end);
+        size_t line_end = buf.find_first_of(";\n\r");
+        if (line_end != std::string::npos)
+            buf.erase(line_end);
 
         stok = buf;
-		if (!p1read && stok.GetNext(&word) )
-		{
-			p1read = true;
-			(*p1) = word;
-		}
+        if (!p1read && stok.GetNext(&word) )
+        {
+            p1read = true;
+            (*p1) = word;
+        }
 
-		if (p1read)
-		{
-			loop = false;
-			if (stok.GetNext(&word))
-			{
-				(*p2) += word;
-				if (p2->back() == '\\')
-				{
-					p2->back() = '\n';
-					loop = true;
-				}
-			}
-		}
+        if (p1read)
+        {
+            loop = false;
+            if (stok.GetNext(&word))
+            {
+                (*p2) += word;
+                if (p2->back() == '\\')
+                {
+                    p2->back() = '\n';
+                    loop = true;
+                }
+            }
+        }
     }
 
     return true;
@@ -59,10 +59,10 @@ bool Parser::ParseNextLine(std::string *p1, std::string *p2)
 
 int Parser::ParseRoutine(const std::string &filename, HandlersList &callbacks, int flags)
 {
-	std::string p1;
-	std::string p2;
+    std::string p1;
+    std::string p2;
 
-	int selectedHandler = -1;
+    int selectedHandler = -1;
 
     while ( ParseNextLine(&p1, &p2) )
     {
@@ -72,9 +72,9 @@ int Parser::ParseRoutine(const std::string &filename, HandlersList &callbacks, i
 
             if ( res == RESULT_SCOPE_END )
             {
-				selectedHandler = -1;
+                selectedHandler = -1;
             }
-			else if ( res )
+            else if ( res )
             {
                 if ( res == RESULT_UNKNOWN )
                     ypa_log_out("PARSE ERROR: script %s line #%d unknown keyword %s.\n", filename.c_str(), _line, p1.c_str());
@@ -86,7 +86,7 @@ int Parser::ParseRoutine(const std::string &filename, HandlersList &callbacks, i
         }
         else if ( !(flags & FLAG_NO_INCLUDE) && !StriCmp(p1, "include") )
         {
-        	Parser include(p2);
+            Parser include(p2);
             if ( !include.ParseFile(p2, callbacks, flags) )
             {
                 ypa_log_out("ERROR: script %s line #%d include %s failed!\n", filename.c_str(), _line, p1.c_str());
@@ -98,10 +98,10 @@ int Parser::ParseRoutine(const std::string &filename, HandlersList &callbacks, i
             for (uint32_t i = 0; i < callbacks.size(); i++)
             {
             	if ( callbacks[i]->IsScope(*this, p1, p2) )
-				{
-					selectedHandler = i;
-					break;
-				}
+                {
+                    selectedHandler = i;
+                    break;
+                }
             }
 
             if ( selectedHandler == -1 && (flags & FLAG_NO_SCOPE_SKIP) )
@@ -156,17 +156,17 @@ bool Parser::ParseFile(const std::string &filename, HandlersList &callbacks, int
     parser._mode = MODE_FILE;
 
     if (!parser._file)
-            return false;
+        return false;
 
     int res = RESULT_SCOPE_END;
     while (res == RESULT_SCOPE_END)
-            res = parser.ParseRoutine(filename, callbacks, flags);
+        res = parser.ParseRoutine(filename, callbacks, flags);
 
     delete parser._file;
     parser._file = NULL;
 
     if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
-            return false;
+        return false;
 
     return true;
 }
@@ -186,7 +186,7 @@ bool Parser::ParseStringList(const Engine::StringList &slist, HandlersList &call
     parser._file = NULL;
 
     if ( res == RESULT_UNKNOWN || res == RESULT_BAD_DATA || res == RESULT_UNEXP_EOF )
-            return false;
+        return false;
 
     return true;
 }
