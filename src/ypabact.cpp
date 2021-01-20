@@ -21,6 +21,24 @@ int ypabact_id = 1;
 char **dword_5490B0; // ypaworld strings
 
 
+uint8_t DestFX::ParseTypeName(const std::string &in)
+{
+    if ( !StriCmp(in, "death") )
+        return FX_DEATH;
+    
+    if ( !StriCmp(in, "megadeth") )
+        return FX_MEGADETH;
+    
+    if ( !StriCmp(in, "create") )
+        return FX_CREATE;
+    
+    if ( !StriCmp(in, "beam") )
+        return FX_BEAM;
+    
+    return FX_NONE;
+}
+
+
 NC_STACK_ypabact::NC_STACK_ypabact()
 : _kidList(this, GetKidRefNode, World::BLIST_KIDS)
 {
@@ -4958,8 +4976,8 @@ void NC_STACK_ypabact::Renew()
     _gun_angle_user = _gun_angle;
     _oflags |= BACT_OFLAG_LANDONWAIT;
 
-    for (int i = 0; i < 16; i++)
-        _destroyFX[i].clear();
+    for (DestFX &x : _destroyFX)
+        x.Clear();
 
     memset(&_vp_extra, 0, sizeof(extra_vproto) * 3);
 
@@ -6580,7 +6598,7 @@ void NC_STACK_ypabact::BeamingTimeUpdate(update_msg *arg)
     }
 }
 
-void NC_STACK_ypabact::StartDestFX__sub0(const destFX &fx)
+void NC_STACK_ypabact::StartDestFX(const DestFX &fx)
 {
     ypaworld_arg146 arg146;
 
@@ -6589,11 +6607,11 @@ void NC_STACK_ypabact::StartDestFX__sub0(const destFX &fx)
 
     if ( _radius > 31.0 )    // 31.0
     {
-        float len = fx.pos.length();
+        float len = fx.Pos.length();
 
         if ( len > 0.1 )
         {
-            vec3d pos = fx.pos / len * _radius;
+            vec3d pos = fx.Pos / len * _radius;
 
             arg146.pos += _rotation.Transform(pos);
         }
@@ -6612,9 +6630,9 @@ void NC_STACK_ypabact::StartDestFX__sub0(const destFX &fx)
 
         bah->SetStateInternal(&v18);
 
-        bah->_fly_dir = _rotation.Transform(fx.pos);
+        bah->_fly_dir = _rotation.Transform(fx.Pos);
 
-        if ( fx.type_flag & 0x10 )
+        if ( fx.Accel )
             bah->_fly_dir += _fly_dir * _fly_dir_length;
 
         float len = bah->_fly_dir.length();
@@ -6628,25 +6646,26 @@ void NC_STACK_ypabact::StartDestFX__sub0(const destFX &fx)
     }
 }
 
-void NC_STACK_ypabact::StartDestFX(uint8_t arg)
+void NC_STACK_ypabact::StartDestFXByType(uint8_t type)
 {
     if ( _world->ypaworld_func145(this) )
     {
-        int a4 = _world->getYW_destroyFX();
+        size_t a4 = _world->getYW_destroyFX();
 
-        if (a4 > 16)
-            a4 = 16;
+        if (a4 > _destroyFX.size())
+            a4 = _destroyFX.size();
 
-        for (int i = 0; i < a4; i++)
+        for (size_t i = 0; i < a4; i++)
         {
             if ( _destroyFX[i].ModelID )
             {
-                const destFX &fx = _destroyFX[i];
+                const DestFX &fx = _destroyFX[i];
 
-                if ( ((fx.type_flag & 2) && arg == 2) || ((fx.type_flag & 1) && arg == 1) || ((fx.type_flag & 4) && arg == 4) || ((fx.type_flag & 8) && arg == 8) )
-                    StartDestFX__sub0(fx);
+                if ( fx.Type == type )
+                    StartDestFX(fx);
             }
         }
+        
     }
 }
 
@@ -7027,7 +7046,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         _soundFlags |= 0x80;
 
-        StartDestFX(1);
+        StartDestFXByType(DestFX::FX_DEATH);
 
         result = 1;
     }
@@ -7096,7 +7115,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             SFXEngine::SFXe.startSound(&_soundcarrier, 9);
         }
 
-        StartDestFX(8);
+        StartDestFXByType(DestFX::FX_BEAM);
 
         result = 1;
     }
@@ -7178,7 +7197,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             SFXEngine::SFXe.startSound(&_soundcarrier, 3);
         }
 
-        StartDestFX(4);
+        StartDestFXByType(DestFX::FX_CREATE);
 
         result = 1;
     }
@@ -7285,7 +7304,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
             SFXEngine::SFXe.startSound(&_soundcarrier, 4);
 
-            StartDestFX(2);
+            StartDestFXByType(DestFX::FX_MEGADETH);
 
             _fly_dir_length = 0;
 

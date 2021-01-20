@@ -713,24 +713,25 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
         if ( stok.GetNext(&fx_type) && stok.GetNext(&pp1) && stok.GetNext(&pp2) && stok.GetNext(&pp3) && stok.GetNext(&pp4) )
         {
-            destFX &dfx = _vhcl->dest_fx[ _vhcl->destFxCount ];
-            dfx.type_flag = 0;
+            DestFX &dfx = _vhcl->dest_fx[ _vhcl->destFxCount ];
+            dfx.Type = DestFX::ParseTypeName(fx_type);
 
-            if ( !StriCmp(fx_type, "death") )
-                dfx.type_flag |= 1;
-            else if ( !StriCmp(fx_type, "megadeth") )
-                dfx.type_flag |= 2;
-            else if ( !StriCmp(fx_type, "create") )
-                dfx.type_flag |= 4;
-            else if ( !StriCmp(fx_type, "beam") )
-                dfx.type_flag |= 8;
-            else
+            if (dfx.Type == DestFX::FX_NONE)
                 return ScriptParser::RESULT_BAD_DATA;
 
             dfx.ModelID = std::stol(pp1, NULL, 0);
-            dfx.pos.x = std::stof(pp2, 0);
-            dfx.pos.y = std::stof(pp3, 0);
-            dfx.pos.z = std::stof(pp4, 0);
+            dfx.Pos.x = std::stof(pp2, 0);
+            dfx.Pos.y = std::stof(pp3, 0);
+            dfx.Pos.z = std::stof(pp4, 0);
+            
+            std::string pp5;
+            if ( stok.GetNext(&pp5) )
+            {
+                if (std::stol(pp5, NULL, 0) != 0 )
+                    dfx.Accel = true;
+                else
+                    dfx.Accel = false;
+            }
 
             _vhcl->destFxCount++;
             if ( _vhcl->destFxCount >= _vhcl->dest_fx.size() )
@@ -1422,24 +1423,25 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
 
         if ( stok.GetNext(&fx_type) && stok.GetNext(&pp1) && stok.GetNext(&pp2) && stok.GetNext(&pp3) && stok.GetNext(&pp4) )
         {
-            destFX &dfx = _wpn->dfx[ _wpn->destFxCount ];
-            dfx.type_flag = 0;
+            DestFX &dfx = _wpn->dfx[ _wpn->destFxCount ];
+            dfx.Type = DestFX::ParseTypeName(fx_type);
 
-            if ( !StriCmp(fx_type, "death") )
-                dfx.type_flag |= 1;
-            else if ( !StriCmp(fx_type, "megadeth") )
-                dfx.type_flag |= 2;
-            else if ( !StriCmp(fx_type, "create") )
-                dfx.type_flag |= 4;
-            else if ( !StriCmp(fx_type, "beam") )
-                dfx.type_flag |= 8;
-            else
+            if (dfx.Type == DestFX::FX_NONE)
                 return ScriptParser::RESULT_BAD_DATA;
 
             dfx.ModelID = std::stol(pp1, NULL, 0);
-            dfx.pos.x = std::stof(pp2, 0);
-            dfx.pos.y = std::stof(pp3, 0);
-            dfx.pos.z = std::stof(pp4, 0);
+            dfx.Pos.x = std::stof(pp2, 0);
+            dfx.Pos.y = std::stof(pp3, 0);
+            dfx.Pos.z = std::stof(pp4, 0);
+            
+            std::string pp5;
+            if ( stok.GetNext(&pp5) )
+            {
+                if (std::stol(pp5, NULL, 0) != 0 )
+                    dfx.Accel = true;
+                else
+                    dfx.Accel = false;
+            }
 
             _wpn->destFxCount++;
             if ( _wpn->destFxCount >= (int)_wpn->dfx.size() )

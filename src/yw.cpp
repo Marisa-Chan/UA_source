@@ -1992,8 +1992,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wobj->_vp_megadeth = vhcls_models[wproto->vp_megadeth];
     wobj->_vp_genesis =  vhcls_models[wproto->vp_genesis];
 
-    for (int i = 0; i < 16; i++)
-        wobj->_destroyFX[i] = wproto->dfx[i];
+    wobj->_destroyFX = wproto->dfx;
 
     int missileType;
 

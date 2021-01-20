@@ -744,7 +744,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
-        StartDestFX(1);
+        StartDestFXByType(DestFX::FX_DEATH);
 
         _fly_dir_length = 0;
     }
@@ -774,7 +774,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
-        StartDestFX(2);
+        StartDestFXByType(DestFX::FX_MEGADETH);
 
         _fly_dir_length = 0;
     }

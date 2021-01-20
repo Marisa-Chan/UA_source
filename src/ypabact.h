@@ -21,23 +21,30 @@ struct yw_arg129;
 struct cellArea;
 
 
-struct destFX
+struct DestFX
 {
-    char type_flag;
-    int ModelID; // Model id. >= 0
-    vec3d pos;
+    enum FXTYPES {
+        FX_NONE = 0,
+        FX_DEATH,    // "death"
+        FX_MEGADETH, // "megadeth"
+        FX_CREATE,   // "create"
+        FX_BEAM      // "beam"
+    };
+    
+    uint8_t Type = FX_NONE;
+    int ModelID  = 0; // Model id. >= 0
+    vec3d Pos;
+    bool Accel   = false;
 
-    destFX()
+    void Clear()
     {
-        clear();
-    }
-
-    void clear()
-    {
-        type_flag = 0;
+        Type = FX_NONE;
         ModelID = 0;
-        pos = 0.0;
+        Pos = vec3d();
+        Accel = false;
     }
+    
+    static uint8_t ParseTypeName(const std::string &in);
 };
 
 
@@ -464,7 +471,7 @@ public:
     virtual size_t TargetAssess(bact_arg110 *arg);
     virtual size_t TestTargetSector(NC_STACK_ypabact *);
     virtual void BeamingTimeUpdate(update_msg *arg);
-    virtual void StartDestFX(uint8_t arg);
+    virtual void StartDestFXByType(uint8_t arg);
     virtual void CorrectPositionOnLand();
     virtual void CorrectPositionInLevelBox(void *);
     virtual void NetUpdate(update_msg *arg);
@@ -547,7 +554,7 @@ public:
     
     void sub_4843BC(NC_STACK_ypabact *bact2, int a3);
     void sub_493480(NC_STACK_ypabact *bact2, int mode);
-    void StartDestFX__sub0(const destFX &fx);
+    void StartDestFX(const DestFX &fx);
 
     void DoTargetWaypoint();
     void FixSectorFall();
@@ -665,7 +672,7 @@ public:
     int _vp_active;
     extra_vproto _vp_extra[3];
     int _vp_extra_mode;
-    std::array<destFX, 16> _destroyFX;
+    std::array<DestFX, 16> _destroyFX;    // dest_fx
     float _radius;
     float _viewer_radius;
     float _overeof;
