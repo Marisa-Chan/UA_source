@@ -4978,6 +4978,8 @@ void NC_STACK_ypabact::Renew()
 
     for (DestFX &x : _destroyFX)
         x.Clear();
+    
+    _extDestroyFX.clear();
 
     memset(&_vp_extra, 0, sizeof(extra_vproto) * 3);
 
@@ -6666,6 +6668,11 @@ void NC_STACK_ypabact::StartDestFXByType(uint8_t type)
             }
         }
         
+        for (const DestFX &x : _extDestroyFX)
+        {
+            if (x.ModelID != 0 && x.Type == type)
+                StartDestFX(x);
+        }
     }
 }
 

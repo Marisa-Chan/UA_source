@@ -742,6 +742,39 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
             return ScriptParser::RESULT_BAD_DATA;
         }
     }
+    else if ( !StriCmp(p1, "ext_dest_fx") || !StriCmp(p1, "extended_dest_fx") )
+    {
+        Stok stok(p2, " _");
+        std::string fx_type, pp1, pp2, pp3, pp4;
+
+        if ( stok.GetNext(&fx_type) && stok.GetNext(&pp1) && stok.GetNext(&pp2) && stok.GetNext(&pp3) && stok.GetNext(&pp4) )
+        {
+            _vhcl->ExtDestroyFX.emplace_back();
+            
+            DestFX &dfx = _vhcl->ExtDestroyFX.back();
+            
+            dfx.Type = DestFX::ParseTypeName(fx_type);
+
+            if (dfx.Type == DestFX::FX_NONE)
+                return ScriptParser::RESULT_BAD_DATA;
+
+            dfx.ModelID = std::stol(pp1, NULL, 0);
+            dfx.Pos.x = std::stof(pp2, 0);
+            dfx.Pos.y = std::stof(pp3, 0);
+            dfx.Pos.z = std::stof(pp4, 0);
+            
+            std::string pp5;
+            if ( stok.GetNext(&pp5) )
+            {
+                if (std::stol(pp5, NULL, 0) != 0 )
+                    dfx.Accel = true;
+                else
+                    dfx.Accel = false;
+            }
+        }
+        else
+            return ScriptParser::RESULT_BAD_DATA;
+    }
     else if ( !StriCmp(p1, "weapon") )
     {
         _vhcl->weapon = std::stol(p2, NULL, 0);
@@ -1446,6 +1479,39 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
             _wpn->destFxCount++;
             if ( _wpn->destFxCount >= (int)_wpn->dfx.size() )
                 _wpn->destFxCount = _wpn->dfx.size() - 1;
+        }
+        else
+            return ScriptParser::RESULT_BAD_DATA;
+    }
+    else if ( !StriCmp(p1, "ext_dest_fx") || !StriCmp(p1, "extended_dest_fx") )
+    {
+        Stok stok(p2, " _");
+        std::string fx_type, pp1, pp2, pp3, pp4;
+
+        if ( stok.GetNext(&fx_type) && stok.GetNext(&pp1) && stok.GetNext(&pp2) && stok.GetNext(&pp3) && stok.GetNext(&pp4) )
+        {
+            _wpn->ExtDestroyFX.emplace_back();
+            
+            DestFX &dfx = _wpn->ExtDestroyFX.back();
+            
+            dfx.Type = DestFX::ParseTypeName(fx_type);
+
+            if (dfx.Type == DestFX::FX_NONE)
+                return ScriptParser::RESULT_BAD_DATA;
+
+            dfx.ModelID = std::stol(pp1, NULL, 0);
+            dfx.Pos.x = std::stof(pp2, 0);
+            dfx.Pos.y = std::stof(pp3, 0);
+            dfx.Pos.z = std::stof(pp4, 0);
+            
+            std::string pp5;
+            if ( stok.GetNext(&pp5) )
+            {
+                if (std::stol(pp5, NULL, 0) != 0 )
+                    dfx.Accel = true;
+                else
+                    dfx.Accel = false;
+            }
         }
         else
             return ScriptParser::RESULT_BAD_DATA;

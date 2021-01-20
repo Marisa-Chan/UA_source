@@ -1737,6 +1737,7 @@ struct VhclProto
     int16_t vp_megadeth;
     int16_t vp_genesis;
     std::array<DestFX, 16> dest_fx;      // dest_fx
+    std::vector<DestFX>    ExtDestroyFX; // ext_dest_fx
     std::array<vhclSndFX, 12> sndFX;
     int vo_type;
     float max_pitch;
@@ -1809,6 +1810,8 @@ struct VhclProto
 
         for (auto &x : dest_fx)
             x.Clear();
+        
+        ExtDestroyFX.clear();
 
         for (auto &x : sndFX)
             x.clear();
@@ -1882,6 +1885,7 @@ struct WeapProto
     int16_t vp_genesis;
     int destFxCount;
     std::array<DestFX, 16> dfx;
+    std::vector<DestFX>    ExtDestroyFX; // ext_dest_fx
     vhclSndFX sndFXes[3];
     int field_870;
     int field_874;
@@ -1941,6 +1945,8 @@ struct WeapProto
         for (auto &f: dfx)
             f.Clear();
 
+        ExtDestroyFX.clear();
+        
         for (auto &s: sndFXes)
             s.clear();
 

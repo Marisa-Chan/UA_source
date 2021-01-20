@@ -673,6 +673,7 @@ public:
     extra_vproto _vp_extra[3];
     int _vp_extra_mode;
     std::array<DestFX, 16> _destroyFX;    // dest_fx
+    std::vector<DestFX>    _extDestroyFX; // ext_dest_fx
     float _radius;
     float _viewer_radius;
     float _overeof;

@@ -1862,6 +1862,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bacto->_vp_genesis.trigo = vhcls_models[ vhcl->vp_genesis ].trigo;
 
         bacto->_destroyFX = vhcl->dest_fx;
+        bacto->_extDestroyFX = vhcl->ExtDestroyFX;
 
         memset(bacto->_vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
         memset(bacto->_vp_fx_tform, 0, sizeof(TFEngine::TForm3D *) * 32);
@@ -1993,6 +1994,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wobj->_vp_genesis =  vhcls_models[wproto->vp_genesis];
 
     wobj->_destroyFX = wproto->dfx;
+    wobj->_extDestroyFX = wproto->ExtDestroyFX;
 
     int missileType;
 
