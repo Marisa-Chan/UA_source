@@ -23,6 +23,10 @@ bool Parser::ParseNextLine(std::string *p1, std::string *p2)
     	if ( !ReadLine(&buf) )
 			return p1read;
 
+        size_t line_start = buf.find(";#!");
+        if (line_start != std::string::npos)
+            buf = buf.substr(line_start + 3);
+        
 		size_t line_end = buf.find_first_of(";\n\r");
 		if (line_end != std::string::npos)
 			buf.erase(line_end);
