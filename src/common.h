@@ -511,7 +511,7 @@ public:
     {
         for(size_t i = 0; i < MIN(BASE::size(), bits.size()); i++)
         {
-            if (at(i) != bits.at(i))
+            if ((at(i) & bits.at(i)) != bits.at(i))
                 return false;
         }
         
