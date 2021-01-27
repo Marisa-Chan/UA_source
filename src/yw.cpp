@@ -164,7 +164,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     icon_energy__h = 0;
     icon0___h = 0;
     field_1a58 = 0;
-    field_1a5c = 0;
+    field_1a5c = World::DOACTION_0;
     field_1a60 = NULL;
     field_1a64 = 0;
     field_1A66 = 0;
@@ -824,7 +824,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         field_1618 = arg->DTime;
         field_161c++;
 
-        field_1b24.user_action = 0;
+        field_1b24.user_action = World::DOACTION_0;
         field_1b24.gTime = timeStamp;
         field_1b24.frameTime = arg->DTime;
         field_1b24.units_count = 0;
@@ -6155,7 +6155,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     b64_parms = arg;
     field_161c++;
-    field_1b24.user_action = 0;
+    field_1b24.user_action = World::DOACTION_0;
     field_1b24.gTime = arg->TimeStamp;
     field_1b24.frameTime = arg->DTime;
     field_1b24.units_count = 0;

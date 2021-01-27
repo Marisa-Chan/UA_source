@@ -1378,7 +1378,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
     switch ( arg->user_action )
     {
-    case 2: //Move squad
+    case World::DOACTION_2: //Move squad
         arg->selectBact->_status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
 
         if ( arg->target_Sect )
@@ -1465,7 +1465,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         sub_4AB69C(arg->selectBact, 0);
         break;
 
-    case 3:
+    case World::DOACTION_3:
         if ( arg->energy <= _roboEnergyLife )
         {
             arg146.pos = arg->target_point;
@@ -1535,7 +1535,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case 4:
+    case World::DOACTION_4:
         if ( arg->energy <= _roboEnergyLife )
         {
             arg146.pos = arg->target_point;
@@ -1592,7 +1592,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case 6:
+    case World::DOACTION_6:
         if ( arg->energy <= _roboEnergyLife )
         {
             arg148.ownerID = _owner;
@@ -1627,7 +1627,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case 10:
+    case World::DOACTION_10:
         if ( !(_roboState & ROBOSTATE_MOVE) )
         {
             SFXEngine::SFXe.startSound(&_soundcarrier, 9);
@@ -1655,7 +1655,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case 11:
+    case World::DOACTION_11:
     {
         arg->selectBact->_status_flg |= BACT_STFLAG_WAYPOINT;
         arg->selectBact->_m_cmdID = 0;
@@ -1725,7 +1725,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     }
     break;
 
-    case 12:
+    case World::DOACTION_12:
         if ( arg->selectBact->_waypoints_count < 32 && (arg->selectBact->_status_flg & BACT_STFLAG_WAYPOINT) )
         {
             int v72 = arg->selectBact->_waypoints_count;
@@ -1792,7 +1792,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case 13:
+    case World::DOACTION_13:
         arg->selectBact->_status_flg |= BACT_STFLAG_WAYPOINTCCL;
         sub_4A448C(arg->selectBact);
         break;

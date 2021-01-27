@@ -281,7 +281,24 @@ public:
 };
 
 
-
+enum DOACTION
+{
+    DOACTION_0 = 0,
+    DOACTION_1,
+    DOACTION_2,
+    DOACTION_3,
+    DOACTION_4,
+    DOACTION_5,
+    DOACTION_6,
+    DOACTION_7,
+    DOACTION_8,
+    DOACTION_9,
+    DOACTION_10,
+    DOACTION_11,
+    DOACTION_12,
+    DOACTION_13,
+    DOACTION_19
+};
 
 
 

@@ -1303,7 +1303,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
     switch ( yw->field_1a5c )
     {
-    case 2:
+    case World::DOACTION_2:
         if ( !(robo_map.field_1E8 & 0x200) )
         {
             if ( yw->field_1a58 & 0x20 )
@@ -1330,19 +1330,19 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         }
         break;
 
-    case 5:
+    case World::DOACTION_5:
         FontUA::select_tileset(&pcur, v114);
 
         pcur = sub_4F6980(pcur, yw->field_1a98->_position.x, yw->field_1a98->_position.z, 0x85, a4, a5);
         break;
 
-    case 6:
+    case World::DOACTION_6:
         FontUA::select_tileset(&pcur, v110);
 
         pcur = sub_4F6980(pcur, yw->field_1a7c.x, yw->field_1a7c.z, 65, v111, v111);
         break;
 
-    case 8:
+    case World::DOACTION_8:
         if ( !(robo_map.field_1E8 & 0x200) )
         {
             if ( yw->field_1a98 )
@@ -1369,7 +1369,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         }
         break;
 
-    case 10:
+    case World::DOACTION_10:
         FontUA::select_tileset(&pcur, v114);
 
         pcur = sub_4F6980(pcur, yw->field_1a6c.x, yw->field_1a6c.z, 0x88, a4, a5);
@@ -10984,7 +10984,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(InputState *arg, int a3)
         return a3;
     }
 
-    if ( field_1ab0   &&   a3 == 2 &&   arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+    if ( field_1ab0   &&   a3 == World::DOACTION_2 &&   arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
     {
         if ( field_1ab4 )
         {
@@ -10994,12 +10994,12 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(InputState *arg, int a3)
             if ( sqrt( POW2(v8) + POW2(v9) ) < 100.0 )
             {
                 field_1ab4++;
-                return 13;
+                return World::DOACTION_13;
             }
 
             field_1ab4++;
 
-            return 12;
+            return World::DOACTION_12;
         }
         else
         {
@@ -11007,7 +11007,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(InputState *arg, int a3)
 
             field_1ab4++;
 
-            return 11;
+            return World::DOACTION_11;
         }
     }
 
@@ -11353,7 +11353,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
 {
     switch ( arg )
     {
-    case 8:
+    case World::DOACTION_8:
         if ( field_1a98->_bact_type != BACT_TYPES_GUN && field_1a98 != UserRobo )
         {
             if ( sub_4D3C80(this) )
@@ -11369,10 +11369,10 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
             bzda.field_1D0 = bzda.field_1CC & 0x20;
         break;
 
-    case 2:
+    case World::DOACTION_2:
         if (_activeCmdrRemapIndex >= 0)
         {
-            field_1b24.user_action = 2;
+            field_1b24.user_action = World::DOACTION_2;
             field_1b24.selectBact = _cmdrsRemap[_activeCmdrRemapIndex];
 
             if ( field_1a58 & 0x10 )
@@ -11394,9 +11394,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         }
         break;
 
-    case 11:
-    case 12:
-    case 13:
+    case World::DOACTION_11:
+    case World::DOACTION_12:
+    case World::DOACTION_13:
         if (_activeCmdrRemapIndex >= 0)
         {
             field_1b24.user_action = arg;
@@ -11414,8 +11414,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         }
         break;
 
-    case 3:
-        field_1b24.user_action = 3;
+    case World::DOACTION_3:
+        field_1b24.user_action = World::DOACTION_3;
         field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
         field_1b24.target_point = field_1a8c * field_1a9c + field_1334;
 
@@ -11425,10 +11425,10 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         _activeCmdrID = 0;
         break;
 
-    case 4:
+    case World::DOACTION_4:
         if (_activeCmdrRemapIndex >= 0)
         {
-            field_1b24.user_action = 4;
+            field_1b24.user_action = World::DOACTION_4;
             field_1b24.selectBact = _cmdrsRemap[_activeCmdrRemapIndex];
 
             field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
@@ -11436,7 +11436,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         }
         break;
 
-    case 5:
+    case World::DOACTION_5:
         sb_0x4c66f8(this, field_1a98, current_bact);
 
         if ( field_1a98->_bact_type != BACT_TYPES_GUN && field_1a98 != UserRobo )
@@ -11449,8 +11449,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         }
         break;
 
-    case 6:
-        field_1b24.user_action = 6;
+    case World::DOACTION_6:
+        field_1b24.user_action = World::DOACTION_6;
         field_1b24.protoID = bzda.field_3DC[bzda.field_8F4];
         field_1b24.target_Sect = field_1a60;
         field_1b24.target_sect_x = field_1a64;
@@ -11461,8 +11461,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         bzda.field_1D0 = bzda.field_1CC & 1;
         break;
 
-    case 10:
-        field_1b24.user_action = 10;
+    case World::DOACTION_10:
+        field_1b24.user_action = World::DOACTION_10;
         field_1b24.target_Sect = field_1a60;
         field_1b24.target_sect_x = field_1a64;
         field_1b24.target_sect_y = field_1A66;
@@ -11493,7 +11493,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
 
         int v5 = 0;
         int v6 = 0;
-        int v8 = 0;
+        int v8 = World::DOACTION_0;
 
         if ( _mouseGrabbed )
         {
@@ -11511,7 +11511,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
         {
 
             v6 = 1;
-            v8 = 0;
+            v8 = World::DOACTION_0;
 
             if ( bzda.field_1D0 == 1 )
             {
@@ -11521,13 +11521,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                     {
                         if ( UserRobo->_owner == field_1a98->_owner )
                         {
-                            v8 = 8;
+                            v8 = World::DOACTION_8;
                             v6 = 2;
                             v5 = 64;
                         }
                         else if ( _activeCmdrRemapIndex != -1 )
                         {
-                            v8 = 2;
+                            v8 = World::DOACTION_2;
                             v6 = 3;
                             v5 = 67;
                         }
@@ -11537,13 +11537,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 {
                     if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 4;
                         v5 = 65;
                     }
                     else
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v5 = 66;
                         v6 = 3;
                     }
@@ -11555,7 +11555,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 {
                     if ( (field_1a58 & 0x20) && UserRobo->_owner == field_1a98->_owner )
                     {
-                        v8 = 8;
+                        v8 = World::DOACTION_8;
                         v6 = 2;
                         v5 = 64;
                     }
@@ -11564,7 +11564,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                         switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
-                            v8 = 3;
+                            v8 = World::DOACTION_3;
                             v6 = 6;
                             v5 = 68;
                             break;
@@ -11594,13 +11594,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                         {
                             if ( UserRobo->_owner == field_1a98->_owner )
                             {
-                                v8 = 8;
+                                v8 = World::DOACTION_8;
                                 v6 = 2;
                                 v5 = 64;
                             }
                             else
                             {
-                                v8 = 2;
+                                v8 = World::DOACTION_2;
                                 v6 = 3;
                                 v5 = 67;
                             }
@@ -11608,13 +11608,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                     }
                     else if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 4;
                         v5 = 65;
                     }
                     else
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 3;
                         v5 = 66;
                     }
@@ -11626,7 +11626,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 {
                     if ( (field_1a58 & 0x20) && UserRobo->_owner == field_1a98->_owner )
                     {
-                        v8 = 8;
+                        v8 = World::DOACTION_8;
                         v6 = 2;
                         v5 = 64;
                     }
@@ -11635,7 +11635,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                         switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
-                            v8 = 4;
+                            v8 = World::DOACTION_4;
                             v6 = 7;
                             v5 = 69;
                             break;
@@ -11666,13 +11666,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                         {
                             if ( UserRobo->_owner == field_1a98->_owner )
                             {
-                                v8 = 8;
+                                v8 = World::DOACTION_8;
                                 v6 = 2;
                                 v5 = 64;
                             }
                             else
                             {
-                                v8 = 2;
+                                v8 = World::DOACTION_2;
                                 v6 = 3;
                                 v5 = 67;
                             }
@@ -11680,13 +11680,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                     }
                     else if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 4;
                         v5 = 65;
                     }
                     else
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 3;
                         v5 = 66;
                     }
@@ -11698,12 +11698,12 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 {
                     if ( arg->KbdLastDown == Input::KC_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
                     {
-                        v8 = 19;
+                        v8 = World::DOACTION_19;
                         v6 = 8;
                     }
                     else if ( UserRobo->_owner == field_1a98->_owner )
                     {
-                        v8 = 5;
+                        v8 = World::DOACTION_5;
                         v6 = 8;
                         v5 = 70;
                     }
@@ -11715,13 +11715,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 {
                     if ( UserRobo->_owner == field_1a98->_owner )
                     {
-                        v8 = 8;
+                        v8 = World::DOACTION_8;
                         v6 = 2;
                         v5 = 64;
                     }
                     else
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 3;
                         v5 = 67;
                     }
@@ -11731,7 +11731,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                     switch ( ypaworld_func64__sub21__sub2() )
                     {
                     case 0:
-                        v8 = 6;
+                        v8 = World::DOACTION_6;
                         v6 = 10;
                         v5 = 71;
                         break;
@@ -11767,13 +11767,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 {
                     if ( UserRobo->_owner == field_1a98->_owner )
                     {
-                        v8 = 8;
+                        v8 = World::DOACTION_8;
                         v6 = 2;
                         v5 = 64;
                     }
                     else
                     {
-                        v8 = 2;
+                        v8 = World::DOACTION_2;
                         v6 = 3;
                         v5 = 67;
                     }
@@ -11783,7 +11783,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                     switch ( ypaworld_func64__sub21__sub3() )
                     {
                     case 0:
-                        v8 = 10;
+                        v8 = World::DOACTION_10;
                         v6 = 9;
                         v5 = 72;
                         break;
@@ -11815,7 +11815,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
 
             if ( ypaworld_func64__sub21__sub6(&arg->ClickInf) )
             {
-                v18 = 5;
+                v18 = World::DOACTION_5;
                 v6 = 8;
                 arg->ClickInf.flag |= ClickBoxInf::FLAG_LM_DOWN;
             }
@@ -11823,7 +11823,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
             if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
                 ypaworld_func64__sub21__sub5(v18);
 
-            if ( (arg->ClickInf.flag & ClickBoxInf::FLAG_LM_HOLD) && v18 )
+            if ( (arg->ClickInf.flag & ClickBoxInf::FLAG_LM_HOLD) && v18 != World::DOACTION_0 )
                 v6 = 0;
         }
 
