@@ -1465,7 +1465,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         sub_4AB69C(arg->selectBact, 0);
         break;
 
-    case World::DOACTION_3:
+    case World::DOACTION_ADD_UNIT1:
         if ( arg->energy <= _roboEnergyLife )
         {
             arg146.pos = arg->target_point;
@@ -1535,7 +1535,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case World::DOACTION_4:
+    case World::DOACTION_ADD_UNIT2:
         if ( arg->energy <= _roboEnergyLife )
         {
             arg146.pos = arg->target_point;
@@ -1800,6 +1800,21 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     default:
         break;
     }
+}
+
+void NC_STACK_yparobo::HandleUserCommands(update_msg *arg)
+{
+    if ( _kidRef.IsListType(World::BLIST_CACHE) ) // Do not update units in dead list
+        return;
+    
+    if (_status_flg & (BACT_STFLAG_DEATH1 | BACT_STFLAG_DEATH2))
+        return;
+    
+    if ( _status != BACT_STATUS_NORMAL)
+        return;
+
+    if ( getBACT_inputting() || IsPlayerRobo() )
+        doUserCommands(arg);
 }
 
 int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos)
@@ -4783,19 +4798,19 @@ void NC_STACK_yparobo::AI_layer3(update_msg *arg)
         {
             checkCollisions(arg->frameTime * 0.001);
 
-            if ( _roboState & ROBOSTATE_PLAYERROBO )
+            if ( IsPlayerRobo() )
                 wallow(arg);
             else
                 AI_doMove(arg);
 
-            if ( _roboState & ROBOSTATE_PLAYERROBO )
+            if ( IsPlayerRobo() )
             {
                 searchEnemyRobo();
                 usersRoboEnergyCheck();
-                doUserCommands(arg);
+                //doUserCommands(arg);
             }
 
-            if ( !(_roboState & ROBOSTATE_PLAYERROBO) )
+            if ( !IsPlayerRobo() )
             {
                 AI_checkWorld(arg);
                 AI_doWish(arg);
@@ -4807,7 +4822,7 @@ void NC_STACK_yparobo::AI_layer3(update_msg *arg)
 
             checkDanger();
 
-            if ( _roboState & ROBOSTATE_DANGER && !(_roboState & ROBOSTATE_PLAYERROBO) )
+            if ( _roboState & ROBOSTATE_DANGER && !IsPlayerRobo() )
                 AI_solveTrouble(arg);
         }
     }
@@ -4898,7 +4913,7 @@ void NC_STACK_yparobo::User_layer(update_msg *arg)
             if ( arg->inpt->Buttons.Is(3) )
                 HandBrake(arg);
 
-            doUserCommands(arg);
+            //doUserCommands(arg);
             yparobo_func71__sub0(arg);
             wallow(arg);
 
@@ -5182,7 +5197,7 @@ void NC_STACK_yparobo::EnergyInteract(update_msg *arg)
 
         float v70 = v65 * v63 * v64 * arg176.field_4;
 
-        if ( _roboState & ROBOSTATE_PLAYERROBO )
+        if ( IsPlayerRobo() )
         {
             int v67 = 0;
 
@@ -6442,6 +6457,10 @@ int NC_STACK_yparobo::getROBO_absReload()
     return _roboEnergyReloadPS;
 }
 
+bool NC_STACK_yparobo::IsPlayerRobo() const
+{
+    return (_roboState & ROBOSTATE_PLAYERROBO) != 0;
+}
 
 
 

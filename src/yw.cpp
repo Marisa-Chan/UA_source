@@ -899,6 +899,13 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             field_1b74 = UserUnit->_pSector->owner;
 
             uint32_t v37 = profiler_begin();
+            
+            // Do user commands before any unit state can be changed
+            if (UserRobo)
+            {
+                if (UserRobo->_bact_type == BACT_TYPES_ROBO)
+                    ((NC_STACK_yparobo *)UserRobo)->HandleUserCommands(&field_1b24);
+            }
 
             for ( NC_STACK_ypabact *unit : _unitsList.safe_iter() )
             {

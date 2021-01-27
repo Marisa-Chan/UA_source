@@ -223,7 +223,12 @@ public:
     virtual int getROBO_absReload();
     
     void ypabact_func65__sub0();
-
+    
+    bool IsPlayerRobo() const;
+    
+public:
+    void HandleUserCommands(update_msg *arg);
+    
 protected:
 
     void checkCommander();
@@ -314,7 +319,7 @@ public:
     float _roboYPos;
 
     char _roboWFlags;
-    int _roboState;
+    int32_t _roboState;
     int _roboNewAI;
     int _roboTimeScale;
 

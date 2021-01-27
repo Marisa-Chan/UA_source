@@ -11414,8 +11414,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         }
         break;
 
-    case World::DOACTION_3:
-        field_1b24.user_action = World::DOACTION_3;
+    case World::DOACTION_ADD_UNIT1:
+        field_1b24.user_action = World::DOACTION_ADD_UNIT1;
         field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
         field_1b24.target_point = field_1a8c * field_1a9c + field_1334;
 
@@ -11425,10 +11425,10 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         _activeCmdrID = 0;
         break;
 
-    case World::DOACTION_4:
+    case World::DOACTION_ADD_UNIT2:
         if (_activeCmdrRemapIndex >= 0)
         {
-            field_1b24.user_action = World::DOACTION_4;
+            field_1b24.user_action = World::DOACTION_ADD_UNIT2;
             field_1b24.selectBact = _cmdrsRemap[_activeCmdrRemapIndex];
 
             field_1b24.protoID = bzda.field_2DC[bzda.field_8EC];
@@ -11564,7 +11564,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                         switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
-                            v8 = World::DOACTION_3;
+                            v8 = World::DOACTION_ADD_UNIT1;
                             v6 = 6;
                             v5 = 68;
                             break;
@@ -11635,7 +11635,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                         switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
-                            v8 = World::DOACTION_4;
+                            v8 = World::DOACTION_ADD_UNIT2;
                             v6 = 7;
                             v5 = 69;
                             break;
