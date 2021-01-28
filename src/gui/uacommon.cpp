@@ -52,7 +52,7 @@ void UA::LoadFont(const std::string &fontstr)
     }
 
     //stack__win3d.font.height = height;
-    _UATTF = SDLWRAP_loadFont(fontname, _UAFontH);
+    _UATTF = System::LoadFont(fontname, _UAFontH);
 
     if (!_UATTF)
         return;

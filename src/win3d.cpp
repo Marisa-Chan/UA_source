@@ -776,7 +776,7 @@ int NC_STACK_win3d::LoadFontByDescr(const std::string &fontname)
     }
 
     stack__win3d.font.height = height;
-    stack__win3d.font.ttfFont = SDLWRAP_loadFont(facename, height);
+    stack__win3d.font.ttfFont = System::LoadFont(facename, height);
 
     if ( stack__win3d.font.ttfFont )
     {
@@ -892,7 +892,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     SDLWRAP_resizeWindow(picked->w, picked->h);
     
-    win3d->screenSurface = SDLWRAP::Screen();
+    win3d->screenSurface = System::Screen();
 
     switch( win3d_keys[16].Get<int>() )
     {
@@ -1042,7 +1042,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    SDLWRAP::DrawLine(stack__win3d.screenSurface,
+    System::DrawLine(stack__win3d.screenSurface,
                       Common::Rect(x1, y1, x2, y2),
                       (rstr->field_4 >> 16) & 0xFF,
                       (rstr->field_4 >> 8) & 0xFF,
@@ -1055,7 +1055,7 @@ size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
     __NC_STACK_display *rstr = &stack__display;
 
-    SDLWRAP::DrawLine(stack__win3d.screenSurface,
+    System::DrawLine(stack__win3d.screenSurface,
                       Common::Rect(rstr->field_54c + arg->x1, rstr->field_550 + arg->y1,
                                    rstr->field_54c + arg->x2, rstr->field_550 + arg->y2),
                       (rstr->field_4 >> 16) & 0xFF,
@@ -1076,7 +1076,7 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
 
         if ( stack__display._inverseClip.IsEmpty() || !Common::ClipLine(stack__display._inverseClip, &tmp2) )
         {
-            SDLWRAP::DrawLine(stack__win3d.screenSurface, tmp1, r, g, b);
+            System::DrawLine(stack__win3d.screenSurface, tmp1, r, g, b);
         }
         else
         {
@@ -1084,17 +1084,17 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
             {
                 if ( tmp2.left != tmp1.left || tmp2.top != tmp1.top )
                 {
-                    SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
-                    SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                    System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
                 else
                 {
-                    SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
             }
             else
             {
-                SDLWRAP::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
             }
         }
     }
@@ -1936,7 +1936,7 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
                         (arg->rect2.x2 + 1.0) * rstr->field_554,
                         (arg->rect2.y2 + 1.0) * rstr->field_558 );
 
-    SDLWRAP::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, stack__win3d.screenSurface, dRect);
+    System::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, stack__win3d.screenSurface, dRect);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
@@ -2000,7 +2000,7 @@ void NC_STACK_win3d::BeginFrame()
 
 void NC_STACK_win3d::EndFrame()
 {
-    Gui::Root::Instance.Draw(SDLWRAP::Screen());
+    Gui::Root::Instance.Draw(System::Screen());
     SDLWRAP_drawScreen();
     Gui::Root::Instance.HwCompose();
     
@@ -2324,7 +2324,7 @@ void NC_STACK_win3d::setW3D_texFilt(int arg)
 
 void NC_STACK_win3d::draw2DandFlush()
 {
-    Gui::Root::Instance.Draw(SDLWRAP::Screen());
+    Gui::Root::Instance.Draw(System::Screen());
     SDLWRAP_drawScreen();
     Gui::Root::Instance.HwCompose();
 

@@ -782,10 +782,11 @@ int main(int argc, char *argv[])
 //		CloseHandle(UAMUTEX);
 //		return 0;
 //	}
-
-    Gui::UA::Init();
+    
     FSMgr::iDir::setBaseDir("");
-    SDLWRAP_INIT();
+    System::Init();
+    
+    Gui::UA::Init();
 
     if ( !WinMain__sub0(argc, argv) )
         return 0;
@@ -839,7 +840,7 @@ int main(int argc, char *argv[])
             if ( !sb_0x411324() )
                 break;
 
-            if ( SDLWRAP_UPDATE() )
+            if ( System::Update() )
                 break;
         }
         else
@@ -851,7 +852,7 @@ int main(int argc, char *argv[])
                 if ( !sb_0x411324() )
                     break;
 
-                if ( SDLWRAP_UPDATE() )
+                if ( System::Update() )
                     break;
 
                 ticks = curTick;
@@ -881,10 +882,10 @@ int main(int argc, char *argv[])
     
     ypaworld->DeleteNewGuiElements();
     
-    Gui::UA::Deinit();
     sub_4113E8();
-
-    SDLWRAP_DEINIT();
+    Gui::UA::Deinit();
+    
+    System::Deinit();
 
     return 0;
 }

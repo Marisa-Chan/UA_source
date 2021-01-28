@@ -171,7 +171,7 @@ void UAMessageBox::Draw(SDL_Surface *surface, const Common::Rect &dirt)
             out.bottom += 1;
             out.left = 0;
 
-            SDLWRAP::Draw(tiles->img->GetSwTex(), src, surface, out.Pos());
+            System::Draw(tiles->img->GetSwTex(), src, surface, out.Pos());
 
             src = tiles->map[_GLYPH_MD];
             src.y += src.h - 1;
@@ -180,13 +180,13 @@ void UAMessageBox::Draw(SDL_Surface *surface, const Common::Rect &dirt)
 
             out = Common::Rect(tiles->GetWidth(_GLYPH_LD), out.top, GetWidth() - tiles->GetWidth(_GLYPH_RD), out.bottom);
 
-            SDLWRAP::DrawFill(tiles->img->GetSwTex(), src, surface, out);
+            System::DrawFill(tiles->img->GetSwTex(), src, surface, out);
 
             src = tiles->map[_GLYPH_RD];
             src.y += src.h - 1;
             src.h = 1;
 
-            SDLWRAP::Draw(tiles->img->GetSwTex(), src, surface, Common::Point(out.right, out.top));
+            System::Draw(tiles->img->GetSwTex(), src, surface, Common::Point(out.right, out.top));
             
             DrawText(surface, _txt1, TXTFLAG_CENTER, _UATextColor, _txtRect1);
             DrawText(surface, _txt2, TXTFLAG_CENTER, _UATextColor, _txtRect2);

@@ -13,22 +13,17 @@
 
 #include "common.h"
 
-
-void SDLWRAP_INIT();
-void SDLWRAP_DEINIT();
-int SDLWRAP_UPDATE();
-
-struct SDLWRAP_Point
-{
-    int x;
-    int y;
-};
-
 void SDLWRAP_resizeWindow(int w, int h);
 
-namespace SDLWRAP 
+namespace System 
 {
+    void Init();
+    void Deinit();
+    int  Update();
+    
     SDL_Surface *Screen();
+    
+    TTF_Font *LoadFont(const std::string &fontname, int height);
     
     void DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb);
     void BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surface *mask, uint8_t index, SDL_Surface *dst, Common::Rect dRect);
@@ -42,7 +37,7 @@ namespace SDLWRAP
     void EventsAddHandler(SDL_EventFilter);
 }
 
-TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height);
+
 
 uint8_t *SDLWRAP_makeScreenCopy(int &ow, int &oh);
 uint8_t *SDLWRAP_makeDepthScreenCopy(int &ow, int &oh);

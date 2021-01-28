@@ -272,7 +272,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
     case SDL_MOUSEBUTTONDOWN:
     {
-        Common::Point corrPos = SDLWRAP::MousePosNorm(Common::Point(event->button.x, event->button.y));
+        Common::Point corrPos = System::MousePosNorm(Common::Point(event->button.x, event->button.y));
         if ( !Gui::Root::Instance.MouseDown(corrPos, event->button.button) )
         {
             if (event->button.button == SDL_BUTTON_LEFT)
@@ -308,7 +308,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
     case SDL_MOUSEBUTTONUP:
     {
-        Common::Point corrPos = SDLWRAP::MousePosNorm(Common::Point(event->button.x, event->button.y));
+        Common::Point corrPos = System::MousePosNorm(Common::Point(event->button.x, event->button.y));
         if ( !Gui::Root::Instance.MouseUp(corrPos, event->button.button) )
         {
             if (event->button.button == SDL_BUTTON_LEFT)
@@ -347,7 +347,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
     case SDL_MOUSEMOTION:
     {
-        Common::Point corrPos = SDLWRAP::MousePosNorm(Common::Point(event->button.x, event->button.y));
+        Common::Point corrPos = System::MousePosNorm(Common::Point(event->button.x, event->button.y));
         if ( !Gui::Root::Instance.MouseMove(corrPos) )
         {
             _mPos = corrPos;
@@ -1243,7 +1243,7 @@ void NC_STACK_winp::initfirst()
 
     _joyButtonStates = 0;
 
-    SDLWRAP::EventsAddHandler(InputWatch);
+    System::EventsAddHandler(InputWatch);
 
     if (_joyHaptic)
     {

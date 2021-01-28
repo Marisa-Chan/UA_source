@@ -20,21 +20,32 @@ static bool curRelMouse = false;
 static int sW = 640, sH = 480;
 static int curW = 640, curH = 480;
 
-namespace SDLWRAP
+namespace System
 {
 static std::list< SDL_EventFilter > EventHandlers;
-}
-
 
 struct FontNode
 {
-    std::string filepath;
-    std::string name;
-    std::string stylename;
+    std::string Path;
+    std::string Name;
+    std::string Style;
+    
+    FontNode() {};
+    FontNode(const std::string &p, const std::string &n, const std::string &s)
+    : Path(p)
+    , Name(n)
+    , Style(s)
+    {};
+    
+    FontNode(const FontNode &&fnt)
+    {
+        Path = std::move(fnt.Path);
+        Name = std::move(fnt.Name);
+        Style = std::move(fnt.Style);
+    };
 };
 
-static std::list< FontNode * > fontsList;
-
+static std::list< FontNode > FontsList;
 
 /*SDLWRAP_mouseState mouseWork;
 SDLWRAP_mouseState mousePubl;
@@ -42,12 +53,14 @@ SDLWRAP_keybState  keybWork;
 SDLWRAP_keybState  keybPubl;
 int VK_Map[SDL_NUM_SCANCODES];*/
 
-static struct FontLookup
+struct TFontLookup
 {
-    const std::string sign; // Font name or part
-    const std::string alt1;
-    const std::string alt2;
-} fontsLookup[] =
+    const std::string Name; // Font name or part
+    const std::string Alt1;
+    const std::string Alt2;
+};
+
+static TFontLookup FontsLookup[]
 {
     {"arial", "liberation sans", ""},
     {"dungeon", "xolonium bold", "xolonium regular"},
@@ -56,15 +69,9 @@ static struct FontLookup
     {"small font", "press start 2p", ""}
 };
 
-void SDLWRAP_ScanFonts()
+void ScanFonts()
 {
-    for(std::list< FontNode *>::iterator it = fontsList.begin(); it != fontsList.end(); it++)
-    {
-        if (*it)
-            delete *it;
-    }
-
-    fontsList.clear();
+    FontsList.clear();
 
     FSMgr::DirIter dir = FSMgr::iDir::readDir("fonts/");
     if (dir)
@@ -76,19 +83,14 @@ void SDLWRAP_ScanFonts()
             {
                 std::string tmp = nod->getName();
                 for (size_t i = 0; i < tmp.length(); i++)
-                    tmp[i] = tolower(tmp[i]);
+                    tmp[i] = std::tolower(tmp[i]);
 
-                if( strstr(tmp.c_str(), ".ttf") || strstr(tmp.c_str(), ".otf") || strstr(tmp.c_str(), ".fon") )
+                if( tmp.find(".ttf") != std::string::npos || tmp.find(".otf") != std::string::npos || tmp.find(".fon") != std::string::npos )
                 {
                     TTF_Font *fnt = TTF_OpenFont(nod->getPath().c_str(), 12);
                     if (fnt)
                     {
-                        FontNode *nd = new FontNode;
-                        nd->filepath = nod->getPath();
-                        nd->name = TTF_FontFaceFamilyName(fnt);
-                        nd->stylename = TTF_FontFaceStyleName(fnt);
-
-                        fontsList.push_back(nd);
+                        FontsList.push_back( System::FontNode(nod->getPath(), TTF_FontFaceFamilyName(fnt), TTF_FontFaceStyleName(fnt)) );
 
                         TTF_CloseFont(fnt);
                     }
@@ -96,6 +98,7 @@ void SDLWRAP_ScanFonts()
             }
         }
     }
+}
 }
 
 uint32_t SDLWRAP_CorrectFormat(uint32_t format)
@@ -215,11 +218,11 @@ void SDLWRAP_drawScreen()
     glPopAttrib();
 }
 
+namespace System {
 
-
-void SDLWRAP_INIT()
+void Init()
 {
-    SDLWRAP::EventHandlers.clear();
+    System::EventHandlers.clear();
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC) < 0)
     {
@@ -241,24 +244,18 @@ void SDLWRAP_INIT()
 
     TTF_Init();
 
-    SDLWRAP_ScanFonts();
+    ScanFonts();
 
     IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP);
 
     SDLNet_Init();
 }
 
-void SDLWRAP_DEINIT()
+void Deinit()
 {
     IMG_Quit();
 
-    for(std::list< FontNode *>::iterator it = fontsList.begin(); it != fontsList.end(); it++)
-    {
-        if (*it)
-            delete *it;
-    }
-
-    fontsList.clear();
+    FontsList.clear();
 
     if ( screen )
         SDL_FreeSurface(screen);
@@ -276,12 +273,12 @@ void SDLWRAP_DEINIT()
 }
 
 
-int SDLWRAP_UPDATE()
+int Update()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
-        for(SDL_EventFilter &e : SDLWRAP::EventHandlers)
+        for(SDL_EventFilter &e : EventHandlers)
             (e)(NULL, &event);
 
         switch(event.type)
@@ -311,6 +308,7 @@ int SDLWRAP_UPDATE()
     }
 
     return 0;
+}
 }
 
 void SDLWRAP_flipWindow()
@@ -347,23 +345,21 @@ void SDLWRAP_setFullscreen(uint32_t full, SDL_DisplayMode *mode)
     }
 }
 
-std::string SDLWRAP_FindFont(const std::string &fontName)
+namespace System {
+std::string FindFont(const std::string &fontName)
 {
-    for(FontNode *fnt : fontsList )
+    for(const FontNode &fnt : FontsList )
     {
-        if (fnt)
+        if (StriCmp(fontName, fnt.Name) == 0)
+            return fnt.Path;
+        else
         {
-            if (StriCmp(fontName, fnt->name) == 0)
-                return fnt->filepath;
-            else
-            {
-                std::string ttmp = fnt->name;
-                ttmp += " ";
-                ttmp += fnt->stylename;
+            std::string ttmp = fnt.Name;
+            ttmp += " ";
+            ttmp += fnt.Style;
 
-                if (StriCmp(fontName, ttmp) == 0)
-                    return fnt->filepath;
-            }
+            if (StriCmp(fontName, ttmp) == 0)
+                return fnt.Path;
         }
     }
 
@@ -371,28 +367,28 @@ std::string SDLWRAP_FindFont(const std::string &fontName)
 }
 
 
-TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height)
+TTF_Font *LoadFont(const std::string &fontname, int height)
 {
     std::string tmp2 = fontname;
     for (size_t i = 0; i < tmp2.length(); i++)
-        tmp2[i] = tolower(tmp2[i]);
+        tmp2[i] = std::tolower(tmp2[i]);
 
     TTF_Font *fnt = NULL;
 
-    std::string filename = SDLWRAP_FindFont(tmp2);
+    std::string filename = FindFont(tmp2);
 
     if (filename.empty())
     {
-        for( const FontLookup &lookup : fontsLookup )
+        for( const TFontLookup &lookup : FontsLookup )
         {
-            if ( !StriCmp(tmp2, lookup.sign) )
+            if ( !StriCmp(tmp2, lookup.Name) )
             {
-                filename = SDLWRAP_FindFont(lookup.alt1);
+                filename = FindFont(lookup.Alt1);
 
                 if (!filename.empty())
                     break;
 
-                filename = SDLWRAP_FindFont(lookup.alt2);
+                filename = FindFont(lookup.Alt2);
 
                 if (!filename.empty())
                     break;
@@ -402,16 +398,16 @@ TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height)
 
     if (filename.empty())
     {
-        for( const FontLookup &lookup : fontsLookup )
+        for( const TFontLookup &lookup : FontsLookup )
         {
-            if ( tmp2.find(lookup.sign) != std::string::npos )
+            if ( tmp2.find(lookup.Name) != std::string::npos )
             {
-                filename = SDLWRAP_FindFont(lookup.alt1);
+                filename = FindFont(lookup.Alt1);
 
                 if (!filename.empty())
                     break;
 
-                filename = SDLWRAP_FindFont(lookup.alt2);
+                filename = FindFont(lookup.Alt2);
 
                 if (!filename.empty())
                     break;
@@ -426,6 +422,7 @@ TTF_Font *SDLWRAP_loadFont(const std::string &fontname, int height)
         fmt::printf("Can't load font %s %d\n", fontname, height);
 
     return fnt;
+}
 }
 
 uint8_t *SDLWRAP_makeScreenCopy(int &ow, int &oh)
@@ -497,7 +494,7 @@ void SDLWRAP_restoreWindow()
 
 
 
-namespace SDLWRAP
+namespace System
 {    
 SDL_Surface *Screen()
 {
