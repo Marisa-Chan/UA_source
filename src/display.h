@@ -39,23 +39,6 @@ struct ua_fRect
 };
 
 
-struct __NC_STACK_display
-{
-    uint32_t field_4; // Color?
-    Common::Rect _clip;
-    Common::Rect _inverseClip;
-    std::array<TileMap *, 256> tiles;
-    int field_54c;
-    int field_550;
-    float field_554;
-    float field_558;
-    
-    UA_PALETTE palette;
-    UA_PALETTE field_300[8];
-};
-
-
-
 
 struct w3d_func198arg
 {
@@ -197,9 +180,7 @@ public:
     virtual UA_PALETTE * display_func273(int paletteId);
     virtual void SaveScreenshot(const std::string & screenName);
 
-    NC_STACK_display() {
-        memset(&stack__display, 0, sizeof(stack__display));
-    };
+    NC_STACK_display();
     virtual ~NC_STACK_display() {};
     
     virtual const std::string &ClassName() const {
@@ -263,12 +244,22 @@ public:
     //Data
 public:
     static const Nucleus::ClassDescr description;
-
-    __NC_STACK_display stack__display;
-
+    
+    uint32_t field_4 = 0; // Color?
+    Common::Rect _clip;
+    Common::Rect _inverseClip;
+    std::array<TileMap *, 256> tiles;
+    int field_54c   = 0;
+    int field_550   = 0;
+    float field_554 = 0;
+    float field_558 = 0;
+    
+    UA_PALETTE palette;
+    std::array<UA_PALETTE, 8> field_300;
+    
 protected:
-    int16_t _width;
-    int16_t _height;
+    int16_t _width  = 0;
+    int16_t _height = 0;
 };
 
 #endif // DISPLAY_H_INCLUDED
