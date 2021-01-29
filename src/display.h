@@ -245,17 +245,17 @@ public:
 public:
     static const Nucleus::ClassDescr description;
     
-    uint32_t field_4 = 0; // Color?
+    uint32_t _field_4 = 0; // Color?
     Common::Rect _clip;
     Common::Rect _inverseClip;
-    std::array<TileMap *, 256> tiles;
-    int field_54c   = 0;
-    int field_550   = 0;
-    float field_554 = 0;
-    float field_558 = 0;
+    std::array<TileMap *, 256> _tiles;
+    int _field_54c   = 0;
+    int _field_550   = 0;
+    float _field_554 = 0;
+    float _field_558 = 0;
     
-    UA_PALETTE palette;
-    std::array<UA_PALETTE, 8> field_300;
+    UA_PALETTE _palette;
+    std::array<UA_PALETTE, 8> _field_300;
     
 protected:
     int16_t _width  = 0;

@@ -1010,8 +1010,8 @@ size_t NC_STACK_win3d::raster_func192(IDVPair *)
 
 size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 {
-    float tX = field_554 - 1.0;
-    float tY = field_558 - 1.0;
+    float tX = _field_554 - 1.0;
+    float tY = _field_558 - 1.0;
 
     int y1 = (arg->y1 + 1.0) * tY;
     int y2 = (arg->y2 + 1.0) * tY;
@@ -1020,9 +1020,9 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 
     System::DrawLine(_screenSurface,
                       Common::Rect(x1, y1, x2, y2),
-                      (field_4 >> 16) & 0xFF,
-                      (field_4 >> 8) & 0xFF,
-                       field_4 & 0xFF);
+                      (_field_4 >> 16) & 0xFF,
+                      (_field_4 >> 8) & 0xFF,
+                       _field_4 & 0xFF);
     return 1;
 }
 
@@ -1030,11 +1030,11 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
     System::DrawLine(_screenSurface,
-                      Common::Rect(field_54c + arg->x1, field_550 + arg->y1,
-                                   field_54c + arg->x2, field_550 + arg->y2),
-                      (field_4 >> 16) & 0xFF,
-                      (field_4 >> 8) & 0xFF,
-                      field_4 & 0xFF);
+                      Common::Rect(_field_54c + arg->x1, _field_550 + arg->y1,
+                                   _field_54c + arg->x2, _field_550 + arg->y2),
+                      (_field_4 >> 16) & 0xFF,
+                      (_field_4 >> 8) & 0xFF,
+                      _field_4 & 0xFF);
 
     return 1;
 }
@@ -1076,8 +1076,8 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
 
 size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
 {
-    float tX = field_554 - 1.0;
-    float tY = field_558 - 1.0;
+    float tX = _field_554 - 1.0;
+    float tY = _field_558 - 1.0;
 
     int y1 = (arg->y1 + 1.0) * tY;
     int y2 = (arg->y2 + 1.0) * tY;
@@ -1085,22 +1085,22 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
     int x2 = (arg->x2 + 1.0) * tX;
 
     sub_420EDC (x1, y1, x2, y2,
-               (field_4 >> 16) & 0xFF,
-               (field_4 >> 8) & 0xFF,
-               field_4 & 0xFF);
+               (_field_4 >> 16) & 0xFF,
+               (_field_4 >> 8) & 0xFF,
+               _field_4 & 0xFF);
 
     return 1;
 }
 
 size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
 {
-    sub_420EDC(field_54c + arg->x1,
-               field_550 + arg->y1,
-               field_54c + arg->x2,
-               field_550 + arg->y2,
-               (field_4 >> 16) & 0xFF,
-               (field_4 >> 8) & 0xFF,
-               field_4 & 0xFF);
+    sub_420EDC(_field_54c + arg->x1,
+               _field_550 + arg->y1,
+               _field_54c + arg->x2,
+               _field_550 + arg->y2,
+               (_field_4 >> 16) & 0xFF,
+               (_field_4 >> 8) & 0xFF,
+               _field_4 & 0xFF);
 
     return 1;
 }
@@ -1114,10 +1114,10 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     int a3 = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
     int a4 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
 
-    int a5 = field_554 * (arg->float14 + 1.0);
-    int a6 = field_558 * (arg->float18 + 1.0);
-    int a7 = field_554 * (arg->float1C + 1.0);
-    int a8 = field_558 * (arg->float20 + 1.0);
+    int a5 = _field_554 * (arg->float14 + 1.0);
+    int a6 = _field_558 * (arg->float18 + 1.0);
+    int a7 = _field_554 * (arg->float1C + 1.0);
+    int a8 = _field_558 * (arg->float20 + 1.0);
     
     SDL_Rect src;
     src.x = a1;
@@ -1200,10 +1200,10 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
     loc.dwordC = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
     loc.dword10 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
 
-    loc.dword18 = (arg->float14 + 1.0) * field_554;
-    loc.dword1C = (arg->float18 + 1.0) * field_558;
-    loc.dword20 = (arg->float1C + 1.0) * field_554;
-    loc.dword24 = (arg->float20 + 1.0) * field_558;
+    loc.dword18 = (arg->float14 + 1.0) * _field_554;
+    loc.dword1C = (arg->float18 + 1.0) * _field_558;
+    loc.dword20 = (arg->float1C + 1.0) * _field_554;
+    loc.dword24 = (arg->float20 + 1.0) * _field_558;
 
     if ( win3d_func204__sub0(this, &loc) )
     {
@@ -1718,7 +1718,7 @@ void NC_STACK_win3d::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 8: // Select tileset
-                tile = tiles[FontUA::get_u8(&curpos)];
+                tile = _tiles[FontUA::get_u8(&curpos)];
                 break;
 
             case 9: // Include another cmdlist source
@@ -1765,7 +1765,7 @@ void NC_STACK_win3d::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 16: // Full reset tileset
-                tile = tiles[FontUA::get_u8(&curpos)];
+                tile = _tiles[FontUA::get_u8(&curpos)];
                 line_height = tile->h;
                 y_off = 0;
                 break;
@@ -1873,10 +1873,10 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
                         (arg->rect1.x2 + 1.0) * (arg->bitm_intern->width / 2),
                         (arg->rect1.y2 + 1.0) * (arg->bitm_intern->height / 2) );
 
-    Common::Rect dRect( (arg->rect2.x1 + 1.0) * field_554,
-                        (arg->rect2.y1 + 1.0) * field_558,
-                        (arg->rect2.x2 + 1.0) * field_554,
-                        (arg->rect2.y2 + 1.0) * field_558 );
+    Common::Rect dRect( (arg->rect2.x1 + 1.0) * _field_554,
+                        (arg->rect2.y1 + 1.0) * _field_558,
+                        (arg->rect2.x2 + 1.0) * _field_554,
+                        (arg->rect2.y2 + 1.0) * _field_558 );
 
     System::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, _screenSurface, dRect);
 }
