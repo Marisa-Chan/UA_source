@@ -1747,7 +1747,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 
     std::string wavName;
     if ( usr->default_lang_dll )
-        wavName = fmt::sprintf("sounds/speech/%s/9%d.wav", usr->default_lang_dll, arg);
+        wavName = fmt::sprintf("sounds/speech/%s/9%d.wav", *usr->default_lang_dll, arg);
     else
         wavName = fmt::sprintf("sounds/speech/language/9%d.wav", arg);
 
