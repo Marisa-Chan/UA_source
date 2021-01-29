@@ -160,48 +160,48 @@ ScreenFont::ScreenFont()
     b = 0;
 }
 
-__NC_STACK_win3d::__NC_STACK_win3d()
+NC_STACK_win3d::NC_STACK_win3d()
 {
-    width = 0;
-    height = 0;
-    screenSurface = NULL;
-    currentCursor = 0;
-    forcesoftcursor = 0;
-    movie_player = 0;
-    field_38 = 0;
-    txt16bit = 0;
-    use_simple_d3d = 0;
-    disable_lowres = 0;
-    export_window_mode = 0;
-    sort_id = 0;
-    flags = 0;
+    _screenSurface = NULL;
+    _currentCursor = 0;
+    _forcesoftcursor = 0;
+    _movie_player = 0;
+    _field_38 = 0;
+    _txt16bit = 0;
+    _use_simple_d3d = 0;
+    _disable_lowres = 0;
+    _export_window_mode = 0;
+    _sort_id = 0;
+    _flags = 0;
 
-    pending.clear();
+    _pending.clear();
 
     for(int i = 0; i < 9; i++)
     {
-        gray_colors__[i][0] = 0.0;
-        gray_colors__[i][1] = 0.0;
-        gray_colors__[i][2] = 0.0;
+        _greyColors[i][0] = 0.0;
+        _greyColors[i][1] = 0.0;
+        _greyColors[i][2] = 0.0;
     }
 
-    dither = 0;
-    filter = 0;
-    antialias = 0;
-    alpha = 0;
-    zbuf_when_tracy = 0;
-    colorkey = 0;
+    _dither = 0;
+    _filter = 0;
+    _antialias = 0;
+    _alpha = 0;
+    _zbuf_when_tracy = 0;
+    _colorkey = 0;
 
-    pixfmt = NULL;
-    glPixfmt = 0;
-    glPixtype = 0;
+    _pixfmt = NULL;
+    _glPixfmt = 0;
+    _glPixtype = 0;
 
-    sceneBeginned = 0;
+    _sceneBeginned = 0;
 
-    corrIW = corrW = 1.0;
-    corrIH = corrH = 1.0;
+    _corrIW = _corrW = 1.0;
+    _corrIH = _corrH = 1.0;
 
-    solidFont = true;
+    _solidFont = true;
+    
+    _setFrustumClip(1.0, 8192.0);
 }
 
 
@@ -236,15 +236,13 @@ void out_yes_no_status(const char *filename, int val)
 
 void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
 {
-    ScreenFont *font = &stack__win3d.font;
-
-    if ( font->ttfFont )
+    if ( _font.ttfFont )
     {
         if ( txt->flag & 0x20 )
         {
-            font->r = txt->p1;
-            font->g = txt->p2;
-            font->b = txt->p3;
+            _font.r = txt->p1;
+            _font.g = txt->p2;
+            _font.b = txt->p3;
         }
         else
         {
@@ -257,7 +255,7 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
 
                 if ( txt->flag & 0xE )
                 {
-                    TTF_SizeUTF8(font->ttfFont, txt->string, &cx, &cy);
+                    TTF_SizeUTF8(_font.ttfFont, txt->string, &cx, &cy);
                 }
 
                 int p1 = txt->p1;
@@ -302,10 +300,10 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                     }
                 }
 
-                SDL_SetClipRect(stack__win3d.screenSurface, &clipRect);
+                SDL_SetClipRect(_screenSurface, &clipRect);
 
 
-                int v10 = ((p4 - font->height) / 2) - 2 + p2;
+                int v10 = ((p4 - _font.height) / 2) - 2 + p2;
                 if ( txt->flag & 0x10 )
                 {
                     v10++;
@@ -320,14 +318,14 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
 
                 SDL_Surface *tmp;
 
-                if (stack__win3d.solidFont)
+                if (_solidFont)
                 {
-                    tmp = TTF_RenderUTF8_Solid(font->ttfFont, txt->string, clr);
+                    tmp = TTF_RenderUTF8_Solid(_font.ttfFont, txt->string, clr);
                     SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
                 }
                 else
                 {
-                    tmp = TTF_RenderUTF8_Blended(font->ttfFont, txt->string, clr);
+                    tmp = TTF_RenderUTF8_Blended(_font.ttfFont, txt->string, clr);
                     SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
                 }
 
@@ -337,21 +335,21 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 want.x = p1 + 2;
                 want.y = v10 + 1;
 
-                SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
+                SDL_BlitSurface(tmp, NULL, _screenSurface, &want);
 
                 clr.a = 255;
-                clr.r = font->r;
-                clr.g = font->g;
-                clr.b = font->b;
+                clr.r = _font.r;
+                clr.g = _font.g;
+                clr.b = _font.b;
 
-                if (stack__win3d.solidFont)
+                if (_solidFont)
                 {
                     SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
                 }
                 else
                 {
                     SDL_FreeSurface(tmp);
-                    tmp = TTF_RenderUTF8_Blended(font->ttfFont, txt->string, clr);
+                    tmp = TTF_RenderUTF8_Blended(_font.ttfFont, txt->string, clr);
                     SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
                 }
 
@@ -360,11 +358,11 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 want.x = p1 + 1;
                 want.y = v10;
 
-                SDL_BlitSurface(tmp, NULL, stack__win3d.screenSurface, &want);
+                SDL_BlitSurface(tmp, NULL, _screenSurface, &want);
                 SDL_FreeSurface(tmp);
 
 
-                SDL_SetClipRect(stack__win3d.screenSurface, NULL);
+                SDL_SetClipRect(_screenSurface, NULL);
             }
         }
     }
@@ -380,29 +378,27 @@ void NC_STACK_win3d::AddScreenText(const char *string, int p1, int p2, int p3, i
     v8->p4 = p4;
     v8->flag = flag;
 
-    stack__win3d.font.entries.push_back(v8);
+    _font.entries.push_back(v8);
 }
 
 void NC_STACK_win3d::DrawScreenText()
 {
-    ScreenFont *font = &stack__win3d.font;
+    _font.r = 255;
+    _font.g = 255;
+    _font.b = 0;
 
-    font->r = 255;
-    font->g = 255;
-    font->b = 0;
-
-    for ( std::list<ScreenText *>::iterator it = font->entries.begin(); it != font->entries.end(); it++ )
+    for ( std::list<ScreenText *>::iterator it = _font.entries.begin(); it != _font.entries.end(); it++ )
     {
         DrawTextEntry(*it);
         delete (*it);
     }
 
-    font->entries.clear();
+    _font.entries.clear();
 }
 
-int win3dInitialisation(__NC_STACK_win3d *w3d)
+int NC_STACK_win3d::win3dInitialisation()
 {
-    w3d->pending.clear();
+    _pending.clear();
 
     for (int i = 0; i < 8; i++)
     {
@@ -431,53 +427,49 @@ int win3dInitialisation(__NC_STACK_win3d *w3d)
             break;
         }
 
-        w3d->gray_colors__[i][0] = ((color >> 16) & 0xFF) / 255.0;
-        w3d->gray_colors__[i][1] = ((color >> 8) & 0xFF) / 255.0;
-        w3d->gray_colors__[i][2] = (color & 0xFF) / 255.0;
+        _greyColors[i][0] = ((color >> 16) & 0xFF) / 255.0;
+        _greyColors[i][1] = ((color >> 8) & 0xFF) / 255.0;
+        _greyColors[i][2] = (color & 0xFF) / 255.0;
     }
 
-    w3d->gray_colors__[8][0] = 1.0;
-    w3d->gray_colors__[8][1] = 1.0;
-    w3d->gray_colors__[8][2] = 1.0;
+    _greyColors[8][0] = 1.0;
+    _greyColors[8][1] = 1.0;
+    _greyColors[8][2] = 1.0;
 
     return 1;
 }
 
 int NC_STACK_win3d::initPixelFormats()
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    if (w3d->pixfmt)
-        SDL_FreeFormat(w3d->pixfmt);
+    if (_pixfmt)
+        SDL_FreeFormat(_pixfmt);
 
     SDL_DisplayMode curr;
     SDL_GetCurrentDisplayMode(0, &curr);
     curr.format = SDLWRAP_CorrectFormat(curr.format);
 
-    w3d->pixfmt = SDL_AllocFormat( curr.format );
+    _pixfmt = SDL_AllocFormat( curr.format );
 
-    SDLWRAP_GL_mapFormat(curr.format, &w3d->glPixfmt, &w3d->glPixtype);
+    SDLWRAP_GL_mapFormat(curr.format, &_glPixfmt, &_glPixtype);
 
     return 1;
 }
 
 int NC_STACK_win3d::initPolyEngine()
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    w3d->rendStates[TEXTUREHANDLE] = 0;
-    w3d->rendStates[SHADEMODE] = 1; //Smooth
-    w3d->rendStates[STIPPLEENABLE] = 0;
-    w3d->rendStates[SRCBLEND] = 1;//D3DBLEND_ONE;
-    w3d->rendStates[DESTBLEND] = 0;//D3DBLEND_ZERO;
-    w3d->rendStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
-    w3d->rendStates[ALPHABLENDENABLE] = 0; /* TRUE to enable alpha blending */
-    w3d->rendStates[ZWRITEENABLE] = 1; /* TRUE to enable z writes */
-    w3d->rendStates[TEXTUREMAG] = (w3d->filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
-    w3d->rendStates[TEXTUREMIN] = (w3d->filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
+    _rendStates[TEXTUREHANDLE] = 0;
+    _rendStates[SHADEMODE] = 1; //Smooth
+    _rendStates[STIPPLEENABLE] = 0;
+    _rendStates[SRCBLEND] = 1;//D3DBLEND_ONE;
+    _rendStates[DESTBLEND] = 0;//D3DBLEND_ZERO;
+    _rendStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+    _rendStates[ALPHABLENDENABLE] = 0; /* TRUE to enable alpha blending */
+    _rendStates[ZWRITEENABLE] = 1; /* TRUE to enable z writes */
+    _rendStates[TEXTUREMAG] = (_filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
+    _rendStates[TEXTUREMIN] = (_filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
 
     for (int i = 0; i < W3D_STATES_MAX; i++)
-        w3d->rendStates2[i] = w3d->rendStates[i];
+        _rendStates2[i] = _rendStates[i];
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -488,7 +480,7 @@ int NC_STACK_win3d::initPolyEngine()
 
     glDisable(GL_CULL_FACE);
 
-    if (w3d->dither)
+    if (_dither)
         glEnable(GL_DITHER);
     else
         glDisable(GL_DITHER);
@@ -503,7 +495,7 @@ int NC_STACK_win3d::initPolyEngine()
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
 
-    w3d->pending.clear();
+    _pending.clear();
 
     //glAlphaFunc ( GL_GREATER, 0.1 ) ;
     //glEnable ( GL_ALPHA_TEST );
@@ -563,11 +555,6 @@ gfxMode *windd_func0__sub0(const std::string &file)
     }
 
     return sub_41F68C();
-}
-
-int sub_42AC78(__NC_STACK_win3d *a1)
-{
-    return a1->forcesoftcursor;
 }
 
 uint32_t cursPix(uint8_t *data, int ofs, int bpp)
@@ -711,13 +698,13 @@ SDL_Cursor *NC_STACK_win3d::wrapLoadCursor(const char *name)
     return cursor;
 }
 
-void sub_42D410(__NC_STACK_win3d *obj, int curID, int force)
+void NC_STACK_win3d::sub_42D410(int curID, int force)
 {
     int sett = 0;
 
     if ( force )
         sett = 1;
-    else if ( curID != obj->currentCursor )
+    else if ( curID != _currentCursor )
         sett = 1;
 
     if ( sett )
@@ -729,13 +716,13 @@ void sub_42D410(__NC_STACK_win3d *obj, int curID, int force)
             if ( cursors[curID - 1] )
                 SDL_SetCursor( cursors[curID - 1] );
 
-            if (!obj->currentCursor)
+            if (!_currentCursor)
                 SDL_ShowCursor(SDL_ENABLE);
         }
 
     }
 
-    obj->currentCursor = curID;
+    _currentCursor = curID;
 }
 
 
@@ -769,21 +756,21 @@ int NC_STACK_win3d::LoadFontByDescr(const std::string &fontname)
         //weight = 400;
     }
 
-    if ( stack__win3d.font.ttfFont )
+    if ( _font.ttfFont )
     {
-        TTF_CloseFont(stack__win3d.font.ttfFont);
-        stack__win3d.font.ttfFont = NULL;
+        TTF_CloseFont(_font.ttfFont);
+        _font.ttfFont = NULL;
     }
 
-    stack__win3d.font.height = height;
-    stack__win3d.font.ttfFont = System::LoadFont(facename, height);
+    _font.height = height;
+    _font.ttfFont = System::LoadFont(facename, height);
 
-    if ( stack__win3d.font.ttfFont )
+    if ( _font.ttfFont )
     {
-        if (!stack__win3d.solidFont)
-            TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_LIGHT);
+        if (!_solidFont)
+            TTF_SetFontHinting(_font.ttfFont, TTF_HINTING_LIGHT);
         else
-            TTF_SetFontHinting(stack__win3d.font.ttfFont, TTF_HINTING_MONO);
+            TTF_SetFontHinting(_font.ttfFont, TTF_HINTING_MONO);
 
         return 1;
     }
@@ -797,7 +784,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 {
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
-    int export_window_mode = win3d_keys[13].Get<bool>();     // gfx.export_window_mode
+    _export_window_mode = win3d_keys[13].Get<bool>();     // gfx.export_window_mode
 
     switch(win3d_keys[14].Get<int>())
     {
@@ -859,29 +846,24 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     if ( !NC_STACK_display::func0(stak) )
         return 0;
 
-    __NC_STACK_win3d *win3d = &stack__win3d;
+    _forcesoftcursor = 0;
+    _sort_id = picked->sortid;
+    _movie_player = win3d_keys[9].Get<bool>();
+    _disable_lowres = win3d_keys[12].Get<bool>();
+    _txt16bit = txt16bit_def;
+    _use_simple_d3d = drawprim_def;
 
-    win3d->forcesoftcursor = 0;
-    win3d->sort_id = picked->sortid;
-    win3d->movie_player = win3d_keys[9].Get<bool>();
-    win3d->disable_lowres = win3d_keys[12].Get<bool>();
-    win3d->txt16bit = txt16bit_def;
-    win3d->use_simple_d3d = drawprim_def;
-    win3d->export_window_mode = export_window_mode;
+    _solidFont = win3d_keys[15].Get<bool>();
 
-    win3d->solidFont = win3d_keys[15].Get<bool>();
-
-    win3d->windowed = picked->windowed; ////HACK
+    _windowed = picked->windowed; ////HACK
 
     if ( picked->windowed )
-        win3d->flags |= 1;
+        _flags |= 1;
 
 
-    win3d->mode = picked->mode;
+    _mode = picked->mode;
 
-    win3d->currentCursor = -1;
-    win3d->width = picked->w;
-    win3d->height = picked->h;
+    _currentCursor = -1;
 
     if (!picked->windowed)
         SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &picked->mode);
@@ -892,7 +874,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     SDLWRAP_resizeWindow(picked->w, picked->h);
     
-    win3d->screenSurface = System::Screen();
+    _screenSurface = System::Screen();
 
     switch( win3d_keys[16].Get<int>() )
     {
@@ -924,18 +906,18 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
         delete fil;
     }
 
-    if ( (float)win3d->width / (float)win3d->height >= 1.4 )
+    if ( (float)_width / (float)_height >= 1.4 )
     {
-        int half = (win3d->width + win3d->height) / 2;
-        win3d->corrW = (float)half * 1.1429 / (float)win3d->width;
-        win3d->corrH = (float)half * 0.85715 / (float)win3d->height;
-        win3d->corrIW = 1.0 / win3d->corrW;
-        win3d->corrIH = 1.0 / win3d->corrH;
+        int half = (_width + _height) / 2;
+        _corrW = (float)half * 1.1429 / (float)_width;
+        _corrH = (float)half * 0.85715 / (float)_height;
+        _corrIW = 1.0 / _corrW;
+        _corrIH = 1.0 / _corrH;
     }
     else //No correction
     {
-        win3d->corrIW = win3d->corrW = 1.0;
-        win3d->corrIH = win3d->corrH = 1.0;
+        _corrIW = _corrW = 1.0;
+        _corrIH = _corrH = 1.0;
     }
 
 
@@ -958,20 +940,18 @@ size_t NC_STACK_win3d::func0(IDVList &stak)
     if ( !windd_func0(stak) )
         return 0;
 
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    w3d->dither = win3d_keys[0].Get<bool>();
-    w3d->filter = win3d_keys[1].Get<bool>();
-    w3d->antialias = win3d_keys[2].Get<bool>();
-    w3d->zbuf_when_tracy = win3d_keys[4].Get<bool>();
-    w3d->colorkey = win3d_keys[5].Get<bool>();
+    _dither = win3d_keys[0].Get<bool>();
+    _filter = win3d_keys[1].Get<bool>();
+    _antialias = win3d_keys[2].Get<bool>();
+    _zbuf_when_tracy = win3d_keys[4].Get<bool>();
+    _colorkey = win3d_keys[5].Get<bool>();
 
     if ( can_srcblend )
-        w3d->alpha = 192;
+        _alpha = 192;
     else
-        w3d->alpha = 128;
+        _alpha = 128;
 
-    if ( !win3dInitialisation(w3d) )
+    if ( !win3dInitialisation() )
     {
         ypa_log_out("win3d.class: Initialization failed.\n");
         func1();
@@ -1004,21 +984,19 @@ size_t NC_STACK_win3d::func0(IDVList &stak)
 
 size_t NC_STACK_win3d::func1()
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    if (w3d->pixfmt)
+    if (_pixfmt)
     {
-        SDL_FreeFormat(w3d->pixfmt);
-        w3d->pixfmt = NULL;
+        SDL_FreeFormat(_pixfmt);
+        _pixfmt = NULL;
     }
 
-    if ( w3d->font.ttfFont )
+    if ( _font.ttfFont )
     {
-        TTF_CloseFont(w3d->font.ttfFont);
-        w3d->font.ttfFont = NULL;
+        TTF_CloseFont(_font.ttfFont);
+        _font.ttfFont = NULL;
     }
 
-    if (w3d->windowed)
+    if (_windowed)
         SDLWRAP_restoreWindow();
 
     return NC_STACK_display::func1();
@@ -1040,7 +1018,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    System::DrawLine(stack__win3d.screenSurface,
+    System::DrawLine(_screenSurface,
                       Common::Rect(x1, y1, x2, y2),
                       (field_4 >> 16) & 0xFF,
                       (field_4 >> 8) & 0xFF,
@@ -1051,7 +1029,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 
 size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
-    System::DrawLine(stack__win3d.screenSurface,
+    System::DrawLine(_screenSurface,
                       Common::Rect(field_54c + arg->x1, field_550 + arg->y1,
                                    field_54c + arg->x2, field_550 + arg->y2),
                       (field_4 >> 16) & 0xFF,
@@ -1072,7 +1050,7 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
 
         if ( _inverseClip.IsEmpty() || !Common::ClipLine(_inverseClip, &tmp2) )
         {
-            System::DrawLine(stack__win3d.screenSurface, tmp1, r, g, b);
+            System::DrawLine(_screenSurface, tmp1, r, g, b);
         }
         else
         {
@@ -1080,17 +1058,17 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
             {
                 if ( tmp2.left != tmp1.left || tmp2.top != tmp1.top )
                 {
-                    System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
-                    System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    System::DrawLine(_screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                    System::DrawLine(_screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
                 else
                 {
-                    System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    System::DrawLine(_screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
             }
             else
             {
-                System::DrawLine(stack__win3d.screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                System::DrawLine(_screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
             }
         }
     }
@@ -1153,7 +1131,7 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     dst.w = a7 - a5;
     dst.h = a8 - a6;
     
-    SDL_BlitScaled(pbitm->swTex, &src, stack__win3d.screenSurface, &dst);
+    SDL_BlitScaled(pbitm->swTex, &src, _screenSurface, &dst);
     
     return 1;
 }
@@ -1214,8 +1192,6 @@ int win3d_func204__sub0(NC_STACK_win3d *w3d, rstr_loc204 *arg)
 
 size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
     rstr_loc204 loc;
 
     loc.pbitm = arg->pbitm;
@@ -1243,7 +1219,7 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
         dst.w = loc.dword20 - loc.dword18;
         dst.h = loc.dword24 - loc.dword1C;
 
-        SDL_BlitScaled(loc.pbitm->swTex, &src, w3d->screenSurface, &dst);
+        SDL_BlitScaled(loc.pbitm->swTex, &src, _screenSurface, &dst);
     }
 
 
@@ -1252,8 +1228,6 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
 
 void NC_STACK_win3d::SetRenderStates(int setAll)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
     uint32_t changeStates = 0;
 
     if (setAll)
@@ -1261,18 +1235,18 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 
     for (int i = 0; i < W3D_STATES_MAX; i++)
     {
-        if (w3d->rendStates2[i] != w3d->rendStates[i])
+        if (_rendStates2[i] != _rendStates[i])
             changeStates |= 1 << i;
 
-        w3d->rendStates[i] = w3d->rendStates2[i];
+        _rendStates[i] = _rendStates2[i];
     }
 
     if ( changeStates & MSK(TEXTUREHANDLE))
     {
-        if (w3d->rendStates[TEXTUREHANDLE])
+        if (_rendStates[TEXTUREHANDLE])
         {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, w3d->rendStates[TEXTUREHANDLE]);
+            glBindTexture(GL_TEXTURE_2D, _rendStates[TEXTUREHANDLE]);
         }
         else
         {
@@ -1283,7 +1257,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 
     if ( changeStates & ( MSK(TEXTUREHANDLE) | MSK(TEXTUREMAG) ) )
     {
-        if (w3d->rendStates[TEXTUREMAG])
+        if (_rendStates[TEXTUREMAG])
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         else
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -1291,7 +1265,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 
     if ( changeStates & ( MSK(TEXTUREHANDLE) | MSK(TEXTUREMIN) ) )
     {
-        if (w3d->rendStates[TEXTUREMIN])
+        if (_rendStates[TEXTUREMIN])
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         else
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -1300,7 +1274,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 
     if ( changeStates & MSK(SHADEMODE) )
     {
-        if (w3d->rendStates[SHADEMODE])
+        if (_rendStates[SHADEMODE])
             glShadeModel(GL_SMOOTH);
         else
             glShadeModel(GL_FLAT);
@@ -1313,7 +1287,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
     if ( changeStates & (MSK(SRCBLEND) | MSK(DESTBLEND)) )
     {
         GLint src, dst;
-        switch (w3d->rendStates[SRCBLEND])
+        switch (_rendStates[SRCBLEND])
         {
         case 0:
             src = GL_ZERO;
@@ -1333,7 +1307,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
             break;
         }
 
-        switch (w3d->rendStates[DESTBLEND])
+        switch (_rendStates[DESTBLEND])
         {
         case 0:
             dst = GL_ZERO;
@@ -1358,21 +1332,21 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 
     if ( changeStates & MSK(TEXTUREMAPBLEND) )
     {
-        if (w3d->rendStates[TEXTUREMAPBLEND] == 0)
+        if (_rendStates[TEXTUREMAPBLEND] == 0)
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-        else if (w3d->rendStates[TEXTUREMAPBLEND] == 1)
+        else if (_rendStates[TEXTUREMAPBLEND] == 1)
         {
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
             glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
             glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
         }
-        else if (w3d->rendStates[TEXTUREMAPBLEND] == 2)
+        else if (_rendStates[TEXTUREMAPBLEND] == 2)
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
 
     if ( changeStates & MSK(ALPHABLENDENABLE) )
     {
-        if (w3d->rendStates[ALPHABLENDENABLE])
+        if (_rendStates[ALPHABLENDENABLE])
             glEnable(GL_BLEND);
         else
             glDisable(GL_BLEND);
@@ -1380,7 +1354,7 @@ void NC_STACK_win3d::SetRenderStates(int setAll)
 
     if ( changeStates & MSK(ZWRITEENABLE) )
     {
-        if (w3d->rendStates[ZWRITEENABLE])
+        if (_rendStates[ZWRITEENABLE])
             glDepthMask(GL_TRUE);
         else
             glDepthMask(GL_FALSE);
@@ -1399,9 +1373,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
         float r, g, b, a;
     };
 
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    if ( !w3d->sceneBeginned )
+    if ( !_sceneBeginned )
         return;
 
     if ( polysDat->vertexCount < 3 || polysDat->vertexCount > 12 )
@@ -1411,7 +1383,7 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
     if ( !(polysDat->renderFlags & RFLAGS_FALLOFF) )
         if ( polysDat->renderFlags & 0x30 && !a6 )
         {
-            w3d->pending.push_back( in );
+            _pending.push_back( in );
             return;
         }
 
@@ -1430,22 +1402,22 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
         vtx[i].a = 1.0;
     }
 
-    w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
-    w3d->rendStates2[STIPPLEENABLE] = 0;
-    w3d->rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
-    w3d->rendStates2[DESTBLEND] = 0;//D3DBLEND_ZERO;
-    w3d->rendStates2[TEXTUREMAPBLEND] = 0;//D3DTBLEND_COPY;
-    w3d->rendStates2[ALPHABLENDENABLE] = 0;
-    w3d->rendStates2[ZWRITEENABLE] = 1;
-    w3d->rendStates2[TEXTUREHANDLE] = 0;
+    _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
+    _rendStates2[STIPPLEENABLE] = 0;
+    _rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
+    _rendStates2[DESTBLEND] = 0;//D3DBLEND_ZERO;
+    _rendStates2[TEXTUREMAPBLEND] = 0;//D3DTBLEND_COPY;
+    _rendStates2[ALPHABLENDENABLE] = 0;
+    _rendStates2[ZWRITEENABLE] = 1;
+    _rendStates2[TEXTUREHANDLE] = 0;
 
-    w3d->rendStates2[TEXTUREMAG] = (w3d->filter != 0);
-    w3d->rendStates2[TEXTUREMIN] = (w3d->filter != 0);
+    _rendStates2[TEXTUREMAG] = (_filter != 0);
+    _rendStates2[TEXTUREMIN] = (_filter != 0);
 
     if ( polysDat->renderFlags & (RFLAGS_LINMAP | RFLAGS_PERSPMAP) )
     {
         if (in->datSub.pbitm)
-            w3d->rendStates2[TEXTUREHANDLE] = in->datSub.pbitm->hwTex;
+            _rendStates2[TEXTUREHANDLE] = in->datSub.pbitm->hwTex;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
@@ -1467,8 +1439,8 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
 
     if ( polysDat->renderFlags & (RFLAGS_FLATSHD | RFLAGS_GRADSHD) )
     {
-        w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
-        w3d->rendStates2[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
+        _rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+        _rendStates2[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
 
         for (int i = 0; i < polysDat->vertexCount; i++)
         {
@@ -1482,70 +1454,70 @@ void NC_STACK_win3d::sb_0x43b518(polysDat *in, int a5, int a6)
 
     if ( polysDat->renderFlags & RFLAGS_LUMTRACY )
     {
-        if ( !w3d->zbuf_when_tracy )
-            w3d->rendStates2[ZWRITEENABLE] = 0;
+        if ( !_zbuf_when_tracy )
+            _rendStates2[ZWRITEENABLE] = 0;
 
         if ( can_destblend )
         {
-            w3d->rendStates2[ALPHABLENDENABLE] = 1;
-            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            w3d->rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
-            w3d->rendStates2[DESTBLEND] = 1;//D3DBLEND_ONE;
-            w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _rendStates2[ALPHABLENDENABLE] = 1;
+            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
+            _rendStates2[DESTBLEND] = 1;//D3DBLEND_ONE;
+            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
         }
         else if ( can_srcblend )
         {
-            w3d->rendStates2[ALPHABLENDENABLE] = 1;
-            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _rendStates2[ALPHABLENDENABLE] = 1;
+            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
         }
         else if ( can_stippling )
         {
-            w3d->rendStates2[ALPHABLENDENABLE] = 1;
-            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            w3d->rendStates2[STIPPLEENABLE] = 1;
-            w3d->rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _rendStates2[ALPHABLENDENABLE] = 1;
+            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _rendStates2[STIPPLEENABLE] = 1;
+            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
         }
 
         for (int i = 0; i < polysDat->vertexCount; i++)
-            vtx[i].a = w3d->alpha;
+            vtx[i].a = _alpha;
     }
     else if ( polysDat->renderFlags & RFLAGS_ZEROTRACY )
     {
-        if ( !w3d->zbuf_when_tracy )
-            w3d->rendStates2[ZWRITEENABLE] = 0;
+        if ( !_zbuf_when_tracy )
+            _rendStates2[ZWRITEENABLE] = 0;
 
-        if ( w3d->pixfmt->BytesPerPixel != 1 )
+        if ( _pixfmt->BytesPerPixel != 1 )
         {
-            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
         }
 
-        w3d->rendStates2[ALPHABLENDENABLE] = 1;
-        w3d->rendStates2[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
-        w3d->rendStates2[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
-        w3d->rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+        _rendStates2[ALPHABLENDENABLE] = 1;
+        _rendStates2[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
+        _rendStates2[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
+        _rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
     }
 
     if (win3d_keys[18].Get<bool>())
     {
         if (polysDat->renderFlags & RFLAGS_SKY)
         {
-            w3d->rendStates2[ZWRITEENABLE] = 0;
+            _rendStates2[ZWRITEENABLE] = 0;
         }
         else if (polysDat->renderFlags & RFLAGS_FALLOFF)
         {
-            w3d->rendStates2[ZWRITEENABLE] = 1;
-            w3d->rendStates2[ALPHABLENDENABLE] = 1;
-            w3d->rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            w3d->rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            w3d->rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            w3d->rendStates2[SHADEMODE] = 1;//D3DSHADE_FLAT;
-            w3d->rendStates2[STIPPLEENABLE] = 0;
+            _rendStates2[ZWRITEENABLE] = 1;
+            _rendStates2[ALPHABLENDENABLE] = 1;
+            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _rendStates2[SHADEMODE] = 1;//D3DSHADE_FLAT;
+            _rendStates2[STIPPLEENABLE] = 0;
 
             float transDist = win3d_keys[19].Get<int>();
             float transLen = win3d_keys[20].Get<int>();
@@ -1584,16 +1556,14 @@ size_t NC_STACK_win3d::raster_func206(polysDat *arg)
     return 1;
 }
 
-void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **arr)
+void NC_STACK_win3d::win3d_func209__sub0(char *cmdline, char **arr)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
     int v11;
 
-    int bytesPerColor = w3d->screenSurface->format->BytesPerPixel;
+    int bytesPerColor = _screenSurface->format->BytesPerPixel;
 
     char *curpos = cmdline;
-    int w_pixels = w3d->screenSurface->pitch / bytesPerColor;
+    int w_pixels = _screenSurface->pitch / bytesPerColor;
     TileMap *tile = NULL;
 
     int x_out = 0;
@@ -1606,21 +1576,8 @@ void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **
     int y_pos_line = 0;
     int x_pos_line = 0;
 
-    int rilHeight, rilWidth;
-
-    if ( w3d->flags & 8 )
-    {
-        rilHeight = w3d->height / 2;
-        rilWidth = w3d->width / 2;
-    }
-    else
-    {
-        rilHeight = w3d->height;
-        rilWidth = w3d->width;
-    }
-
-    int halfWidth = rilWidth / 2;
-    int halfHeight = rilHeight / 2;
+    int halfWidth = _width / 2;
+    int halfHeight = _height / 2;
 
     int line_width = 0;
     int line_height = 0;
@@ -1674,7 +1631,7 @@ void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **
             
             for(int i = 0; i < cpy_width; i += srcR.w)
             {
-                SDL_BlitSurface(tile->img->GetSwTex(), &srcR, w3d->screenSurface, &dstR);
+                SDL_BlitSurface(tile->img->GetSwTex(), &srcR, _screenSurface, &dstR);
                 dstR.x += srcR.w;
             }                
 
@@ -1734,7 +1691,7 @@ void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **
             case 4: //ypos
                 y_out = FontUA::get_s16(&curpos);
                 if ( y_out < 0 )
-                    y_out += rilHeight;
+                    y_out += _height;
 
                 x_pos_line = x_out;
                 y_pos_line = y_out;
@@ -1863,7 +1820,7 @@ void NC_STACK_win3d::win3d_func209__sub0(TileMap **tiles, char *cmdline, char **
 
 void NC_STACK_win3d::raster_func209(w3d_a209 *arg)
 {
-    win3d_func209__sub0(tiles.data(), arg->cmdbuf, arg->includ);
+    win3d_func209__sub0(arg->cmdbuf, arg->includ);
 }
 
 
@@ -1871,11 +1828,11 @@ void NC_STACK_win3d::BeginScene()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glLoadMatrixd(frustum);
+    glLoadMatrixd(_frustum);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    stack__win3d.sceneBeginned = 1;
+    _sceneBeginned = 1;
 }
 
 bool NC_STACK_win3d::compare(polysDat *a, polysDat *b)
@@ -1885,19 +1842,18 @@ bool NC_STACK_win3d::compare(polysDat *a, polysDat *b)
 
 void NC_STACK_win3d::RenderTransparent()
 {
-    if ( stack__win3d.sceneBeginned )
+    if ( _sceneBeginned )
     {
-        if ( stack__win3d.pending.size() )
+        if ( _pending.size() )
         {
-            std::stable_sort(stack__win3d.pending.begin(), stack__win3d.pending.end(), compare);
+            std::stable_sort(_pending.begin(), _pending.end(), compare);
 
-            for (std::deque<polysDat *>::iterator it = stack__win3d.pending.begin(); it != stack__win3d.pending.end(); it++)
+            for (std::deque<polysDat *>::iterator it = _pending.begin(); it != _pending.end(); it++)
             {
                 sb_0x43b518((*it), 1, 1);
             }
 
-
-            stack__win3d.pending.clear();
+            _pending.clear();
         }
     }
 }
@@ -1907,7 +1863,7 @@ void NC_STACK_win3d::EndScene()
 {
     RenderTransparent();
 
-    stack__win3d.sceneBeginned = 0;
+    _sceneBeginned = 0;
 }
 
 void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
@@ -1922,7 +1878,7 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
                         (arg->rect2.x2 + 1.0) * field_554,
                         (arg->rect2.y2 + 1.0) * field_558 );
 
-    System::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, stack__win3d.screenSurface, dRect);
+    System::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, _screenSurface, dRect);
 }
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
@@ -1971,9 +1927,7 @@ size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
 
 void NC_STACK_win3d::BeginFrame()
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    SDL_FillRect(w3d->screenSurface, NULL, SDL_MapRGBA(w3d->screenSurface->format, 0, 0, 0, 0) );
+    SDL_FillRect(_screenSurface, NULL, SDL_MapRGBA(_screenSurface->format, 0, 0, 0, 0) );
 
     glPushAttrib(GL_DEPTH_WRITEMASK);
     glDepthMask(GL_TRUE);
@@ -1996,7 +1950,7 @@ void NC_STACK_win3d::EndFrame()
 
 
 
-void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
+void NC_STACK_win3d::win3d_func262__sub0(int a2, int *a3, int *a4)
 {
     float cl1 = 0.0;
     float cl2 = 0.0;
@@ -2013,9 +1967,9 @@ void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
             float v15 = a4[i] / 255.0;
             int v14 = a3[i];
 
-            tclr1 += w3d->gray_colors__[v14][0] * v15;
-            tclr2 += w3d->gray_colors__[v14][1] * v15;
-            tclr3 += w3d->gray_colors__[v14][2] * v15;
+            tclr1 += _greyColors[v14][0] * v15;
+            tclr2 += _greyColors[v14][1] * v15;
+            tclr3 += _greyColors[v14][2] * v15;
         }
 
         cl1 = tclr1;
@@ -2029,25 +1983,21 @@ void win3d_func262__sub0(__NC_STACK_win3d *w3d, int a2, int *a3, int *a4)
     if ( cl3 > 1.0 )
         cl3 = 1.0;
 
-    w3d->gray_colors__[8][0] = cl1;
-    w3d->gray_colors__[8][1] = cl2;
-    w3d->gray_colors__[8][2] = cl3;
+    _greyColors[8][0] = cl1;
+    _greyColors[8][1] = cl2;
+    _greyColors[8][2] = cl3;
 }
 
 void NC_STACK_win3d::display_func262(rstr_262_arg *arg)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    win3d_func262__sub0(w3d, arg->cnt, arg->slot, arg->weight);
+    win3d_func262__sub0(arg->cnt, arg->slot, arg->weight);
     NC_STACK_display::display_func262(arg);
 }
 
 
 void NC_STACK_win3d::display_func263(displ_arg263 *arg)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    sub_42D410(w3d, arg->pointer_id, 0);
+    sub_42D410(arg->pointer_id, 0);
     NC_STACK_display::display_func263(arg);
 }
 
@@ -2072,18 +2022,18 @@ bool NC_STACK_win3d::AllocTexture(ResBitmap *bitm)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        if (bitm->swTex->format->format == stack__win3d.pixfmt->format)
+        if (bitm->swTex->format->format == _pixfmt->format)
         {
             SDL_LockSurface(bitm->swTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, bitm->swTex->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, bitm->swTex->pixels);
             SDL_UnlockSurface(bitm->swTex);
         }
         else
         {
-            SDL_Surface *conv = ConvertSDLSurface(bitm->swTex, stack__win3d.pixfmt);
+            SDL_Surface *conv = ConvertSDLSurface(bitm->swTex, _pixfmt);
             
             SDL_LockSurface(conv);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, stack__win3d.glPixfmt, stack__win3d.glPixtype, conv->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, conv->pixels);
             SDL_UnlockSurface(conv);
             
             SDL_FreeSurface(conv);
@@ -2172,7 +2122,7 @@ void NC_STACK_win3d::windd_func321(IDVPair *)
 
 
 
-char * windd_func322__sub0(__NC_STACK_win3d *wdd, const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, uint32_t timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
+char * NC_STACK_win3d::windd_func322__sub0(const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, uint32_t timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen)
 {
     dprintf("MAKE ME %s\n","windd_func322__sub0");
     return NULL;
@@ -2181,12 +2131,9 @@ char * windd_func322__sub0(__NC_STACK_win3d *wdd, const char *box_title, const c
 //Show DLGBox with edit field and get entered value
 void NC_STACK_win3d::windd_func322(windd_dlgBox *dlgBox)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
     windd_func320(NULL);
 
     dlgBox->result = windd_func322__sub0(
-                         w3d,
                          dlgBox->title,
                          dlgBox->ok,
                          dlgBox->cancel,
@@ -2210,10 +2157,10 @@ void windd_func323__sub0__sub0(const char *filename)
 }
 
 
-void windd_func323__sub0(__NC_STACK_win3d *w3d, const char *filename)
+void NC_STACK_win3d::windd_func323__sub0(const char *filename)
 {
 ////    unk_514F20 = 1;
-    if ( w3d->movie_player )
+    if ( _movie_player )
         windd_func323__sub0__sub0(filename);
 ////    unk_514F20 = 0;
 }
@@ -2221,9 +2168,7 @@ void windd_func323__sub0(__NC_STACK_win3d *w3d, const char *filename)
 //Play movie file
 void NC_STACK_win3d::windd_func323(const char **filename)
 {
-    __NC_STACK_win3d *w3d = &stack__win3d;
-
-    windd_func323__sub0(w3d, *filename);
+    windd_func323__sub0(*filename);
 }
 
 void NC_STACK_win3d::windd_func324(wdd_func324arg *inout)
@@ -2288,22 +2233,22 @@ void NC_STACK_win3d::setWDD_drawPrim(int arg)
 
 int NC_STACK_win3d::getDISP_displID()
 {
-    return stack__win3d.sort_id;
+    return _sort_id;
 }
 
 int NC_STACK_win3d::getWDD_16bitTex()
 {
-    return stack__win3d.txt16bit;
+    return _txt16bit;
 }
 
 int NC_STACK_win3d::getWDD_drawPrim()
 {
-    return stack__win3d.use_simple_d3d;
+    return _use_simple_d3d;
 }
 
 void NC_STACK_win3d::setW3D_texFilt(int arg)
 {
-    stack__win3d.filter = arg;
+    _filter = arg;
 }
 
 
@@ -2314,28 +2259,28 @@ void NC_STACK_win3d::draw2DandFlush()
     SDLWRAP_drawScreen();
     Gui::Root::Instance.HwCompose();
 
-    SDL_FillRect(stack__win3d.screenSurface, NULL, SDL_MapRGBA(stack__win3d.screenSurface->format, 0, 0, 0, 0) );
+    SDL_FillRect(_screenSurface, NULL, SDL_MapRGBA(_screenSurface->format, 0, 0, 0, 0) );
 }
 
 void NC_STACK_win3d::matrixAspectCorrection(mat3x3 &inout, bool invert)
 {
     if (invert)
     {
-        inout.m00 *= stack__win3d.corrIW;
-        inout.m01 *= stack__win3d.corrIW;
-        inout.m02 *= stack__win3d.corrIW;
-        inout.m10 *= stack__win3d.corrIH;
-        inout.m11 *= stack__win3d.corrIH;
-        inout.m12 *= stack__win3d.corrIH;
+        inout.m00 *= _corrIW;
+        inout.m01 *= _corrIW;
+        inout.m02 *= _corrIW;
+        inout.m10 *= _corrIH;
+        inout.m11 *= _corrIH;
+        inout.m12 *= _corrIH;
     }
     else
     {
-        inout.m00 *= stack__win3d.corrW;
-        inout.m01 *= stack__win3d.corrW;
-        inout.m02 *= stack__win3d.corrW;
-        inout.m10 *= stack__win3d.corrH;
-        inout.m11 *= stack__win3d.corrH;
-        inout.m12 *= stack__win3d.corrH;
+        inout.m00 *= _corrW;
+        inout.m01 *= _corrW;
+        inout.m02 *= _corrW;
+        inout.m10 *= _corrH;
+        inout.m11 *= _corrH;
+        inout.m12 *= _corrH;
     }
 }
 
@@ -2343,46 +2288,46 @@ void NC_STACK_win3d::getAspectCorrection(float &cW, float &cH, bool invert)
 {
     if (invert)
     {
-        cW = stack__win3d.corrIW;
-        cH = stack__win3d.corrIH;
+        cW = _corrIW;
+        cH = _corrIH;
     }
     else
     {
-        cW = stack__win3d.corrW;
-        cH = stack__win3d.corrH;
+        cW = _corrW;
+        cH = _corrH;
     }
 }
 
 void NC_STACK_win3d::setFrustumClip(float _near, float _far)
 {
-    if (_near != frustumNear || _far != frustumFar)
+    if (_near != _frustumNear || _far != _frustumFar)
         _setFrustumClip(_near, _far);
 }
 
 void NC_STACK_win3d::_setFrustumClip(float _near, float _far)
 {
     //-z * frustum
-    frustumNear = _near;
-    frustumFar = _far;
-    frustum[0] = 1.0;
-    frustum[1] = 0.0;
-    frustum[2] = 0.0;
-    frustum[3] = 0.0;
+    _frustumNear = _near;
+    _frustumFar = _far;
+    _frustum[0] = 1.0;
+    _frustum[1] = 0.0;
+    _frustum[2] = 0.0;
+    _frustum[3] = 0.0;
 
-    frustum[4] = 0.0;
-    frustum[5] = 1.0;
-    frustum[6] = 0.0;
-    frustum[7] = 0.0;
+    _frustum[4] = 0.0;
+    _frustum[5] = 1.0;
+    _frustum[6] = 0.0;
+    _frustum[7] = 0.0;
 
-    frustum[8] = 0.0;
-    frustum[9] = 0.0;
-    frustum[10] = (_far + _near) / (_far - _near);
-    frustum[11] = 1.0;
+    _frustum[8] = 0.0;
+    _frustum[9] = 0.0;
+    _frustum[10] = (_far + _near) / (_far - _near);
+    _frustum[11] = 1.0;
 
-    frustum[12] = 0.0;
-    frustum[13] = 0.0;
-    frustum[14] = -2.0 * (_far * _near) / (_far - _near);
-    frustum[15] = 0.0;
+    _frustum[12] = 0.0;
+    _frustum[13] = 0.0;
+    _frustum[14] = -2.0 * (_far * _near) / (_far - _near);
+    _frustum[15] = 0.0;
 }
 
 void NC_STACK_win3d::ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp)
@@ -2432,7 +2377,7 @@ void NC_STACK_win3d::ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bo
 
 SDL_PixelFormat *NC_STACK_win3d::GetScreenFormat()
 {
-    return stack__win3d.screenSurface->format;
+    return _screenSurface->format;
 }
 
 SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
@@ -2447,7 +2392,7 @@ SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
 
 SDL_Surface *NC_STACK_win3d::ConvertToScreenFormat(SDL_Surface *src)
 {
-    return ConvertSDLSurface(src, stack__win3d.screenSurface->format);
+    return ConvertSDLSurface(src, _screenSurface->format);
 }
 
 SDL_Surface * NC_STACK_win3d::ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt)

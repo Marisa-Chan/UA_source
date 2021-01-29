@@ -72,53 +72,6 @@ struct ScreenFont
     ScreenFont();
 };
 
-struct __NC_STACK_win3d
-{
-    int width;
-    int height;
-    SDL_Surface *screenSurface;
-    int currentCursor;
-    int forcesoftcursor;
-    int movie_player;
-    int field_38;
-    int txt16bit;
-    int use_simple_d3d;
-    int disable_lowres;
-    int export_window_mode;
-    int sort_id;
-    int flags;
-
-    // From bigdata
-    std::deque<polysDat *> pending;
-    float gray_colors__[9][3];
-    // \From bigdata
-
-    int dither;
-    int filter;
-    int antialias;
-    int alpha;
-    int zbuf_when_tracy;
-    int colorkey;
-
-    SDL_PixelFormat *pixfmt;
-    SDL_DisplayMode mode;
-    GLint glPixfmt, glPixtype;
-    bool windowed;
-
-    uint32_t rendStates[W3D_STATES_MAX];
-    uint32_t rendStates2[W3D_STATES_MAX];
-
-    int sceneBeginned;
-
-    ScreenFont font;
-
-    float corrW, corrIW;
-    float corrH, corrIH;
-    bool solidFont;
-
-    __NC_STACK_win3d();
-};
-
 class NC_STACK_win3d: public NC_STACK_display
 {
 public:
@@ -153,10 +106,7 @@ public:
     virtual void windd_func324(wdd_func324arg *inout);
     virtual void windd_func325(wdd_func324arg *arg);
 
-    NC_STACK_win3d() {
-        _setFrustumClip(1.0, 8192.0);
-        //memset(&stack__win3d, 0, sizeof(stack__win3d));
-    };
+    NC_STACK_win3d();
     virtual ~NC_STACK_win3d() {};
     
     virtual const std::string &ClassName() const {
@@ -201,6 +151,10 @@ public:
     void setFrustumClip(float near, float far);
 
     static bool compare(polysDat *a, polysDat *b);
+    
+    void windd_func323__sub0(const char *filename);
+    int win3dInitialisation();
+    void sub_42D410(int curID, int force);
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
     virtual SDL_PixelFormat *GetScreenFormat();
@@ -219,26 +173,67 @@ protected:
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
     void DrawTextEntry(const ScreenText *txt);
 
-    void win3d_func209__sub0(TileMap **tiles, char *cmdline, char **arr);
+    void win3d_func209__sub0(char *cmdline, char **arr);
+    void win3d_func262__sub0(int a2, int *a3, int *a4);
 
     static SDL_Cursor *wrapLoadCursor(const char *name);
 
     void _setFrustumClip(float near, float far);
     
     void sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
+    char * windd_func322__sub0(const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, uint32_t timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen);
 
 public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_win3d stack__win3d;
-
     static Common::Ini::KeyList win3d_keys;
 
+public:
+    SDL_Surface *_screenSurface;
+    int _currentCursor;
+    int _forcesoftcursor;
+    int _movie_player;
+    int _field_38;
+    int _txt16bit;
+    int _use_simple_d3d;
+    int _disable_lowres;
+    int _export_window_mode;
+    int _sort_id;
+    int _flags;
+
+    // From bigdata
+    std::deque<polysDat *> _pending;
+    float _greyColors[9][3];
+    // \From bigdata
+
+    int _dither;
+    int _filter;
+    int _antialias;
+    int _alpha;
+    int _zbuf_when_tracy;
+    int _colorkey;
+
+    SDL_PixelFormat *_pixfmt;
+    SDL_DisplayMode _mode;
+    GLint _glPixfmt, _glPixtype;
+    bool _windowed;
+
+    uint32_t _rendStates[W3D_STATES_MAX];
+    uint32_t _rendStates2[W3D_STATES_MAX];
+
+    int _sceneBeginned;
+
+    ScreenFont _font;
+
+    float _corrW, _corrIW;
+    float _corrH, _corrIH;
+    bool _solidFont;
+
 protected:
-    GLdouble frustum[16];
-    float frustumNear;
-    float frustumFar;
+    GLdouble _frustum[16];
+    float _frustumNear;
+    float _frustumFar;
 };
 
 
