@@ -15,7 +15,7 @@
 
 #include "gui/root.h"
 
-struct gfxMode
+struct GfxMode
 {
     int w;
     int h;
@@ -24,9 +24,66 @@ struct gfxMode
     bool windowed;
     int sortid;
     std::string name;
+    
+    GfxMode()
+    {
+        w = 0;
+        h = 0;
+        bpp = 0;
+        mode = {0};
+        windowed = false;
+        sortid = 0;
+        name = "";
+    }
+    
+    GfxMode(GfxMode &&g)
+    {
+        w = std::move(g.w);
+        h = std::move(g.h);
+        bpp = std::move(g.bpp);
+        mode = std::move(g.mode);
+        windowed = std::move(g.windowed);
+        sortid = std::move(g.sortid);
+        name = std::move(g.name);
+    }
+    
+    GfxMode(const GfxMode &g)
+    {
+        w = g.w;
+        h = g.h;
+        bpp = g.bpp;
+        mode = g.mode;
+        windowed = g.windowed;
+        sortid = g.sortid;
+        name = g.name;
+    }
+    
+    GfxMode& operator=(const GfxMode &g)
+    {
+        w = g.w;
+        h = g.h;
+        bpp = g.bpp;
+        mode = g.mode;
+        windowed = g.windowed;
+        sortid = g.sortid;
+        name = g.name;
+        return *this;
+    }
+    
+    operator bool() const
+    {
+        if (w == 0 || h == 0 || bpp == 0)
+            return false;
+        return true;
+    }
+    
+    static bool Compare(const GfxMode &a, const GfxMode &b)
+    {
+        return (a.sortid > b.sortid);
+    }
 };
 
-std::list<gfxMode *> graphicsModes;
+std::list<GfxMode> graphicsModes;
 SDL_Cursor *cursors[11];
 
 const Nucleus::ClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
@@ -58,24 +115,16 @@ Common::Ini::KeyList NC_STACK_win3d::win3d_keys
 
 
 
-bool gfxComp(const gfxMode *a, const gfxMode *b)
+void AddGfxMode(const GfxMode &md)
 {
-    return (a->sortid > b->sortid);
-}
-
-void addGfxMode(gfxMode *md)
-{
-    for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
+    for (const GfxMode &m : graphicsModes)
     {
-        if ( (*it)->sortid == md->sortid )
-        {
-            delete md;
+        if ( m.sortid == md.sortid )
             return;
-        }
     }
 
     graphicsModes.push_back(md);
-    log_d3dlog("Add display mode: %s%dx%d\n", (md->windowed ? "Windowed ": ""), md->w, md->h );
+    log_d3dlog("Add display mode: %s%dx%d\n", (md.windowed ? "Windowed ": ""), md.w, md.h );
 }
 
 
@@ -103,40 +152,38 @@ void NC_STACK_win3d::initfirst()
         target.refresh_rate = 0;
         target.driverdata   = 0;
 
-        gfxMode *mode;
         if (SDL_GetClosestDisplayMode(0, &target, &closest) )
         {
-            mode = new gfxMode;
-            mode->w = closest.w;
-            mode->h = closest.h;
-            mode->mode = closest;
-            mode->bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
-            mode->windowed = false;
-            mode->name = fmt::sprintf("%d x %d", mode->w, mode->h);
+            GfxMode mode;
+            mode.w = closest.w;
+            mode.h = closest.h;
+            mode.mode = closest;
+            mode.bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
+            mode.windowed = false;
+            mode.name = fmt::sprintf("%d x %d", mode.w, mode.h);
 
-            mode->sortid = (closest.w & 0x7FFF) << 7 | (closest.h & 0x7FFF);
+            mode.sortid = (closest.w & 0x7FFF) << 7 | (closest.h & 0x7FFF);
 
-            addGfxMode(mode);
+            AddGfxMode(mode);
         }
 
         if (checkmodes[i][0] <= deskMode.w && checkmodes[i][1] <= deskMode.h)
         {
-            mode = new gfxMode;
+            GfxMode mode;
+            mode.w = checkmodes[i][0];
+            mode.h = checkmodes[i][1];
+            mode.mode = deskMode;
+            mode.bpp = SDL_BYTESPERPIXEL(corrected) * 8;
+            mode.windowed = true;
+            mode.name = fmt::sprintf("Windowed %d x %d", mode.w, mode.h);
 
-            mode->w = checkmodes[i][0];
-            mode->h = checkmodes[i][1];
-            mode->mode = deskMode;
-            mode->bpp = SDL_BYTESPERPIXEL(corrected) * 8;
-            mode->windowed = true;
-            mode->name = fmt::sprintf("Windowed %d x %d", mode->w, mode->h);
+            mode.sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
 
-            mode->sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
-
-            addGfxMode(mode);
+            AddGfxMode(mode);
         }
     }
 
-    graphicsModes.sort(gfxComp);
+    graphicsModes.sort(GfxMode::Compare);
 
     cursors[0] = wrapLoadCursor("Pointer");
     cursors[1] = wrapLoadCursor("Cancel");
@@ -520,18 +567,18 @@ int NC_STACK_win3d::initPolyEngine()
 }
 
 
-gfxMode *sub_41F68C()
+GfxMode sub_41F68C()
 {
-    for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
+    for (const GfxMode &m : graphicsModes)
     {
-        if ((*it)->w == 640 && (*it)->h == 480)
-            return *it;
+        if (m.w == 640 && m.h == 480)
+            return m;
     }
 
     return graphicsModes.front();
 }
 
-gfxMode *windd_func0__sub0(const std::string &file)
+GfxMode windd_func0__sub0(const std::string &file)
 {
     FSMgr::FileHandle *fil = uaOpenFile(file, "r");
 
@@ -545,10 +592,10 @@ gfxMode *windd_func0__sub0(const std::string &file)
             if (pos != std::string::npos)
                 line.erase(pos);
 
-            for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
+            for (const GfxMode &m : graphicsModes)
             {
-                if ( StriCmp((*it)->name, line) == 0 )
-                    return *it;
+                if ( StriCmp(m.name, line) == 0 )
+                    return m;
             }
         }
         delete fil;
@@ -817,14 +864,14 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     int v7 = stak.Get<int32_t>(ATT_DISPLAY_ID, 0);
 
-    gfxMode *picked = NULL;
+    GfxMode picked;
     if ( v7 )
     {
-        for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
+        for (const GfxMode &m : graphicsModes)
         {
-            if ( (*it)->sortid == v7 )
+            if ( m.sortid == v7 )
             {
-                picked = *it;
+                picked = m;
                 break;
             }
         }
@@ -837,17 +884,17 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
         picked = windd_func0__sub0("env/vid.def");
     }
 
-    log_d3dlog(" picked mode %s\n", picked->name.c_str());
+    log_d3dlog(" picked mode %s\n", picked.name.c_str());
 
 
-    stak.Add(ATT_WIDTH, (int32_t)picked->w);
-    stak.Add(ATT_HEIGHT, (int32_t)picked->h);
+    stak.Add(ATT_WIDTH, (int32_t)picked.w);
+    stak.Add(ATT_HEIGHT, (int32_t)picked.h);
 
     if ( !NC_STACK_display::func0(stak) )
         return 0;
 
     _forcesoftcursor = 0;
-    _sort_id = picked->sortid;
+    _sort_id = picked.sortid;
     _movie_player = win3d_keys[9].Get<bool>();
     _disable_lowres = win3d_keys[12].Get<bool>();
     _txt16bit = txt16bit_def;
@@ -855,24 +902,24 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     _solidFont = win3d_keys[15].Get<bool>();
 
-    _windowed = picked->windowed; ////HACK
+    _windowed = picked.windowed; ////HACK
 
-    if ( picked->windowed )
+    if ( picked.windowed )
         _flags |= 1;
 
 
-    _mode = picked->mode;
+    _mode = picked.mode;
 
     _currentCursor = -1;
 
-    if (!picked->windowed)
-        SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &picked->mode);
+    if (!picked.windowed)
+        SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &picked.mode);
     else
         SDLWRAP_setFullscreen(0, NULL);
 
     SDL_Delay(250);
 
-    SDLWRAP_resizeWindow(picked->w, picked->h);
+    SDLWRAP_resizeWindow(picked.w, picked.h);
     
     _screenSurface = System::Screen();
 
@@ -902,7 +949,7 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
     if ( fil )
     {
-        fil->printf("%s\n", picked->name.c_str());
+        fil->printf("%s\n", picked.name.c_str());
         delete fil;
     }
 
@@ -1883,44 +1930,34 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
 
 size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
 {
-    gfxMode *nod = NULL;
+    auto it = graphicsModes.begin();
 
     if ( inout->sort_id )
     {
-        for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
+        while (it != graphicsModes.end())
         {
-            if ( (*it)->sortid == inout->sort_id )
-            {
-                nod = *it;
+            if ( it->sortid == inout->sort_id )
                 break;
-            }
+            
+            it++;
         }
 
     }
-    else
-        nod = graphicsModes.front();
 
-    if ( !nod )
+    if ( it == graphicsModes.end() )
         return 0;
 
-    inout->sort_id = nod->sortid;
-    inout->width = nod->w;
-    inout->height = nod->h;
+    inout->sort_id = it->sortid;
+    inout->width = it->w;
+    inout->height = it->h;
 
-    strncpy(inout->name, nod->name.c_str(), 32);
+    strncpy(inout->name, it->name.c_str(), 32);
 
-    for (std::list<gfxMode *>::iterator it = graphicsModes.begin(); it != graphicsModes.end(); it++)
-    {
-        if ( *it == nod )
-        {
-            it++;
-            if (it != graphicsModes.end())
-                return (*it)->sortid;
-
-            break;
-        }
-    }
-
+    it++;
+    
+    if (it != graphicsModes.end())
+        return it->sortid;
+    
     return 0;
 }
 
