@@ -122,11 +122,9 @@ void GFXEngine::setResolution(int res)
 
     cls3D->EndFrame();
 
-    delete_class_obj(cls3D);
+    //delete_class_obj(cls3D);
 
-    if ( sub_422CE8(gfx_keys[4].Get<std::string>(), 
-                    gfx_keys[5].Get<std::string>(), 
-                    res) )
+    if ( cls3D->ChangeResolution(res) )
     {
         cls3D->BeginFrame();
 

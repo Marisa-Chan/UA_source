@@ -29,12 +29,19 @@ size_t NC_STACK_display::func0(IDVList &stak)
         return 0;
 
     dprintf("MAKE ME %s\n","raster_func0");
+    
+    SetResolution( Common::Point(stak.Get<int32_t>(ATT_WIDTH, DEFAULT_WIDTH), stak.Get<int32_t>(ATT_HEIGHT, DEFAULT_HEIGHT)) );
 
-    _width = stak.Get<int32_t>(ATT_WIDTH, 0);
-    _height = stak.Get<int32_t>(ATT_HEIGHT, 0);
+    engines.display___win3d = this;
 
-//    rstr->bitm_intern = (bitmap_intern *)getRsrc_pData();
+    return 1;
+}
 
+bool NC_STACK_display::SetResolution(Common::Point res)
+{
+    _width = res.x;   //stak.Get<int32_t>(ATT_WIDTH, 0);
+    _height = res.y; //stak.Get<int32_t>(ATT_HEIGHT, 0);
+    
     _clip = Common::Rect(_width - 1, _height - 1);
 
     _field_54c = _width / 2;
@@ -42,10 +49,13 @@ size_t NC_STACK_display::func0(IDVList &stak)
 
     _field_554 = _width / 2;
     _field_558 = _height / 2;
+    
+    return true;
+}
 
-    engines.display___win3d = this;
-
-    return 1;
+bool NC_STACK_display::ChangeResolution(Common::Point res, bool windowed)
+{
+    return SetResolution(res);
 }
 
 size_t NC_STACK_display::func1()

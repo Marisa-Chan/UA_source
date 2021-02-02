@@ -153,7 +153,7 @@ public:
     static bool compare(polysDat *a, polysDat *b);
     
     void windd_func323__sub0(const char *filename);
-    int win3dInitialisation();
+    void win3dInitialisation();
     void sub_42D410(int curID, int force);
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
@@ -162,10 +162,13 @@ public:
     virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src);
     
     static SDL_Surface *ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt);
+    
+    virtual bool ChangeResolution(Common::Point res, bool windowed = false);
+    bool ChangeResolution(int32_t mode);
 
 protected:
-    int initPolyEngine();
-    int initPixelFormats();
+    void initPolyEngine();
+    void initPixelFormats();
     void SetRenderStates(int arg);
     void sb_0x43b518(polysDat *polysDat, int a5, int a6);
     void RenderTransparent();
@@ -182,6 +185,8 @@ protected:
     
     void sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
     char * windd_func322__sub0(const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, uint32_t timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen);
+    
+    void ApplyResolution();
 
 public:
     //Data

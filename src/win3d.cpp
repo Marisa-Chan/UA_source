@@ -22,7 +22,7 @@ struct GfxMode
     int bpp;
     SDL_DisplayMode mode;
     bool windowed;
-    int sortid;
+    int32_t sortid;
     std::string name;
     
     GfxMode()
@@ -443,7 +443,7 @@ void NC_STACK_win3d::DrawScreenText()
     _font.entries.clear();
 }
 
-int NC_STACK_win3d::win3dInitialisation()
+void NC_STACK_win3d::win3dInitialisation()
 {
     _pending.clear();
 
@@ -482,11 +482,9 @@ int NC_STACK_win3d::win3dInitialisation()
     _greyColors[8][0] = 1.0;
     _greyColors[8][1] = 1.0;
     _greyColors[8][2] = 1.0;
-
-    return 1;
 }
 
-int NC_STACK_win3d::initPixelFormats()
+void NC_STACK_win3d::initPixelFormats()
 {
     if (_pixfmt)
         SDL_FreeFormat(_pixfmt);
@@ -498,11 +496,9 @@ int NC_STACK_win3d::initPixelFormats()
     _pixfmt = SDL_AllocFormat( curr.format );
 
     SDLWRAP_GL_mapFormat(curr.format, &_glPixfmt, &_glPixtype);
-
-    return 1;
 }
 
-int NC_STACK_win3d::initPolyEngine()
+void NC_STACK_win3d::initPolyEngine()
 {
     _rendStates[TEXTUREHANDLE] = 0;
     _rendStates[SHADEMODE] = 1; //Smooth
@@ -562,8 +558,6 @@ int NC_STACK_win3d::initPolyEngine()
 
 //	if (can_stippling)
 //        glPolygonStipple(stpl);
-
-    return 1;
 }
 
 
@@ -886,7 +880,6 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
 
     log_d3dlog(" picked mode %s\n", picked.name.c_str());
 
-
     stak.Add(ATT_WIDTH, (int32_t)picked.w);
     stak.Add(ATT_HEIGHT, (int32_t)picked.h);
 
@@ -907,21 +900,9 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     if ( picked.windowed )
         _flags |= 1;
 
-
     _mode = picked.mode;
 
     _currentCursor = -1;
-
-    if (!picked.windowed)
-        SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &picked.mode);
-    else
-        SDLWRAP_setFullscreen(0, NULL);
-
-    SDL_Delay(250);
-
-    SDLWRAP_resizeWindow(picked.w, picked.h);
-    
-    _screenSurface = System::Screen();
 
     switch( win3d_keys[16].Get<int>() )
     {
@@ -953,21 +934,6 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
         delete fil;
     }
 
-    if ( (float)_width / (float)_height >= 1.4 )
-    {
-        int half = (_width + _height) / 2;
-        _corrW = (float)half * 1.1429 / (float)_width;
-        _corrH = (float)half * 0.85715 / (float)_height;
-        _corrIW = 1.0 / _corrW;
-        _corrIH = 1.0 / _corrH;
-    }
-    else //No correction
-    {
-        _corrIW = _corrW = 1.0;
-        _corrIH = _corrH = 1.0;
-    }
-
-
     //win3d->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
     return 1;
 }
@@ -998,35 +964,83 @@ size_t NC_STACK_win3d::func0(IDVList &stak)
     else
         _alpha = 128;
 
-    if ( !win3dInitialisation() )
-    {
-        ypa_log_out("win3d.class: Initialization failed.\n");
-        func1();
-        return 0;
-    }
+    win3dInitialisation();
 
-    if ( !initPixelFormats() )
-    {
-        ypa_log_out("win3d.class: Pixelformat problems.\n");
-        func1();
-        return 0;
-    }
-
-    /*	if ( !initTextureCache(w3d) )
-    	{
-    		ypa_log_out("win3d.class: Failed to initialize texture cache.\n");
-    		func1();
-    		return 0;
-    	}*/
-
-    if ( !initPolyEngine() )
-    {
-        ypa_log_out("win3d.class: Failed to initialize polygon engine.\n");
-        func1();
-        return 0;
-    }
+    ApplyResolution();
 
     return 1;
+}
+
+void NC_STACK_win3d::ApplyResolution()
+{
+    if (!_windowed)
+        SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &_mode);
+    else
+        SDLWRAP_setFullscreen(0, NULL);
+    
+    SDL_Delay(250);
+
+    SDLWRAP_resizeWindow(_width, _height);
+    
+    _screenSurface = System::Screen();
+    
+    if ( (float)_width / (float)_height >= 1.4 )
+    {
+        int half = (_width + _height) / 2;
+        _corrW = (float)half * 1.1429 / (float)_width;
+        _corrH = (float)half * 0.85715 / (float)_height;
+        _corrIW = 1.0 / _corrW;
+        _corrIH = 1.0 / _corrH;
+    }
+    else //No correction
+    {
+        _corrIW = _corrW = 1.0;
+        _corrIH = _corrH = 1.0;
+    }
+    
+    initPixelFormats();
+    
+    initPolyEngine();
+}
+
+bool NC_STACK_win3d::ChangeResolution(Common::Point res, bool windowed)
+{    
+    NC_STACK_display::ChangeResolution(res, windowed);
+    
+    _windowed = windowed;
+    
+    ApplyResolution();
+    
+    return true;
+}
+
+bool NC_STACK_win3d::ChangeResolution(int32_t mode)
+{
+    GfxMode picked;
+    if ( mode )
+    {
+        for (const GfxMode &m : graphicsModes)
+        {
+            if ( m.sortid == mode )
+            {
+                picked = m;
+                break;
+            }
+        }
+
+        if ( !picked )
+            picked = sub_41F68C();
+    }
+    else
+    {
+        picked = windd_func0__sub0("env/vid.def");
+    }
+    
+    _mode = picked.mode;
+    _sort_id = picked.sortid;
+    
+    ChangeResolution(Common::Point(picked.w, picked.h), picked.windowed);
+    return true;
 }
 
 size_t NC_STACK_win3d::func1()

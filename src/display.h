@@ -133,6 +133,12 @@ struct windd_arg256
 
 class NC_STACK_display: public NC_STACK_nucleus
 {
+protected:
+    enum
+    {
+        DEFAULT_WIDTH = 640,
+        DEFAULT_HEIGHT = 480,
+    };
 public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
@@ -235,11 +241,16 @@ public:
 
     Common::Point GetSize() const { return Common::Point(_width, _height); };
     
+    virtual bool ChangeResolution(Common::Point res, bool windowed = false);
+    
     
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp) = 0;
     virtual SDL_PixelFormat *GetScreenFormat() = 0;
     virtual SDL_Surface *CreateSurfaceScreenFormat(int width, int height) = 0;
     virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src) = 0;
+
+protected:
+    bool SetResolution(Common::Point res);
 
     //Data
 public:
