@@ -175,7 +175,7 @@ Common::Rect Widget::GetWidgetVisibleRect() const
     return tmp;
 }
 
-Widget *Widget::FindChildLPos(const Common::Point &pos, bool stopOnModal)
+Widget *Widget::FindChildLPos(const Common::Point &pos)
 {
     if ( !IsEnabled() || !GetSizeRect().IsIn(pos) )
         return NULL;
@@ -190,25 +190,6 @@ Widget *Widget::FindChildLPos(const Common::Point &pos, bool stopOnModal)
         else
             inCli = false;
     }
-    
-    if (stopOnModal && !_modals.empty())
-    {
-        for(auto w : _modals)
-        {
-            if (w->IsEnabled())
-            {
-                if (w->_flags & FLAG_PRIVATE)
-                { 
-                    if (w->_rect.IsIn(pos))
-                        return w->FindChildLPos(pos - w->_rect.Pos(), stopOnModal);
-                }
-                else if ( inCli && w->_rect.IsIn(cliPos) )
-                    return w->FindChildLPos(cliPos - w->_rect.Pos(), stopOnModal);
-                
-                return this;
-            }
-        }
-    }
 
     for(auto w : _childs)
     {
@@ -217,20 +198,95 @@ Widget *Widget::FindChildLPos(const Common::Point &pos, bool stopOnModal)
             if (w->_flags & FLAG_PRIVATE)
             { 
                 if (w->_rect.IsIn(pos))
-                    return w->FindChildLPos(pos - w->_rect.Pos(), stopOnModal);
+                    return w->FindChildLPos(pos - w->_rect.Pos());
             }
             else if ( inCli && w->_rect.IsIn(cliPos) )
-                return w->FindChildLPos(cliPos - w->_rect.Pos(), stopOnModal);
+                return w->FindChildLPos(cliPos - w->_rect.Pos());
         }
     }
     return this;
 }
 
-Widget *Widget::FindByPos(const Common::Point &pos, bool stopOnModal)
+Widget *Widget::FindByPos(const Common::Point &pos)
 {
-    return FindChildLPos(ScreenCoordToWidget(pos), stopOnModal);
+    return FindChildLPos(ScreenCoordToWidget(pos));
 }
 
+
+Widget *Widget::FindByMouse(const Common::Point &pos)
+{
+    return FindChildByMouseLPos(ScreenCoordToWidget(pos));
+}
+
+Widget *Widget::FindChildByMouseLPos(const Common::Point &pos)
+{
+    if ( !IsEnabled() || !GetSizeRect().IsIn(pos) )
+        return NULL;
+
+    if (!_childs.empty())
+    {
+        Common::Point cliPos = pos;
+        bool inCli = true;
+
+        if (_flags & FLAG_CLIENT)
+        {
+            if (!_client.IsEmpty() && _client.IsIn(pos))
+                cliPos -= _client.Pos();
+            else
+                inCli = false;
+        }
+
+        if (!_modals.empty())
+        {
+            for(auto w : _modals)
+            {
+                if (w->IsEnabled())
+                {
+                    Widget * fnd = NULL;
+                    if (w->_flags & FLAG_PRIVATE)
+                    { 
+                        if (w->_rect.IsIn(pos))
+                            fnd = w->FindChildByMouseLPos(pos - w->_rect.Pos());
+                    }
+                    else if ( inCli && w->_rect.IsIn(cliPos) )
+                        fnd = w->FindChildByMouseLPos(cliPos - w->_rect.Pos());
+
+                    if (fnd)
+                        return fnd;
+                    
+                    return this;
+                }
+            }
+        }
+
+        if (!(_flags & FLAG_INP_KSKIP))
+        {
+            for(auto w : _childs)
+            {
+                if (w->IsEnabled())
+                {
+                    Widget * fnd = NULL;
+                    
+                    if (w->_flags & FLAG_PRIVATE)
+                    { 
+                        if (w->_rect.IsIn(pos))
+                            fnd = w->FindChildByMouseLPos(pos - w->_rect.Pos());
+                    }
+                    else if ( inCli && w->_rect.IsIn(cliPos) )
+                        fnd = w->FindChildByMouseLPos(cliPos - w->_rect.Pos());
+                    
+                    if (fnd)
+                        return fnd;
+                }
+            }
+        }
+    }
+    
+    if (_flags & FLAG_INP_SKIP)
+        return NULL;
+    
+    return this;
+}
 
 Widget *Widget::FindByID(uint32_t id, bool enabled)
 {

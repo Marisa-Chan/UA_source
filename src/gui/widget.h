@@ -26,6 +26,8 @@ enum
     FLAG_PRIVATE    = (1 << 3), // Do not place it in client rect
     FLAG_NODRAW     = (1 << 4), // Do not draw this widget, but draw all childs
     FLAG_NOBRING    = (1 << 5), // Do not up it to front
+    FLAG_INP_SKIP   = (1 << 6), // Transparent for mouse
+    FLAG_INP_KSKIP  = (1 << 7), // Kids transparent for mouse
 };
 
 typedef void (*TFOnWidget)(Widget *w, void *);
@@ -48,8 +50,11 @@ public:
     bool IsEnabled() const { return (_flags & FLAG_ENABLED) != 0; };
     bool IsFocused() const { return (_flags & FLAG_FOCUSED) != 0; };
 
-    Widget *FindByPos(const Common::Point &pos, bool stopOnModal = false);  //Screen coords
-    Widget *FindChildLPos(const Common::Point &pos, bool stopOnModal = false); //Widget local coords
+    virtual Widget *FindByPos(const Common::Point &pos);  //Screen coords
+    virtual Widget *FindChildLPos(const Common::Point &pos); //Widget local coords
+    
+    virtual Widget *FindByMouse(const Common::Point &pos);  //Screen coords
+    virtual Widget *FindChildByMouseLPos(const Common::Point &pos); //Widget local coords
     
     Widget *FindByID(uint32_t id, bool enabled = true);
     
@@ -64,8 +69,20 @@ public:
 
     Common::Point GetOnParentPos() const;
 
-    Common::Rect GetScreenVisibleRect() const;
+    /*** 
+     * Calculate visible rect in screen coordinates
+     * For calculations only used parent widget bounds and widget spaces
+     * Siblings not affect it
+     ***/
+    Common::Rect GetScreenVisibleRect() const; 
+    
+    /*** 
+     * Calculate visible rect in widget coordinates
+     * For calculations only used parent widget bounds and widget spaces
+     * Siblings not affect it
+     ***/
     Common::Rect GetWidgetVisibleRect() const;
+    
 
     Common::Point ScreenCoordToClient(Common::Point pos) const;
     Common::Point ScreenCoordToWidget(Common::Point pos) const;

@@ -311,7 +311,7 @@ bool Root::MouseDown(Common::Point pos, int button)
     else
     {       
         if (firstBtn)
-            UpdateWidgetOnMice( FindByPos(pos, true) );
+            UpdateWidgetOnMice( FindByMouse(pos) );
 
         if (_miceOn)
         {
@@ -354,7 +354,7 @@ bool Root::MouseUp(Common::Point pos, int button)
             _dragging = NULL;
             
             
-            UpdateWidgetOnMice( FindByPos(pos, true) );
+            UpdateWidgetOnMice( FindByMouse(pos) );
         }
         return true;
     }
@@ -372,7 +372,7 @@ bool Root::MouseUp(Common::Point pos, int button)
             _miceOn->MouseUp(_miceOn->ScreenCoordToWidget(pos), pos, btn);
             
             if (!_buttons)
-                UpdateWidgetOnMice( FindByPos(pos, true) );
+                UpdateWidgetOnMice( FindByMouse(pos) );
 
             return true;
         }
@@ -394,7 +394,7 @@ bool Root::MouseMove(Common::Point pos)
     else
     {
         if (!_buttons)
-            UpdateWidgetOnMice( FindByPos(pos, true) );
+            UpdateWidgetOnMice( FindByMouse(pos) );
 
         if (_miceOn)
         {
@@ -417,36 +417,64 @@ void Root::RootWidgetToFront(Widget *w)
 }
 
 
-Widget *Root::_FindByPos(WidgetList &lst, const Common::Point &pos, bool stopOnModal)
+Widget *Root::_FindByPos(WidgetList &lst, const Common::Point &pos)
 {
     for(auto w : lst)
     {
         if (w->IsEnabled() && w->GetScreenVisibleRect().IsIn(pos))
-            return w->FindByPos(pos, stopOnModal);
+            return w->FindByPos(pos);
     }
     return NULL;
 }
 
-Widget *Root::FindByPos(const Common::Point &pos, bool stopOnModal)
+Widget *Root::_FindByMouse(WidgetList& lst, const Common::Point& pos)
 {
-    if (stopOnModal && !_modals.empty())
+    for(auto w : lst)
+    {
+        if (w->IsEnabled() && w->GetScreenVisibleRect().IsIn(pos))
+        {
+            Widget *ret = w->FindByMouse(pos);
+            
+            if (ret)
+                return ret;
+        }
+    }
+    return NULL;
+}
+
+Widget *Root::FindByPos(const Common::Point &pos)
+{           
+    Widget *w = _FindByPos(_foreground, pos);
+    if (w)
+        return w;
+
+    w = _FindByPos(_normal, pos);
+    if (w)
+        return w;
+
+    return NULL;
+}
+
+Widget *Root::FindByMouse(const Common::Point& pos)
+{
+    if (!_modals.empty())
     {
         for(auto w : _modals)
         {
             if (w->IsEnabled())
             {
                 if (w->GetScreenVisibleRect().IsIn(pos))
-                    return w->FindByPos(pos, stopOnModal);
+                    return w->FindByMouse(pos);
                 return NULL;
             }
         }
     }
             
-    Widget *w = _FindByPos(_foreground, pos, stopOnModal);
+    Widget *w = _FindByMouse(_foreground, pos);
     if (w)
         return w;
 
-    w = _FindByPos(_normal, pos, stopOnModal);
+    w = _FindByMouse(_normal, pos);
     if (w)
         return w;
 

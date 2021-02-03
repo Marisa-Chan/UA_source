@@ -93,7 +93,10 @@ public:
     void SetScreenSize(Common::Point sz);
     Common::Point GetScreenSize();
 
-    Widget *FindByPos(const Common::Point &pos, bool stopOnModal = false);
+    Widget *FindByPos(const Common::Point &pos);
+    
+    Widget *FindByMouse(const Common::Point &pos);
+    
     Widget *FindByID(uint32_t id, bool enabled = true);
     
     uint32_t TimerAdd(uint32_t wID, uint32_t time, uint32_t code = Timer::CODE_ANY);
@@ -110,7 +113,8 @@ protected:
     Root() {};
     ~Root();
     
-    Widget *_FindByPos(WidgetList &lst, const Common::Point& pos, bool stopOnModal = false);
+    Widget *_FindByPos(WidgetList &lst, const Common::Point& pos);
+    Widget *_FindByMouse(WidgetList &lst, const Common::Point& pos);
     Widget *_FindByID(WidgetList &lst, uint32_t id, bool enabled = true);
     void DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point parentOffset, Widget *w, uint32_t alph = 255);
         
