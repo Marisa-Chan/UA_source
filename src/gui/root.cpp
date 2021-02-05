@@ -10,6 +10,29 @@ namespace Gui
 {
 Root Root::Instance;
 
+ViewPortal::~ViewPortal()
+{
+    if (SoftSurface)
+        SDL_FreeSurface(SoftSurface);
+}
+
+
+Common::Point ViewPortal::GetPortalPos(Common::Point pos)
+{
+    if (Size.x == 0 || Size.y == 0)
+        return Common::Point();
+    
+    if (Portal.IsEmpty())
+        return Common::Point();
+    
+    pos -= Portal.Pos();
+    
+    pos.x = (float)pos.x * (float)Size.x / (float)Portal.Width();
+    pos.y = (float)pos.y * (float)Size.y / (float)Portal.Height();
+    
+    return pos;
+}
+
 Root::~Root()
 {
     if (_hwTex)
@@ -51,14 +74,16 @@ void Root::AddWidget(Widget *w, bool top)
         
 }
 
-WidgetList& Root::GetLayerList(int l)
+WidgetList& Root::GetLayerList(Widget *w)
 {
-    switch(l)
+    switch(w->_rooted)
     {
     case LAYER_BACK:
         return _background;
     case LAYER_FRONT:
         return _foreground;
+    case LAYER_PORTAL:
+        return _portals.at(w->_portalid).Widgets;
     case LAYER_NORMAL:
     default:
         return _normal;
@@ -72,7 +97,7 @@ void Root::RemoveWidget(Widget *w)
     
     _modals.remove(w);
     
-    GetLayerList(w->_rooted).remove(w);
+    GetLayerList(w).remove(w);
 
     if (_miceOn == w)
         _miceOn = NULL;
@@ -91,9 +116,48 @@ void Root::RemoveWidget(Widget *w)
         w->_fOnHideShow(w, w->_fOnHideShowData, false);
 }
 
+void Root::DrawPortal(SDL_Surface *screen, ViewPortal &p)
+{
+    if (p.Size.x == 0 || p.Size.y == 0 || p.Portal.IsEmpty())
+        return;
+    
+    if (!_hwRender)
+    {
+        Common::Rect tmp = p.Portal.IntersectionRect( Common::Rect(screen->w, screen->h) );
+        
+        if (!p.SoftSurface || p.SoftSurface->w < p.Size.x || p.SoftSurface->h < p.Size.y)
+        {
+            if (p.SoftSurface)
+                SDL_FreeSurface(p.SoftSurface);
+            
+            p.SoftSurface = CreateScreenFmtSurface(p.Size.x, p.Size.y);
+        }
+        
+        SDL_FillRect(p.SoftSurface, NULL, SDL_MapRGBA(p.SoftSurface->format, 0, 0, 0, 0));
+        
+        for(auto it = p.Widgets.rbegin(); it != p.Widgets.rend(); it++)
+            DrawWidget(p.SoftSurface, Common::Rect(p.Size), Common::Point(0, 0), *it);
+        
+        SDL_Rect src {0, 0, p.Size.x, p.Size.y};
+        SDL_Rect dst {tmp.left, tmp.top, tmp.Width(), tmp.Height()};
+        SDL_BlitScaled(p.SoftSurface, &src, screen, &dst);
+    }
+    else
+    {
+        for(Widget *w : p.Widgets)
+            HwPrepareWidget(w);
+    }
+}
 
 void Root::Draw(SDL_Surface *screen)
 {
+    for(auto it = _portals.rbegin(); it != _portals.rend(); it++)
+    {
+        if (it->Used)
+            DrawPortal(screen, *it);
+    }
+    
+    
     if (!_hwRender)
     {
         for(auto it = _normal.rbegin(); it != _normal.rend(); it++)
@@ -322,6 +386,7 @@ bool Root::MouseDown(Common::Point pos, int button)
                 ChangeFocus(_miceOn);
             }
             
+            pos = CorrectPosForWidget(_miceOn, pos);
             _miceOn->MouseDown(_miceOn->ScreenCoordToWidget(pos), pos, btn);
             return true;
         }
@@ -350,7 +415,7 @@ bool Root::MouseUp(Common::Point pos, int button)
     {
         if (!_buttons)
         {
-            _dragging->MoveTo(pos - _dragPos);
+            _dragging->MoveTo( CorrectPosForWidget(_dragging, pos) - _dragPos);
             _dragging = NULL;
             
             
@@ -369,7 +434,8 @@ bool Root::MouseUp(Common::Point pos, int button)
                 ChangeFocus(_miceOn);
             }
 
-            _miceOn->MouseUp(_miceOn->ScreenCoordToWidget(pos), pos, btn);
+            Common::Point cpos = CorrectPosForWidget(_miceOn, pos);
+            _miceOn->MouseUp(_miceOn->ScreenCoordToWidget(cpos), cpos, btn);
             
             if (!_buttons)
                 UpdateWidgetOnMice( FindByMouse(pos) );
@@ -388,7 +454,7 @@ bool Root::MouseMove(Common::Point pos)
 
     if (_dragging)
     {
-        _dragging->MoveTo(pos - _dragPos);
+        _dragging->MoveTo( CorrectPosForWidget(_dragging, pos)  - _dragPos);
         return true;
     }
     else
@@ -398,6 +464,7 @@ bool Root::MouseMove(Common::Point pos)
 
         if (_miceOn)
         {
+            pos = CorrectPosForWidget(_miceOn, pos);
             _miceOn->MouseMove(_miceOn->ScreenCoordToWidget(pos), pos, _buttons);
             return true;
         }
@@ -408,12 +475,8 @@ bool Root::MouseMove(Common::Point pos)
 void Root::RootWidgetToFront(Widget *w)
 {
     Widget *root = w->GetRoot();
-
-    if (_normal.MoveToFirst(root))
-        return;
-
-    if (_foreground.MoveToFirst(root))
-        return;
+    
+    GetLayerList(root).MoveToFirst(root);
 }
 
 
@@ -434,7 +497,6 @@ Widget *Root::_FindByMouse(WidgetList& lst, const Common::Point& pos)
         if (w->IsEnabled() && w->GetScreenVisibleRect().IsIn(pos))
         {
             Widget *ret = w->FindByMouse(pos);
-            
             if (ret)
                 return ret;
         }
@@ -451,6 +513,17 @@ Widget *Root::FindByPos(const Common::Point &pos)
     w = _FindByPos(_normal, pos);
     if (w)
         return w;
+    
+    for( ViewPortal &p : _portals )
+    {
+        if (p.Used)
+        {
+            w = _FindByMouse(p.Widgets, p.GetPortalPos(pos));
+            if (w)
+                return w;
+        }
+    }
+
 
     return NULL;
 }
@@ -477,6 +550,16 @@ Widget *Root::FindByMouse(const Common::Point& pos)
     w = _FindByMouse(_normal, pos);
     if (w)
         return w;
+    
+    for( ViewPortal &p : _portals )
+    {
+        if (p.Used)
+        {
+            w = _FindByMouse(p.Widgets, p.GetPortalPos(pos));
+            if (w)
+                return w;
+        }
+    }
 
     return NULL;
 }
@@ -490,6 +573,16 @@ Widget *Root::FindByID(uint32_t id, bool enabled)
     w = _FindByID(_normal, id, enabled);
     if (w)
         return w;
+    
+    for( ViewPortal &p : _portals )
+    {
+        if (p.Used)
+        {
+            w = _FindByID(p.Widgets, id, enabled);
+            if (w)
+                return w;
+        }
+    }
 
     return NULL;
 }
@@ -529,7 +622,7 @@ void Root::ChangeFocus(Widget *w)
 void Root::StartDragging(Widget *w)
 {
     _dragging = w;
-    _dragPos = w->GetScreenPos() - w->_rect.Pos() + (_micePos - w->GetScreenPos());
+    _dragPos = w->GetScreenPos() - w->_rect.Pos() + ( CorrectPosForWidget(w, _micePos)  - w->GetScreenPos());
 }
 
 
@@ -730,13 +823,7 @@ void Root::HwCompose()
     if (_hwRender && _normal.size())
     {
         glPushAttrib(GL_LIGHTING | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TRANSFORM_BIT | GL_TEXTURE_BIT | GL_TEXTURE_2D);
-
-        glMatrixMode(GL_PROJECTION);
-        glOrtho(0, _screenSize.x, _screenSize.y, 0, -1, 1);
         
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
         glDisable(GL_LIGHTING);
 
         glDepthMask(GL_FALSE);
@@ -757,7 +844,40 @@ void Root::HwCompose()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        
+        
+        
+        glPushAttrib(GL_VIEWPORT_BIT);
+        for(auto it = _portals.rbegin(); it != _portals.rend(); it++)
+        {
+            if (it->Used)
+            {
+                glViewport(it->Portal.left, _screenSize.y - it->Portal.bottom, it->Portal.Width(), it->Portal.Height());
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                glOrtho(0, it->Size.x, it->Size.y, 0, -1, 1);
 
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                
+                for(auto wit = it->Widgets.rbegin(); wit != it->Widgets.rend(); wit++)
+                    HwRenderWidget(*wit);
+            }
+        }
+        glPopAttrib();
+        
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, _screenSize.x, _screenSize.y, 0, -1, 1);
+        
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        
+        for(auto it = _normal.rbegin(); it != _normal.rend(); it++)
+            HwRenderWidget(*it);
+        
+        
         for(auto it = _normal.rbegin(); it != _normal.rend(); it++)
             HwRenderWidget(*it);
 
@@ -793,6 +913,72 @@ void Root::HwRenderWidget(Widget *w)
         glEnd();
     }
 }
+
+
+int32_t Root::AddPortal(Common::Point size, Common::Rect portal)
+{
+    _portals.emplace_back();
+    ViewPortal &p = _portals.back();
+    p.Size = size;
+    p.Portal = portal;
+    p.Used = true;
+    return _portals.size();
+}
+    
+bool Root::DeletePortal(int32_t id)
+{
+    _portals.at(id).Used = false;
+    return true;
+}
+    
+bool Root::ResizePortal(int32_t id, Common::Point size)
+{
+    _portals.at(id).Size = size;
+    return true;
+}
+    
+bool Root::SetPortal(int32_t id, Common::Rect portal)
+{
+    _portals.at(id).Portal = portal;
+    return true;
+}
+
+void Root::AddWidgetPortal(int32_t id, Widget *w, bool top)
+{
+    _miceOn = NULL; // Find it
+
+    w->Unparent();
+    w->_rooted = LAYER_PORTAL;
+    w->_portalid = id;
+    
+    if (w->_modal)
+    {
+        top = true;
+        _modals.push_front(w);
+    }    
+    
+    if (top)
+        _portals.at(id).Widgets.push_front(w);
+    else
+        _portals.at(id).Widgets.push_back(w);
+    
+    w->OnAttachDetach(true);
+    
+    if (w->IsEnabled() && w->_fOnHideShow) // If it's already enabled do call hide/show
+        w->_fOnHideShow(w, w->_fOnHideShowData, true);
+        
+}
+
+Common::Point Root::CorrectPosForWidget(Widget *w, Common::Point pos)
+{
+    // If widget is no in portal - return unchanged
+    Widget *root = w->GetRoot();
+    if (root->_rooted != LAYER_PORTAL)
+        return pos;
+    
+    return _portals.at(root->_portalid).GetPortalPos(pos);
+}
+
 
 
 WidgetList::iterator WidgetList::find(Widget *w)

@@ -200,6 +200,7 @@ protected:
 
 private:
     int    _rooted = Root::LAYER_UNK;
+    int  _portalid = 0;
 };
 
 }
