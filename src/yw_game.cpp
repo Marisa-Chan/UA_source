@@ -1,6 +1,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <math.h>
+#include "env.h"
 #include "includes.h"
 #include "yw_internal.h"
 #include "yw.h"
@@ -28,15 +29,13 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw)
     else
         v3 = "disk512.ilbm";
 
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", "data:mc2res");
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
     NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>({
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(v3)},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
 
     return disk;
 }
@@ -691,13 +690,11 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
         draw_splashScreen(this, diskScreenImage);
 
 
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", "data:fonts");
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:fonts");
 
     int v19 = load_fonts_and_icons();
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
 
     if ( !v19 )
         return 0;
@@ -735,7 +732,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     sb_0x44ca90__sub8(this);
     sb_0x44ca90__sub6(this);
 
-    set_prefix_replacement("rsrc", "data:");
+    Common::Env.SetPrefix("rsrc", "data:");
 
     if ( sub_4DA41C(mapp, LevelNet->mapInfos[_levelInfo->LevelID].mapPath) && (mapp->Flags & 0x7F) == 0x7F )
     {
@@ -746,7 +743,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
         sb_0x44ca90__sub5(this);
 
-        set_prefix_replacement("rsrc", fmt::sprintf("data:set%d", mapp->SetID));
+        Common::Env.SetPrefix("rsrc", fmt::sprintf("data:set%d", mapp->SetID));
 
         sb_0x44ca90__sub2(this, mapp);
 
@@ -1938,9 +1935,7 @@ void sub_44BF34(vhclSndFX *sndfx)
 {
     if ( !sndfx->wavs[0] && !sndfx->single_sample )
     {
-        std::string oldRsrc = get_prefix_replacement("rsrc");
-
-        set_prefix_replacement("rsrc", "data:");
+        std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
 
         if ( sndfx->extS.cnt )
         {
@@ -1979,7 +1974,7 @@ void sub_44BF34(vhclSndFX *sndfx)
                 ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name.c_str());
         }
 
-        set_prefix_replacement("rsrc", oldRsrc);
+        Common::Env.SetPrefix("rsrc", oldRsrc);
     }
 }
 

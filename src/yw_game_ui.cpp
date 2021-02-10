@@ -2,6 +2,7 @@
 #include <string.h>
 #include <math.h>
 #include <iterator>
+#include "env.h"
 #include "includes.h"
 #include "yw_internal.h"
 #include "yw.h"
@@ -2852,7 +2853,7 @@ void sb_0x451034__sub9(NC_STACK_ypaworld *yw)
 
     wis->field_0 = 1;
 
-    set_prefix_replacement("rsrc", "data:");
+    Common::Env.SetPrefix("rsrc", "data:");
 
     for (int i = 0; i < 14; i++)
     {
@@ -7737,9 +7738,7 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
 
     smpls->field_0 = -1;
 
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", "data:");
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
 
     std::string filename = "sounds/speech/";
 
@@ -7763,7 +7762,7 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
 
     NC_STACK_wav *v23 = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, filename}} );
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
 
     if ( v23 )
     {

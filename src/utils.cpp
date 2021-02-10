@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "inttypes.h"
 #include "crc32.h"
+#include "env.h"
 #include <SDL2/SDL_timer.h>
 
 
@@ -128,21 +129,19 @@ uint32_t profiler_end(uint32_t prev)
 
 
 
-void correctSeparatorAndExt(std::string &str)
+std::string correctSeparatorAndExt(std::string str)
 {
     std::replace(str.begin(), str.end(), '/', '\\');
 
     size_t pos = str.rfind('.');
     if (pos != std::string::npos && (str.length() - pos - 1) > 3)
         str.resize(pos + 3 + 1);
+    return str;
 }
 
 bool uaFileExist(const std::string &src_path)
 {
-    std::string path = file_path_copy_manipul(src_path);
-    correctSeparatorAndExt(path);
-
-    return FSMgr::iDir::fileExist(path);
+    return FSMgr::iDir::fileExist( correctSeparatorAndExt(Common::Env.ApplyPrefix(src_path)) );
 }
 
 //FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode)
@@ -163,8 +162,7 @@ bool uaFileExist(const std::string &src_path)
 
 FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mode)
 {
-    std::string path = file_path_copy_manipul(src_path);
-    correctSeparatorAndExt(path);
+    std::string path = correctSeparatorAndExt( Common::Env.ApplyPrefix(src_path) );
 
     FSMgr::FileHandle *v4 = FSMgr::iDir::openFile(path, mode);
 
@@ -176,33 +174,25 @@ FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mo
 
 FSMgr::DirIter uaOpenDir(const std::string &dir)
 {
-    std::string dst = file_path_copy_manipul(dir);
-    correctSeparatorAndExt(dst);
-
+    std::string dst = correctSeparatorAndExt( Common::Env.ApplyPrefix(dir) );
     return FSMgr::iDir::readDir(dst);
 }
 
 bool uaDeleteFile(const std::string &path)
 {
-    std::string dst = file_path_copy_manipul(path);
-    correctSeparatorAndExt(dst);
-
+    std::string dst = correctSeparatorAndExt( Common::Env.ApplyPrefix(path) );
     return FSMgr::iDir::deleteFile(dst);
 }
 
 bool uaDeleteDir(const std::string &path)
 {
-    std::string dst = file_path_copy_manipul(path);
-    correctSeparatorAndExt(dst);
-
+    std::string dst = correctSeparatorAndExt( Common::Env.ApplyPrefix(path) );
     return FSMgr::iDir::deleteDir(dst);
 }
 
 bool uaCreateDir(const std::string &path)
 {
-    std::string dst = file_path_copy_manipul(path);
-    correctSeparatorAndExt(dst);
-
+    std::string dst = correctSeparatorAndExt( Common::Env.ApplyPrefix(path) );
     return FSMgr::iDir::createDir(dst);
 }
 

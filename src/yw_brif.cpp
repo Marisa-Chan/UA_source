@@ -6,6 +6,7 @@
 #include "yw_internal.h"
 #include "lstvw.h"
 #include "font.h"
+#include "env.h"
 
 extern GuiList stru_5C91D0;
 
@@ -93,9 +94,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState 
 
 int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
 {
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", fmt::sprintf("data:set%d:", setID));
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", fmt::sprintf("data:set%d:", setID));
 
     if ( setID != yw->set_number && setID != 46 )
     {
@@ -111,7 +110,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
         if ( !yw->additionalSet )
         {
             ypa_log_out("yw_MBLoadSet(): loading set object %d failed\n", setID);
-            set_prefix_replacement("rsrc", oldRsrc);
+            Common::Env.SetPrefix("rsrc", oldRsrc);
             return 0;
         }
 
@@ -176,7 +175,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
         delete fil;
     }
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
 
     return 1;
 }

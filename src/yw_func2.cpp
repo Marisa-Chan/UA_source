@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "gui/uamsgbox.h"
+#include "env.h"
 
 extern char **ypaworld__string_pointers;
 extern int word_5A50C2;
@@ -661,8 +662,7 @@ void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
     {
         yw->_win3d = GFX::Engine.C3D();
 
-        std::string buf;
-        sub_412810(yw->movies[World::MOVIE_INTRO], buf);
+        std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(yw->movies[World::MOVIE_INTRO]) );
         const char *v5 = buf.c_str();
 
         yw->_win3d->windd_func323(&v5);
@@ -1741,9 +1741,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 {
     UserData *usr = yw->GameShell;
 
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", "data:");
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
 
     std::string wavName;
     if ( usr->default_lang_dll )
@@ -1776,7 +1774,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
         SFXEngine::SFXe.startSound(&usr->field_782, 0);
     }
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
 }
 
 void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
@@ -5027,9 +5025,7 @@ bool UserData::LoadSample(int block, int sampleID, const std::string &file)
     if (block < 0 || block >= 2)
         return false;
 
-    std::string rsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", "data:");
+    std::string rsrc = Common::Env.SetPrefix("rsrc", "data:");
 
     NC_STACK_wav *wav = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(file)}});
     if ( !wav )
@@ -5053,7 +5049,7 @@ bool UserData::LoadSample(int block, int sampleID, const std::string &file)
         samples2_info.samples_data[sampleID].psampl = wav->getSMPL_pSample();
     }
 
-    set_prefix_replacement("rsrc", rsrc);
+    Common::Env.SetPrefix("rsrc", rsrc);
     return true;
 }
 

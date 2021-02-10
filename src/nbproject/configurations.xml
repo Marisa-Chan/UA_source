@@ -45,7 +45,6 @@
       </df>
       <in>3ds.cpp</in>
       <in>IFFile.cpp</in>
-      <in>MC.cpp</in>
       <in>ade.cpp</in>
       <in>amesh.cpp</in>
       <in>area.cpp</in>
@@ -58,6 +57,8 @@
       <in>def_parser.cpp</in>
       <in>display.cpp</in>
       <in>embed.cpp</in>
+      <in>env.cpp</in>
+      <in>env.h</in>
       <in>font.cpp</in>
       <in>glob_funcs.cpp</in>
       <in>idev.cpp</in>
@@ -157,10 +158,6 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="MC.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
       <item path="ade.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
@@ -208,6 +205,10 @@
       <item path="embed.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
+      </item>
+      <item path="env.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="env.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="0/fmtlib">
         <ccTool>

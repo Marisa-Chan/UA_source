@@ -156,7 +156,7 @@ inline double fSign(double x)
     return 1.0;
 }
 
-void correctSeparatorAndExt(std::string &str);
+std::string correctSeparatorAndExt(std::string str);
 
 int StriCmp(const std::string &a, const std::string &b);
 bool StrGetBool(const std::string &str);

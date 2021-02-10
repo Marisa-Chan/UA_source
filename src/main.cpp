@@ -1,19 +1,40 @@
 #define GLOBAL
 #include "system/fsmgr.h"
 #include "system/system.h"
+#include "env.h"
+
 #include "includes.h"
 #include "system/gfx.h"
+#include "system/inpt.h"
+#include "ade.h"
+#include "area.h"
+#include "amesh.h"
 #include "bitmap.h"
+#include "bmpAnm.h"
+#include "base.h"
 #include "display.h"
 #include "win3d.h"
 #include "ilbm.h"
+#include "particle.h"
+#include "embed.h"
+#include "network.h"
+#include "windp.h"
+#include "ypabact.h"
+#include "ypatank.h"
+#include "ypacar.h"
+#include "ypaflyer.h"
+#include "yparobo.h"
+#include "ypaufo.h"
+#include "3ds.h"
+#include "image.h"
+
 
 #include "font.h"
 #include "yw.h"
 
 #include "button.h"
 
-#include "system/inpt.h"
+
 
 #include "gui/widget.h"
 #include "gui/uawidgets.h"
@@ -490,23 +511,46 @@ int init_classesLists_and_variables()
     init_d3dlog();
     init_dinputlog();
 
-    if ( !set_classes_list() )
-        return 0;
+    Nucleus::ClassList.push_back(NC_STACK_nucleus::description);
+    Nucleus::ClassList.push_back(NC_STACK_rsrc::description);
+    Nucleus::ClassList.push_back(NC_STACK_bitmap::description);
+    Nucleus::ClassList.push_back(NC_STACK_skeleton::description);
+    Nucleus::ClassList.push_back(NC_STACK_ilbm::description);
+    Nucleus::ClassList.push_back(NC_STACK_sklt::description);
+    Nucleus::ClassList.push_back(NC_STACK_ade::description);
+    Nucleus::ClassList.push_back(NC_STACK_area::description);
+    Nucleus::ClassList.push_back(NC_STACK_base::description);
+    Nucleus::ClassList.push_back(NC_STACK_bmpanim::description);
+    Nucleus::ClassList.push_back(NC_STACK_amesh::description);
+    Nucleus::ClassList.push_back(NC_STACK_particle::description);
+    Nucleus::ClassList.push_back(NC_STACK_embed::description);
+    Nucleus::ClassList.push_back(NC_STACK_idev::description);
+    Nucleus::ClassList.push_back(NC_STACK_input::description);
+    Nucleus::ClassList.push_back(NC_STACK_itimer::description);
+    Nucleus::ClassList.push_back(NC_STACK_iwimp::description);
+    Nucleus::ClassList.push_back(NC_STACK_sample::description);
+    Nucleus::ClassList.push_back(NC_STACK_wav::description);
+    Nucleus::ClassList.push_back(NC_STACK_display::description);
+    Nucleus::ClassList.push_back(NC_STACK_button::description);
+    Nucleus::ClassList.push_back(NC_STACK_network::description);
+    Nucleus::ClassList.push_back(NC_STACK_win3d::description);
+    Nucleus::ClassList.push_back(NC_STACK_winp::description);
+    Nucleus::ClassList.push_back(NC_STACK_wintimer::description);
+    Nucleus::ClassList.push_back(NC_STACK_windp::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypaworld::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypabact::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypatank::description);
+    Nucleus::ClassList.push_back(NC_STACK_yparobo::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypamissile::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypaflyer::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypacar::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypaufo::description);
+    Nucleus::ClassList.push_back(NC_STACK_ypagun::description);
+    Nucleus::ClassList.push_back(NC_STACK_3ds::description);
+    Nucleus::ClassList.push_back(NC_STACK_image::description);
 
     return 1;
 }
-
-int add_to_params_list(const char *a1)
-{
-    if ( engines.some_params_count >= 31 )
-        return 0;
-
-    engines.some_params_pointers[engines.some_params_count] = a1;
-    engines.some_params_count++;
-    return 1;
-}
-
-
 
 void deinit_globl_engines()
 {
@@ -517,7 +561,7 @@ void deinit_globl_engines()
     if ( audio_inited )
         SFXEngine::SFXe.deinit();
 
-    sb_0x411c08();
+    ypa_log_out("Nucleus shutdown:\n");
 }
 
 int WinMain__sub0__sub0()
@@ -535,28 +579,28 @@ int WinMain__sub0__sub0()
         return 0;
     }
 
-    add_to_params_list("gfx.display  = win3d.class");
-    add_to_params_list("gfx.display2 = windd.class");
-    add_to_params_list("gfx.engine     = gfx.engine");
-    add_to_params_list("tform.engine   = tform_ng.engine");
-    add_to_params_list("input.engine   = input.engine");
-    add_to_params_list("input.wimp     = winp");
-    add_to_params_list("input.keyboard = winp");
-    add_to_params_list("input.slider[10] = winp:mousex");
-    add_to_params_list("input.slider[11] = winp:mousey");
-    add_to_params_list("input.slider[12] = winp:joyx winp:joyrudder");
-    add_to_params_list("input.slider[13] = winp:joyy");
-    add_to_params_list("input.slider[14] = winp:joythrottle");
-    add_to_params_list("input.slider[15] = winp:joyhatx");
-    add_to_params_list("input.slider[16] = winp:joyhaty");
-    add_to_params_list("input.button[16] = winp:joyb0");
-    add_to_params_list("input.button[17] = winp:joyb1");
-    add_to_params_list("input.button[18] = winp:joyb2");
-    add_to_params_list("input.button[19] = winp:joyb3");
-    add_to_params_list("input.button[20] = winp:joyb4");
-    add_to_params_list("input.button[21] = winp:joyb5");
-    add_to_params_list("input.button[22] = winp:joyb6");
-    add_to_params_list("input.button[23] = winp:joyb7");
+    Common::Env.AddGlobalIniKey("gfx.display  = win3d.class");
+    Common::Env.AddGlobalIniKey("gfx.display2 = windd.class");
+    Common::Env.AddGlobalIniKey("gfx.engine     = gfx.engine");
+    Common::Env.AddGlobalIniKey("tform.engine   = tform_ng.engine");
+    Common::Env.AddGlobalIniKey("input.engine   = input.engine");
+    Common::Env.AddGlobalIniKey("input.wimp     = winp");
+    Common::Env.AddGlobalIniKey("input.keyboard = winp");
+    Common::Env.AddGlobalIniKey("input.slider[10] = winp:mousex");
+    Common::Env.AddGlobalIniKey("input.slider[11] = winp:mousey");
+    Common::Env.AddGlobalIniKey("input.slider[12] = winp:joyx winp:joyrudder");
+    Common::Env.AddGlobalIniKey("input.slider[13] = winp:joyy");
+    Common::Env.AddGlobalIniKey("input.slider[14] = winp:joythrottle");
+    Common::Env.AddGlobalIniKey("input.slider[15] = winp:joyhatx");
+    Common::Env.AddGlobalIniKey("input.slider[16] = winp:joyhaty");
+    Common::Env.AddGlobalIniKey("input.button[16] = winp:joyb0");
+    Common::Env.AddGlobalIniKey("input.button[17] = winp:joyb1");
+    Common::Env.AddGlobalIniKey("input.button[18] = winp:joyb2");
+    Common::Env.AddGlobalIniKey("input.button[19] = winp:joyb3");
+    Common::Env.AddGlobalIniKey("input.button[20] = winp:joyb4");
+    Common::Env.AddGlobalIniKey("input.button[21] = winp:joyb5");
+    Common::Env.AddGlobalIniKey("input.button[22] = winp:joyb6");
+    Common::Env.AddGlobalIniKey("input.button[23] = winp:joyb7");
 
     audio_inited = SFXEngine::SFXe.init();
     input_inited = INPe.init();
@@ -737,7 +781,7 @@ int WinMain__sub0(int argc, char *argv[])
         {
             if (strcasecmp(argv[i], "-env") == 0 && i + 1 < argc)
             {
-                set_prefix_replacement("env", argv[i + 1]);
+                Common::Env.SetPrefix("env", argv[i + 1]);
             }
         }
 

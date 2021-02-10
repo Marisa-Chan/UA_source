@@ -22,30 +22,8 @@ struct Key
     KEYTYPE Type;
     nonstd::any Value;
     
-    Key(const std::string &k, KEYTYPE t, nonstd::any v)
-    : Name(k), Type(t), Value(v)
-    {}
-    
-    Key(const std::string &k, KEYTYPE t)
-    : Name(k), Type(t)
-    {
-        switch(t)
-        {
-            default:
-            case KT_DIGIT:
-                Value = (int32_t)0;
-                break;
-            
-            case KT_WORD:
-            case KT_STRING:
-                Value = std::string();
-                break;
-                
-            case KT_BOOL:
-                Value = false;
-                break;
-        }
-    }
+    Key(const std::string &k, KEYTYPE t, nonstd::any v);
+    Key(const std::string &k, KEYTYPE t);
     
     template <typename T>
     T Get()

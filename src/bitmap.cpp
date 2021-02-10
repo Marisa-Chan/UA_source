@@ -122,7 +122,7 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
                     intern->height = height;
 
                     // allocate buffer, create palette, surface and texture
-                    intern->swTex = engines.display___win3d->CreateSurfaceScreenFormat(width, height);
+                    intern->swTex = GFX::Engine.C3D()->CreateSurfaceScreenFormat(width, height);
                     if (!intern->swTex)
                     {
                         delete intern;
@@ -152,7 +152,7 @@ size_t NC_STACK_bitmap::rsrc_func65(rsrc *res)
     if ( intern )
     {
         if ( intern->hwTex )
-            engines.display___win3d->FreeTexture(intern);
+            GFX::Engine.C3D()->FreeTexture(intern);
 
         if ( intern->swTex )
             SDL_FreeSurface(intern->swTex);
@@ -253,8 +253,8 @@ void NC_STACK_bitmap::PrepareTexture( bool force )
         return;
     
     if (stack__bitmap.bitm_intern->hwTex)
-        engines.display___win3d->FreeTexture(stack__bitmap.bitm_intern);
+        GFX::Engine.C3D()->FreeTexture(stack__bitmap.bitm_intern);
         
-    engines.display___win3d->AllocTexture(stack__bitmap.bitm_intern);
+    GFX::Engine.C3D()->AllocTexture(stack__bitmap.bitm_intern);
 }
 

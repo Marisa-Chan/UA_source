@@ -1,8 +1,35 @@
 #include "ini.h"
-#include "includes.h"
+#include "env.h"
+#include "utils.h"
 
 namespace Common {
 namespace Ini {
+    
+Key::Key(const std::string &k, KEYTYPE t, nonstd::any v)
+: Name(k), Type(t), Value(v)
+{}
+
+
+Key::Key(const std::string &k, KEYTYPE t)
+: Name(k), Type(t)
+{
+    switch(t)
+    {
+        default:
+        case KT_DIGIT:
+            Value = (int32_t)0;
+            break;
+
+        case KT_WORD:
+        case KT_STRING:
+            Value = std::string();
+            break;
+
+        case KT_BOOL:
+            Value = false;
+            break;
+    }
+}
     
 void ParseLine(std::string line, KeyList *lst)
 {
@@ -72,8 +99,8 @@ bool ParseIniFile(std::string iniFile, KeyList *lst)
     
     delete fil;
     
-    for( int i = 0; i < engines.some_params_count; i++ )
-        ParseLine(engines.some_params_pointers[i], lst);
+    for( const std::string &str : Env._predefinedIniKeys )
+        ParseLine(str, lst);
 
     return true;
 }

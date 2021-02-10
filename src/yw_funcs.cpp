@@ -8,6 +8,7 @@
 #include "font.h"
 #include "button.h"
 #include "windp.h"
+#include "env.h"
 
 extern GuiList stru_5C91D0;
 
@@ -1166,9 +1167,7 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
         }
     }
 
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-
-    set_prefix_replacement("rsrc", "data:mc2res");
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
     NC_STACK_sklt *tmp_skel = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Skeleton/ColSide.sklt")}} );
     if ( !tmp_skel )
@@ -1190,7 +1189,7 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
     yw->ColCross.skeleton = tmp_skel;
     yw->ColCross.skeleton_internal = yw->ColCross.skeleton->GetSkelet();
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
 
     return 1;
 }
@@ -1212,8 +1211,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
         "pointers/build.ilbm"
     };
     
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-    set_prefix_replacement("rsrc", "data:mc2res");
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
     for (int i = 0; i < 11; i++)
     {
@@ -1223,7 +1221,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
         if ( !yw->pointers[i] )
         {
             ypa_log_out("yw_select.c/yw_InitMouseStuff()\n");
-            set_prefix_replacement("rsrc", oldRsrc);
+            Common::Env.SetPrefix("rsrc", oldRsrc);
             return 0;
         }
 
@@ -1240,7 +1238,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
     arg_263.pointer_id = 1;
     GFX::Engine.SetCursor(arg_263.pointer_id, 0);
 
-    set_prefix_replacement("rsrc", oldRsrc);
+    Common::Env.SetPrefix("rsrc", oldRsrc);
     return 1;
 }
 
@@ -1249,13 +1247,9 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
     _win3d = GFX::Engine.C3D();
     _mouseGrabbed = 0;
 
-    std::string oldRsrc = get_prefix_replacement("rsrc");
-    std::string newRsrc = fmt::sprintf("data:set%d", setID);
+    std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
     _win3d->display_func271(NULL);
-
-
-    set_prefix_replacement("rsrc", "data:mc2res");
 
     colsub_sklt = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("skeleton/colsub.sklt")}});
     if ( !colsub_sklt )
@@ -1274,7 +1268,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
     colcomp_sklt_intrn = colcomp_sklt->GetSkelet();
 
 
-    set_prefix_replacement("rsrc", newRsrc);
+    Common::Env.SetPrefix("rsrc", fmt::sprintf("data:set%d", setID));
 
     if ( !GFX::Engine.LoadPalette("palette/standard.pal") )
         ypa_log_out("WARNING: Could not load set default palette!\n");
@@ -1294,7 +1288,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
         {
             set_number = 0;
             ypa_log_out("yw_LoadSet(): loading set object %d failed\n", setID);
-            set_prefix_replacement("rsrc", oldRsrc);
+            Common::Env.SetPrefix("rsrc", oldRsrc);
             return 0;
         }
         set_number = setID;
@@ -1458,8 +1452,7 @@ void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
 
 void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
 {
-    std::string buf;
-    sub_412810(movie_fname, buf);
+    std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix( movie_fname ) );
 
     const char *v6;
     v6 = buf.c_str();
@@ -1927,7 +1920,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
 
     _levelInfo->Gates.clear();
 
-    set_prefix_replacement("rsrc", "data:");
+    Common::Env.SetPrefix("rsrc", "data:");
 
     LevelDesc *mproto = &brief.Desc;
 
@@ -1986,14 +1979,14 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
                     brief.Stage = 28;
                 }
 
-                set_prefix_replacement("rsrc", "levels:");
+                Common::Env.SetPrefix("rsrc", "levels:");
 
                 if ( LevelNet->brief_map[0].map_name[0] )
                     brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
                         {NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->brief_map[0].map_name},
                         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
-                set_prefix_replacement("rsrc", "mbpix:");
+                Common::Env.SetPrefix("rsrc", "mbpix:");
 
                 brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
                     {NC_STACK_rsrc::RSRC_ATT_NAME, mproto->Mbmaps[0].Name},
@@ -2082,7 +2075,7 @@ bool NC_STACK_ypaworld::InitDebrief()
 
     _levelInfo->State = 9;
 
-    set_prefix_replacement("rsrc", "data:");
+    Common::Env.SetPrefix("rsrc", "data:");
 
     const std::array<std::string, 4> vGfxName
     {
@@ -2115,14 +2108,14 @@ bool NC_STACK_ypaworld::InitDebrief()
         return false;
     }
 
-    set_prefix_replacement("rsrc", "levels:");
+    Common::Env.SetPrefix("rsrc", "levels:");
 
     if ( LevelNet->debrief_map[0].map_name[0] )
         brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
             {NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->debrief_map[0].map_name},
             {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
-    set_prefix_replacement("rsrc", "mbpix:");
+    Common::Env.SetPrefix("rsrc", "mbpix:");
 
     brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
         {NC_STACK_rsrc::RSRC_ATT_NAME, v8.Name},

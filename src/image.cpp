@@ -160,7 +160,7 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
     
     if (convertColor)
     {
-        SDL_Surface *screenFmt = engines.display___win3d->ConvertToScreenFormat(loaded);
+        SDL_Surface *screenFmt = GFX::Engine.C3D()->ConvertToScreenFormat(loaded);
         if (screenFmt)
         {
             SDL_FreeSurface(bitm->swTex);

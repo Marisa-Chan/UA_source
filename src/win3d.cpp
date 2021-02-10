@@ -1978,7 +1978,7 @@ SDL_PixelFormat *NC_STACK_win3d::GetScreenFormat()
 
 SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
 {
-    SDL_PixelFormat *fmt = engines.display___win3d->GetScreenFormat();
+    SDL_PixelFormat *fmt = GFX::Engine.C3D()->GetScreenFormat();
 #if SDL_VERSION_ATLEAST(2,0,5)
     return SDL_CreateRGBSurfaceWithFormat(0, width, height, fmt->BitsPerPixel, fmt->format);
 #else

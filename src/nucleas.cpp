@@ -4,9 +4,9 @@
 
 namespace Nucleus
 {
-ClassList ClassList::Instance;
+TClassList TClassList::Instance;
 
-ClassList::iterator ClassList::find(const std::string &clsname)
+TClassList::iterator TClassList::find(const std::string &clsname)
 {
     for(iterator it = begin(); it != end(); it++)
     {
@@ -26,8 +26,8 @@ ClassDescr::ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)
 
 NC_STACK_nucleus *CFInit(const std::string &classname, IDVList &stak)
 {
-    ClassList::iterator it = ClassList::Instance.find(classname);
-    if (it == ClassList::Instance.end())
+    TClassList::iterator it = ClassList.find(classname);
+    if (it == ClassList.end())
         return NULL;
 
     NC_STACK_nucleus *inst = it->_newinstance();
@@ -179,7 +179,7 @@ int delete_class_obj(NC_STACK_nucleus *cls)
 
 NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
 {
-    Nucleus::ClassList::iterator clss = Nucleus::ClassList::Instance.end();
+    Nucleus::TClassList::iterator clss = Nucleus::ClassList.end();
     NC_STACK_nucleus *obj = NULL;
     while ( 1 )
     {
@@ -201,8 +201,8 @@ NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
             if ( mfile->read(classname, 256) < 0 )
                 return NULL;
 
-            clss = Nucleus::ClassList::Instance.find(classname);
-            if ( clss == Nucleus::ClassList::Instance.end() )
+            clss = Nucleus::ClassList.find(classname);
+            if ( clss == Nucleus::ClassList.end() )
             {
                 return NULL;
             }

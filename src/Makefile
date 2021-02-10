@@ -44,6 +44,7 @@ OBJS =  \
 	def_parser.cpp\
 	display.cpp\
 	embed.cpp\
+	env.cpp\
 	fmtlib/format.cc\
 	font.cpp\
 	glob_funcs.cpp\
@@ -66,7 +67,6 @@ OBJS =  \
 	log.cpp\
 	lstvw.cpp\
 	main.cpp\
-	MC.cpp\
 	IFFile.cpp\
 	network.cpp\
 	netlib/client.cpp\

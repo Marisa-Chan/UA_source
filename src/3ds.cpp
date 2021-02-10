@@ -3,7 +3,7 @@
 #include "image.h"
 #include "display.h"
 #include "win3d.h"
-#include "glob_funcs.h"
+#include "env.h"
 
 
 const Nucleus::ClassDescr NC_STACK_3ds::description("3ds.class", &newinstance);
@@ -388,15 +388,14 @@ size_t NC_STACK_3ds::readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *
 
             if (!texmap.tex)
             {
-                std::string oldprefix = get_prefix_replacement("rsrc");
-                set_prefix_replacement("rsrc", "");
+                std::string oldprefix = Common::Env.SetPrefix("rsrc", "");
 
                 texmap.tex = Nucleus::CInit<NC_STACK_image>( {
                     {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(texName)},
                     {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)2},
                     {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
-                set_prefix_replacement("rsrc", oldprefix.c_str());
+                Common::Env.SetPrefix("rsrc", oldprefix);
                 printf("%s\n", texName);
             }
         }

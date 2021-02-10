@@ -14,6 +14,7 @@
 #include "yw_net.h"
 #include "gui/uacommon.h"
 #include "gui/uamsgbox.h"
+#include "env.h"
 
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
@@ -372,7 +373,7 @@ int AssignParser::Handle(ScriptParser::Parser &parser, const std::string &p1, co
 	}
 	else if ( !p1.empty() && !p2.empty() )
 	{
-		set_prefix_replacement(p1, p2);
+		Common::Env.SetPrefix(p1, p2);
 		ypa_log_out("parsing assign.txt: set assign %s to %s\n", p1.c_str(), p2.c_str());
 		return ScriptParser::RESULT_OK;
 	}
@@ -448,8 +449,7 @@ int yw_InitLocale(NC_STACK_ypaworld *yw)
 
 bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
 {
-    std::string buf = get_prefix_replacement("rsrc");
-    set_prefix_replacement("rsrc", "data:");
+    std::string buf = Common::Env.SetPrefix("rsrc", "data:");
 
     ScriptParser::HandlersList parsers {
         new World::Parsers::VhclProtoParser(this),
@@ -458,7 +458,7 @@ bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
     };
 
     bool res = ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
-    set_prefix_replacement("rsrc", buf);
+    Common::Env.SetPrefix("rsrc", buf);
 
     return res;
 }
@@ -560,15 +560,15 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
         return 0;
     }
 
-    set_prefix_replacement("rsrc", "mc2res");
-    set_prefix_replacement("data", "Data");
-    set_prefix_replacement("save", "Save");
-    set_prefix_replacement("help", "Help");
-    set_prefix_replacement("mov", "Data:mov");
-    set_prefix_replacement("levels", "Levels");
-    set_prefix_replacement("mbpix", "levels:mbpix");
-    set_prefix_replacement("locale", "locale");
-    set_prefix_replacement("scripts", "data:scripts");
+    Common::Env.SetPrefix("rsrc", "mc2res");
+    Common::Env.SetPrefix("data", "Data");
+    Common::Env.SetPrefix("save", "Save");
+    Common::Env.SetPrefix("help", "Help");
+    Common::Env.SetPrefix("mov", "Data:mov");
+    Common::Env.SetPrefix("levels", "Levels");
+    Common::Env.SetPrefix("mbpix", "levels:mbpix");
+    Common::Env.SetPrefix("locale", "locale");
+    Common::Env.SetPrefix("scripts", "data:scripts");
 
     if ( !World::ParseAssignFile("env:assign.txt") )
         ypa_log_out("Warning, no env:assign.txt script.\n");
@@ -1226,8 +1226,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     }
     else
     {
-        std::string tmp = get_prefix_replacement("rsrc");
-        set_prefix_replacement("rsrc", "data:");
+        std::string tmp = Common::Env.SetPrefix("rsrc", "data:");
 
         ScriptParser::HandlersList parsers {
             new World::Parsers::VhclProtoParser(this),
@@ -1236,7 +1235,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
         };
 
         ScriptParser::ParseStringList(gem.ActionsList, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
-        set_prefix_replacement("rsrc", tmp);
+        Common::Env.SetPrefix("rsrc", tmp);
     }
 
     std::string txt = get_lang_string(string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
@@ -2851,9 +2850,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
     if ( yw->LevelNet->bg_n )
     {
-        std::string oldRsrc = get_prefix_replacement("rsrc");
-
-        set_prefix_replacement("rsrc", "levels:");
+        std::string oldRsrc = Common::Env.SetPrefix("rsrc", "levels:");
 
         int v38 = 0;
         int v39 = 65535;
@@ -2970,7 +2967,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
             }
         }
 
-        set_prefix_replacement("rsrc", oldRsrc);
+        Common::Env.SetPrefix("rsrc", oldRsrc);
 
         if ( !v37 )
         {
@@ -7825,14 +7822,14 @@ void NC_STACK_ypaworld::UpdateGuiSettings()
 
 void NC_STACK_ypaworld::LoadGuiFonts()
 {
-    std::string old = SetPathKeys("rsrc", "data:set46");
+    std::string old = Common::Env.SetPrefix("rsrc", "data:set46");
 
     Gui::UA::_UATiles[Gui::UA::TILESET_46DEFAULT] = yw_LoadFont("default.font"); //0
     Gui::UA::_UATiles[Gui::UA::TILESET_46MAPC16] = yw_LoadFont("mapcur16.font"); //18
     Gui::UA::_UATiles[Gui::UA::TILESET_46MAPC32] = yw_LoadFont("mapcur32.font"); //19
     Gui::UA::_UATiles[Gui::UA::TILESET_46ENERGY] = yw_LoadFont("energy.font"); //30
     
-    SetPathKeys("rsrc", "data:fonts");
+    Common::Env.SetPrefix("rsrc", "data:fonts");
     Gui::UA::_UATiles[Gui::UA::TILESET_DEFAULT]     = yw_LoadFont("default.font"); //0
     Gui::UA::_UATiles[Gui::UA::TILESET_MENUGRAY]    = yw_LoadFont("menugray.font"); //6
     Gui::UA::_UATiles[Gui::UA::TILESET_ICONNS]      = yw_LoadFont("icon_ns.font"); //24
@@ -7841,7 +7838,7 @@ void NC_STACK_ypaworld::LoadGuiFonts()
     Gui::UA::_UATiles[Gui::UA::TILESET_MAPVERT]     = yw_LoadFont("mapvert.font"); //12
     Gui::UA::_UATiles[Gui::UA::TILESET_MAPVERT1]    = yw_LoadFont("mapvert1.font"); //13
 
-    SetPathKeys("rsrc", old);    
+    Common::Env.SetPrefix("rsrc", old);    
 }
 
 void NC_STACK_ypaworld::CreateNewGuiElements()

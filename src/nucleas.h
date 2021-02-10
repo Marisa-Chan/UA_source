@@ -76,13 +76,16 @@ public:
 namespace Nucleus
 {
 
-class ClassList: public std::list<ClassDescr>
+class TClassList: public std::list<ClassDescr>
 {
 public:
     iterator find(const std::string &clsname);
 
-static ClassList Instance;
+public:
+    static TClassList Instance;
 };
+
+static constexpr TClassList &ClassList = TClassList::Instance;
 
 
 
@@ -159,8 +162,8 @@ NC_STACK_nucleus *CFInit(const std::string &classname, IDVList::TInitList lst);
 template <class T>
 T *CTFInit(const std::string &classname, IDVList &stak)
 {
-    ClassList::iterator it = ClassList::Instance.find(classname);
-    if (it == ClassList::Instance.end())
+    TClassList::iterator it = ClassList.find(classname);
+    if (it == ClassList.end())
         return NULL;
 
     NC_STACK_nucleus *inst = it->_newinstance();

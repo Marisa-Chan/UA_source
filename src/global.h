@@ -14,9 +14,6 @@
 #include "glob_funcs.h"
 
 
-EXTR g_engines engines;
-
-
 EXTR int can_srcblend;
 EXTR int can_destblend;
 EXTR int can_stippling;

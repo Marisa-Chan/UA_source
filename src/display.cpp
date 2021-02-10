@@ -32,8 +32,6 @@ size_t NC_STACK_display::func0(IDVList &stak)
     
     SetResolution( Common::Point(stak.Get<int32_t>(ATT_WIDTH, DEFAULT_WIDTH), stak.Get<int32_t>(ATT_HEIGHT, DEFAULT_HEIGHT)) );
 
-    engines.display___win3d = this;
-
     return 1;
 }
 
@@ -60,7 +58,6 @@ bool NC_STACK_display::ChangeResolution(Common::Point res, bool windowed)
 
 size_t NC_STACK_display::func1()
 {
-    engines.display___win3d = NULL;
     return NC_STACK_nucleus::func1();
 }
 

@@ -410,13 +410,13 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
         {
             UA_PALETTE *pal = bitm->palette;
             if (!pal)
-                pal = engines.display___win3d->GetPalette();
+                pal = GFX::Engine.C3D()->GetPalette();
             
             //if (alphaPalette && convertColor)
             if (alphaPalette)
             {
                 UA_PALETTE tmp;
-                engines.display___win3d->ConvAlphaPalette(&tmp, *pal, transp);
+                GFX::Engine.C3D()->ConvAlphaPalette(&tmp, *pal, transp);
                 SDL_SetPaletteColors(bitm->swTex->format->palette, tmp.data(), 0, 256);
             }
             else
@@ -425,7 +425,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 
         if ( convertColor )
         {
-            SDL_Surface *screenFmt = engines.display___win3d->ConvertToScreenFormat(bitm->swTex);
+            SDL_Surface *screenFmt = GFX::Engine.C3D()->ConvertToScreenFormat(bitm->swTex);
             if (screenFmt)
             {
                 SDL_FreeSurface(bitm->swTex);
