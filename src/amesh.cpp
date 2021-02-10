@@ -3,7 +3,7 @@
 #include "nucleas.h"
 #include "amesh.h"
 #include "utils.h"
-#include "engine_input.h"
+#include "system/inpt.h"
 
 #include "display.h"
 #include "win3d.h"
@@ -11,7 +11,7 @@
 #include "skeleton.h"
 #include "base.h"
 
-#include "engine_gfx.h"
+#include "system/gfx.h"
 
 
 const Nucleus::ClassDescr NC_STACK_amesh::description("amesh.class", &newinstance);
@@ -454,7 +454,6 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                     datSub->renderFlags |= NC_STACK_display::RFLAGS_FALLOFF;
             }
 
-            data->render_func = GFXEngine::defRenderFunc;
             data->range = maxz;
 
             arg->rndrStack->commit();

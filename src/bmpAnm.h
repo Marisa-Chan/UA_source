@@ -2,7 +2,7 @@
 #define BMPANM_H_INCLUDED
 
 #include "rsrc.h"
-#include "engine_gfx.h"
+#include "system/gfx.h"
 #include "bitmap.h"
 
 struct bmpAnim_t2

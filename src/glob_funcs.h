@@ -16,11 +16,6 @@ struct TKVPair
 
 struct g_engines
 {
-    int __AllocCount;
-    int __AllocSize;
-    int __AllocMax;
-    int file_handles;
-    std::string MC_RES_CLASS_ENGINE[3];
     const char *some_params_pointers[32];
     int some_params_count;
     NC_STACK_display *display___win3d;
@@ -28,11 +23,6 @@ struct g_engines
 
     g_engines()
     {
-        __AllocCount = 0;
-        __AllocSize = 0;
-        __AllocMax = 0;
-        file_handles = 0;
-
         for (int i = 0; i < 32; i++)
             some_params_pointers[i] = NULL;
 

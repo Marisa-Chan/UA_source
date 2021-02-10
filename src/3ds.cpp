@@ -670,7 +670,6 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                                 datSub->renderFlags |= NC_STACK_display::RFLAGS_FALLOFF;
                         }
 
-                        data->render_func = GFXEngine::defRenderFunc;
                         data->range = maxz;
 
                         arg->rndrStack->commit();

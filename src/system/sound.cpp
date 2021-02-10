@@ -1,7 +1,14 @@
-#include "includes.h"
-#include "engine_miles.h"
-
+#include "../fmtlib/printf.h"
+#include "../common.h"
+#include "../ini.h"
+#include "../log.h"
 #include <math.h>
+#include "sound.h"
+#include "../common.h"
+
+#include "../display.h"
+#include "../win3d.h"
+
 
 SFXEngine SFXEngine::SFXe;
 
@@ -903,7 +910,7 @@ void SFXEngine::sb_0x424c74__sub3()
         i++;
     }
 
-    NC_STACK_display *pwin3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_display *pwin3d = GFX::Engine.C3D();
 
     if ( pwin3d )
     {

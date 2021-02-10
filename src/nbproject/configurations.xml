@@ -6,15 +6,15 @@
         <in>format.cc</in>
       </df>
       <df name="gui">
+        <in>oldcompat.cpp</in>
+        <in>oldcompat.h</in>
         <in>root.cpp</in>
         <in>uabutton.cpp</in>
-		<in>uacommon.cpp</in>
-        <in>uacommon.h</in>
+        <in>uacommon.cpp</in>
+        <in>uaempty.cpp</in>
+        <in>uamsgbox.cpp</in>
         <in>uascroll.cpp</in>
-        <in>uascroll.h</in>
-        <in>uawidgets.h</in>
         <in>uawindow.cpp</in>
-        <in>uawindow.h</in>
         <in>widget.cpp</in>
       </df>
       <df name="netlib">
@@ -27,8 +27,19 @@
         <in>single_threads.cpp</in>
         <in>zndNet.cpp</in>
       </df>
+      <df name="system">
+        <in>fsmgr.cpp</in>
+        <in>fsmgr.h</in>
+        <in>gfx.cpp</in>
+        <in>gfx.h</in>
+        <in>inpt.cpp</in>
+        <in>inpt.h</in>
+        <in>sound.cpp</in>
+        <in>sound.h</in>
+        <in>system.cpp</in>
+        <in>system.h</in>
+      </df>
       <df name="world">
-        <in>history.h</in>
         <in>parsers.cpp</in>
         <in>saveparsers.cpp</in>
       </df>
@@ -47,12 +58,7 @@
       <in>def_parser.cpp</in>
       <in>display.cpp</in>
       <in>embed.cpp</in>
-      <in>engine_gfx.cpp</in>
-      <in>engine_input.cpp</in>
-      <in>engine_miles.cpp</in>
-      <in>engine_tform.cpp</in>
       <in>font.cpp</in>
-      <in>fsmgr.cpp</in>
       <in>glob_funcs.cpp</in>
       <in>idev.cpp</in>
       <in>ilbm.cpp</in>
@@ -64,9 +70,7 @@
       <in>log.cpp</in>
       <in>lstvw.cpp</in>
       <in>main.cpp</in>
-      <in>memstream.h</in>
       <in>network.cpp</in>
-      <in>nlist.cpp</in>
       <in>nucleas.cpp</in>
       <in>particle.cpp</in>
       <in>rsrc.cpp</in>
@@ -79,7 +83,6 @@
       <in>windp.cpp</in>
       <in>winp.cpp</in>
       <in>wintimer.cpp</in>
-      <in>wrapSDL.cpp</in>
       <in>wrapal.cpp</in>
       <in>ypabact.cpp</in>
       <in>ypacar.cpp</in>
@@ -98,6 +101,15 @@
       <in>yw_net.cpp</in>
       <in>yw_save.cpp</in>
     </df>
+    <df root="." name="1">
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Важные файлы"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Важные файлы"
                    projectFiles="false"
@@ -106,8 +118,9 @@
       <itemPath>nbproject/private/launcher.properties</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceFolderFilter>^(nbproject|dop|cov-int|codeblocks.*|obj|reserv|GAME|trpp|src)$</sourceFolderFilter>
+  <sourceFolderFilter>^(nbproject|dop|cov-int|codeblocks.*|obj|reserv|GAME|trpp)$</sourceFolderFilter>
   <sourceRootList>
+    <Elem>.</Elem>
     <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
@@ -120,13 +133,14 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-std=c++11"/>
+        <element flagsID="1" commonFlags="-std=c++14"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
       <makefileType>
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
-          <buildCommand>${MAKE} -f Makefile nix -j 10</buildCommand>
+          <buildCommand>${MAKE} -f Makefile nix -j 4</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath>UA_source</executablePath>
         </makeTool>
@@ -195,22 +209,6 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="engine_gfx.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="engine_input.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="engine_miles.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="engine_tform.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
       <folder path="0/fmtlib">
         <ccTool>
           <incDir>
@@ -232,6 +230,13 @@
           </incDir>
         </ccTool>
       </folder>
+      <folder path="0/system">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
       <folder path="0/world">
         <ccTool>
           <incDir>
@@ -247,13 +252,13 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="fsmgr.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
       <item path="glob_funcs.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
+      </item>
+      <item path="gui/oldcompat.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="gui/oldcompat.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="gui/root.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
@@ -263,19 +268,25 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="gui/uacommon.cpp" ex="false" tool="1" flavor2="0">
+      <item path="gui/uacommon.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
-      <item path="gui/uacommon.h" ex="false" tool="3" flavor2="0">
+      <item path="gui/uaempty.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
-      <item path="gui/uascroll.cpp" ex="false" tool="1" flavor2="0">
+      <item path="gui/uamsgbox.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
-      <item path="gui/uascroll.h" ex="false" tool="3" flavor2="0">
+      <item path="gui/uascroll.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="1">
+        </ccTool>
       </item>
-      <item path="gui/uawidgets.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="gui/uawindow.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="gui/uawindow.h" ex="false" tool="3" flavor2="0">
+      <item path="gui/uawindow.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
       <item path="gui/widget.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
@@ -321,8 +332,6 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="memstream.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="netlib/client.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
@@ -359,10 +368,6 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="nlist.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
       <item path="nucleas.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
@@ -386,6 +391,30 @@
       <item path="sklt.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
+      </item>
+      <item path="system/fsmgr.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="system/fsmgr.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/gfx.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/gfx.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/inpt.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/inpt.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/sound.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/sound.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/system.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="system/system.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
@@ -411,17 +440,11 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="world/history.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="world/parsers.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
       </item>
       <item path="world/saveparsers.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="wrapSDL.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
       </item>

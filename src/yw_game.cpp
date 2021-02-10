@@ -58,7 +58,7 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
         a4.float1C =  1.0;
         a4.float20 =  1.0;
 
-        NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
+        NC_STACK_display *win3d = GFX::Engine.C3D();
 
         if ( win3d )
         {
@@ -66,7 +66,7 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
             v4.bitm = yw->pointers__bitm[5];
             v4.pointer_id = 6;
 
-            win3d->display_func263(&v4);
+            GFX::Engine.SetCursor(v4.pointer_id, 0);
 
             win3d->BeginFrame();
             win3d->raster_func202(&a4);
@@ -96,7 +96,7 @@ void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScree
         a4.float1C =  1.0;
         a4.float20 =  1.0;
 
-        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
         if ( win3d )
         {
@@ -104,7 +104,7 @@ void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScree
             v4.bitm = yw->pointers__bitm[5];
             v4.pointer_id = 6;
 
-            win3d->display_func263(&v4);
+            GFX::Engine.SetCursor(v4.pointer_id, 0);
 
             win3d->BeginFrame();
             win3d->raster_func202(&a4);
@@ -563,7 +563,7 @@ void sb_0x44ca90__sub5(NC_STACK_ypaworld *yw)
 
 void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
 {
-    NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
     for (size_t i = 0; i < mapp->Palettes.size(); i++)
     {
@@ -647,8 +647,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     field_1a20 = 0;
 
     _levelInfo->Gates.clear();
-
-	_levelInfo->SuperItems.clear();
+    _levelInfo->SuperItems.clear();
 
     _Gems.clear();
     
@@ -665,11 +664,11 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     {
         if ( game_default_res != shell_default_res )
         {
-            GFXEngine::GFXe.setResolution(game_default_res);
+            GFX::Engine.SetResolution(game_default_res);
 
-            screen_width = GFXEngine::GFXe.getScreenW();
-            screen_height = GFXEngine::GFXe.getScreenH();
-            _win3d = GFXEngine::GFXe.getC3D();
+            screen_width = GFX::Engine.GetScreenW();
+            screen_height = GFX::Engine.GetScreenH();
+            _win3d = GFX::Engine.C3D();
 
             _win3d->setWDD_cursor( (field_73CE & 0x40) != 0 );
 
@@ -4284,7 +4283,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
             yw->ypaworld_func159(&info_msg);
         }
 
-        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
         win3d->SaveScreenshot( fmt::sprintf("env:snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id) );
         

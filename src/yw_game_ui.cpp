@@ -1689,7 +1689,7 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
     pcur = sb_0x4f8f64__sub0(yw, pcur);
     FontUA::set_end(&pcur);
 
-    GFXEngine::GFXe.drawText(&arg);
+    GFX::Engine.DrawText(&arg);
 }
 
 void sub_4C157C(NC_STACK_ypaworld *yw)
@@ -3009,13 +3009,13 @@ void sb_0x4d7c08__sub0__sub1()
         w3d_a209 v0;
         v0 = bzda.cmdstrm;
 
-        GFXEngine::GFXe.drawText(&v0);
+        GFX::Engine.DrawText(&v0);
 
         if ( gui_lstvw.IsOpen() )
         {
             v0 = gui_lstvw.cmdstrm;
 
-            GFXEngine::GFXe.drawText(&v0);
+            GFX::Engine.DrawText(&v0);
         }
     }
 }
@@ -3053,7 +3053,7 @@ void sb_0x4d7c08__sub0(NC_STACK_ypaworld *yw)
                         v6 = 1;
                 }
 
-                GFXEngine::GFXe.drawText(&v8);
+                GFX::Engine.DrawText(&v8);
 
                 if ( v6 )
                     lstnode->postDraw(yw);
@@ -8743,7 +8743,7 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
     arg.cmdbuf = byte_5A7650;
     arg.includ = 0;
 
-    GFXEngine::GFXe.drawText(&arg);
+    GFX::Engine.DrawText(&arg);
 }
 
 
@@ -8783,7 +8783,7 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
     float CW = 1.0, CH = 1.0;
 
     if (aspectCorrection)
-        GFXEngine::GFXe.getC3D()->getAspectCorrection(CW, CH, false);
+        GFX::Engine.C3D()->getAspectCorrection(CW, CH, false);
 
     if ( wire )
     {
@@ -9730,7 +9730,7 @@ void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
     v20.cmdbuf = byte_5C8DB0;
     v20.includ = 0;
 
-    GFXEngine::GFXe.drawText(&v20);
+    GFX::Engine.DrawText(&v20);
 
     yw->hudi.field_18 = NULL;
 }
@@ -10364,7 +10364,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
 
     FontUA::set_end(&pcur);
 
-    GFXEngine::GFXe.drawText(&post_rndr);
+    GFX::Engine.DrawText(&post_rndr);
 }
 
 void yw_RenderHUDRadare(NC_STACK_ypaworld *yw)
@@ -11891,7 +11891,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
         if ( squadron_manager.field_2A8 & 1 )
             v19.pointer_id = 1;
 
-        _win3d->display_func263(&v19);
+        GFX::Engine.SetCursor(v19.pointer_id, 0);
 
         if ( v5 )
             sub_4811E8(v5);

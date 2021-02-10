@@ -2,7 +2,7 @@
 #define WIN3D_H_INCLUDED
 
 #include <deque>
-#include "wrapSDL.h"
+#include "system/system.h"
 #include "display.h"
 #include "ini.h"
 
@@ -89,11 +89,10 @@ public:
     virtual void BeginScene();
     virtual void EndScene();
     virtual void raster_func218(rstr_218_arg *arg);
-    virtual size_t display_func256(windd_arg256 *inout);
     virtual void BeginFrame();
     virtual void EndFrame();
     virtual void display_func262(rstr_262_arg *arg);
-    virtual void display_func263(displ_arg263 *arg);
+
     virtual bool AllocTexture(ResBitmap *arg);
     virtual void FreeTexture(ResBitmap *arg);
     virtual void display_func271(IDVPair *stak);
@@ -131,7 +130,6 @@ public:
     virtual void setWDD_16bitTex(int arg);
     virtual void setWDD_drawPrim(int arg);
 
-    virtual int getDISP_displID();
     virtual int getWDD_16bitTex();
     virtual int getWDD_drawPrim();
 
@@ -142,8 +140,6 @@ public:
 
     void draw2DandFlush();
 
-
-    static void initfirst();
     int LoadFontByDescr(const std::string &fontname);
     void matrixAspectCorrection(mat3x3 &inout, bool invert);
     void getAspectCorrection(float &cW, float &cH, bool invert);
@@ -154,7 +150,6 @@ public:
     
     void windd_func323__sub0(const char *filename);
     void win3dInitialisation();
-    void sub_42D410(int curID, int force);
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
     virtual SDL_PixelFormat *GetScreenFormat();
@@ -164,7 +159,6 @@ public:
     static SDL_Surface *ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt);
     
     virtual bool ChangeResolution(Common::Point res, bool windowed = false);
-    bool ChangeResolution(int32_t mode);
 
 protected:
     void initPolyEngine();
@@ -195,8 +189,6 @@ public:
     static Common::Ini::KeyList win3d_keys;
 
 public:
-    SDL_Surface *_screenSurface;
-    int _currentCursor;
     int _forcesoftcursor;
     int _movie_player;
     int _field_38;
@@ -204,7 +196,6 @@ public:
     int _use_simple_d3d;
     int _disable_lowres;
     int _export_window_mode;
-    int _sort_id;
     int _flags;
 
     // From bigdata
@@ -222,7 +213,6 @@ public:
     SDL_PixelFormat *_pixfmt;
     SDL_DisplayMode _mode;
     GLint _glPixfmt, _glPixtype;
-    bool _windowed;
 
     uint32_t _rendStates[W3D_STATES_MAX];
     uint32_t _rendStates2[W3D_STATES_MAX];

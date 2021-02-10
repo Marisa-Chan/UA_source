@@ -275,14 +275,6 @@ void NC_STACK_display::display_func262(rstr_262_arg *arg)
     }
 }
 
-void NC_STACK_display::display_func263(displ_arg263 *arg)
-{
-//    __NC_STACK_display *displ = &stack__display;
-
-//    display_func265(NULL);
-//    displ->pointer_bitm = arg->bitm;
-//    display_func264(NULL);
-}
 
 //void NC_STACK_display::display_func264(void *)
 //{

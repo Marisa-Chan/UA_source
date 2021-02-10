@@ -3,7 +3,7 @@
 #include "root.h"
 #include "widget.h"
 
-#include "../wrapSDL.h"
+#include "../system/gfx.h"
 
 
 namespace Gui
@@ -282,10 +282,10 @@ void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point par
             }
 
             parentOffset += w->_rect.Pos();
-            
+
             Common::Point clientOffset = parentOffset;
             Common::Rect clientSpace = widgetSpace;
-            
+
             if (w->_flags & Widget::FLAG_CLIENT)
             {
                 Common::Rect s = w->_client;
@@ -302,7 +302,6 @@ void Root::DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point par
                 else if ( !clientSpace.IsEmpty() )
                     DrawWidget(screen, clientSpace, clientOffset, *it, effA);
             }
-                
         }
     }
 }
@@ -352,7 +351,7 @@ void Root::HwPrepareWidget(Widget *w)
     }
 }
 
-bool Root::MouseDown(Common::Point pos, int button)
+bool Root::MouseDown(Common::Point pos, int button, int clkNum)
 {
     ValidateWidgets();
         
@@ -387,14 +386,14 @@ bool Root::MouseDown(Common::Point pos, int button)
             }
             
             pos = CorrectPosForWidget(_miceOn, pos);
-            _miceOn->MouseDown(_miceOn->ScreenCoordToWidget(pos), pos, btn);
+            _miceOn->MouseDown(_miceOn->ScreenCoordToWidget(pos), pos, btn, clkNum);
             return true;
         }
     }
     return false;
 }
 
-bool Root::MouseUp(Common::Point pos, int button)
+bool Root::MouseUp(Common::Point pos, int button, int clkNum)
 {
     ValidateWidgets();
     
@@ -435,7 +434,7 @@ bool Root::MouseUp(Common::Point pos, int button)
             }
 
             Common::Point cpos = CorrectPosForWidget(_miceOn, pos);
-            _miceOn->MouseUp(_miceOn->ScreenCoordToWidget(cpos), cpos, btn);
+            _miceOn->MouseUp(_miceOn->ScreenCoordToWidget(cpos), cpos, btn, clkNum);
             
             if (!_buttons)
                 UpdateWidgetOnMice( FindByMouse(pos) );
@@ -446,7 +445,7 @@ bool Root::MouseUp(Common::Point pos, int button)
     return false;
 }
 
-bool Root::MouseMove(Common::Point pos)
+bool Root::MouseMove(Common::Point pos, Common::Point relMove)
 {
     ValidateWidgets();
     
@@ -465,7 +464,7 @@ bool Root::MouseMove(Common::Point pos)
         if (_miceOn)
         {
             pos = CorrectPosForWidget(_miceOn, pos);
-            _miceOn->MouseMove(_miceOn->ScreenCoordToWidget(pos), pos, _buttons);
+            _miceOn->MouseMove(_miceOn->ScreenCoordToWidget(pos), pos, relMove, _buttons);
             return true;
         }
     }
@@ -640,9 +639,11 @@ void Root::SetScreenSize(Common::Point sz)
         w->OnParentResize(sz);
 }
 
-Common::Point Root::GetScreenSize()
+Common::Point Root::GetScreenSize(int32_t portalID)
 {
-    return _screenSize;
+    if (portalID < 0)
+        return _screenSize;
+    return _portals.at(portalID).Size;
 }
 
 bool Root::CheckEnable(Widget *w)
@@ -804,7 +805,7 @@ SDL_Surface *Root::CreateScreenFmtSurface(uint32_t w, uint32_t h)
     
     SDL_DisplayMode curr;
     SDL_GetCurrentDisplayMode(0, &curr);
-    curr.format = SDLWRAP_CorrectFormat(curr.format);
+    curr.format = GFX::Engine.CorrectSurfaceFormat(curr.format);
     
 #if SDL_VERSION_ATLEAST(2,0,5)
     return SDL_CreateRGBSurfaceWithFormat(0, w, h, SDL_BITSPERPIXEL(curr.format), curr.format);
@@ -891,7 +892,7 @@ void Root::HwRenderWidget(Widget *w)
     if (w && w->IsEnabled() && w->_alpha != 0 /*&& Common::Rect(_screenSize).IsIntersects(w->_rect)*/ && w->_hwSurface)
     {
         GLint format, fmtype;
-        SDLWRAP_GL_mapFormat(w->_hwSurface->format->format, &format, &fmtype);
+        GFX::Engine.GLMapFormat(w->_hwSurface->format->format, &format, &fmtype);
         
         SDL_LockSurface(w->_hwSurface);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w->_hwSurface->w, w->_hwSurface->h, 0, format, fmtype, w->_hwSurface->pixels);
@@ -922,7 +923,7 @@ int32_t Root::AddPortal(Common::Point size, Common::Rect portal)
     p.Size = size;
     p.Portal = portal;
     p.Used = true;
-    return _portals.size();
+    return _portals.size() - 1;
 }
     
 bool Root::DeletePortal(int32_t id)
@@ -934,6 +935,10 @@ bool Root::DeletePortal(int32_t id)
 bool Root::ResizePortal(int32_t id, Common::Point size)
 {
     _portals.at(id).Size = size;
+    
+    for(Widget *& w : _portals.at(id).Widgets)
+        w->OnParentResize(size);
+    
     return true;
 }
     

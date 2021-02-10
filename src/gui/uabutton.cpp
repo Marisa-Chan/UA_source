@@ -3,7 +3,7 @@
 namespace Gui
 {
 
-void UABaseButton::MouseMove(Common::Point pos, Common::Point scrPos, int button)
+void UABaseButton::MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int button)
 {
     if ( !(_btnFlags & FLAG_LOCKED) )
     {
@@ -13,10 +13,10 @@ void UABaseButton::MouseMove(Common::Point pos, Common::Point scrPos, int button
             _btnFlags |= FLAG_PRESSED;
     }
     
-    Widget::MouseMove(pos, scrPos, button);
+    Widget::MouseMove(pos, scrPos, relMove, button);
 }
 
-void UABaseButton::MouseDown(Common::Point pos, Common::Point scrPos, int button)
+void UABaseButton::MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum)
 {
     if ( !(_btnFlags & FLAG_LOCKED) )
     {
@@ -32,7 +32,7 @@ void UABaseButton::MouseDown(Common::Point pos, Common::Point scrPos, int button
     Widget::MouseDown(pos, scrPos, button);
 }
 
-void UABaseButton::MouseUp(Common::Point pos, Common::Point scrPos, int button)
+void UABaseButton::MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum)
 {
     if ( !(_btnFlags & FLAG_LOCKED) )
     {
@@ -45,7 +45,7 @@ void UABaseButton::MouseUp(Common::Point pos, Common::Point scrPos, int button)
         }
     }
     
-    Widget::MouseUp(pos, scrPos, button);
+    Widget::MouseUp(pos, scrPos, button, clkNum);
 }
 
 void UABaseButton::OnBtnPress()
@@ -88,7 +88,7 @@ UATextButton::UATextButton(Widget *parent, const std::string &txt, const Common:
 
 void UATextButton::Init()
 {
-    _color = GFX::Color();
+    _color = GFX::Engine.Color();
 }
 
 void UATextButton::SetColor(SDL_Color clr)

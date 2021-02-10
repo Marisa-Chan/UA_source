@@ -233,7 +233,7 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, I
 void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
 {
     usr->input_listview.SetRect(yw, -2, -2);
-    GFXEngine::GFXe.getTileset(0);
+    GFX::Engine.GetTileset(0);
 
     char *v4 = usr->input_listview.ItemsPreLayout(yw, usr->input_listview.itemBlock, 0, "uvw");
 
@@ -341,7 +341,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v21;
     v21 = usr->input_listview.cmdstrm;
 
-    GFXEngine::GFXe.drawText(&v21);
+    GFX::Engine.DrawText(&v21);
 }
 
 
@@ -493,7 +493,7 @@ void fill_videmodes_list(UserData *usr)
 {
     usr->video_mode_list.clear();
 
-    usr->p_ypaworld->_win3d = GFXEngine::GFXe.getC3D();
+    usr->p_ypaworld->_win3d = GFX::Engine.C3D();
 
     windd_arg256 warg_256;
     warg_256.sort_id = 0;
@@ -502,7 +502,7 @@ void fill_videmodes_list(UserData *usr)
 
     while( id )
     {
-        id = usr->p_ypaworld->_win3d->display_func256(&warg_256);
+        id = GFX::Engine.display_func256(&warg_256);
 
         usr->video_mode_list.emplace_back();
         video_mode_node &vnode = usr->video_mode_list.back();
@@ -659,7 +659,7 @@ void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
 {
     if ( !yw->movies[World::MOVIE_INTRO].empty() )
     {
-        yw->_win3d = GFXEngine::GFXe.getC3D();
+        yw->_win3d = GFX::Engine.C3D();
 
         std::string buf;
         sub_412810(yw->movies[World::MOVIE_INTRO], buf);

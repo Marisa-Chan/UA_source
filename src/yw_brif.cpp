@@ -79,7 +79,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState 
         v4.bitm = yw->pointers__bitm[5];
         v4.pointer_id = 6;
 
-        yw->_win3d->display_func263(&v4);
+        GFX::Engine.SetCursor(v4.pointer_id, 0);
     }
     else
     {
@@ -195,7 +195,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState 
         v6.bitm = yw->pointers__bitm[0];
         v6.pointer_id = 1;
 
-        yw->_win3d->display_func263(&v6);
+        GFX::Engine.SetCursor(v6.pointer_id, 0);
     }
     else
     {

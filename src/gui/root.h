@@ -97,9 +97,9 @@ public:
     void RemoveWidget(Widget *w);
     void Draw(SDL_Surface *screen);
 
-    bool MouseDown(Common::Point pos, int button);
-    bool MouseMove(Common::Point pos);
-    bool MouseUp(Common::Point pos, int button);
+    bool MouseDown(Common::Point pos, int button, int clkNum = 1);
+    bool MouseMove(Common::Point pos, Common::Point relMove);
+    bool MouseUp(Common::Point pos, int button, int clkNum = 1);
 
     void RootWidgetToFront(Widget *w);
     void ChangeFocus(Widget *w);
@@ -107,7 +107,7 @@ public:
     void StopHoldingMouse();
 
     void SetScreenSize(Common::Point sz);
-    Common::Point GetScreenSize();
+    Common::Point GetScreenSize(int32_t portalID = -1);
 
     Widget *FindByPos(const Common::Point &pos);
     
@@ -198,6 +198,8 @@ protected:
 
     SDL_Surface       *_dirtSurface = NULL;
 };
+
+static constexpr Root &Instance = Root::Instance;
 
 }
 

@@ -44,14 +44,10 @@ OBJS =  \
 	def_parser.cpp\
 	display.cpp\
 	embed.cpp\
-	engine_gfx.cpp\
-	engine_input.cpp\
-	engine_miles.cpp\
-	engine_tform.cpp\
 	fmtlib/format.cc\
 	font.cpp\
-	fsmgr.cpp\
 	glob_funcs.cpp\
+	gui/oldcompat.cpp\
 	gui/root.cpp\
 	gui/uabutton.cpp\
 	gui/uacommon.cpp\
@@ -87,6 +83,11 @@ OBJS =  \
 	sample.cpp\
 	skeleton.cpp\
 	sklt.cpp\
+	system/fsmgr.cpp\
+	system/gfx.cpp\
+	system/inpt.cpp\
+	system/sound.cpp\
+	system/system.cpp\
 	utils.cpp\
 	wav.cpp\
 	win3d.cpp\
@@ -96,7 +97,6 @@ OBJS =  \
 	world/parsers.cpp\
 	world/saveparsers.cpp\
 	wrapal.cpp\
-	wrapSDL.cpp\
 	yw.cpp\
 	yw_brif.cpp\
 	yw_funcs.cpp\

@@ -2,7 +2,7 @@
 
 #include <inttypes.h>
 #include <list>
-#include "wrapSDL.h"
+#include "system/system.h"
 #include "includes.h"
 #include "nucleas.h"
 #include "rsrc.h"
@@ -15,76 +15,7 @@
 
 #include "gui/root.h"
 
-struct GfxMode
-{
-    int w;
-    int h;
-    int bpp;
-    SDL_DisplayMode mode;
-    bool windowed;
-    int32_t sortid;
-    std::string name;
-    
-    GfxMode()
-    {
-        w = 0;
-        h = 0;
-        bpp = 0;
-        mode = {0};
-        windowed = false;
-        sortid = 0;
-        name = "";
-    }
-    
-    GfxMode(GfxMode &&g)
-    {
-        w = std::move(g.w);
-        h = std::move(g.h);
-        bpp = std::move(g.bpp);
-        mode = std::move(g.mode);
-        windowed = std::move(g.windowed);
-        sortid = std::move(g.sortid);
-        name = std::move(g.name);
-    }
-    
-    GfxMode(const GfxMode &g)
-    {
-        w = g.w;
-        h = g.h;
-        bpp = g.bpp;
-        mode = g.mode;
-        windowed = g.windowed;
-        sortid = g.sortid;
-        name = g.name;
-    }
-    
-    GfxMode& operator=(const GfxMode &g)
-    {
-        w = g.w;
-        h = g.h;
-        bpp = g.bpp;
-        mode = g.mode;
-        windowed = g.windowed;
-        sortid = g.sortid;
-        name = g.name;
-        return *this;
-    }
-    
-    operator bool() const
-    {
-        if (w == 0 || h == 0 || bpp == 0)
-            return false;
-        return true;
-    }
-    
-    static bool Compare(const GfxMode &a, const GfxMode &b)
-    {
-        return (a.sortid > b.sortid);
-    }
-};
 
-std::list<GfxMode> graphicsModes;
-SDL_Cursor *cursors[11];
 
 const Nucleus::ClassDescr NC_STACK_win3d::description("win3d.class", &newinstance);
 
@@ -114,90 +45,6 @@ Common::Ini::KeyList NC_STACK_win3d::win3d_keys
 };
 
 
-
-void AddGfxMode(const GfxMode &md)
-{
-    for (const GfxMode &m : graphicsModes)
-    {
-        if ( m.sortid == md.sortid )
-            return;
-    }
-
-    graphicsModes.push_back(md);
-    log_d3dlog("Add display mode: %s%dx%d\n", (md.windowed ? "Windowed ": ""), md.w, md.h );
-}
-
-
-void NC_STACK_win3d::initfirst()
-{
-    SDL_DisplayMode deskMode;
-    SDL_GetDesktopDisplayMode(0, &deskMode);
-
-    int checkmodes[][2] =
-    {
-        {640, 480}, {800, 600}, {1024, 768}, {1280, 1024}, {1440, 1050}, {1600, 1200},
-        {720, 480}, {852, 480}, {1280, 720}, {1366, 768}, {1600, 900}, {1920, 1080}, {2560, 1440},
-        {-1, -1}
-    };
-
-    uint32_t corrected = SDLWRAP_CorrectFormat(deskMode.format);
-
-    for(int i = 0; checkmodes[i][0] != -1; i++)
-    {
-        SDL_DisplayMode target, closest;
-
-        target.w = checkmodes[i][0];
-        target.h = checkmodes[i][1];
-        target.format = corrected;
-        target.refresh_rate = 0;
-        target.driverdata   = 0;
-
-        if (SDL_GetClosestDisplayMode(0, &target, &closest) )
-        {
-            GfxMode mode;
-            mode.w = closest.w;
-            mode.h = closest.h;
-            mode.mode = closest;
-            mode.bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
-            mode.windowed = false;
-            mode.name = fmt::sprintf("%d x %d", mode.w, mode.h);
-
-            mode.sortid = (closest.w & 0x7FFF) << 7 | (closest.h & 0x7FFF);
-
-            AddGfxMode(mode);
-        }
-
-        if (checkmodes[i][0] <= deskMode.w && checkmodes[i][1] <= deskMode.h)
-        {
-            GfxMode mode;
-            mode.w = checkmodes[i][0];
-            mode.h = checkmodes[i][1];
-            mode.mode = deskMode;
-            mode.bpp = SDL_BYTESPERPIXEL(corrected) * 8;
-            mode.windowed = true;
-            mode.name = fmt::sprintf("Windowed %d x %d", mode.w, mode.h);
-
-            mode.sortid = 0x40000000 | (checkmodes[i][0] & 0x7FFF) << 7 | (checkmodes[i][1] & 0x7FFF);
-
-            AddGfxMode(mode);
-        }
-    }
-
-    graphicsModes.sort(GfxMode::Compare);
-
-    cursors[0] = wrapLoadCursor("Pointer");
-    cursors[1] = wrapLoadCursor("Cancel");
-    cursors[2] = wrapLoadCursor("Select");
-    cursors[3] = wrapLoadCursor("Attack");
-    cursors[4] = wrapLoadCursor("Goto");
-    cursors[5] = wrapLoadCursor("Disk");
-    cursors[6] = wrapLoadCursor("New");
-    cursors[7] = wrapLoadCursor("Add");
-    cursors[8] = wrapLoadCursor("Control");
-    cursors[9] = wrapLoadCursor("Beam");
-    cursors[10] = wrapLoadCursor("Build");
-}
-
 ScreenFont::ScreenFont()
 {
     ttfFont = NULL;
@@ -209,8 +56,6 @@ ScreenFont::ScreenFont()
 
 NC_STACK_win3d::NC_STACK_win3d()
 {
-    _screenSurface = NULL;
-    _currentCursor = 0;
     _forcesoftcursor = 0;
     _movie_player = 0;
     _field_38 = 0;
@@ -218,7 +63,6 @@ NC_STACK_win3d::NC_STACK_win3d()
     _use_simple_d3d = 0;
     _disable_lowres = 0;
     _export_window_mode = 0;
-    _sort_id = 0;
     _flags = 0;
 
     _pending.clear();
@@ -347,7 +191,7 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                     }
                 }
 
-                SDL_SetClipRect(_screenSurface, &clipRect);
+                SDL_SetClipRect(GFX::Engine.Screen(), &clipRect);
 
 
                 int v10 = ((p4 - _font.height) / 2) - 2 + p2;
@@ -382,7 +226,7 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 want.x = p1 + 2;
                 want.y = v10 + 1;
 
-                SDL_BlitSurface(tmp, NULL, _screenSurface, &want);
+                SDL_BlitSurface(tmp, NULL, GFX::Engine.Screen(), &want);
 
                 clr.a = 255;
                 clr.r = _font.r;
@@ -405,11 +249,11 @@ void NC_STACK_win3d::DrawTextEntry(const ScreenText *txt)
                 want.x = p1 + 1;
                 want.y = v10;
 
-                SDL_BlitSurface(tmp, NULL, _screenSurface, &want);
+                SDL_BlitSurface(tmp, NULL, GFX::Engine.Screen(), &want);
                 SDL_FreeSurface(tmp);
 
 
-                SDL_SetClipRect(_screenSurface, NULL);
+                SDL_SetClipRect(GFX::Engine.Screen(), NULL);
             }
         }
     }
@@ -491,11 +335,11 @@ void NC_STACK_win3d::initPixelFormats()
 
     SDL_DisplayMode curr;
     SDL_GetCurrentDisplayMode(0, &curr);
-    curr.format = SDLWRAP_CorrectFormat(curr.format);
+    curr.format = GFX::Engine.CorrectSurfaceFormat(curr.format);
 
     _pixfmt = SDL_AllocFormat( curr.format );
 
-    SDLWRAP_GL_mapFormat(curr.format, &_glPixfmt, &_glPixtype);
+    GFX::Engine.GLMapFormat(curr.format, &_glPixfmt, &_glPixtype);
 }
 
 void NC_STACK_win3d::initPolyEngine()
@@ -561,210 +405,11 @@ void NC_STACK_win3d::initPolyEngine()
 }
 
 
-GfxMode sub_41F68C()
-{
-    for (const GfxMode &m : graphicsModes)
-    {
-        if (m.w == 640 && m.h == 480)
-            return m;
-    }
-
-    return graphicsModes.front();
-}
-
-GfxMode windd_func0__sub0(const std::string &file)
-{
-    FSMgr::FileHandle *fil = uaOpenFile(file, "r");
-
-    if ( fil )
-    {
-        std::string line;
-        if ( fil->ReadLine(&line) )
-        {
-            size_t pos = line.find_first_of("\n\r");
-            
-            if (pos != std::string::npos)
-                line.erase(pos);
-
-            for (const GfxMode &m : graphicsModes)
-            {
-                if ( StriCmp(m.name, line) == 0 )
-                    return m;
-            }
-        }
-        delete fil;
-    }
-
-    return sub_41F68C();
-}
-
-uint32_t cursPix(uint8_t *data, int ofs, int bpp)
-{
-    switch (bpp)
-    {
-    case 1:
-        return (data[ofs / 8] >> (7 - ofs % 8)) & 1;
-    case 2:
-        return (data[ofs / 4] >> ((3 - ofs % 4) << 1)) & 3;
-    case 4:
-        return (data[ofs / 2] >> ((1 - ofs % 2) << 2)) & 15;
-    case 8:
-        return data[ofs];
-    case 16:
-        return data[2 * ofs] | data[2 * ofs + 1] << 8;
-    case 24:
-        return data[3 * ofs] | data[3 * ofs + 1] << 8 | data[ 3 * ofs + 2] << 16;
-    case 32:
-        return data[4 * ofs] | data[4 * ofs + 1] << 8 | data[4 * ofs + 2] << 16 | data[4 * ofs + 3] << 24;
-    }
-
-    return 0;
-}
-
-SDL_Cursor *NC_STACK_win3d::wrapLoadCursor(const char *name)
-{
-    std::string cur = "res/";
-    cur += name;
-    cur += ".cur";
-
-    FSMgr::FileHandle *fil = uaOpenFile(cur.c_str(), "rb");
-
-    UA_PALETTE pal;
-
-    if (!fil)
-        return NULL;
-
-    fil->readU16L();
-    if (fil->readU16L() != 2)
-    {
-        delete fil;
-        return NULL;
-    }
-
-    fil->readU16L(); //count
-
-    //Only first entry
-    fil->readU8(); //w
-    fil->readU8(); //h
-    fil->readU8(); //color count
-    fil->readU8(); //reserved
-    int hotX = fil->readU16L();
-    int hotY = fil->readU16L();
-    fil->readU32L(); //size
-    int off = fil->readU32L();
-
-    //seek to cursor
-    fil->seek(off, SEEK_SET);
-
-    //read InfoHeader
-    fil->readU32L(); //header size
-    int bmpw = fil->readS32L();
-    int bmph = fil->readS32L();
-    fil->readU16L(); //planes
-    int bitcount = fil->readU16L();
-    fil->readU32L(); //compression
-    fil->readU32L(); //imagesize
-    fil->readU32L(); //XpixelsPerM
-    fil->readU32L(); //YpixelsPerM
-    int clrused = fil->readU32L(); //ColorsUsed
-    fil->readU32L(); //ColorsImportant
-
-    // read pallete
-    int palcnt = 0;
-    if (clrused == 0 || bitcount < 16)
-    {
-        palcnt = clrused != 0 ? clrused : 1 << bitcount;
-
-        for (int i = 0; i < palcnt; i++)
-        {
-            pal[i].r = fil->readU8();
-            pal[i].g = fil->readU8();
-            pal[i].b = fil->readU8();
-            fil->readU8(); //reserved
-        }
-    }
-
-    int width = bmpw;
-    int height = abs(bmph)/2;
-
-    int imgsz = height * width * bitcount / 8;
-    int mask_size = height * width / 8;
-
-    uint8_t *data = (uint8_t *)malloc(imgsz);
-    uint8_t *mask = (uint8_t *)malloc(mask_size);
-
-    fil->read(data, imgsz);
-    fil->read(mask, mask_size);
-
-    delete fil;
 
 
-    SDL_Surface *cursr = SDL_CreateRGBSurface(0, width, height, 32, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
 
-    for (int y = 0; y < height; y++)
-    {
-        int invY = height - 1 - y;
-        uint8_t *row = (uint8_t *)cursr->pixels + y * cursr->pitch;
 
-        for (int x = 0; x < width; x++)
-        {
-            if (palcnt > 0)
-            {
-                int idx = cursPix(data, invY * width + x, bitcount);
-                int alph = cursPix(mask, invY * width + x, 1);
-                row[x * 4 + 0] = pal[ idx ].r;
-                row[x * 4 + 1] = pal[ idx ].g;
-                row[x * 4 + 2] = pal[ idx ].b;
-                row[x * 4 + 3] = (1 - alph) * 255;
-            }
-            else
-            {
-                uint32_t clr = cursPix(data, invY * width + x, bitcount);
-                int alph = cursPix(mask, invY * width + x, 1);
-                row[x * 4 + 0] = clr & 0xFF;
-                row[x * 4 + 1] = (clr >> 8) & 0xFF;
-                row[x * 4 + 2] = (clr >> 16) & 0xFF;
-                row[x * 4 + 3] = (1 - alph) * 255;
-            }
-        }
-    }
 
-    free(data);
-    free(mask);
-
-    SDL_Cursor* cursor = SDL_CreateColorCursor(cursr, hotX, hotY);
-
-    SDL_FreeSurface(cursr);
-
-    return cursor;
-}
-
-void NC_STACK_win3d::sub_42D410(int curID, int force)
-{
-    int sett = 0;
-
-    if ( force )
-        sett = 1;
-    else if ( curID != _currentCursor )
-        sett = 1;
-
-    if ( sett )
-    {
-        if ( curID == 0 )
-            SDL_ShowCursor(SDL_DISABLE);
-        else if ( curID <= 11 )
-        {
-            if ( cursors[curID - 1] )
-                SDL_SetCursor( cursors[curID - 1] );
-
-            if (!_currentCursor)
-                SDL_ShowCursor(SDL_ENABLE);
-        }
-
-    }
-
-    _currentCursor = curID;
-}
 
 
 int NC_STACK_win3d::LoadFontByDescr(const std::string &fontname)
@@ -855,54 +500,18 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
         break;
     }
 
-
-    int v7 = stak.Get<int32_t>(ATT_DISPLAY_ID, 0);
-
-    GfxMode picked;
-    if ( v7 )
-    {
-        for (const GfxMode &m : graphicsModes)
-        {
-            if ( m.sortid == v7 )
-            {
-                picked = m;
-                break;
-            }
-        }
-
-        if ( !picked )
-            picked = sub_41F68C();
-    }
-    else
-    {
-        picked = windd_func0__sub0("env/vid.def");
-    }
-
-    log_d3dlog(" picked mode %s\n", picked.name.c_str());
-
-    stak.Add(ATT_WIDTH, (int32_t)picked.w);
-    stak.Add(ATT_HEIGHT, (int32_t)picked.h);
+    //log_d3dlog(" picked mode %s\n", picked.name.c_str());
 
     if ( !NC_STACK_display::func0(stak) )
         return 0;
 
     _forcesoftcursor = 0;
-    _sort_id = picked.sortid;
     _movie_player = win3d_keys[9].Get<bool>();
     _disable_lowres = win3d_keys[12].Get<bool>();
     _txt16bit = txt16bit_def;
     _use_simple_d3d = drawprim_def;
 
     _solidFont = win3d_keys[15].Get<bool>();
-
-    _windowed = picked.windowed; ////HACK
-
-    if ( picked.windowed )
-        _flags |= 1;
-
-    _mode = picked.mode;
-
-    _currentCursor = -1;
 
     switch( win3d_keys[16].Get<int>() )
     {
@@ -926,13 +535,6 @@ size_t NC_STACK_win3d::windd_func0(IDVList &stak)
     fpsLimitter(win3d_keys[17].Get<int>());
 
     LoadFontByDescr("MS Sans Serif,12,400,0");
-
-    FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
-    if ( fil )
-    {
-        fil->printf("%s\n", picked.name.c_str());
-        delete fil;
-    }
 
     //win3d->field_54______rsrc_field4 = (bitmap_intern *)getRsrc_pData();
     return 1;
@@ -972,18 +574,7 @@ size_t NC_STACK_win3d::func0(IDVList &stak)
 }
 
 void NC_STACK_win3d::ApplyResolution()
-{
-    if (!_windowed)
-        SDLWRAP_setFullscreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &_mode);
-    else
-        SDLWRAP_setFullscreen(0, NULL);
-    
-    SDL_Delay(250);
-
-    SDLWRAP_resizeWindow(_width, _height);
-    
-    _screenSurface = System::Screen();
-    
+{        
     if ( (float)_width / (float)_height >= 1.4 )
     {
         int half = (_width + _height) / 2;
@@ -1006,15 +597,13 @@ void NC_STACK_win3d::ApplyResolution()
 bool NC_STACK_win3d::ChangeResolution(Common::Point res, bool windowed)
 {    
     NC_STACK_display::ChangeResolution(res, windowed);
-    
-    _windowed = windowed;
-    
+        
     ApplyResolution();
     
     return true;
 }
 
-bool NC_STACK_win3d::ChangeResolution(int32_t mode)
+/*bool NC_STACK_win3d::ChangeResolution(int32_t mode)
 {
     GfxMode picked;
     if ( mode )
@@ -1041,7 +630,7 @@ bool NC_STACK_win3d::ChangeResolution(int32_t mode)
     
     ChangeResolution(Common::Point(picked.w, picked.h), picked.windowed);
     return true;
-}
+}*/
 
 size_t NC_STACK_win3d::func1()
 {
@@ -1056,9 +645,6 @@ size_t NC_STACK_win3d::func1()
         TTF_CloseFont(_font.ttfFont);
         _font.ttfFont = NULL;
     }
-
-    if (_windowed)
-        SDLWRAP_restoreWindow();
 
     return NC_STACK_display::func1();
 }
@@ -1079,7 +665,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
     int x1 = (arg->x1 + 1.0) * tX;
     int x2 = (arg->x2 + 1.0) * tX;
 
-    System::DrawLine(_screenSurface,
+    GFX::Engine.DrawLine(GFX::Engine.Screen(),
                       Common::Rect(x1, y1, x2, y2),
                       (_field_4 >> 16) & 0xFF,
                       (_field_4 >> 8) & 0xFF,
@@ -1090,7 +676,7 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 
 size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
 {
-    System::DrawLine(_screenSurface,
+    GFX::Engine.DrawLine(GFX::Engine.Screen(),
                       Common::Rect(_field_54c + arg->x1, _field_550 + arg->y1,
                                    _field_54c + arg->x2, _field_550 + arg->y2),
                       (_field_4 >> 16) & 0xFF,
@@ -1111,7 +697,7 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
 
         if ( _inverseClip.IsEmpty() || !Common::ClipLine(_inverseClip, &tmp2) )
         {
-            System::DrawLine(_screenSurface, tmp1, r, g, b);
+            GFX::Engine.DrawLine(GFX::Engine.Screen(), tmp1, r, g, b);
         }
         else
         {
@@ -1119,17 +705,17 @@ void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8
             {
                 if ( tmp2.left != tmp1.left || tmp2.top != tmp1.top )
                 {
-                    System::DrawLine(_screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
-                    System::DrawLine(_screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
                 else
                 {
-                    System::DrawLine(_screenSurface, Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
                 }
             }
             else
             {
-                System::DrawLine(_screenSurface, Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
             }
         }
     }
@@ -1192,7 +778,7 @@ size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
     dst.w = a7 - a5;
     dst.h = a8 - a6;
     
-    SDL_BlitScaled(pbitm->swTex, &src, _screenSurface, &dst);
+    SDL_BlitScaled(pbitm->swTex, &src, GFX::Engine.Screen(), &dst);
     
     return 1;
 }
@@ -1280,7 +866,7 @@ size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
         dst.w = loc.dword20 - loc.dword18;
         dst.h = loc.dword24 - loc.dword1C;
 
-        SDL_BlitScaled(loc.pbitm->swTex, &src, _screenSurface, &dst);
+        SDL_BlitScaled(loc.pbitm->swTex, &src, GFX::Engine.Screen(), &dst);
     }
 
 
@@ -1621,10 +1207,10 @@ void NC_STACK_win3d::win3d_func209__sub0(char *cmdline, char **arr)
 {
     int v11;
 
-    int bytesPerColor = _screenSurface->format->BytesPerPixel;
+    int bytesPerColor = GFX::Engine.Screen()->format->BytesPerPixel;
 
     char *curpos = cmdline;
-    int w_pixels = _screenSurface->pitch / bytesPerColor;
+    int w_pixels = GFX::Engine.Screen()->pitch / bytesPerColor;
     TileMap *tile = NULL;
 
     int x_out = 0;
@@ -1692,7 +1278,7 @@ void NC_STACK_win3d::win3d_func209__sub0(char *cmdline, char **arr)
             
             for(int i = 0; i < cpy_width; i += srcR.w)
             {
-                SDL_BlitSurface(tile->img->GetSwTex(), &srcR, _screenSurface, &dstR);
+                SDL_BlitSurface(tile->img->GetSwTex(), &srcR, GFX::Engine.Screen(), &dstR);
                 dstR.x += srcR.w;
             }                
 
@@ -1939,47 +1525,18 @@ void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
                         (arg->rect2.x2 + 1.0) * _field_554,
                         (arg->rect2.y2 + 1.0) * _field_558 );
 
-    System::BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, _screenSurface, dRect);
+    GFX::Engine.BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, GFX::Engine.Screen(), dRect);
 }
 
-size_t NC_STACK_win3d::display_func256(windd_arg256 *inout)
-{
-    auto it = graphicsModes.begin();
-
-    if ( inout->sort_id )
-    {
-        while (it != graphicsModes.end())
-        {
-            if ( it->sortid == inout->sort_id )
-                break;
-            
-            it++;
-        }
-
-    }
-
-    if ( it == graphicsModes.end() )
-        return 0;
-
-    inout->sort_id = it->sortid;
-    inout->width = it->w;
-    inout->height = it->h;
-
-    strncpy(inout->name, it->name.c_str(), 32);
-
-    it++;
-    
-    if (it != graphicsModes.end())
-        return it->sortid;
-    
-    return 0;
-}
 
 
 void NC_STACK_win3d::BeginFrame()
 {
-    SDL_FillRect(_screenSurface, NULL, SDL_MapRGBA(_screenSurface->format, 0, 0, 0, 0) );
-
+    SDL_FillRect(GFX::Engine.Screen(), NULL, SDL_MapRGBA(GFX::Engine.Screen()->format, 0, 0, 0, 0) );
+    
+    Common::Point scrSz = System::GetResolution();
+    glViewport(0, 0, scrSz.x, scrSz.y);
+    
     glPushAttrib(GL_DEPTH_WRITEMASK);
     glDepthMask(GL_TRUE);
 
@@ -1991,11 +1548,11 @@ void NC_STACK_win3d::BeginFrame()
 
 void NC_STACK_win3d::EndFrame()
 {
-    Gui::Root::Instance.Draw(System::Screen());
-    SDLWRAP_drawScreen();
+    Gui::Root::Instance.Draw(GFX::Engine.RealScreen());
+    GFX::Engine.DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
     
-    SDLWRAP_flipWindow();
+    System::Flip();
 }
 
 
@@ -2043,13 +1600,6 @@ void NC_STACK_win3d::display_func262(rstr_262_arg *arg)
 {
     win3d_func262__sub0(arg->cnt, arg->slot, arg->weight);
     NC_STACK_display::display_func262(arg);
-}
-
-
-void NC_STACK_win3d::display_func263(displ_arg263 *arg)
-{
-    sub_42D410(arg->pointer_id, 0);
-    NC_STACK_display::display_func263(arg);
 }
 
 bool NC_STACK_win3d::AllocTexture(ResBitmap *bitm)
@@ -2120,7 +1670,7 @@ void win3d_func274__sub0(FSMgr::FileHandle *fil)
 {
     int bf_w = 0, bf_h = 0;
 
-    uint8_t *buf = SDLWRAP_makeScreenCopy(bf_w, bf_h);
+    uint8_t *buf = GFX::Engine.MakeScreenCopy(&bf_w, &bf_h);
 
     if (buf && bf_w && bf_h)
     {
@@ -2282,11 +1832,6 @@ void NC_STACK_win3d::setWDD_drawPrim(int arg)
 
 
 
-int NC_STACK_win3d::getDISP_displID()
-{
-    return _sort_id;
-}
-
 int NC_STACK_win3d::getWDD_16bitTex()
 {
     return _txt16bit;
@@ -2306,11 +1851,11 @@ void NC_STACK_win3d::setW3D_texFilt(int arg)
 
 void NC_STACK_win3d::draw2DandFlush()
 {
-    Gui::Root::Instance.Draw(System::Screen());
-    SDLWRAP_drawScreen();
+    Gui::Root::Instance.Draw(GFX::Engine.RealScreen());
+    GFX::Engine.DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
 
-    SDL_FillRect(_screenSurface, NULL, SDL_MapRGBA(_screenSurface->format, 0, 0, 0, 0) );
+    SDL_FillRect(GFX::Engine.Screen(), NULL, SDL_MapRGBA(GFX::Engine.Screen()->format, 0, 0, 0, 0) );
 }
 
 void NC_STACK_win3d::matrixAspectCorrection(mat3x3 &inout, bool invert)
@@ -2428,7 +1973,7 @@ void NC_STACK_win3d::ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bo
 
 SDL_PixelFormat *NC_STACK_win3d::GetScreenFormat()
 {
-    return _screenSurface->format;
+    return GFX::Engine.Screen()->format;
 }
 
 SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
@@ -2443,7 +1988,7 @@ SDL_Surface *NC_STACK_win3d::CreateSurfaceScreenFormat(int width, int height)
 
 SDL_Surface *NC_STACK_win3d::ConvertToScreenFormat(SDL_Surface *src)
 {
-    return ConvertSDLSurface(src, _screenSurface->format);
+    return ConvertSDLSurface(src, GFX::Engine.Screen()->format);
 }
 
 SDL_Surface * NC_STACK_win3d::ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt)

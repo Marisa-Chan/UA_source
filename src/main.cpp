@@ -1,8 +1,8 @@
 #define GLOBAL
-#include "fsmgr.h"
-#include "wrapSDL.h"
+#include "system/fsmgr.h"
+#include "system/system.h"
 #include "includes.h"
-#include "engine_gfx.h"
+#include "system/gfx.h"
 #include "bitmap.h"
 #include "display.h"
 #include "win3d.h"
@@ -13,8 +13,7 @@
 
 #include "button.h"
 
-#include "engine_gfx.h"
-#include "engine_input.h"
+#include "system/inpt.h"
 
 #include "gui/widget.h"
 #include "gui/uawidgets.h"
@@ -27,7 +26,6 @@ int dword_51362C = 0;
 int dword_513630 = 0;
 std::string buildDate;
 
-int gfx_inited = 0;
 int tform_inited = 0;
 int audio_inited = 0;
 int input_inited = 0;
@@ -465,9 +463,9 @@ int sb_0x411324()
 
     // If mouse captured, enable releative mouse control
     if (ypaworld->_mouseGrabbed)
-        SDLWRAP_releativeMouse(true);
+        System::SetReleativeMouse(true);
     else
-        SDLWRAP_releativeMouse(false);
+        System::SetReleativeMouse(false);
     
     Gui::Root::Instance.TimersUpdate( input_states.Period );
 
@@ -518,8 +516,6 @@ void deinit_globl_engines()
         INPe.deinit();
     if ( audio_inited )
         SFXEngine::SFXe.deinit();
-    if ( gfx_inited )
-        GFXEngine::GFXe.deinit();
 
     sb_0x411c08();
 }
@@ -562,7 +558,6 @@ int WinMain__sub0__sub0()
     add_to_params_list("input.button[22] = winp:joyb6");
     add_to_params_list("input.button[23] = winp:joyb7");
 
-    gfx_inited = GFXEngine::GFXe.init();
     audio_inited = SFXEngine::SFXe.init();
     input_inited = INPe.init();
     tform_inited = TFEngine::Engine.init();
@@ -574,12 +569,6 @@ int WinMain__sub0__sub0()
         return 0;
     }
 
-    if ( !gfx_inited )
-    {
-        sub_412038("Couldn't open gfx engine!");
-        deinit_globl_engines();
-        return 0;
-    }
     if ( !tform_inited )
     {
         sub_412038("Couldn't open tform engine!");
@@ -785,6 +774,7 @@ int main(int argc, char *argv[])
     
     FSMgr::iDir::setBaseDir("");
     System::Init();
+    GFX::Engine.Init();
     
     Gui::UA::Init();
 
@@ -802,7 +792,7 @@ int main(int argc, char *argv[])
     ypaworld->CreateNewGuiElements();
     
     
-     
+    //Gui::Root::Instance.AddPortal( Common::Point(640, 480), Common::Rect(0, 0, 300, 300));
     
     // New gui test windows
     /*Gui::UAWindow *smpl = new Gui::UAWindow("Test1", Common::PointRect(100, 100, 200, 300), 
@@ -812,19 +802,24 @@ int main(int argc, char *argv[])
     smpl->SetEnable(true);
     smpl->SetAlpha(190);
 
-    Gui::Root::Instance.AddWidget(smpl);*/    
+    Gui::Root::Instance.AddWidget(smpl);   
     
-   /* Gui::UAWindow *smpl2 = new Gui::UAWindow("Test2", Common::PointRect(115, 120, 50, 60), 
+    Gui::UAWindow *smpl2 = new Gui::UAWindow("Test2", Common::PointRect(0, 0, 50, 60), 
         Gui::UAWindow::FLAG_WND_RESIZEABLE | 
         Gui::UAWindow::FLAG_WND_VSCROLL | 
         Gui::UAWindow::FLAG_WND_CLOSE |
         Gui::UAWindow::FLAG_WND_HELP | 
         Gui::UAWindow::FLAG_WND_MAXM |
         Gui::UAWindow::FLAG_WND_HSCROLL);
-    smpl2->SetEnable(true);
-    smpl2->SetAlpha(190);
+    smpl2->SetEnable(true);*/
+    //smpl2->SetAlpha(190);
     
-    smpl->AddChild(smpl2);*/
+    //scl->MoveTo(100, 100);
+    //scl->ResizeWH(300, 360);
+    
+    //Gui::Root::Instance.AddWidgetPortal(0, smpl2);  
+    //Gui::Root::Instance.AddWidget(smpl2);  
+    //smpl->AddChild(smpl2);
     
    
     

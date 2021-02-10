@@ -17,7 +17,7 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
-#include "fsmgr.h"
+#include "system/fsmgr.h"
 
 class waldev;
 

@@ -1,7 +1,7 @@
 #include <inttypes.h>
 #include "includes.h"
 #include "nucleas.h"
-#include "engine_input.h"
+#include "system/inpt.h"
 #include "winp.h"
 #include "utils.h"
 #include "log.h"
@@ -272,88 +272,24 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
     case SDL_MOUSEBUTTONDOWN:
     {
-        Common::Point corrPos = System::MousePosNorm(Common::Point(event->button.x, event->button.y));
-        if ( !Gui::Root::Instance.MouseDown(corrPos, event->button.button) )
-        {
-            if (event->button.button == SDL_BUTTON_LEFT)
-            {
-                _mLstate = true;
-                _mLDpos = corrPos;
-
-                _mLDcnt++;
-
-                KeyDown(Input::KC_LMB);
-            }
-            else if (event->button.button == SDL_BUTTON_RIGHT)
-            {
-                _mRstate = true;
-                _mRDpos = corrPos;
-
-                _mRDcnt++;
-
-                KeyDown(Input::KC_RMB);
-            }
-            else if (event->button.button == SDL_BUTTON_MIDDLE)
-            {
-                _mMstate = true;
-                _mMDpos = corrPos;
-
-                _mMDcnt++;
-
-                KeyDown(Input::KC_MMB);
-            }
-        }
+        Common::Point pos = Common::Point(event->button.x, event->button.y);
+        Gui::Root::Instance.MouseDown(pos, event->button.button, event->button.clicks);
     }
     break;
 
     case SDL_MOUSEBUTTONUP:
     {
-        Common::Point corrPos = System::MousePosNorm(Common::Point(event->button.x, event->button.y));
-        if ( !Gui::Root::Instance.MouseUp(corrPos, event->button.button) )
-        {
-            if (event->button.button == SDL_BUTTON_LEFT)
-            {
-                _mLstate = false;
-                _mLUpos = corrPos;
-
-                _mLUcnt++;
-
-                KeyUp(Input::KC_LMB);
-
-                if ((event->button.clicks & 1) == 0)
-                    _mDBLstate = true;
-            }
-            else if (event->button.button == SDL_BUTTON_RIGHT)
-            {
-                _mRstate = false;
-                _mRUpos = corrPos;
-
-                _mRUcnt++;
-
-                KeyUp(Input::KC_RMB);
-            }
-            else if (event->button.button == SDL_BUTTON_MIDDLE)
-            {
-                _mMstate = false;
-                _mMUpos = corrPos;
-
-                _mMUcnt++;
-
-                KeyUp(Input::KC_MMB);
-            }
-        }
+        Common::Point pos = Common::Point(event->button.x, event->button.y);
+        Gui::Root::Instance.MouseUp(pos, event->button.button, event->button.clicks);
     }
     break;
 
     case SDL_MOUSEMOTION:
     {
-        Common::Point corrPos = System::MousePosNorm(Common::Point(event->button.x, event->button.y));
-        if ( !Gui::Root::Instance.MouseMove(corrPos) )
-        {
-            _mPos = corrPos;
-            _mMoveQuery = Common::Point(event->motion.xrel, event->motion.yrel);
-            
-        }
+        Common::Point pos = Common::Point(event->button.x, event->button.y);
+        Common::Point rel = Common::Point(event->motion.xrel, event->motion.yrel);
+        if ( !Gui::Root::Instance.MouseMove(pos, rel) )
+            OnMouseMove(pos, rel);
     }
     break;
 
@@ -365,6 +301,78 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 }
 
 
+void NC_STACK_winp::OnMouseDown(Common::Point pos, int btn, int clkNum)
+{
+    if (btn == Gui::MICE_LEFT)
+    {
+        _mLstate = true;
+        _mLDpos = pos;
+
+        _mLDcnt++;
+
+        KeyDown(Input::KC_LMB);
+    }
+    else if (btn == Gui::MICE_RIGHT)
+    {
+        _mRstate = true;
+        _mRDpos = pos;
+
+        _mRDcnt++;
+
+        KeyDown(Input::KC_RMB);
+    }
+    else if (btn == Gui::MICE_MIDDLE)
+    {
+        _mMstate = true;
+        _mMDpos = pos;
+
+        _mMDcnt++;
+
+        KeyDown(Input::KC_MMB);
+    }
+}
+
+
+void NC_STACK_winp::OnMouseUp(Common::Point pos, int btn, int clkNum)
+{
+    if (btn == Gui::MICE_LEFT)
+    {
+        _mLstate = false;
+        _mLUpos = pos;
+
+        _mLUcnt++;
+
+        KeyUp(Input::KC_LMB);
+
+        if ((clkNum & 1) == 0)
+            _mDBLstate = true;
+    }
+    else if (btn == Gui::MICE_RIGHT)
+    {
+        _mRstate = false;
+        _mRUpos = pos;
+
+        _mRUcnt++;
+
+        KeyUp(Input::KC_RMB);
+    }
+    else if (btn == Gui::MICE_MIDDLE)
+    {
+        _mMstate = false;
+        _mMUpos = pos;
+
+        _mMUcnt++;
+
+        KeyUp(Input::KC_MMB);
+    }
+}
+
+
+void NC_STACK_winp::OnMouseMove(Common::Point pos, Common::Point rel)
+{
+    _mPos = pos;
+    _mMoveQuery = rel;
+}
 
 
 size_t NC_STACK_winp::func0(IDVList &stak)

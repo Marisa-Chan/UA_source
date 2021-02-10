@@ -185,7 +185,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 //xyz field_1ab8;
 
     memset(pointers, 0, sizeof(pointers));
-    memset(pointers__bitm, 0, sizeof(pointers__bitm));
 
     field_1b1c = 0;
     field_1b20 = 0; // saved mouse x
@@ -610,8 +609,8 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
         return 0;
     }
 
-    screen_width = GFXEngine::GFXe.getScreenW();
-    screen_height = GFXEngine::GFXe.getScreenH();
+    screen_width = GFX::Engine.GetScreenW();
+    screen_height = GFX::Engine.GetScreenH();
 
     _unitsList.clear();
     field_17a0.clear();
@@ -755,7 +754,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     {
         uint32_t v92 = profiler_begin();
 
-        _win3d = GFXEngine::GFXe.getC3D();
+        _win3d = GFX::Engine.C3D();
 
         field_7626 = 0;
         b64_parms = arg;
@@ -3101,7 +3100,7 @@ void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
 
 bool NC_STACK_ypaworld::GameShellInitBkg()
 {
-    NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_display *win3d = GFX::Engine.C3D();
 
     ua_dRect v5;
     v5.x1 = -(screen_width >> 1);
@@ -3157,7 +3156,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         return 0;
     }
 
-    _win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFX::Engine.C3D();
 
     if ( !_win3d )
     {
@@ -3170,7 +3169,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     v233.bitm = pointers__bitm[0];
     v233.pointer_id = 1;
 
-    _win3d->display_func263(&v233);
+    GFX::Engine.SetCursor(v233.pointer_id, 0);
 
     fill_videmodes_list(usr);
 
@@ -5247,7 +5246,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             int v284 = ((dword_5A50B6 - 3 * word_5A50C0) * 0.25 - 3 * word_5A50C0) * 0.25;
 
-            TileMap *v198 = GFXEngine::GFXe.getTileset(8);
+            TileMap *v198 = GFX::Engine.GetTileset(8);
 
             btn_64arg.tileset_down = 16;
             btn_64arg.tileset_up = 16;
@@ -5896,7 +5895,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 //Make screenshot
 void sub_4476AC(NC_STACK_ypaworld *yw)
 {
-    NC_STACK_win3d *w3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_win3d *w3d = GFX::Engine.C3D();
 
     w3d->SaveScreenshot(fmt::sprintf("env:snaps/f_%04d", yw->field_2424));
     
@@ -5924,7 +5923,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     SFXEngine::SFXe.sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
 
-    _win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFX::Engine.C3D();
 
     _win3d->BeginFrame();
 
@@ -6158,7 +6157,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     recorder *repl = replayer;
     uint32_t v33 = profiler_begin();
 
-    _win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFX::Engine.C3D();
 
     b64_parms = arg;
     field_161c++;
@@ -6494,7 +6493,7 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 
     if ( v19 || load_lang_lng(this, lang_name) )
     {
-        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
         const char *v11 = NULL;
 
@@ -7183,11 +7182,9 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 {
     UserData *usr = GameShell;
 
-    NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
-
     int current_resolution;
 
-    current_resolution = win3d->getDISP_displID();
+    current_resolution = GFX::Engine.GetGfxMode();
 
     if ( arg->resolution == current_resolution && !arg->make_changes )
         return 1;
@@ -7204,19 +7201,19 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         v6 = 0;
     }
 
-    GFXEngine::GFXe.setResolution( arg->resolution );
+    GFX::Engine.SetResolution( arg->resolution );
 
-    screen_width = GFXEngine::GFXe.getScreenW();
-    screen_height = GFXEngine::GFXe.getScreenH();
+    screen_width = GFX::Engine.GetScreenW();
+    screen_height = GFX::Engine.GetScreenH();
 
     if ( v6 && !ypaworld_func156(usr))
     {
         ypa_log_out("Warning: Unable to open GameShell with mode %d\n", arg->resolution);
 
-        GFXEngine::GFXe.setResolution( usr->p_ypaworld->shell_default_res );
+        GFX::Engine.SetResolution( usr->p_ypaworld->shell_default_res );
 
-        screen_width = GFXEngine::GFXe.getScreenW();
-        screen_height = GFXEngine::GFXe.getScreenH();
+        screen_width = GFX::Engine.GetScreenW();
+        screen_height = GFX::Engine.GetScreenH();
 
         if ( !ypaworld_func156(usr) )
         {
@@ -7224,7 +7221,7 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         }
     }
 
-    win3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
     if ( usr->GFX_flags & 4 )
     {

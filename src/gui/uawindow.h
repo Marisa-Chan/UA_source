@@ -30,9 +30,9 @@ public:
     
     virtual void Draw(SDL_Surface *surface, const Common::Rect &dirt);
     
-    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button);
-    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button);
-    virtual void MouseMove(Common::Point pos, Common::Point scrPos, int button);
+    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
+    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
+    virtual void MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int button);
     virtual void Resize(Common::Point sz);    
 
 protected:

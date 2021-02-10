@@ -4,8 +4,8 @@
 #include <deque>
 #include <list>
 #include "nucleas.h"
-#include "engine_tform.h"
-#include "engine_input.h"
+#include "system/gfx.h"
+#include "system/inpt.h"
 #include "skeleton.h"
 #include "ade.h"
 
@@ -20,7 +20,6 @@ typedef std::list<NC_STACK_base *> BaseList;
 
 struct polysDat
 {
-    void (*render_func)(void *);
     int32_t range;
     polysDatSub datSub;
 };

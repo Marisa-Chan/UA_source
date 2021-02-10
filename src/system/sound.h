@@ -2,9 +2,9 @@
 #define ENGINE_MILES_H_INCLUDED
 
 #include <array>
-#include "engine_tform.h"
-#include "sample.h"
-#include "wrapal.h"
+#include "gfx.h"
+#include "../sample.h"
+#include "../wrapal.h"
 
 #define AUDIO_CHANNELS   16
 

@@ -2,7 +2,7 @@
 #define BITMAP_H_INCLUDED
 
 #include "rsrc.h"
-#include "engine_gfx.h"
+#include "system/gfx.h"
 
 struct pixel_2d
 {

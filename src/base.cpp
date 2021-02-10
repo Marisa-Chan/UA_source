@@ -5,18 +5,17 @@
 #include "nucleas.h"
 
 #include "utils.h"
-#include "engine_input.h"
+#include "system/inpt.h"
 
 #include "bitmap.h"
 #include "display.h"
 #include "win3d.h"
 #include "base.h"
-#include "engine_tform.h"
 #include "skeleton.h"
 #include "ade.h"
 #include "embed.h"
 
-#include "engine_gfx.h"
+#include "system/gfx.h"
 
 const Nucleus::ClassDescr NC_STACK_base::description("base.class", &newinstance);
 RenderStack NC_STACK_base::renderStack;
@@ -124,10 +123,7 @@ void RenderStack::render(bool sorting, tCompare _func, bool Clear)
     }
 
     for(std::deque<polysDat *>::iterator it = que.begin(); it != qEnd; it++)
-    {
-        polysDat *pol = *it;
-        pol->render_func( pol );
-    }
+        GFX::Engine.C3D()->raster_func206( *it );
 
     if (Clear)
         clear();
@@ -659,7 +655,7 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
     arg->field_10 += renderStack.getSize();
 
     NC_STACK_win3d *win3d;
-    win3d = GFXEngine::GFXe.getC3D();
+    win3d = GFX::Engine.C3D();
 
 
     win3d->BeginFrame();

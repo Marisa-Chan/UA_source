@@ -2,8 +2,8 @@
 #define ENGINE_INPUT_H_INCLUDED
 
 #include <vector>
-#include "utils.h"
-#include "common.h"
+#include "../utils.h"
+#include "../common.h"
 
 class NC_STACK_input;
 

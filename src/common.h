@@ -31,7 +31,7 @@ struct PointRect;
 template <typename T>
 struct TPoint
 {
-    typedef TPoint<T> __Point;
+    typedef TPoint<T> __Point;    
     T x;
     T y;
 

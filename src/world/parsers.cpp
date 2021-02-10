@@ -3295,7 +3295,7 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 {
     if ( !StriCmp(p1, "end") )
     {
-        NC_STACK_win3d *win3d = GFXEngine::GFXe.getC3D();
+        NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
         if ( win3d )
         {

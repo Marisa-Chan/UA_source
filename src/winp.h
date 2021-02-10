@@ -62,11 +62,16 @@ public:
     };
     static void initfirst();
     
+    static void OnMouseDown(Common::Point pos, int btn, int clkNum);
+    static void OnMouseUp(Common::Point pos, int btn, int clkNum);
+    static void OnMouseMove(Common::Point pos, Common::Point rel);
+    
 protected:
     static void CheckJoy();
     static void KeyDown(int16_t vk);
     static void KeyUp(int16_t vk);
     static int InputWatch(void *, SDL_Event *event);
+    
     static SDL_JoystickGUID sdlReadJoyGuid();
     static bool sdlGUIDcmp(SDL_JoystickGUID &gd1, SDL_JoystickGUID &gd2);
     static int sdlJoyAxis(SDL_Joystick* joystick, int axis);

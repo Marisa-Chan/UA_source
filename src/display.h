@@ -1,7 +1,7 @@
 #ifndef DISPLAY_H_INCLUDED
 #define DISPLAY_H_INCLUDED
 
-#include "engine_gfx.h"
+#include "system/gfx.h"
 #include "common.h"
 #include "base.h"
 
@@ -123,14 +123,6 @@ struct displ_arg263
     int pointer_id;
 };
 
-struct windd_arg256
-{
-    int sort_id;
-    int width;
-    int height;
-    char name[32];
-};
-
 class NC_STACK_display: public NC_STACK_nucleus
 {
 protected:
@@ -167,16 +159,13 @@ public:
     virtual size_t raster_func219(IDVPair *);
     virtual size_t raster_func220(IDVPair *);
     virtual void raster_func221(ua_dRect *arg);
-    virtual size_t display_func256(windd_arg256 *inout) {
-        return 0;
-    };
+
     virtual void BeginFrame() {};
     virtual void EndFrame() {};
 
     virtual void display_func261(int ID, UA_PALETTE &pal, int from, int num);
     virtual void display_func261(int ID, UA_PALETTE &pal);
     virtual void display_func262(rstr_262_arg *arg);
-    virtual void display_func263(displ_arg263 *arg);
 //    virtual void display_func264(void *);
 //    virtual void display_func265(void *);
     virtual bool AllocTexture(ResBitmap *pbitm);
@@ -208,7 +197,8 @@ public:
         ATT_HEIGHT      = 0x80001006,
         ATT_PALETTE     = 0x80001007,
         ATT_DISPLAY_ID  = 0x80001008,
-        ATT_DISPLAY_INF = 0x80001009
+        ATT_DISPLAY_INF = 0x80001009,
+        ATT_DISPLAY_WIN = 0x8000100A,
     };
 
     enum RFLAGS

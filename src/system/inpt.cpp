@@ -1,6 +1,8 @@
-#include "includes.h"
-#include "engine_input.h"
-#include "input.h"
+#include "../common.h"
+#include "../ini.h"
+#include "../log.h"
+#include "inpt.h"
+#include "../input.h"
 
 INPEngine INPe;
 

@@ -214,61 +214,61 @@ int NC_STACK_ypaworld::load_fonts_and_icons()
             return 0;
         }
 
-        GFXEngine::GFXe.setTileset(tiles[i], i);
+        GFX::Engine.SetTileset(tiles[i], i);
     }
 
 
     tiles[40] = yw_LoadTileSet("lego16.ilbm", Common::Point(16, 16), Common::Point(16, 16), Common::Point(16, 16), Common::Point());
     if ( !tiles[40] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[40], 40);
+    GFX::Engine.SetTileset(tiles[40], 40);
 
     tiles[41] = yw_LoadTileSet("lego8.ilbm", Common::Point(8, 8), Common::Point(8, 8), Common::Point(16, 16), Common::Point());
     if ( !tiles[41] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[41], 41);
+    GFX::Engine.SetTileset(tiles[41], 41);
 
     tiles[42] = yw_LoadTileSet("lego4.ilbm", Common::Point(4, 4), Common::Point(4, 4), Common::Point(16, 16), Common::Point());
     if ( !tiles[42] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[42], 42);
+    GFX::Engine.SetTileset(tiles[42], 42);
 
     tiles[43] = yw_LoadTileSet("sec4.ilbm", Common::Point(4, 4), Common::Point(4, 4), Common::Point(16, 16), Common::Point());
     if ( !tiles[43] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[43], 43);
+    GFX::Engine.SetTileset(tiles[43], 43);
 
     tiles[44] = yw_LoadTileSet("sec8.ilbm", Common::Point(8, 8), Common::Point(8, 8), Common::Point(16, 16), Common::Point());
     if ( !tiles[44] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[44], 44);
+    GFX::Engine.SetTileset(tiles[44], 44);
     
     
     
     tiles[50] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(4, 4), Common::Point(4, 0), Common::Point(9, 1), Common::Point(504, 64));
     if ( !tiles[50] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[50], 50);
+    GFX::Engine.SetTileset(tiles[50], 50);
     
     tiles[51] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(8, 8), Common::Point(8, 0), Common::Point(9, 1), Common::Point(432, 64));
     if ( !tiles[51] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[51], 51);
+    GFX::Engine.SetTileset(tiles[51], 51);
     
     tiles[52] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(16, 16), Common::Point(16, 0), Common::Point(9, 1), Common::Point(288, 64));
     if ( !tiles[52] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[52], 52);
+    GFX::Engine.SetTileset(tiles[52], 52);
     
     tiles[53] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(32, 32), Common::Point(32, 0), Common::Point(9, 1), Common::Point(0, 64));
     if ( !tiles[53] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[53], 53);
+    GFX::Engine.SetTileset(tiles[53], 53);
     
     tiles[54] = yw_LoadTileSet("mapmisc.ilbm", Common::Point(64, 64), Common::Point(64, 0), Common::Point(9, 1), Common::Point(0, 0));
     if ( !tiles[54] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[54], 54);
+    GFX::Engine.SetTileset(tiles[54], 54);
 
     for (int i = 50; i < 55; i++)
     {
@@ -283,22 +283,22 @@ int NC_STACK_ypaworld::load_fonts_and_icons()
     tiles[59] = yw_LoadFont("mapvhcl3.font");
     if ( !tiles[59] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[59], 59);
+    GFX::Engine.SetTileset(tiles[59], 59);
 
     tiles[60] = yw_LoadFont("mapvhcl5.font");
     if ( !tiles[60] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[60], 60);
+    GFX::Engine.SetTileset(tiles[60], 60);
 
     tiles[61] = yw_LoadFont("mapvhcl7.font");
     if ( !tiles[61] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[61], 61);
+    GFX::Engine.SetTileset(tiles[61], 61);
 
     tiles[62] = yw_LoadFont("mapvhcl9.font");
     if ( !tiles[62] )
         return 0;
-    GFXEngine::GFXe.setTileset(tiles[62], 62);
+    GFX::Engine.SetTileset(tiles[62], 62);
 
     font_default_h = tiles[0]->h;
     font_default_w__a = tiles[0]->map[97].w; // a
@@ -1234,11 +1234,11 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
 
     arg_263.bitm = 0;
     arg_263.pointer_id = 0;
-    yw->_win3d->display_func263(&arg_263);
+    GFX::Engine.SetCursor(arg_263.pointer_id, 0);
 
     arg_263.bitm = yw->pointers__bitm[0];
     arg_263.pointer_id = 1;
-    yw->_win3d->display_func263(&arg_263);
+    GFX::Engine.SetCursor(arg_263.pointer_id, 0);
 
     set_prefix_replacement("rsrc", oldRsrc);
     return 1;
@@ -1246,7 +1246,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
 
 int NC_STACK_ypaworld::yw_LoadSet(int setID)
 {
-    _win3d = GFXEngine::GFXe.getC3D();
+    _win3d = GFX::Engine.C3D();
     _mouseGrabbed = 0;
 
     std::string oldRsrc = get_prefix_replacement("rsrc");
@@ -1276,7 +1276,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
 
     set_prefix_replacement("rsrc", newRsrc);
 
-    if ( !GFXEngine::GFXe.loadPal("palette/standard.pal") )
+    if ( !GFX::Engine.LoadPalette("palette/standard.pal") )
         ypa_log_out("WARNING: Could not load set default palette!\n");
 
     if ( setID != set_number && setID != 46 )
@@ -1374,8 +1374,8 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
         return 0;
     }
 
-    GFXEngine::GFXe.setTracyRmp( tracyrmp_ilbm->GetResBmp() );
-    GFXEngine::GFXe.setShadeRmp( shadermp_ilbm->GetResBmp() );
+    GFX::Engine.SetTracyRmp( tracyrmp_ilbm->GetResBmp() );
+    GFX::Engine.SetShadeRmp( shadermp_ilbm->GetResBmp() );
 
     additionalBeeBox = NC_STACK_base::READ_BAS_FILE("rsrc:objects/beebox.base");
     if ( !additionalBeeBox )
@@ -1517,7 +1517,7 @@ void sb_0x4ea37c(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_display *win3d = GFX::Engine.C3D();
 
     win3d->display_func272(NULL);
 }
@@ -2416,7 +2416,7 @@ void ypaworld_func158__video_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v16;
     v16 = usr->video_listvw.cmdstrm;
 
-    GFXEngine::GFXe.drawText(&v16);
+    GFX::Engine.DrawText(&v16);
 }
 
 void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
@@ -2474,7 +2474,7 @@ void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v16;
     v16 = usr->d3d_listvw.cmdstrm;
 
-    GFXEngine::GFXe.drawText(&v16);
+    GFX::Engine.DrawText(&v16);
 }
 
 char * sub_4DDF78(NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
@@ -2756,7 +2756,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
             case UserData::NETSCREEN_CHOOSE_MAP:
             {
-                TileMap *tiles = GFXEngine::GFXe.getTileset(8);
+                TileMap *tiles = GFX::Engine.GetTileset(8);
 
                 items[0].txt = connTp;
                 items[0].width = tiles->map[80].w;
@@ -2863,7 +2863,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     FontUA::set_end(&cmd);
 
     w3d_a209 txt = usr->network_listvw.cmdstrm;
-    GFXEngine::GFXe.drawText(&txt);
+    GFX::Engine.DrawText(&txt);
 }
 
 void ypaworld_func158__locale_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
@@ -2905,7 +2905,7 @@ void ypaworld_func158__locale_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 v13;
     v13 = usr->local_listvw.cmdstrm;
 
-    GFXEngine::GFXe.drawText(&v13);
+    GFX::Engine.DrawText(&v13);
 }
 
 void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
@@ -3009,7 +3009,7 @@ void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     w3d_a209 arg;
     arg = usr->disk_listvw.cmdstrm;
 
-    GFXEngine::GFXe.drawText(&arg);
+    GFX::Engine.DrawText(&arg);
 }
 
 void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
@@ -3027,7 +3027,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
 
     int v6 = h;
 
-    TileMap *v7 = GFXEngine::GFXe.getTileset(0);
+    TileMap *v7 = GFX::Engine.GetTileset(0);
 
     while ( v6 > v7->h )
     {
@@ -3070,7 +3070,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
     a1a.cmdbuf = buf;
     a1a.includ = NULL;
 
-    GFXEngine::GFXe.drawText(&a1a);
+    GFX::Engine.DrawText(&a1a);
 }
 
 void ypaworld_func158__confirm_draw(UserData *usr)
@@ -3161,7 +3161,8 @@ void sb_0x44ac24__sub0(NC_STACK_ypaworld *yw)
         displ_arg263 v5;
         v5.bitm = 0;
         v5.pointer_id = 0;
-        yw->_win3d->display_func263(&v5);
+        
+        GFX::Engine.SetCursor(v5.pointer_id, 0);
     }
 
     for (int i = 0; i < 11; i++)
@@ -3233,7 +3234,7 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d = GFXEngine::GFXe.getC3D();
+    NC_STACK_display *win3d = GFX::Engine.C3D();
 
     win3d->display_func272(NULL);
 

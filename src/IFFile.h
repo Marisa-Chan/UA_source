@@ -2,7 +2,7 @@
 #define IFFile_H_INCLUDED
 
 #include <list>
-#include "fsmgr.h"
+#include "system/fsmgr.h"
 
 class IFFile
 {

@@ -6,7 +6,7 @@
 #include <SDL2/SDL.h>
 
 #include "../common.h"
-#include "../engine_gfx.h"
+#include "../system/gfx.h"
 
 #include "widget.h"
 

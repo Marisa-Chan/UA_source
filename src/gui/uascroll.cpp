@@ -126,7 +126,7 @@ void UAScroll::Draw(SDL_Surface *surface, const Common::Rect &dirt)
     }
 }
     
-void UAScroll::MouseDown(Common::Point pos, Common::Point scrPos, int button)
+void UAScroll::MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum)
 {
     _lastPos = pos;
     
@@ -155,7 +155,7 @@ void UAScroll::MouseDown(Common::Point pos, Common::Point scrPos, int button)
     }
 }
 
-void UAScroll::MouseUp(Common::Point pos, Common::Point scrPos, int button)
+void UAScroll::MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum)
 {
     _lastPos = pos;
     
@@ -181,7 +181,7 @@ void UAScroll::MouseUp(Common::Point pos, Common::Point scrPos, int button)
     }
 }
 
-void UAScroll::MouseMove(Common::Point pos, Common::Point scrPos, int button)
+void UAScroll::MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int button)
 {
     _lastPos = pos;
     

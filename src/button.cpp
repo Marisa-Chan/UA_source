@@ -3,8 +3,8 @@
 #include "nucleas.h"
 #include "button.h"
 #include "utils.h"
-#include "engine_gfx.h"
-#include "engine_input.h"
+#include "system/gfx.h"
+#include "system/inpt.h"
 
 #include "font.h"
 
@@ -77,8 +77,8 @@ size_t NC_STACK_button::func0(IDVList &stak)
 
     if ( w > 0 && h > 0 )
     {
-        screen_width = GFXEngine::GFXe.getScreenW();
-        screen_height = GFXEngine::GFXe.getScreenH();
+        screen_width = GFX::Engine.GetScreenW();
+        screen_height = GFX::Engine.GetScreenH();
     }
     else
     {
@@ -231,7 +231,7 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     if ( sbt.button_type == TYPE_CAPTION )
         bt.h = 0;
     else
-        bt.h = GFXEngine::GFXe.getTileset( arg->tileset_up )->h;
+        bt.h = GFX::Engine.GetTileset( arg->tileset_up )->h;
 
     idd++;
 
@@ -294,7 +294,7 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
         if ( field_d8[id].button_type != TYPE_CAPTION )
         {
             buttons[id].w = field_d8[id].width;
-            buttons[id].h = GFXEngine::GFXe.getTileset( field_d8[id].tileset_down )->h;
+            buttons[id].h = GFX::Engine.GetTileset( field_d8[id].tileset_down )->h;
         }
 
         field_d8[id].flags &= ~FLAG_DISABLED;
@@ -546,7 +546,7 @@ void NC_STACK_button::button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt
         v6 = sbt->tileset_down;
     }
 
-    TileMap *v7 = GFXEngine::GFXe.getTileset(v6);
+    TileMap *v7 = GFX::Engine.GetTileset(v6);
 
 
     char *v8 = *pbuf;
@@ -639,7 +639,7 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
         v7 = sbt->tileset_up;
     }
 
-    TileMap *v8 = GFXEngine::GFXe.getTileset(v7);
+    TileMap *v8 = GFX::Engine.GetTileset(v7);
 
     int strwdth = 0;
 
@@ -779,7 +779,7 @@ size_t NC_STACK_button::button_func70(void *)
         arg209.cmdbuf = button_tmpbuf;
         arg209.includ = NULL;
 
-        GFXEngine::GFXe.drawText(&arg209);
+        GFX::Engine.DrawText(&arg209);
     }
 
     return 1;

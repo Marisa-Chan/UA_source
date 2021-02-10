@@ -2,10 +2,9 @@
 #include "MC.h"
 #include "nucleas.h"
 
-#include "engine_gfx.h"
-#include "engine_miles.h"
-#include "engine_tform.h"
-#include "engine_input.h"
+#include "system/gfx.h"
+#include "system/sound.h"
+#include "system/inpt.h"
 
 #include "rsrc.h"
 #include "bitmap.h"
@@ -57,11 +56,6 @@
 
 int set_classes_list()
 {
-    engines.__AllocCount = 0;
-    engines.__AllocSize = 0;
-    engines.__AllocMax = 0;
-    engines.file_handles = 0;
-
     Nucleus::ClassList::Instance.push_back(NC_STACK_nucleus::description);
     Nucleus::ClassList::Instance.push_back(NC_STACK_rsrc::description);
     Nucleus::ClassList::Instance.push_back(NC_STACK_bitmap::description);
@@ -102,21 +96,12 @@ int set_classes_list()
     return 1;
 }
 
-void sb_0x411c08__sub0()
-{
-    ypa_log_out("Nucleus shutdown:\n");
-    ypa_log_out("    __AllocCount = %d\n", engines.__AllocCount);
-    ypa_log_out("    __AllocSize  = %d\n", engines.__AllocSize);
-    ypa_log_out("    __AllocMax   = %d\n", engines.__AllocMax);
-    ypa_log_out("    __FOpenCount = %d\n", engines.file_handles);
-}
-
 void sb_0x411c08()
 {
     engines.kvPairs.clear();
 
 
-    sb_0x411c08__sub0();
+    ypa_log_out("Nucleus shutdown:\n");
 }
 
 

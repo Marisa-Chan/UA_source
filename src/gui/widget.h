@@ -16,6 +16,7 @@ class Root;
 class Widget
 {
 friend class Root;
+friend class OldCompat;
 
 public:
 enum
@@ -96,9 +97,9 @@ public:
     
     void ToFront();
 
-    virtual void MouseMove(Common::Point pos, Common::Point scrPos, int buttons);
-    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button);
-    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button);
+    virtual void MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int buttons);
+    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
+    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
     virtual void MouseEnter();
     virtual void MouseLeave();
     virtual void Draw(SDL_Surface *surface, const Common::Rect &dirt) {};
@@ -113,7 +114,7 @@ public:
     virtual Common::Point GetSpace() const;
     
     
-    void SetAlpha(uint8_t a) 
+    virtual void SetAlpha(uint8_t a) 
     { 
         _alpha = a; 
     };

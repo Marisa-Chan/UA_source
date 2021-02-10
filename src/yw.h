@@ -8,9 +8,9 @@
 #include "types.h"
 #include "memstream.h"
 
-#include "engine_gfx.h"
-#include "engine_input.h"
-#include "engine_miles.h"
+#include "system/gfx.h"
+#include "system/inpt.h"
+#include "system/sound.h"
 #include "bitmap.h"
 #include "ilbm.h"
 #include "display.h"
@@ -1527,7 +1527,7 @@ struct rgbiColor
     
     operator SDL_Color()
     {
-        return GFX::Color(r, g, b, 255);
+        return GFX::Engine.Color(r, g, b, 255);
     }
 };
 

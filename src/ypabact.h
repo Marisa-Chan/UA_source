@@ -2,7 +2,7 @@
 #define YBACT_H_INCLUDED
 
 #include "nucleas.h"
-#include "engine_tform.h"
+#include "system/gfx.h"
 #include "base.h"
 #include "listnode.h"
 #include "types.h"

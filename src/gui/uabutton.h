@@ -26,9 +26,9 @@ public:
     void UnsetBtnFlags(int flags) { _btnFlags &= ~flags; }
     void AsignBtnFlags(int flags) { _btnFlags = flags; }
     
-    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button);
-    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button);
-    virtual void MouseMove(Common::Point pos, Common::Point scrPos, int button);
+    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
+    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
+    virtual void MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int button);
     
 protected:
     virtual void OnBtnPress();
