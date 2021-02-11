@@ -108,12 +108,6 @@ bool ClipLine(const Rect &clip, Rect *line)
 }
 
 
-Rect::operator PointRect() const
-{
-    return PointRect(left, top, Width(), Height());
-}
-
-
 BitMan::BitMan(std::initializer_list<uint32_t> bits)
 {
     Set(bits);

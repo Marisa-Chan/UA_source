@@ -25,8 +25,13 @@ template<typename T> inline T MIN(T a, T b)	{ return (a < b) ? a : b; }
 template<typename T> inline T MAX(T a, T b)	{ return (a > b) ? a : b; }
 
 
-struct Rect;
-struct PointRect;
+template <typename T> struct TPoint;
+template <typename T> struct TRect;
+template <typename T> struct TPointRect;
+
+typedef TPoint<int> Point;
+typedef TRect<int> Rect;
+typedef TPointRect<int> PointRect;
 
 template <typename T>
 struct TPoint
@@ -73,20 +78,21 @@ struct TPoint
     }
 };
 
-typedef TPoint<int> Point;
 
-struct Rect
+
+template <typename T>
+struct TRect
 {
-    int left;
-    int top;
-    int right;
-    int bottom;
+    T left;
+    T top;
+    T right;
+    T bottom;
 
-    Rect() : left(0), top(0), right(0), bottom(0) {};
-    Rect(int w, int h) : left(0), top(0), right(w), bottom(h) {};
-    Rect(Point p) : left(0), top(0), right(p.x), bottom(p.y) {};
-    Rect(int x1, int y1, int x2, int y2) : left(x1), top(y1), right(x2), bottom(y2) {};
-    Rect(const SDL_Rect &r) : left(r.x), top(r.y), right(r.x + r.w), bottom(r.y + r.h) {};
+    TRect() : left(0), top(0), right(0), bottom(0) {};
+    TRect(T w, T h) : left(0), top(0), right(w), bottom(h) {};
+    TRect(TPoint<T> p) : left(0), top(0), right(p.x), bottom(p.y) {};
+    TRect(T x1, T y1, T x2, T y2) : left(x1), top(y1), right(x2), bottom(y2) {};
+    TRect(const SDL_Rect &r) : left(r.x), top(r.y), right(r.x + r.w), bottom(r.y + r.h) {};
 
     bool IsValid() const {
             return (left <= right && top <= bottom);
@@ -96,28 +102,28 @@ struct Rect
             return (left >= right || top >= bottom);
     }
 
-    int Width() const { return right - left; }
-    int Height() const { return bottom - top; }
+    T Width() const { return right - left; }
+    T Height() const { return bottom - top; }
 
-    void SetWidth(int Width) {
+    void SetWidth(T Width) {
         right = left + Width;
     }
 
-    void SetHeight(int Height) {
+    void SetHeight(T Height) {
         bottom = top + Height;
     }
 
-    void SetSize(Point sz) {
+    void SetSize(TPoint<T> sz) {
         right = left + sz.x;
         bottom = top + sz.y;
     }
     
-    void SetSize(int x, int y) {
+    void SetSize(T x, T y) {
         right = left + x;
         bottom = top + y;
     }
 
-    bool IsIn(int x, int y) const {
+    bool IsIn(T x, T y) const {
         if( IsEmpty() )
             return false;
         
@@ -126,25 +132,25 @@ struct Rect
     bool IsIn(const Point &p) const {
             return IsIn(p.x, p.y);
     }
-    bool IsIn(const Rect &r) const {
+    bool IsIn(const TRect &r) const {
         if( IsEmpty() )
             return false;
         
         return (left <= r.left) && (right >= r.right) && (top <= r.top) && (bottom >= r.bottom);
     }
 
-    bool IsIntersects(const Rect &r) const {
+    bool IsIntersects(const TRect &r) const {
         return (left < r.right) && (r.left < right) && (top < r.bottom) && (r.top < bottom);
     }
 
-    Rect IntersectionRect(const Rect &r) const {
+    TRect IntersectionRect(const TRect &r) const {
         if (!IsIntersects(r))
-                return Rect();
+                return TRect();
 
-        return Rect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
+        return TRect(MAX(r.left, left), MAX(r.top, top), MIN(r.right, right), MIN(r.bottom, bottom));
     }
 
-    void ClipBy(const Rect &r) {
+    void ClipBy(const TRect &r) {
         if (top < r.top) top = r.top;
         else if (top > r.bottom) top = r.bottom;
 
@@ -159,26 +165,26 @@ struct Rect
     }
 
     void ClipBy(int maxw, int maxh) {
-        ClipBy(Rect(0, 0, maxw, maxh));
+        ClipBy(TRect(0, 0, maxw, maxh));
     }
 
-    void MoveTo(int x, int y) {
+    void MoveTo(T x, T y) {
         bottom += y - top;
         right += x - left;
         top = y;
         left = x;
     }
 
-    void MoveTo(const Point &p) {
+    void MoveTo(const TPoint<T> &p) {
         MoveTo(p.x, p.y);
     }
 
-    void Translate(int dx, int dy) {
+    void Translate(T dx, T dy) {
         left += dx; right += dx;
         top += dy; bottom += dy;
     }
 
-    void Translate(const Point &p) {
+    void Translate(const TPoint<T> &p) {
         left += p.x; right += p.x;
         top += p.y; bottom += p.y;
     }
@@ -188,17 +194,17 @@ struct Rect
         return !IsEmpty();
     }
 
-    Point Pos() const
+    TPoint<T> Pos() const
     {
-        return Point(left, top);
+        return TPoint<T>(left, top);
     }
 
-    Point Size() const
+    TPoint<T> Size() const
     {
-        return Point(Width(), Height());
+        return TPoint<T>(Width(), Height());
     }
     
-    operator PointRect() const;
+    operator TPointRect<T>() const;
     
     operator SDL_Rect() const
     {
@@ -212,79 +218,82 @@ struct Rect
 
 };
 
-struct PointRect
-{
-    int x;
-    int y;
-    int w;
-    int h;
 
-    PointRect() : x(0), y(0), w(0), h(0) {};
-    PointRect(int x1, int y1) : x(x1), y(y1), w(0), h(0) {};
-    PointRect(Point p) : x(p.x), y(p.y), w(0), h(0) {};
-    PointRect(Point p, int w_, int h_) : x(p.x), y(p.y), w(w_), h(h_) {};
-    PointRect(int x_, int y_, int w_, int h_) : x(x_), y(y_), w(w_), h(h_) {};
-    PointRect(const SDL_Rect &r) : x(r.x), y(r.y), w(r.w), h(r.h) {};
+
+template <typename T>
+struct TPointRect
+{
+    T x;
+    T y;
+    T w;
+    T h;
+
+    TPointRect() : x(0), y(0), w(0), h(0) {};
+    TPointRect(int x1, int y1) : x(x1), y(y1), w(0), h(0) {};
+    TPointRect(TPoint<T> p) : x(p.x), y(p.y), w(0), h(0) {};
+    TPointRect(TPoint<T> p, T w_, T h_) : x(p.x), y(p.y), w(w_), h(h_) {};
+    TPointRect(T x_, T y_, T w_, T h_) : x(x_), y(y_), w(w_), h(h_) {};
+    TPointRect(const SDL_Rect &r) : x(r.x), y(r.y), w(r.w), h(r.h) {};
     
-    int Right() const { return x + w; }
-    int Bottom() const { return y + h; }
+    T Right() const { return x + w; }
+    T Bottom() const { return y + h; }
     
     bool  operator==(const PointRect &p)    const { return x == p.x && y == p.y && w == p.w && h == p.h; }
     bool  operator!=(const PointRect &p)    const { return x != p.x || y != p.y || w != p.w || h != p.h; }
-    PointRect operator+(const Point &delta) const { return PointRect(x + delta.x, y + delta.y, w, h); }
-    PointRect operator-(const Point &delta) const { return PointRect(x - delta.x, y - delta.y, w, h); }
+    TPointRect operator+(const TPoint<T> &delta) const { return TPointRect(x + delta.x, y + delta.y, w, h); }
+    TPointRect operator-(const TPoint<T> &delta) const { return TPointRect(x - delta.x, y - delta.y, w, h); }
 
-    void operator+=(const Point &delta) {
+    void operator+=(const TPoint<T> &delta) {
             x += delta.x;
             y += delta.y;
     }
 
-    void operator-=(const Point &delta) {
+    void operator-=(const TPoint<T> &delta) {
             x -= delta.x;
             y -= delta.y;
     }
     
-    void MoveTo(int px, int py) {
+    void MoveTo(T px, T py) {
             x = px;
             y = py;
     }
 
-    void MoveTo(const Point &p) {
+    void MoveTo(const TPoint<T> &p) {
             MoveTo(p.x, p.y);
     }
 
-    void Translate(int dx, int dy) {
+    void Translate(T dx, T dy) {
             x += dx;
             y += dy;
     }
 
-    void Translate(const Point &p) {
+    void Translate(const TPoint<T> &p) {
             x += p.x;
             y += p.y;
     }
     
-    bool IsIn(int px, int py) const {
+    bool IsIn(T px, T py) const {
             return (px >= x) && (px < Right()) && (py >= y) && (py < Bottom());
     }
-    bool IsIn(const Point &p) const {
+    bool IsIn(const TPoint<T> &p) const {
             return IsIn(p.x, p.y);
     }
-    bool IsIn(const Rect &r) const {
+    bool IsIn(const TRect<T> &r) const {
             return (r.left >= x) && (r.right <= Right()) && (r.top >= y) && (r.bottom <= Bottom());
     }
-    bool IsIn(const PointRect &r) const {
+    bool IsIn(const TPointRect<T> &r) const {
             return (r.x >= x) && (r.Right() <= Right()) && (r.y >= y) && (r.Bottom() <= Bottom());
     }
 
-    bool IsIntersects(const Rect &r) const {
+    bool IsIntersects(const TRect<T> &r) const {
             return (x < r.right) && (Right() > r.left) && (y < r.bottom) && (Bottom() > r.top);
     }
     
-    bool IsIntersects(const PointRect &r) const {
+    bool IsIntersects(const TPointRect<T> &r) const {
             return (x < r.Right()) && (Right() > r.x) && (y < r.Bottom()) && (Bottom() > r.y);
     }
    
-    void ClipBy(const Rect &r) {
+    void ClipBy(const TRect<T> &r) {
             if (y < r.top) y = r.top;
             else if (y > r.bottom) y = r.bottom;
 
@@ -299,10 +308,10 @@ struct PointRect
     }
 
     void ClipBy(int maxw, int maxh) {
-            ClipBy(Rect(0, 0, maxw, maxh));
+            ClipBy(TRect<T>(0, 0, maxw, maxh));
     }
     
-    void ClipBy(const PointRect &r) {
+    void ClipBy(const TPointRect<T> &r) {
             if (y < r.y) y = r.y;
             else if (y > r.Bottom()) y = r.Bottom();
 
@@ -325,14 +334,14 @@ struct PointRect
             return (w >= 0 && h >= 0);
     }
     
-    Point Pos() const
+    TPoint<T> Pos() const
     {
-        return Point(x, y);
+        return TPoint<T>(x, y);
     }
 
-    Point Size() const
+    TPoint<T> Size() const
     {
-        return Point(w, h);
+        return TPoint<T>(w, h);
     }
     
     operator bool() const
@@ -340,14 +349,14 @@ struct PointRect
         return !IsEmpty();
     }
 
-    operator Point() const
+    operator TPoint<T>() const
     {
-        return Point(x, y);
+        return TPoint<T>(x, y);
     }
     
-    operator Rect() const
+    operator TRect<T>() const
     {
-        return Rect(x, y, x + w, y + h);
+        return TRect<T>(x, y, x + w, y + h);
     }
     
     operator SDL_Rect() const
@@ -361,6 +370,14 @@ struct PointRect
     }
 
 };
+
+template<typename T>
+TRect<T>::operator TPointRect<T>() const
+{
+    return TPointRect<T>(left, top, Width(), Height());
+}
+
+
 
 template <class T>
 class PlaneVector : protected std::vector<T>
