@@ -7837,3 +7837,8 @@ void NC_STACK_ypaworld::DeleteNewGuiElements()
     delete GameShell->_menuMsgBox;
     GameShell->_menuMsgBox = NULL;
 }
+
+SDL_Color NC_STACK_ypaworld::GetColor(int colorID)
+{
+    return iniColors.at(colorID);
+}

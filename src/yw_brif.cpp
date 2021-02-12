@@ -854,10 +854,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
                     v20.x2 = v21.x1;
                 }
 
-                yw->_win3d->raster_func217(0xA0A0);
+                yw->_win3d->raster_func217(GFX::Engine.Color(0, 160, 160));
                 yw->_win3d->raster_func198(v20);
 
-                yw->_win3d->raster_func217(0x4040);
+                yw->_win3d->raster_func217(GFX::Engine.Color(0, 64, 64));
                 yw->_win3d->raster_func198(v21);
             }
         }
@@ -1253,7 +1253,7 @@ void yw_DebriefConqSector(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
                 float a9 = v20 * v19;
                 float a10 = v21 * v19;
 
-                yw_RenderVector2D(yw, brf->VectorGfx[3]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10,  yw_GetColor(yw, arg->owner), NULL, NULL);
+                yw_RenderVector2D(yw, brf->VectorGfx[3]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10,  yw->GetColor(arg->owner), NULL, NULL);
             }
         }
     }
@@ -1301,7 +1301,7 @@ void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::Histo
             float a9 = ((v12 / (float)yw->_mapWidth) / 2.0) * v25;
             float a10 = ((v13 / (float)yw->_mapHeight) / 2.0) * v25;
 
-            yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, own), NULL, NULL);
+            yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw->GetColor(own), NULL, NULL);
         }
     }
 }
@@ -1329,7 +1329,7 @@ void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
             float a9 = ((v13 / (float)yw->_mapWidth) / 8.0) * v22;
             float a10 = ((v14 / (float)yw->_mapHeight) / 8.0) * v22;
 
-            yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw_GetColor(yw, arg->owner), NULL, NULL);
+            yw_RenderVector2D(yw, brf->VectorGfx[1]->GetSkelet(), a3a, a4a, 1.0, 0.0, 0.0, 1.0, a9, a10, yw->GetColor(arg->owner), NULL, NULL);
         }
     }
 }
@@ -1390,7 +1390,7 @@ void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
                     arg198_1.x2 = v23;
                     arg198_1.y2 = v21 + v16;
 
-                    yw->_win3d->raster_func217( yw_GetColor(yw, owner) );
+                    yw->_win3d->raster_func217( yw->GetColor(owner) );
                     yw->_win3d->raster_func198(arg198);
                     yw->_win3d->raster_func198(arg198_1);
                 }

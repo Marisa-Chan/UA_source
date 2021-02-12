@@ -667,9 +667,9 @@ size_t NC_STACK_win3d::raster_func198(const Common::FLine &arg)
 
     GFX::Engine.DrawLine(GFX::Engine.Screen(),
                       Common::Line(x1, y1, x2, y2),
-                      (_field_4 >> 16) & 0xFF,
-                      (_field_4 >> 8) & 0xFF,
-                       _field_4 & 0xFF);
+                      _field_4.r,
+                      _field_4.g,
+                      _field_4.b);
     return 1;
 }
 
@@ -679,9 +679,9 @@ size_t NC_STACK_win3d::raster_func199(const Common::Line &arg)
     GFX::Engine.DrawLine(GFX::Engine.Screen(),
                       Common::Line(_field_54c + arg.x1, _field_550 + arg.y1,
                                    _field_54c + arg.x2, _field_550 + arg.y2),
-                      (_field_4 >> 16) & 0xFF,
-                      (_field_4 >> 8) & 0xFF,
-                      _field_4 & 0xFF);
+                      _field_4.r,
+                      _field_4.g,
+                      _field_4.b );
 
     return 1;
 }
@@ -727,9 +727,9 @@ size_t NC_STACK_win3d::raster_func200(const Common::FLine &arg)
                             , (arg.y1 + 1.0) * tY
                             , (arg.x2 + 1.0) * tX
                             , (arg.y2 + 1.0) * tY),
-               (_field_4 >> 16) & 0xFF,
-               (_field_4 >> 8) & 0xFF,
-               _field_4 & 0xFF);
+                        _field_4.r,
+                        _field_4.g,
+                        _field_4.b);
 
     return 1;
 }
@@ -740,9 +740,9 @@ size_t NC_STACK_win3d::raster_func201(const Common::Line &l)
                             , _field_550 + l.y1
                             , _field_54c + l.x2
                             , _field_550 + l.y2),
-               (_field_4 >> 16) & 0xFF,
-               (_field_4 >> 8) & 0xFF,
-               _field_4 & 0xFF);
+                        _field_4.r,
+                        _field_4.g,
+                        _field_4.b );
 
     return 1;
 }

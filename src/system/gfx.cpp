@@ -1447,4 +1447,11 @@ SDL_Color GFXEngine::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     return tmp;
 }
 
+bool GFXEngine::ColorCmp(const SDL_Color &a, const SDL_Color &b)
+{
+    if (a.a != b.a || a.r != b.r || a.g != b.g || a.b != b.b)
+        return false;
+    return true;
+}
+
 }

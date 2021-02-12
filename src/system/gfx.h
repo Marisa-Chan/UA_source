@@ -370,6 +370,7 @@ public:
     static void Draw(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, Common::PointRect dRect);
     
     static SDL_Color Color(uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, uint8_t a = 255);
+    static bool ColorCmp(const SDL_Color &a, const SDL_Color &b);
     
 private:
     GFXEngine() {};

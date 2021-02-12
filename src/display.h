@@ -65,7 +65,7 @@ public:
     virtual size_t raster_func212(IDVPair *);
     virtual void BeginScene();
     virtual void EndScene();
-    virtual size_t raster_func217(uint32_t color);
+    virtual size_t raster_func217(SDL_Color color);
     virtual void raster_func218(rstr_218_arg *arg);
     virtual size_t raster_func219(IDVPair *);
     virtual size_t raster_func220(IDVPair *);
@@ -128,7 +128,7 @@ public:
     //Set
     virtual void SetPalette(UA_PALETTE &pal);
 
-    virtual void SetPen(uint32_t pen);
+    virtual void SetPen(SDL_Color pen);
     virtual void setRSTR_BGpen(uint32_t pen);
     virtual void setRSTR_shdRmp(ResBitmap *rmp);
     virtual void setRSTR_trcRmp(ResBitmap *rmp);
@@ -157,7 +157,7 @@ protected:
 public:
     static const Nucleus::ClassDescr description;
     
-    uint32_t _field_4 = 0; // Color?
+    SDL_Color _field_4 = {0}; // Color?
     Common::Rect _clip;
     Common::Rect _inverseClip;
     std::array<TileMap *, 256> _tiles;

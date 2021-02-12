@@ -192,10 +192,10 @@ void NC_STACK_display::EndScene()
 }
 
 
-size_t NC_STACK_display::raster_func217(uint32_t color)
+size_t NC_STACK_display::raster_func217(SDL_Color color)
 {
-    if ( color != 0xFFFFFFFF )
-        _field_4 = color;
+    //if ( !GFX::Engine.ColorCmp(color, GFX::Engine.Color(255, 255, 255, 255) ) )
+    _field_4 = color;
 
     return 0;
 }
@@ -322,7 +322,7 @@ void NC_STACK_display::SetPalette(UA_PALETTE &newPal)
 }
 
 
-void NC_STACK_display::SetPen(uint32_t pen)
+void NC_STACK_display::SetPen(SDL_Color pen)
 {
     _field_4 = pen;
 }

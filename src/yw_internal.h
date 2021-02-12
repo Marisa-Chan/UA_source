@@ -323,7 +323,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg);
 void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw);
 
 
-typedef void ( *wis_color_func)(NC_STACK_ypaworld *, float, float, float, float, uint32_t *, uint32_t *);
+typedef void ( *wis_color_func)(NC_STACK_ypaworld *, float, float, float, float, SDL_Color *, SDL_Color *);
 
 int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw);
@@ -384,8 +384,7 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw);
 void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 void deleteSplashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 
-void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
-uint32_t yw_GetColor(NC_STACK_ypaworld *yw, int color_id);
+void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, SDL_Color coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt);
 void sub_4D6958(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, samples_collection1 *collection);
 

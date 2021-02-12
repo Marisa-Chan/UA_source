@@ -128,10 +128,6 @@ void sub_481204(NC_STACK_ypaworld *yw, int a2, int a3)
     }
 }
 
-uint32_t yw_GetColor(NC_STACK_ypaworld *yw, int color_id)
-{
-    return yw->iniColors[color_id].color;
-}
 
 void NC_STACK_ypaworld::sb_0x4c87fc(const char *a2, GuiBase *lstvw)
 {
@@ -298,7 +294,7 @@ Common::Point sub_4F681C(Common::FPoint in)
                         , robo_map.field_204 + dround(-in.y / robo_map.field_1E4) - robo_map.field_1F4 );
 }
 
-void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, uint32_t a7)
+void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, SDL_Color a7)
 {
     displ->raster_func217(a7);
     displ->raster_func201( Common::Line( sub_4F681C({a3, a4}), sub_4F681C({a5, a6}) )  );
@@ -387,12 +383,12 @@ void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
 {
     if ( bact != yw->UserRobo && bact->_host_station != bact->_parent && bact->_parent )
     {
-        uint32_t clr;
+        SDL_Color clr;
         NC_STACK_ypabact *bct;
 
         if ( bact->_secndTtype == BACT_TGT_TYPE_UNIT )
         {
-            clr = yw_GetColor(yw, 10);
+            clr = yw->GetColor(10);
             bct = bact->_secndT.pbact;
         }
         else
@@ -400,7 +396,7 @@ void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
             if ( !bact->_parent )
                 return;
 
-            clr = yw_GetColor(yw, 11);
+            clr = yw->GetColor(11);
             bct = bact->_parent;
         }
 
@@ -412,30 +408,30 @@ void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
     {
         NC_STACK_ypabact *bct = bact->_secndT.pbact;
 
-        sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bct->_position.x, bct->_position.z,  yw_GetColor(yw, 10));
+        sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bct->_position.x, bct->_position.z,  yw->GetColor(10));
         return;
     }
 
     if ( bact->_secndTtype == BACT_TGT_TYPE_CELL )
     {
-        sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bact->_sencdTpos.x, bact->_sencdTpos.z, yw_GetColor(yw, 10));
+        sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bact->_sencdTpos.x, bact->_sencdTpos.z, yw->GetColor(10));
     }
     else
     {
         if ( bact->_primTtype == BACT_TGT_TYPE_CELL )
         {
-            sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bact->_primTpos.x, bact->_primTpos.z, yw_GetColor(yw, 9));
+            sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bact->_primTpos.x, bact->_primTpos.z, yw->GetColor(9));
         }
         else if ( bact->_primTtype == BACT_TGT_TYPE_UNIT )
         {
-            sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bact->_primT.pbact->_position.x, bact->_primT.pbact->_position.z, yw_GetColor(yw, 9));
+            sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, bact->_primT.pbact->_position.x, bact->_primT.pbact->_position.z, yw->GetColor(9));
         }
 
         if ( bact->_status_flg & BACT_STFLAG_WAYPOINT )
         {
             if ( bact->_status_flg & BACT_STFLAG_WAYPOINTCCL )
             {
-                uint32_t clr = yw_GetColor(yw, 9);
+                SDL_Color clr = yw->GetColor(9);
 
                 for (int i = 1; i < bact->_waypoints_count; i++)
                     sub_4F68FC(yw->_win3d, bact->_waypoints[i - 1].x, bact->_waypoints[i - 1].z, bact->_waypoints[i].x, bact->_waypoints[i].z, clr);
@@ -444,7 +440,7 @@ void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
             }
             else if ( bact->_waypoints_count > 0 )
             {
-                uint32_t clr = yw_GetColor(yw, 9);
+                SDL_Color clr = yw->GetColor(9);
 
                 for (int i = bact->_current_waypoint; i < bact->_waypoints_count - 1; i++)
                     sub_4F68FC(yw->_win3d, bact->_waypoints[i].x, bact->_waypoints[i].z, bact->_waypoints[i + 1].x, bact->_waypoints[i + 1].z, clr);
@@ -516,7 +512,7 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
                     float a5 = (v10 % yw->_mapWidth) * 1200.0 + 600.0;
                     float a6 = -((v10 / yw->_mapWidth) * 1200.0 + 600.0);
 
-                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, a5, a6, yw_GetColor(yw, i));
+                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, a5, a6, yw->GetColor(i));
                 }
             }
 
@@ -527,7 +523,7 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
                 float v28 = (robo->_roboBuildingCellID % yw->_mapWidth) * 1200.0 + 600.0;
 
                 if ( (yw->timeStamp / 300) & 1 )
-                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v28, v26, yw_GetColor(yw, 0));
+                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v28, v26, yw->GetColor(0));
             }
 
             if ( robo->_roboVehicleDuty )
@@ -537,7 +533,7 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 
                 if ( (yw->timeStamp / 300) & 1 )
                 {
-                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v22, v27, yw_GetColor(yw, 7));
+                    sub_4F68FC(yw->_win3d, bact->_position.x, bact->_position.z, v22, v27, yw->GetColor(7));
                 }
             }
         }
@@ -550,7 +546,7 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
     {
         if ( yw->UserRobo != yw->UserUnit && yw->UserUnit->_parent )
         {
-            sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, yw->UserUnit->_position.z, yw->UserUnit->_parent->_position.x, yw->UserUnit->_parent->_position.z, yw_GetColor(yw, 11));
+            sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, yw->UserUnit->_position.z, yw->UserUnit->_parent->_position.x, yw->UserUnit->_parent->_position.z, yw->GetColor(11));
 
             if ( yw->UserUnit->IsParentMyRobo() )
             {
@@ -571,7 +567,7 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
                 }
 
                 if ( v7 )
-                    sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, yw->UserUnit->_position.z, a5, a6, yw_GetColor(yw, 9));
+                    sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, yw->UserUnit->_position.z, a5, a6, yw->GetColor(9));
             }
         }
     }
@@ -606,8 +602,8 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
 
         if ( yw->UserUnit )
         {
-            sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, 0.0, yw->UserUnit->_position.x, -yw->map_Height_meters, yw_GetColor(yw, 13));
-            sub_4F68FC(yw->_win3d, 0.0, yw->UserUnit->_position.z, yw->map_Width_meters, yw->UserUnit->_position.z, yw_GetColor(yw, 13));
+            sub_4F68FC(yw->_win3d, yw->UserUnit->_position.x, 0.0, yw->UserUnit->_position.x, -yw->map_Height_meters, yw->GetColor(13));
+            sub_4F68FC(yw->_win3d, 0.0, yw->UserUnit->_position.z, yw->map_Width_meters, yw->UserUnit->_position.z, yw->GetColor(13));
         }
 
         if ( robo_map.field_1E8 & 0x200 )
@@ -615,7 +611,7 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
             int wh = yw->screen_width / 2;
             int hh = yw->screen_height / 2;
 
-            yw->_win3d->raster_func217( yw_GetColor(yw, 12) );
+            yw->_win3d->raster_func217( yw->GetColor(12) );
             
             yw->_win3d->raster_func201( {dword_516510 - wh,
                                          dword_516514 - hh,
@@ -1005,7 +1001,7 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
 
         if ( bact->_bact_type != BACT_TYPES_MISSLE && robo_map.field_1EE > 2 )
         {
-            uint32_t clr = yw_GetColor(yw, bact->_owner);
+            SDL_Color clr = yw->GetColor(bact->_owner);
 
             int v31 = 0;
             float v33, v35;
@@ -1032,7 +1028,7 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
 
                     v31 = 1;
 
-                    clr = yw_GetColor(yw, 13);
+                    clr = yw->GetColor(13);
                 }
                 else
                 {
@@ -1058,7 +1054,7 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
 
                 v31 = 1;
 
-                clr = yw_GetColor(yw, 13);
+                clr = yw->GetColor(13);
             }
             else
             {
@@ -8722,7 +8718,7 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
 
 
 
-void wis_color(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, uint32_t *out1, uint32_t *out2)
+void wis_color(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, SDL_Color *out1, SDL_Color *out2)
 {
     float v7 = yw->wis_skeletons.field_86 * 2.0 + -1.5;
 
@@ -8740,19 +8736,19 @@ void wis_color(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, ui
     int v10 = (yw->wis_skeletons.cl2_r - yw->wis_skeletons.cl1_r) * v8 + yw->wis_skeletons.cl1_r;
     int v11 = (yw->wis_skeletons.cl2_b - yw->wis_skeletons.cl1_b) * v8 + yw->wis_skeletons.cl1_b;
 
-    *out1 = ((v10 & 0xFF) << 16) | ((v9 & 0xFF) << 8) | (v11 & 0xFF);
+    *out1 = GFX::Engine.Color(v10, v9, v11);
 
     float v12 = 2.0 * v17;
     int v13 = (yw->wis_skeletons.cl2_g - yw->wis_skeletons.cl1_g) * v12 + yw->wis_skeletons.cl1_g;
     int v14 = (yw->wis_skeletons.cl2_r - yw->wis_skeletons.cl1_r) * v12 + yw->wis_skeletons.cl1_r;
     int v15 = (yw->wis_skeletons.cl2_b - yw->wis_skeletons.cl1_b) * v12 + yw->wis_skeletons.cl1_b;
-    *out2 = ((v13 & 0xFF) << 16) | ((v14 & 0xFF) << 8) | (v15 & 0xFF);
+    *out2 = GFX::Engine.Color(v13, v14, v15);
 }
 
 
 
 
-void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX, float posY, float m00, float m01, float m10, float m11, float scaleX, float scaleY, uint32_t coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection)
+void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX, float posY, float m00, float m01, float m10, float m11, float scaleX, float scaleY, SDL_Color coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection)
 {
     float CW = 1.0, CH = 1.0;
 
@@ -8786,8 +8782,8 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
 
                 if ( color_func )
                 {
-                    uint32_t v32 = coloooor;
-                    uint32_t v31 = coloooor;
+                    SDL_Color v32 = coloooor;
+                    SDL_Color v31 = coloooor;
 
                     color_func(yw,  v29.x1 - posX,   v29.y1 - posY,   v29.x2 - posX,   v29.y2 - posY, &v32, &v31);
 
@@ -8795,8 +8791,8 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
                 }
                 else if ( color_func2 )
                 {
-                    uint32_t v34 = coloooor;
-                    uint32_t v33 = coloooor;
+                    SDL_Color v34 = coloooor;
+                    SDL_Color v33 = coloooor;
 
                     color_func2(yw, v29.x1, v29.y1, v29.x2, v29.y2, &v34, &v33);
 
@@ -8812,8 +8808,8 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
 
 void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *vhcl, float a4, float a5, float a6)
 {
-    uint32_t color_25 = yw_GetColor(yw, 25);
-    uint32_t color_34 = yw_GetColor(yw, 34);
+    SDL_Color color_25 = yw->GetColor(25);
+    SDL_Color color_34 = yw->GetColor(34);
 
     UAskeleton::Data *wairufureimu = NULL;
 
@@ -8834,12 +8830,12 @@ void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *v
         if ( a6 < 1.4 )
             a9 = a6 * 0.1;
 
-        yw->wis_skeletons.cl1_r = (color_34 >> 16) & 0xFF;
-        yw->wis_skeletons.cl1_g = (color_34 >> 8) & 0xFF;
-        yw->wis_skeletons.cl1_b = color_34 & 0xFF;
-        yw->wis_skeletons.cl2_r = (color_25 >> 16) & 0xFF;
-        yw->wis_skeletons.cl2_b = color_25 & 0xFF;
-        yw->wis_skeletons.cl2_g = (color_25 >> 8) & 0xFF;
+        yw->wis_skeletons.cl1_r = color_34.r;
+        yw->wis_skeletons.cl1_g = color_34.g;
+        yw->wis_skeletons.cl1_b = color_34.b;
+        yw->wis_skeletons.cl2_r = color_25.r;
+        yw->wis_skeletons.cl2_b = color_25.b;
+        yw->wis_skeletons.cl2_g = color_25.g;
 
         yw_RenderVector2D(yw, wairufureimu, a4, a5, 1.0, 0.0, 0.0, 1.0, a9, v15, color_34, NULL, func, true);
     }
@@ -8993,8 +8989,8 @@ char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur,
 
     int v31 = yw->screen_width * wis->field_8A;
 
-    uint32_t v21 = yw_GetColor(yw, 25);
-    uint32_t a11 = yw_GetColor(yw, 34);
+    SDL_Color v21 = yw->GetColor(25);
+    SDL_Color a11 = yw->GetColor(34);
 
     wis_color_func a13;
 
@@ -9037,12 +9033,12 @@ char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur,
 
     if ( wis->sklts_intern[2] )
     {
-        yw->wis_skeletons.cl1_r = (a11 >> 16) & 0xFF;
-        yw->wis_skeletons.cl1_g = (a11 >> 8) & 0xFF;
-        yw->wis_skeletons.cl1_b = a11 & 0xFF;
-        yw->wis_skeletons.cl2_r = (v21 >> 16) & 0xFF;
-        yw->wis_skeletons.cl2_b = v21 & 0xFF;
-        yw->wis_skeletons.cl2_g = (v21 >> 8) & 0xFF;
+        yw->wis_skeletons.cl1_r = a11.r;
+        yw->wis_skeletons.cl1_g = a11.g;
+        yw->wis_skeletons.cl1_b = a11.b;
+        yw->wis_skeletons.cl2_r = v21.r;
+        yw->wis_skeletons.cl2_b = v21.b;
+        yw->wis_skeletons.cl2_g = v21.g;
 
         float a4 = (1.0 / (float)yw->screen_height) * 2.0 + ypos;
 
@@ -9073,15 +9069,15 @@ void yw_RenderInfoWeaponWire(NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wp
 
         if ( wairufureimu )
         {
-            uint32_t v9 = yw_GetColor(yw, 20);
-            uint32_t v10 = yw_GetColor(yw, 29);
+            SDL_Color v9 = yw->GetColor(20);
+            SDL_Color v10 = yw->GetColor(29);
 
-            yw->wis_skeletons.cl1_r = (v10 >> 16) & 0xFF;
-            yw->wis_skeletons.cl1_g = (v10 >> 8) & 0xFF;
-            yw->wis_skeletons.cl1_b = v10 & 0xFF;
-            yw->wis_skeletons.cl2_r = (v9 >> 16) & 0xFF;
-            yw->wis_skeletons.cl2_b = v9 & 0xFF;
-            yw->wis_skeletons.cl2_g = (v9 >> 8) & 0xFF;
+            yw->wis_skeletons.cl1_r = v10.r;
+            yw->wis_skeletons.cl1_g = v10.g;
+            yw->wis_skeletons.cl1_b = v10.b;
+            yw->wis_skeletons.cl2_r = v9.r;
+            yw->wis_skeletons.cl2_b = v9.b;
+            yw->wis_skeletons.cl2_g = v9.g;
 
             yw_RenderVector2D(yw, wairufureimu, xpos, ypos, 1.0, 0.0, 0.0, 1.0, 0.0415, 0.05, v10, NULL, func, true);
         }
@@ -9150,8 +9146,8 @@ char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
 char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, float ypos, NC_STACK_ypabact *bact, int vhclid, int flag)
 {
     char *pcur = cur;
-//  yw_GetColor(yw, 25);
-//  yw_GetColor(yw, 34);
+//  yw->GetColor(25);
+//  yw->GetColor(34);
     int v23 = 1;
     int v11 = 1;
     int v22 = 1;
@@ -9234,8 +9230,8 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
 char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float a4, float a5, int a6, int a7)
 {
     char *pcur = cur;
-    //yw_GetColor(yw, 25);
-    //yw_GetColor(yw, 34);
+    //yw->GetColor(25);
+    //yw->GetColor(34);
 
     if ( !(a7 & 0x10) || (yw->timeStamp - wis->field_76 - 200) / 180.0 > 0.0 )
     {
@@ -9320,7 +9316,7 @@ int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
 
 
 
-void wis_color2(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, uint32_t *out1, uint32_t *out2)
+void wis_color2(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, SDL_Color *out1, SDL_Color *out2)
 {
     float v7 = yw->wis_skeletons.field_86 * 6.28;
 
@@ -9345,16 +9341,13 @@ void wis_color2(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, u
     int v13 = (yw->wis_skeletons.cl2_r - yw->wis_skeletons.cl1_r) * v12 + yw->wis_skeletons.cl1_r;
     int v16 = (yw->wis_skeletons.cl2_b - yw->wis_skeletons.cl1_b) * v12 + yw->wis_skeletons.cl1_b;
     int v15 = (yw->wis_skeletons.cl2_g - yw->wis_skeletons.cl1_g) * v12 + yw->wis_skeletons.cl1_g;
-
-    *out1 = ((v13 & 0xFF) << 16) | ((v15 & 0xFF) << 8) | (v16 & 0xFF);
-
-
+    *out1 = GFX::Engine.Color(v13, v15, v16);
 
     float v17 = (v24 * x2 + v22 * y2 + 1.0) * 0.5;
     int v18 = (yw->wis_skeletons.cl2_g - yw->wis_skeletons.cl1_g) * v17 + yw->wis_skeletons.cl1_g;
     int v20 = (yw->wis_skeletons.cl2_r - yw->wis_skeletons.cl1_r) * v17 + yw->wis_skeletons.cl1_r;
     int v19 = (yw->wis_skeletons.cl2_b - yw->wis_skeletons.cl1_b) * v17 + yw->wis_skeletons.cl1_b;
-    *out2 = ((v20 & 0xFF) << 16) | ((v18 & 0xFF) << 8) | (v19 & 0xFF);
+    *out2 = GFX::Engine.Color(v20, v18, v19);
 }
 
 
@@ -9379,8 +9372,8 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
         yy /= v70;
     }
 
-    uint32_t v9 = yw_GetColor(yw, 21);
-    uint32_t v73 = yw_GetColor(yw, 30);
+    SDL_Color v9 = yw->GetColor(21);
+    SDL_Color v73 = yw->GetColor(30);
 
     float tx = yw->UserUnit->_parent->_position.x - yw->UserUnit->_position.x;
     float ty = yw->UserUnit->_parent->_position.z - yw->UserUnit->_position.z;
@@ -9395,12 +9388,12 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
         float v20 = v13 * (1.0 / v17);
         float v23 = v15 * (1.0 / v17);
 
-        yw->wis_skeletons.cl1_r = (v9 >> 16) & 0xFF;
-        yw->wis_skeletons.cl1_g = (v9 >> 8) & 0xFF;
-        yw->wis_skeletons.cl1_b = v9 & 0xFF;
-        yw->wis_skeletons.cl2_r = (v73 >> 16) & 0xFF;
-        yw->wis_skeletons.cl2_b = v73 & 0xFF;
-        yw->wis_skeletons.cl2_g = (v73 >> 8) & 0xFF;
+        yw->wis_skeletons.cl1_r = v9.r;
+        yw->wis_skeletons.cl1_g = v9.g;
+        yw->wis_skeletons.cl1_b = v9.b;
+        yw->wis_skeletons.cl2_r = v73.r;
+        yw->wis_skeletons.cl2_b = v73.b;
+        yw->wis_skeletons.cl2_g = v73.g;
 
         yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v23, -v20, v20, v23, 0.25, 0.3, v9, func, 0, true);
     }
@@ -9424,8 +9417,8 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
 
         if ( v27 )
         {
-            uint32_t v31 = yw_GetColor(yw, 22);
-            uint32_t v74 = yw_GetColor(yw, 31);
+            SDL_Color v31 = yw->GetColor(22);
+            SDL_Color v74 = yw->GetColor(31);
 
             float v88 = tx * yy + ty * xx;
             float a8 = tx * -xx + ty * yy;
@@ -9437,12 +9430,12 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
                 float v40 = v88 * (1.0 / v36);
                 float v42 = a8 * (1.0 / v36);
 
-                yw->wis_skeletons.cl1_r = (v31 >> 16) & 0xFF;
-                yw->wis_skeletons.cl1_g = (v31 >> 8) & 0xFF;
-                yw->wis_skeletons.cl1_b = v31 & 0xFF;
-                yw->wis_skeletons.cl2_r = (v74 >> 16) & 0xFF;
-                yw->wis_skeletons.cl2_b = v74 & 0xFF;
-                yw->wis_skeletons.cl2_g = (v74 >> 8) & 0xFF;
+                yw->wis_skeletons.cl1_r = v31.r;
+                yw->wis_skeletons.cl1_g = v31.g;
+                yw->wis_skeletons.cl1_b = v31.b;
+                yw->wis_skeletons.cl2_r = v74.r;
+                yw->wis_skeletons.cl2_b = v74.b;
+                yw->wis_skeletons.cl2_g = v74.g;
 
                 yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v42, -v40, v40, v42, 0.25, 0.3, v31, func, 0, true);
             }
@@ -9451,8 +9444,8 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
 
     if ( yw->hudi.field_18 )
     {
-        uint32_t a11 = yw_GetColor(yw, 23);
-        uint32_t v50 = yw_GetColor(yw, 32);
+        SDL_Color a11 = yw->GetColor(23);
+        SDL_Color v50 = yw->GetColor(32);
 
         float v45 = yw->hudi.field_18->_position.x - yw->UserUnit->_position.x;
         float v46 = yw->hudi.field_18->_position.z - yw->UserUnit->_position.z;
@@ -9468,19 +9461,19 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
             float v55 = v81 * (1.0 / v52);
             float v58 = v79 * (1.0 / v52);
 
-            yw->wis_skeletons.cl1_r = (a11 >> 16) & 0xFF;
-            yw->wis_skeletons.cl1_g = (a11 >> 8) & 0xFF;
-            yw->wis_skeletons.cl1_b = a11 & 0xFF;
-            yw->wis_skeletons.cl2_r = (v50 >> 16) & 0xFF;
-            yw->wis_skeletons.cl2_b = v50 & 0xFF;
-            yw->wis_skeletons.cl2_g = (v50 >> 8) & 0xFF;
+            yw->wis_skeletons.cl1_r = a11.r;
+            yw->wis_skeletons.cl1_g = a11.g;
+            yw->wis_skeletons.cl1_b = a11.b;
+            yw->wis_skeletons.cl2_r = v50.r;
+            yw->wis_skeletons.cl2_b = v50.b;
+            yw->wis_skeletons.cl2_g = v50.g;
 
             yw_RenderVector2D(yw, wis->sklts_intern[3], 0.7, 0.3, v58, -v55, v55, v58, 0.25, 0.3, a11, func, 0, true);
         }
     }
 
-    uint32_t v60 = yw_GetColor(yw, 24);
-    uint32_t v75 = yw_GetColor(yw, 33);
+    SDL_Color v60 = yw->GetColor(24);
+    SDL_Color v75 = yw->GetColor(33);
 
     float v72 = 0.25;
     float v71 = 0.3;
@@ -9491,12 +9484,12 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
         v72 = v90 * 0.25;
     }
 
-    yw->wis_skeletons.cl1_r = (v60 >> 16) & 0xFF;
-    yw->wis_skeletons.cl1_g = (v60 >> 8) & 0xFF;
-    yw->wis_skeletons.cl1_b = v60 & 0xFF;
-    yw->wis_skeletons.cl2_r = (v75 >> 16) & 0xFF;
-    yw->wis_skeletons.cl2_b = v75 & 0xFF;
-    yw->wis_skeletons.cl2_g = (v75 >> 8) & 0xFF;
+    yw->wis_skeletons.cl1_r = v60.r;
+    yw->wis_skeletons.cl1_g = v60.g;
+    yw->wis_skeletons.cl1_b = v60.b;
+    yw->wis_skeletons.cl2_r = v75.r;
+    yw->wis_skeletons.cl2_b = v75.b;
+    yw->wis_skeletons.cl2_g = v75.g;
 
     yw_RenderVector2D(yw, wis->sklts_intern[1], 0.7, 0.3, yy, -xx, xx, yy, v72, v71, v60, func, 0, true);
 
@@ -9541,14 +9534,14 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
         break;
     }
 
-    uint32_t v65 = yw_GetColor(yw, v64);
+    SDL_Color v65 = yw->GetColor(v64);
 
-    yw->wis_skeletons.cl1_r = (v65 >> 16) & 0xFF;
-    yw->wis_skeletons.cl1_g = (v65 >> 8) & 0xFF;
-    yw->wis_skeletons.cl1_b = v65 & 0xFF;
-    yw->wis_skeletons.cl2_r = (v65 >> 16) & 0xFF;
-    yw->wis_skeletons.cl2_b = v65 & 0xFF;
-    yw->wis_skeletons.cl2_g = (v65 >> 8) & 0xFF;
+    yw->wis_skeletons.cl1_r = v65.r;
+    yw->wis_skeletons.cl1_g = v65.g;
+    yw->wis_skeletons.cl1_b = v65.b;
+    yw->wis_skeletons.cl2_r = v65.r;
+    yw->wis_skeletons.cl2_b = v65.b;
+    yw->wis_skeletons.cl2_g = v65.g;
 
     yw_RenderVector2D(yw, wis->sklts_intern[2], 0.7, 0.3, yy, -xx, xx, yy, 0.07, 0.08, v65, func, 0, true);
 }
@@ -9678,7 +9671,7 @@ void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
 
 
 
-void sub_4E3B80(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, uint32_t *out1, uint32_t *out2)
+void sub_4E3B80(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, SDL_Color *out1, SDL_Color *out2)
 {
     float v15 = yw->wis_skeletons.field_86 * 2.0 - 1.0;
 
@@ -9698,15 +9691,15 @@ void sub_4E3B80(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, u
     int v9 = (yw->wis_skeletons.cl2_g - yw->wis_skeletons.cl1_g) * v17 + yw->wis_skeletons.cl1_g;
     int v10 = (yw->wis_skeletons.cl2_r - yw->wis_skeletons.cl1_r) * v17 + yw->wis_skeletons.cl1_r;
     int v11 =  (yw->wis_skeletons.cl2_b - yw->wis_skeletons.cl1_b) * v17 + yw->wis_skeletons.cl1_b;
-    *out1 = ((v9 & 0xFF) << 8) | ((v10 & 0xFF) << 16) | (v11 & 0xFF);
+    *out1 = GFX::Engine.Color(v10, v9, v11);
 
     int v12 = (yw->wis_skeletons.cl2_g - yw->wis_skeletons.cl1_g) * v16 + yw->wis_skeletons.cl1_g;
     int v13 = (yw->wis_skeletons.cl2_r - yw->wis_skeletons.cl1_r) * v16 + yw->wis_skeletons.cl1_r;
     int v14 = (yw->wis_skeletons.cl2_b - yw->wis_skeletons.cl1_b) * v16 + yw->wis_skeletons.cl1_b;
-    *out2 = ((v12 & 0xFF) << 8) | ((v13 & 0xFF) << 16) | (v14 & 0xFF);
+    *out2 = GFX::Engine.Color(v13, v12, v14);
 }
 
-void sub_4E3D98(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, uint32_t *out1, uint32_t *out2)
+void sub_4E3D98(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, SDL_Color *out1, SDL_Color *out2)
 {
     int v7 = yw->timeStamp % 300;
     float v9 = v7 / 30000.0;
@@ -9716,12 +9709,12 @@ void sub_4E3D98(NC_STACK_ypaworld *yw, float x1, float y1, float x2, float y2, u
     int v10 = (v8->cl2_g - v8->cl1_g) * v9 + v8->cl1_g;
     int v11 = (v8->cl2_r - v8->cl1_r) * v9 + v8->cl1_r;
     int v12 = (v8->cl2_b - v8->cl1_b) * v9 + v8->cl1_b;
-    *out1 = (v12 & 0xFF) | ((v10 & 0xFF) << 8) | ((v11 & 0xFF) << 16);
+    *out1 = GFX::Engine.Color(v11, v10, v12);
 
     int v13 = (v8->cl2_r - v8->cl1_r) * v9 + v8->cl1_r;
     int v16 = (v8->cl2_b - v8->cl1_b) * v9 + v8->cl1_b;
     int v15 = (v8->cl2_g - v8->cl1_g) * v9 + v8->cl1_g;
-    *out2 = ((v13 & 0xFF) << 16) | ((v15 & 0xFF) << 8) | (v16 & 0xFF);
+    *out2 = GFX::Engine.Color(v13, v15, v16);
 }
 
 void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
@@ -9785,7 +9778,7 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
 
         if ( hud_wure )
         {
-            uint32_t v14 = yw_GetColor(yw, 34);
+            SDL_Color v14 = yw->GetColor(34);
             yw_RenderVector2D(yw, hud_wure, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.99, 0.99, v14, NULL, NULL, true);
         }
 
@@ -9793,8 +9786,8 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
         {
             if ( mg_wure )
             {
-                uint32_t v15 = yw_GetColor(yw, 26);
-                uint32_t v16 = yw_GetColor(yw, 35);
+                SDL_Color v15 = yw->GetColor(26);
+                SDL_Color v16 = yw->GetColor(35);
 
                 float a9 = 0.3;
 
@@ -9810,12 +9803,12 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
 
                 sklt_wis *v19 = &yw->wis_skeletons;
 
-                v19->cl1_r = (v16 >> 16) & 0xFF;
-                v19->cl1_g = (v16 >> 8) & 0xFF;
-                v19->cl1_b = v16 & 0xFF;
-                v19->cl2_r = (v15 >> 16) & 0xFF;
-                v19->cl2_g = (v15 >> 8) & 0xFF;
-                v19->cl2_b = v15 & 0xFF;
+                v19->cl1_r = v16.r;
+                v19->cl1_g = v16.g;
+                v19->cl1_b = v16.b;
+                v19->cl2_r = v15.r;
+                v19->cl2_g = v15.g;
+                v19->cl2_b = v15.b;
 
                 yw_RenderVector2D(yw, mg_wure, yw->hudi.field_8, yw->hudi.field_C, 1.0, 0.0, 0.0, 1.0, a9, 0.4, v16, func, NULL, true);
             }
@@ -9826,8 +9819,8 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
             float v51[2];
             wis_color_func func;
 
-            uint32_t a11;
-            uint32_t v27;
+            SDL_Color a11;
+            SDL_Color v27;
 
             if ( yw->hudi.field_18 )
             {
@@ -9839,8 +9832,8 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
                         v51[i] = 1.0;
                 }
 
-                a11 = yw_GetColor(yw, 27);
-                v27 = yw_GetColor(yw, 36);
+                a11 = yw->GetColor(27);
+                v27 = yw->GetColor(36);
 
                 if ( wis->field_72 )
                     func = sub_4E3D98;
@@ -9852,8 +9845,8 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
                 v51[0] = 0;
                 v51[1] = 0;
 
-                v27 = yw_GetColor(yw, 28);
-                a11 = yw_GetColor(yw, 37);
+                v27 = yw->GetColor(28);
+                a11 = yw->GetColor(37);
 
                 if ( wis->field_72 )
                     func = sub_4E3B80;
@@ -9861,12 +9854,12 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
                     func = NULL;
             }
 
-            int v63 = (a11 >> 16) & 0xFF;
-            int v67 = (a11 >> 8) & 0xFF;
-            int v66 = a11 & 0xFF;
-            int v68 = (v27 >> 16) & 0xFF;
-            int v64 = v27 & 0xFF;
-            int v65 = (v27 >> 8) & 0xFF;
+            int v63 = a11.r;
+            int v67 = a11.g;
+            int v66 = a11.b;
+            int v68 = v27.r;
+            int v64 = v27.b;
+            int v65 = v27.g;
 
             for (int i = 0; i < 2; i++)
             {
@@ -9947,7 +9940,7 @@ void yw_RenderCursorOverUnit(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
     {
         if ( a3 > -v30 && v33 < v30 && v33 > -v30 )
         {
-            uint32_t v11 = yw_GetColor(yw, bact->_owner);
+            SDL_Color v11 = yw->GetColor(bact->_owner);
             UAskeleton::Data *v12 = yw->wis_skeletons.sklts_intern[13];
 
             float a3a = a3 / v30;

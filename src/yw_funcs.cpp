@@ -371,13 +371,7 @@ int NC_STACK_ypaworld::yw_InitLevelNet()
     }
 
     for(auto &x : iniColors)
-    {
-        x.r = 255;
-        x.g = 255;
-        x.b = 0;
-        x.i = 10;
-        x.color = 0xFFFF00;
-    }
+        x = GFX::Engine.Color(255, 255, 0);
 
     if ( !yw_ParseWorldIni("env:world.ini") && !yw_ParseWorldIni("data:world.ini"))
     {
@@ -439,28 +433,18 @@ int yw_InitNetwork(NC_STACK_ypaworld *yw)
 }
 
 
-
-void NC_STACK_ypaworld::setIniColor(int color_id, int r, int g, int b, int i)
-{
-    iniColors[color_id].r = r;
-    iniColors[color_id].g = g;
-    iniColors[color_id].b = b;
-    iniColors[color_id].i = i;
-    iniColors[color_id].color = ((r << 16) & 0xFF0000) | ((g << 8) & 0xFF00) | (b & 0xFF) ;
-}
-
 bool NC_STACK_ypaworld::ParseColorString(int color_id, const std::string &color_string)
 {
-	Stok stok(color_string, "_");
-	std::string sr, sg, sb, si;
+    Stok stok(color_string, "_");
+    std::string sr, sg, sb, si;
 
-	if ( stok.GetNext(&sr) && stok.GetNext(&sg) && stok.GetNext(&sb) && stok.GetNext(&si))
+    if ( stok.GetNext(&sr) && stok.GetNext(&sg) && stok.GetNext(&sb) /*&& stok.GetNext(&si)*/)
     {
         int r = std::stoi(sr);
         int g = std::stoi(sg);
         int b = std::stoi(sb);
-        int i = std::stoi(si);
-        setIniColor(color_id, r, g, b, i);
+        //int i = std::stoi(si);
+        iniColors.at(color_id) = GFX::Engine.Color(r, g, b);
         return true;
     }
 

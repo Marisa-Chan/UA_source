@@ -2462,7 +2462,7 @@ public:
     void GuiWinClose(GuiBase *);
 
 
-    void setIniColor(int color_id, int r, int g, int b, int i);
+    SDL_Color GetColor(int color_id);
     bool ParseColorString(int color_id, const std::string &color_string);
 
 
@@ -2738,7 +2738,7 @@ public:
     int field_17c4;
     int field_17c8;
     const char **tooltips;
-    rgbiColor iniColors[World::COLOR_MAX_NUMBER];
+    std::array<SDL_Color, World::COLOR_MAX_NUMBER> iniColors;
     int field_1a00;
     int field_1a04;
     int field_1a08;
