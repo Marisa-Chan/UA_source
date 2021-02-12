@@ -1343,14 +1343,14 @@ struct BriefengScreen
     std::string BriefingText;
     
     rstr_arg204 MapBlitParams;
-    ua_fRect MapBlitStart;
-    ua_fRect MapBlitEnd;
+    Common::FRect MapBlitStart;
+    Common::FRect MapBlitEnd;
 
     int SelectedObjID;
     
     bool AddObjectsFlag;
     BriefObject ViewingObject;
-    ua_fRect ViewingObjectRect;
+    Common::FRect ViewingObjectRect;
     int ViewingObjectAngle;
     uint32_t ViewingObjectStartTime;
     
@@ -1393,13 +1393,13 @@ struct BriefengScreen
         
         ViewingObject = BriefObject();
         
-        ViewingObjectRect = ua_fRect();
+        ViewingObjectRect = Common::FRect();
         ViewingObjectAngle = 0;
         ViewingObjectStartTime = 0;
         
-        MapBlitParams.clear();
-        MapBlitStart = ua_fRect();
-        MapBlitEnd = ua_fRect();
+        MapBlitParams = rstr_arg204();
+        MapBlitStart = Common::FRect();
+        MapBlitEnd = Common::FRect();
         AddObjectsFlag = false;
         SelectedObjID = 0;
 
@@ -1431,7 +1431,7 @@ struct mapINFO
     int field_0;
     std::string mapPath;
     std::string map_name;
-    ua_fRect field_9C;
+    Common::FRect field_9C;
     char robos_count;
     char fractions_mask;
     char secXsize;

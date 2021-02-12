@@ -78,10 +78,10 @@ public:
     virtual size_t func0(IDVList &stak);
     virtual size_t func1();
     virtual size_t raster_func192(IDVPair *);
-    virtual size_t raster_func198(w3d_func198arg *arg);
-    virtual size_t raster_func199(w3d_func199arg *arg);
-    virtual size_t raster_func200(w3d_func198arg *arg);
-    virtual size_t raster_func201(w3d_func199arg *arg);
+    virtual size_t raster_func198(const Common::FLine &arg);
+    virtual size_t raster_func199(const Common::Line &arg);
+    virtual size_t raster_func200(const Common::FLine &arg);
+    virtual size_t raster_func201(const Common::Line &r);
     virtual size_t raster_func202(rstr_arg204 *arg);
     virtual size_t raster_func204(rstr_arg204 *arg);
     virtual size_t raster_func206(polysDat *arg);
@@ -177,7 +177,7 @@ protected:
 
     void _setFrustumClip(float near, float far);
     
-    void sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
+    void sub_420EDC(Common::Line line, uint8_t r, uint8_t g, uint8_t b);
     char * windd_func322__sub0(const char *box_title, const char *box_ok, const char *box_cancel, const char *box_startText, uint32_t timer_time, void (*timer_func)(int, int, int), void *timer_context, int replace, int maxLen);
     
     void ApplyResolution();

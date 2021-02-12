@@ -157,8 +157,8 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, 
 
     if ( brf->ViewingObject ) // Not none
     {
-        pos.x = (brf->ViewingObjectRect.x2 + brf->ViewingObjectRect.x1) / 2.0;
-        pos.y = (brf->ViewingObjectRect.y2 + brf->ViewingObjectRect.y1) / 2.0;
+        pos.x = (brf->ViewingObjectRect.right + brf->ViewingObjectRect.left) / 2.0;
+        pos.y = (brf->ViewingObjectRect.bottom + brf->ViewingObjectRect.top) / 2.0;
 
         float v16;
         float v17;

@@ -533,7 +533,7 @@ bool NC_STACK_ypaworld::sb_0x4e1a88__sub0(const std::string &fname, bool multipl
 
     minf.map_name = _levelInfo->MapName;
 
-    minf.field_9C = ua_fRect();
+    minf.field_9C = Common::FRect();
 
     minf.fractions_mask = 0;
     minf.robos_count = mapp.Robos.size();
@@ -1438,14 +1438,8 @@ void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
     rstr_arg204 a4;
     a4.pbitm = bitm->GetResBmp();
 
-    a4.float14 = -1.0;
-    a4.float4 = -1.0;
-    a4.float18 = -1.0;
-    a4.float8 = -1.0;
-    a4.float1C = 1.0;
-    a4.floatC = 1.0;
-    a4.float20 = 1.0;
-    a4.float10 = 1.0;
+    a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+    a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
     _win3d->raster_func202(&a4);
 }
@@ -1676,15 +1670,8 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
         rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->GetResBmp();
 
-        a4.float4 = -1.0;
-        a4.float8 = -1.0;
-        a4.floatC = 1.0;
-        a4.float10 = 1.0;
-
-        a4.float14 = -1.0;
-        a4.float18 = -1.0;
-        a4.float1C = 1.0;
-        a4.float20 = 1.0;
+        a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+        a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
         yw->_win3d->raster_func202(&a4);
 
@@ -1692,7 +1679,7 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
         {
             mapINFO *v5 = &yw->LevelNet->mapInfos[i];
 
-            if ( v5->field_9C.x1 != v5->field_9C.x2 )
+            if ( !v5->field_9C.IsEmpty() )
             {
                 ResBitmap *v20 = NULL;
 
@@ -1711,14 +1698,8 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
                     v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->GetResBmp();
 
                     v17.flg = i;
-                    v17.rect2.x1 = v5->field_9C.x1;
-                    v17.rect1.x1 = v17.rect2.x1;
-                    v17.rect2.y1 = v5->field_9C.y1;
-                    v17.rect1.y1 = v17.rect2.y1;
-                    v17.rect2.x2 = v5->field_9C.x2;
-                    v17.rect1.x2 = v17.rect2.x2;
-                    v17.rect2.y2 = v5->field_9C.y2;
-                    v17.rect1.y2 = v17.rect2.y2;
+                    v17.rect2 = v5->field_9C;
+                    v17.rect1 = v17.rect2;
 
                     yw->_win3d->raster_func218(&v17);
                 }
@@ -1766,15 +1747,8 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
         rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->GetResBmp();
 
-        a4.float4 = -1.0;
-        a4.float8 = -1.0;
-        a4.floatC = 1.0;
-        a4.float10 = 1.0;
-
-        a4.float14 = -1.0;
-        a4.float18 = -1.0;
-        a4.float1C = 1.0;
-        a4.float20 = 1.0;
+        a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+        a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
         yw->_win3d->raster_func202(&a4);
         //printf("field_BE38 %d \n",yw->LevelNet->field_BE38);
@@ -1783,7 +1757,7 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
         {
             mapINFO *v5 = &yw->LevelNet->mapInfos[i];
 
-            if ( v5->field_9C.x1 != v5->field_9C.x2 )
+            if ( !v5->field_9C.IsEmpty() )
             {
                 ResBitmap *v20 = NULL;
 
@@ -1810,14 +1784,8 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
                     v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->GetResBmp();
 
                     v17.flg = i;
-                    v17.rect2.x1 = v5->field_9C.x1;
-                    v17.rect1.x1 = v17.rect2.x1;
-                    v17.rect2.y1 = v5->field_9C.y1;
-                    v17.rect1.y1 = v17.rect2.y1;
-                    v17.rect2.x2 = v5->field_9C.x2;
-                    v17.rect1.x2 = v17.rect2.x2;
-                    v17.rect2.y2 = v5->field_9C.y2;
-                    v17.rect1.y2 = v17.rect2.y2;
+                    v17.rect2 = v5->field_9C;
+                    v17.rect1 = v17.rect2;
 
                     yw->_win3d->raster_func218(&v17);
                 }
@@ -2006,7 +1974,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
                         map_Height_meters = _mapHeight * 1200.0;
 
                         //Set transitions
-                        brief.ViewingObjectRect = ua_fRect(-0.98750001, 0.34999999, -0.003125, 0.85416669);
+                        brief.ViewingObjectRect = Common::FRect(-0.98750001, 0.34999999, -0.003125, 0.85416669);
 
                         if ( !brief.Stage )
                             brief.Stage = 4;
@@ -2060,13 +2028,7 @@ bool NC_STACK_ypaworld::InitDebrief()
 
     brief.ZoomFromGate = _levelInfo->State == 1;
 
-    ua_fRect v17;
-    v17.x1 = -1.0;
-    v17.y1 = -1.0;
-    v17.x2 = 1.0;
-    v17.y2 = 1.0;
-
-    _win3d->raster_func210(&v17);
+    _win3d->raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
 
     brief.Stage = 0;
     brief.TimerStatus = 0;

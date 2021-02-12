@@ -1006,17 +1006,17 @@ SDL_Surface *GFXEngine::Screen()
 
 
 // Draw line Bresenham's algorithm
-void GFXEngine::DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb )
+void GFXEngine::DrawLine(SDL_Surface *surface, const Common::Line &line, uint8_t cr, uint8_t cg, uint8_t cb )
 {
-    if ((!line.Width() && !line.Height()) || 
-         !Common::Rect(surface->w, surface->h).IsIn(Common::Point(line.left, line.top)) ||
-         !Common::Rect(surface->w, surface->h).IsIn(Common::Point(line.right, line.bottom)) )
+    if ((line.Width() == 0 && line.Height() == 0) || 
+         !Common::Rect(surface->w, surface->h).IsIn(line.P1()) ||
+         !Common::Rect(surface->w, surface->h).IsIn(line.P2()) )
         return;
     
     int rilWidth = surface->pitch / surface->format->BytesPerPixel;
 
-    int xCount = Common::ABS(line.Width());
-    int yCount = Common::ABS(line.Height());
+    int xCount = line.Width();
+    int yCount = line.Height();
 
     uint32_t color = SDL_MapRGBA(surface->format, cr, cg, cb, 255);
 
@@ -1025,12 +1025,12 @@ void GFXEngine::DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t
 
     if ( xCount <= yCount )
     {
-        if ( line.bottom <= line.top )
+        if ( line.y2 <= line.y1 )
             stepAdd = -rilWidth;
         else
             stepAdd = rilWidth;
 
-        if ( line.right <= line.left )
+        if ( line.x2 <= line.x1 )
             stepOdd = -1;
         else
             stepOdd = 1;
@@ -1040,12 +1040,12 @@ void GFXEngine::DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t
     }
     else
     {
-        if ( line.right <= line.left )
+        if ( line.x2 <= line.x1 )
             stepAdd = -1;
         else
             stepAdd = 1;
 
-        if ( line.bottom <= line.top )
+        if ( line.y2 <= line.y1 )
             stepOdd = -rilWidth;
         else
             stepOdd = rilWidth;
@@ -1061,8 +1061,8 @@ void GFXEngine::DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t
     SDL_LockSurface(surface);
     
     void *surfPos = (void *) ((uint8_t *) surface->pixels 
-                    + line.top * surface->pitch 
-                    + line.left * surface->format->BytesPerPixel );
+                    + line.y1 * surface->pitch 
+                    + line.x1 * surface->format->BytesPerPixel );
 
     switch(surface->format->BytesPerPixel)
     {

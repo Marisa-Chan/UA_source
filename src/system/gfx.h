@@ -362,7 +362,7 @@ public:
     static uint32_t CorrectSurfaceFormat(uint32_t format);
     static void GLMapFormat(uint32_t pixelFormat, GLint *format, GLint *type);
     
-    static void DrawLine(SDL_Surface *surface, const Common::Rect &line, uint8_t cr, uint8_t cg, uint8_t cb);
+    static void DrawLine(SDL_Surface *surface, const Common::Line &line, uint8_t cr, uint8_t cg, uint8_t cb);
     static void BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surface *mask, uint8_t index, SDL_Surface *dst, Common::Rect dRect);
     static void DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, const Common::Rect &dRect);
     

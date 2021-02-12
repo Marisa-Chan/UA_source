@@ -24,10 +24,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState 
 
     brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
 
-    brf->MapBlitStart.x1 = -0.4515625;
-    brf->MapBlitStart.y1 = -0.324999988079;
-    brf->MapBlitStart.x2 = brf->MapBlitStart.x1;
-    brf->MapBlitStart.y2 = brf->MapBlitStart.y1;
+    brf->MapBlitStart.left = -0.4515625;
+    brf->MapBlitStart.top = -0.324999988079;
+    brf->MapBlitStart.right = brf->MapBlitStart.left;
+    brf->MapBlitStart.bottom = brf->MapBlitStart.top;
 
     float v17, v16;
 
@@ -47,19 +47,13 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState 
         v16 = (float)yw->_mapHeight / (float)yw->_mapWidth;
     }
 
-    brf->MapBlitParams.float4 = -1.0;
-    brf->MapBlitParams.float8 = -1.0;
-    brf->MapBlitParams.floatC = 1.0;
-    brf->MapBlitParams.float10 = 1.0;
+    brf->MapBlitParams.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-    brf->MapBlitEnd.x1 = -0.4515625 - v17 * 0.4828125;
-    brf->MapBlitEnd.y1 = -0.325 - v16 * 0.6083333333333334;
-    brf->MapBlitEnd.x2 = brf->MapBlitEnd.x1 + v17 * 0.965625;
-    brf->MapBlitEnd.y2 = brf->MapBlitEnd.y1 + v16 * 1.216666666666667;
-    brf->MapBlitParams.float14 = brf->MapBlitStart.x1;
-    brf->MapBlitParams.float18 = brf->MapBlitStart.y1;
-    brf->MapBlitParams.float1C = brf->MapBlitStart.x2;
-    brf->MapBlitParams.float20 = brf->MapBlitStart.y2;
+    brf->MapBlitEnd.left = -0.4515625 - v17 * 0.4828125;
+    brf->MapBlitEnd.top = -0.325 - v16 * 0.6083333333333334;
+    brf->MapBlitEnd.right = brf->MapBlitEnd.left + v17 * 0.965625;
+    brf->MapBlitEnd.bottom = brf->MapBlitEnd.top + v16 * 1.216666666666667;
+    brf->MapBlitParams.float14 = brf->MapBlitStart;
     brf->TextTime = 0;
     brf->PreTextTime = brf->CurrTime;
 }
@@ -70,10 +64,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState 
 
     if ( v5 >= 600 )
     {
-        brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
-        brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
-        brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
-        brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
+        brf->MapBlitParams.float14 = brf->MapBlitEnd;
         brf->Stage = 6;
 
         displ_arg263 v4;
@@ -85,10 +76,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState 
     else
     {
         float v3 = v5 * 0.0016666667;
-        brf->MapBlitParams.float14 = (brf->MapBlitEnd.x1 - brf->MapBlitStart.x1) * v3 + brf->MapBlitStart.x1;
-        brf->MapBlitParams.float18 = (brf->MapBlitEnd.y1 - brf->MapBlitStart.y1) * v3 + brf->MapBlitStart.y1;
-        brf->MapBlitParams.float1C = (brf->MapBlitEnd.x2 - brf->MapBlitStart.x2) * v3 + brf->MapBlitStart.x2;
-        brf->MapBlitParams.float20 = (brf->MapBlitEnd.y2 - brf->MapBlitStart.y2) * v3 + brf->MapBlitStart.y2;
+        brf->MapBlitParams.float14.left = (brf->MapBlitEnd.left - brf->MapBlitStart.left) * v3 + brf->MapBlitStart.left;
+        brf->MapBlitParams.float14.top = (brf->MapBlitEnd.top - brf->MapBlitStart.top) * v3 + brf->MapBlitStart.top;
+        brf->MapBlitParams.float14.right = (brf->MapBlitEnd.right - brf->MapBlitStart.right) * v3 + brf->MapBlitStart.right;
+        brf->MapBlitParams.float14.bottom = (brf->MapBlitEnd.bottom - brf->MapBlitStart.bottom) * v3 + brf->MapBlitStart.bottom;
     }
 }
 
@@ -603,10 +594,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState
         {
             BriefObject &obj = brf->Objects[i];
 
-            float v13 = obj.X / yw->map_Width_meters * (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) + brf->MapBlitEnd.x1;
+            float v13 = obj.X / yw->map_Width_meters * brf->MapBlitEnd.Width() + brf->MapBlitEnd.left;
             float v15 = (v13 + 1.0) * 0.5;
 
-            float v14 = -obj.Y / yw->map_Height_meters * (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) + brf->MapBlitEnd.y1;
+            float v14 = -obj.Y / yw->map_Height_meters * brf->MapBlitEnd.Height() + brf->MapBlitEnd.top;
             float v23 = 0.5 * (v14 + 1.0);
 
             if ( v15 + -0.025 < mx && v15 + 0.025 > mx && v23 + -0.025 < my && v23 + 0.025 > my )
@@ -779,8 +770,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, BriefengScr
 
             int v38 = yw->tiles[(int)obj.TileSet]->h / 2;
 
-            float v15 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) * (obj.X / yw->map_Width_meters) + brf->MapBlitEnd.x1;
-            float v14 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) * (-obj.Y / yw->map_Height_meters) + brf->MapBlitEnd.y1;
+            float v15 = brf->MapBlitEnd.Width() * (obj.X / yw->map_Width_meters) + brf->MapBlitEnd.left;
+            float v14 = brf->MapBlitEnd.Height() * (-obj.Y / yw->map_Height_meters) + brf->MapBlitEnd.top;
 
             FontUA::set_center_xpos(&pos, (v15 * (yw->screen_width / 2)) - v38);
             FontUA::set_center_ypos(&pos, (v14 * (yw->screen_height / 2)) - v38);
@@ -841,13 +832,13 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
         {
             if ( a4 & 1 )
             {
-                w3d_func198arg v20;
-                w3d_func198arg v21;
+                Common::FLine v20;
+                Common::FLine v21;
 
-                v21.x1 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) * v27 + brf->MapBlitEnd.x1;
+                v21.x1 = brf->MapBlitEnd.Width() * v27 + brf->MapBlitEnd.left;
                 v21.x2 = v21.x1;
-                v21.y1 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) * v26 + brf->MapBlitEnd.y1;
-                v21.y2 = brf->ViewingObjectRect.y2;
+                v21.y1 = brf->MapBlitEnd.Height() * v26 + brf->MapBlitEnd.top;
+                v21.y2 = brf->ViewingObjectRect.bottom;
 
                 v20.y1 = v21.y2;
                 v20.y2 = v21.y2;
@@ -855,19 +846,19 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
                 if ( obj_id >= 3 )
                 {
                     v20.x1 = v21.x1;
-                    v20.x2 = brf->ViewingObjectRect.x2;
+                    v20.x2 = brf->ViewingObjectRect.right;
                 }
                 else
                 {
-                    v20.x1 = brf->ViewingObjectRect.x1;
+                    v20.x1 = brf->ViewingObjectRect.left;
                     v20.x2 = v21.x1;
                 }
 
                 yw->_win3d->raster_func217(0xA0A0);
-                yw->_win3d->raster_func198(&v20);
+                yw->_win3d->raster_func198(v20);
 
                 yw->_win3d->raster_func217(0x4040);
-                yw->_win3d->raster_func198(&v21);
+                yw->_win3d->raster_func198(v21);
             }
         }
 
@@ -883,8 +874,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
                 else
                     v13 = 100 * v11 / 500;
 
-                int xpos = ((brf->ViewingObjectRect.x1 + brf->ViewingObjectRect.x2) / 2.0) * (yw->screen_width / 2);
-                int ypos = ((yw->screen_height / 2) * brf->ViewingObjectRect.y2 - yw->tiles[16]->h + -1.0);
+                int xpos = ((brf->ViewingObjectRect.left + brf->ViewingObjectRect.right) / 2.0) * (yw->screen_width / 2);
+                int ypos = ((yw->screen_height / 2) * brf->ViewingObjectRect.bottom - yw->tiles[16]->h + -1.0);
 
                 char cmdbuf[128];
                 char *pos = cmdbuf;
@@ -1072,14 +1063,8 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, In
 
             a4.pbitm = brf->BriefingMapImg->GetResBmp();
 
-            a4.float4 = -1.0;
-            a4.floatC = 1.0;
-            a4.float8 = -1.0;
-            a4.float10 = 1.0;
-            a4.float14 = -1.0;
-            a4.float1C = 1.0;
-            a4.float18 = -1.0;
-            a4.float20 = 1.0;
+            a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+            a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
             yw->_win3d->raster_func204(&a4);
         }
@@ -1108,27 +1093,27 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, In
 // Debrif
 
 
-void sub_449310(ua_fRect *rect)
+void sub_449310(Common::FRect *rect)
 {
-    if ( rect->x1 > 1.0 )
-        rect->x1 = 1.0;
-    else if ( rect->x1 < -1.0 )
-        rect->x1 = -1.0;
+    if ( rect->left > 1.0 )
+        rect->left = 1.0;
+    else if ( rect->left < -1.0 )
+        rect->left = -1.0;
 
-    if ( rect->y1 > 1.0 )
-        rect->y1 = 1.0;
-    else if ( rect->y1 < -1.0 )
-        rect->y1 = -1.0;
+    if ( rect->top > 1.0 )
+        rect->top = 1.0;
+    else if ( rect->top < -1.0 )
+        rect->top = -1.0;
 
-    if ( rect->x2 > 1.0 )
-        rect->x2 = 1.0;
-    else if ( rect->x2 < -1.0 )
-        rect->x2 = -1.0;
+    if ( rect->right > 1.0 )
+        rect->right = 1.0;
+    else if ( rect->right < -1.0 )
+        rect->right = -1.0;
 
-    if ( rect->y2 > 1.0 )
-        rect->y2 = 1.0;
-    else if ( rect->y2 < -1.0 )
-        rect->y2 = -1.0;
+    if ( rect->bottom > 1.0 )
+        rect->bottom = 1.0;
+    else if ( rect->bottom < -1.0 )
+        rect->bottom = -1.0;
 }
 
 void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
@@ -1174,27 +1159,20 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
     float v11 = 2.0 * ((float)v9 / (float)yw->_mapHeight) - 1.0;
     float v12 = 2.0 * ((float)v8 / (float)yw->_mapWidth) - 1.0;
 
-    brf->MapBlitStart.x1 = v12 - v20;
-    brf->MapBlitStart.y1 = v11 - v19;
-    brf->MapBlitStart.x2 = v20 + v12;
-    brf->MapBlitStart.y2 = v11 + v19;
+    brf->MapBlitStart.left = v12 - v20;
+    brf->MapBlitStart.top = v11 - v19;
+    brf->MapBlitStart.right = v20 + v12;
+    brf->MapBlitStart.bottom = v11 + v19;
     sub_449310(&brf->MapBlitStart);
 
-    brf->MapBlitEnd.x1 = -0.4515625 - v21 * 0.4828125;
-    brf->MapBlitEnd.y1 = -0.325 - v22 * 0.6083333333333334;
-    brf->MapBlitEnd.x2 = brf->MapBlitEnd.x1 + v21 * 0.965625;
-    brf->MapBlitEnd.y2 = brf->MapBlitEnd.y1 + v22 * 1.216666666666667;
+    brf->MapBlitEnd.left = -0.4515625 - v21 * 0.4828125;
+    brf->MapBlitEnd.top = -0.325 - v22 * 0.6083333333333334;
+    brf->MapBlitEnd.right = brf->MapBlitEnd.left + v21 * 0.965625;
+    brf->MapBlitEnd.bottom = brf->MapBlitEnd.top + v22 * 1.216666666666667;
     sub_449310(&brf->MapBlitEnd);
 
-    brf->MapBlitParams.float4 = brf->MapBlitStart.x1;
-    brf->MapBlitParams.float8 = brf->MapBlitStart.y1;
-    brf->MapBlitParams.floatC = brf->MapBlitStart.x2;
-    brf->MapBlitParams.float10 = brf->MapBlitStart.y2;
-
-    brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
-    brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
-    brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
-    brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
+    brf->MapBlitParams.float4 = brf->MapBlitStart;
+    brf->MapBlitParams.float14 = brf->MapBlitEnd;
 
     if ( yw->GameShell )
         SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
@@ -1206,28 +1184,18 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, InputState 
 
     if ( v4 >= 600 )
     {
-        brf->MapBlitParams.float4 = -1.0;
-        brf->MapBlitParams.float8 = -1.0;
-        brf->MapBlitParams.floatC = 1.0;
-        brf->MapBlitParams.float10 = 1.0;
-
-        brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
-        brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
-        brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
-        brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
+        brf->MapBlitParams.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+        brf->MapBlitParams.float14 = brf->MapBlitEnd;
         brf->Stage = 6;
     }
     else
     {
         float v3 = v4 / 600.0;
-        brf->MapBlitParams.float4 = brf->MapBlitStart.x1 + (-1.0 - brf->MapBlitStart.x1) * v3;
-        brf->MapBlitParams.float8 = brf->MapBlitStart.y1 + (-1.0 - brf->MapBlitStart.y1) * v3;
-        brf->MapBlitParams.floatC = brf->MapBlitStart.x2 + (1.0 - brf->MapBlitStart.x2) * v3;
-        brf->MapBlitParams.float10 = brf->MapBlitStart.y2 + (1.0 - brf->MapBlitStart.y2) * v3;
-        brf->MapBlitParams.float14 = brf->MapBlitEnd.x1;
-        brf->MapBlitParams.float18 = brf->MapBlitEnd.y1;
-        brf->MapBlitParams.float1C = brf->MapBlitEnd.x2;
-        brf->MapBlitParams.float20 = brf->MapBlitEnd.y2;
+        brf->MapBlitParams.float4.left = brf->MapBlitStart.left + (-1.0 - brf->MapBlitStart.left) * v3;
+        brf->MapBlitParams.float4.top = brf->MapBlitStart.top + (-1.0 - brf->MapBlitStart.top) * v3;
+        brf->MapBlitParams.float4.right = brf->MapBlitStart.right + (1.0 - brf->MapBlitStart.right) * v3;
+        brf->MapBlitParams.float4.bottom = brf->MapBlitStart.bottom + (1.0 - brf->MapBlitStart.bottom) * v3;
+        brf->MapBlitParams.float14 = brf->MapBlitEnd;
     }
 }
 
@@ -1269,11 +1237,11 @@ void yw_DebriefConqSector(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
         {
             if ( brf->VectorGfx[3] )
             {
-                float v20 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->_mapWidth;
-                float v21 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->_mapHeight;
+                float v20 = brf->MapBlitEnd.Width() / (float)yw->_mapWidth;
+                float v21 = brf->MapBlitEnd.Height() / (float)yw->_mapHeight;
 
-                float a3a = (float)arg->secX * v20 + brf->MapBlitEnd.x1 + v20 * 0.5;
-                float a4a = (float)arg->secY * v21 + brf->MapBlitEnd.y1 + v21 * 0.5;
+                float a3a = (float)arg->secX * v20 + brf->MapBlitEnd.left + v20 * 0.5;
+                float a4a = (float)arg->secY * v21 + brf->MapBlitEnd.top + v21 * 0.5;
 
                 float v19 = 1.0 - (float )dtime / 30000.0;
 
@@ -1308,11 +1276,11 @@ void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::Histo
     {
         if ( brf->VectorGfx[1] )
         {
-            float v12 = brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1;
-            float v13 = brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1;
+            float v12 = brf->MapBlitEnd.Width();
+            float v13 = brf->MapBlitEnd.Height();
 
-            float a3a = v12 * (arg->posX / 256.0) + brf->MapBlitEnd.x1;
-            float a4a = v13 * (arg->posY / 256.0) + brf->MapBlitEnd.y1;
+            float a3a = v12 * (arg->posX / 256.0) + brf->MapBlitEnd.left;
+            float a4a = v13 * (arg->posY / 256.0) + brf->MapBlitEnd.top;
 
             float v25;
 
@@ -1345,11 +1313,11 @@ void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
     {
         if ( brf->VectorGfx[1] )
         {
-            float v13 = brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1;
-            float v14 = brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1;
+            float v13 = brf->MapBlitEnd.Width();
+            float v14 = brf->MapBlitEnd.Height();
 
-            float a3a = v13 * (arg->posX / 256.0) + brf->MapBlitEnd.x1;
-            float a4a = v14 * (arg->posY / 256.0) + brf->MapBlitEnd.y1;
+            float a3a = v13 * (arg->posX / 256.0) + brf->MapBlitEnd.left;
+            float a4a = v14 * (arg->posY / 256.0) + brf->MapBlitEnd.top;
 
             float v22 = dtime / 45000.0;
 
@@ -1386,17 +1354,17 @@ void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, BriefengScreen *brf, World:
 
 void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 {
-    float v3 = (brf->MapBlitEnd.x2 - brf->MapBlitEnd.x1) / (float)yw->_mapWidth;
-    float v4 = (brf->MapBlitEnd.y2 - brf->MapBlitEnd.y1) / (float)yw->_mapHeight;
+    float v3 = brf->MapBlitEnd.Width() / (float)yw->_mapWidth;
+    float v4 = brf->MapBlitEnd.Height() / (float)yw->_mapHeight;
 
     float v19 = v3 / 10.0;
     float v16 = v4 / 10.0;
 
-    float v21 = brf->MapBlitEnd.y1 + v4 * 0.5;
+    float v21 = brf->MapBlitEnd.top + v4 * 0.5;
 
     for (int yy = 0; yy < yw->_mapHeight; yy++)
     {
-        float v23 = brf->MapBlitEnd.x1 + v3 * 0.5;
+        float v23 = brf->MapBlitEnd.left + v3 * 0.5;
         
         uint8_t *ownmap = brf->OwnMap.Line(yy);
 
@@ -1409,8 +1377,8 @@ void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
                 if ( xx > 0 && xx < yw->_mapWidth - 1
                         && yy > 0 && yy < yw->_mapHeight - 1 )
                 {
-                    w3d_func198arg arg198;
-                    w3d_func198arg arg198_1;
+                    Common::FLine arg198;
+                    Common::FLine arg198_1;
 
                     arg198.x1 = v23 - v19;
                     arg198.y1 = v21;
@@ -1423,8 +1391,8 @@ void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
                     arg198_1.y2 = v21 + v16;
 
                     yw->_win3d->raster_func217( yw_GetColor(yw, owner) );
-                    yw->_win3d->raster_func198(&arg198);
-                    yw->_win3d->raster_func198(&arg198_1);
+                    yw->_win3d->raster_func198(arg198);
+                    yw->_win3d->raster_func198(arg198_1);
                 }
             }
 
@@ -2205,14 +2173,8 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
                 rstr_arg204 arg204;
                 arg204.pbitm = brf->BriefingMapImg->GetResBmp();
 
-                arg204.float4 = -1.0;
-                arg204.floatC = 1.0;
-                arg204.float8 = -1.0;
-                arg204.float10 = 1.0;
-                arg204.float14 = -1.0;
-                arg204.float1C = 1.0;
-                arg204.float18 = -1.0;
-                arg204.float20 = 1.0;
+                arg204.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+                arg204.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
                 yw->_win3d->raster_func204(&arg204);
             }

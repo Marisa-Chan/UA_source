@@ -3008,16 +3008,16 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
 void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
 {
-    ua_dRect regions[256];
+    std::array<Common::Rect, 256> regions;
 
     if ( yw->LevelNet->ilbm_mask_map )
     {
         for (int i = 0; i < 256; i++)
         {
-            regions[i].x1 = 10000;
-            regions[i].y1 = 10000;
-            regions[i].x2 = -10000;
-            regions[i].y2 = -10000;
+            regions[i].left = 10000;
+            regions[i].top = 10000;
+            regions[i].right = -10000;
+            regions[i].bottom = -10000;
         }
 
         ResBitmap *bitm = yw->LevelNet->ilbm_mask_map->GetResBmp();
@@ -3029,45 +3029,35 @@ void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
 
             for (int x = 0; x < bitm->width; x++)
             {
+                Common::Rect &rgn = regions.at( ln[x] );
 
-                int v7 = ln[x];
-                if ( v7 < 256 )
-                {
-                    ua_dRect *v8 = &regions[v7];
+                if ( x < rgn.left )
+                    rgn.left = x;
 
-                    if ( x < v8->x1 )
-                        v8->x1 = x;
+                if ( x > rgn.right )
+                    rgn.right = x;
 
-                    if ( x > v8->x2 )
-                        v8->x2 = x;
+                if ( y < rgn.top )
+                    rgn.top = y;
 
-                    if ( y < v8->y1 )
-                        v8->y1 = y;
-
-                    if ( y > v8->y2 )
-                        v8->y2 = y;
-                }
+                if ( y > rgn.bottom )
+                    rgn.bottom = y;
             }
         }
 
         for (int i = 0; i < 256; i++)
         {
-            mapINFO *minf = &yw->LevelNet->mapInfos[i];
+            mapINFO &minf = yw->LevelNet->mapInfos[i];
 
-            if ( minf->field_0 && minf->field_0 != 4 && regions[i].x1 != 10000 )
+            if ( minf.field_0 && minf.field_0 != 4 && regions.at(i).IsValid() )
             {
-                minf->field_9C.x1 = 2.0 * ((float)(regions[i].x1) / (float)bitm->width) + -1.0;
-                minf->field_9C.x2 = 2.0 * ((float)(regions[i].x2) / (float)bitm->width) + -1.0;
-                minf->field_9C.y1 = 2.0 * ((float)(regions[i].y1) / (float)bitm->height) + -1.0;
-                minf->field_9C.y2 = 2.0 * ((float)(regions[i].y2) / (float)bitm->height) + -1.0;
+                minf.field_9C.left = 2.0 * ((float)(regions[i].left) / (float)bitm->width) + -1.0;
+                minf.field_9C.right = 2.0 * ((float)(regions[i].right) / (float)bitm->width) + -1.0;
+                minf.field_9C.top = 2.0 * ((float)(regions[i].top) / (float)bitm->height) + -1.0;
+                minf.field_9C.bottom = 2.0 * ((float)(regions[i].bottom) / (float)bitm->height) + -1.0;
             }
             else
-            {
-                minf->field_9C.x2 = 0;
-                minf->field_9C.y1 = 0;
-                minf->field_9C.y2 = 0;
-                minf->field_9C.x1 = 0;
-            }
+                minf.field_9C = Common::FRect();
         }
         
         SDL_UnlockSurface(bitm->swTex);
@@ -3099,13 +3089,7 @@ bool NC_STACK_ypaworld::GameShellInitBkg()
 {
     NC_STACK_display *win3d = GFX::Engine.C3D();
 
-    ua_dRect v5;
-    v5.x1 = -(screen_width >> 1);
-    v5.x2 = screen_width >> 1;
-    v5.y1 = -(screen_height >> 1);
-    v5.y2 = screen_height >> 1;
-
-    win3d->raster_func211(&v5);
+    win3d->raster_func211(Common::Rect (-(screen_width / 2), -(screen_height / 2), screen_width / 2, screen_height / 2) );
     GameShellInitBkgMode(GameShell->envMode);
     return true;
 }

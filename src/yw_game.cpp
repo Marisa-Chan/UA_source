@@ -48,14 +48,8 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
 
         a4.pbitm = splashScreen->GetResBmp();
 
-        a4.float4  = -1.0;
-        a4.float8  = -1.0;
-        a4.floatC  =  1.0;
-        a4.float10 =  1.0;
-        a4.float14 = -1.0;
-        a4.float18 = -1.0;
-        a4.float1C =  1.0;
-        a4.float20 =  1.0;
+        a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+        a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
         NC_STACK_display *win3d = GFX::Engine.C3D();
 
@@ -86,14 +80,8 @@ void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScree
 
         a4.pbitm = splashScreen->GetResBmp();
 
-        a4.float4  = -1.0;
-        a4.float8  = -1.0;
-        a4.floatC  =  1.0;
-        a4.float10 =  1.0;
-        a4.float14 = -1.0;
-        a4.float18 = -1.0;
-        a4.float1C =  1.0;
-        a4.float20 =  1.0;
+        a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+        a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
         NC_STACK_win3d *win3d = GFX::Engine.C3D();
 

@@ -5,100 +5,11 @@
 #include "common.h"
 #include "base.h"
 
-struct ua_dRect
-{
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-};
-
-struct ua_fRect
-{
-    float x1;
-    float y1;
-    float x2;
-    float y2;
-    
-    ua_fRect(float sx1, float sy1, float sx2, float sy2)
-    : x1(sx1), y1(sy1), x2(sx2), y2(sy2)
-    {}
-
-    ua_fRect()
-    {
-    	clear();
-    }
-    
-    void clear()
-    {
-    	x1 = 0.;
-    	y1 = 0.;
-    	x2 = 0.;
-    	y2 = 0.;
-    }
-};
-
-
-
-struct w3d_func198arg
-{
-    float x1;
-    float y1;
-    float x2;
-    float y2;
-};
-
-struct w3d_func199arg
-{
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-};
-
 struct rstr_arg204
 {
-    ResBitmap *pbitm;
-    float float4;
-    float float8;
-    float floatC;
-    float float10;
-    float float14;
-    float float18;
-    float float1C;
-    float float20;
-
-    rstr_arg204()
-    {
-    	clear();
-    }
-
-    void clear()
-    {
-    	pbitm = NULL;
-		float4 = 0.;
-		float8 = 0.;
-		floatC = 0.;
-		float10 = 0.;
-		float14 = 0.;
-		float18 = 0.;
-		float1C = 0.;
-		float20 = 0.;
-    }
-};
-
-struct rstr_loc204
-{
-    ResBitmap *pbitm;
-    int dword4;
-    int dword8;
-    int dwordC;
-    int dword10;
-    int dword14;
-    int dword18;
-    int dword1C;
-    int dword20;
-    int dword24;
+    ResBitmap *pbitm = NULL;
+    Common::FRect float4;
+    Common::FRect float14;
 };
 
 struct rstr_218_arg
@@ -106,8 +17,8 @@ struct rstr_218_arg
     ResBitmap *bitm_intern;
     ResBitmap *bitm_intern2;
     int flg;
-    ua_fRect rect1;
-    ua_fRect rect2;
+    Common::FRect rect1;
+    Common::FRect rect2;
 };
 
 struct rstr_262_arg
@@ -136,10 +47,10 @@ public:
     virtual size_t func1();
     virtual size_t raster_func192(IDVPair *);
 //    virtual size_t raster_func193(bitmap_intern **out);
-    virtual size_t raster_func198(w3d_func198arg *);
-    virtual size_t raster_func199(w3d_func199arg *);
-    virtual size_t raster_func200(w3d_func198arg *);
-    virtual size_t raster_func201(w3d_func199arg *);
+    virtual size_t raster_func198(const Common::FLine &);
+    virtual size_t raster_func199(const Common::Line &l);
+    virtual size_t raster_func200(const Common::FLine &);
+    virtual size_t raster_func201(const Common::Line &r);
     virtual size_t raster_func202(rstr_arg204 *);
     virtual size_t raster_func203(IDVPair *);
     virtual size_t raster_func204(rstr_arg204 *);
@@ -149,8 +60,8 @@ public:
     virtual TileMap *raster_func208(int id);
     virtual int raster_func208(TileMap *tiles);
     virtual void raster_func209(w3d_a209 *);
-    virtual void raster_func210(ua_fRect *arg);
-    virtual void raster_func211(ua_dRect *arg);
+    virtual void raster_func210(const Common::FRect &arg);
+    virtual void raster_func211(const Common::Rect &arg);
     virtual size_t raster_func212(IDVPair *);
     virtual void BeginScene();
     virtual void EndScene();
@@ -158,7 +69,7 @@ public:
     virtual void raster_func218(rstr_218_arg *arg);
     virtual size_t raster_func219(IDVPair *);
     virtual size_t raster_func220(IDVPair *);
-    virtual void raster_func221(ua_dRect *arg);
+    virtual void raster_func221(const Common::Rect &arg);
 
     virtual void BeginFrame() {};
     virtual void EndFrame() {};

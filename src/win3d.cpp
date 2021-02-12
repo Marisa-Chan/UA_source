@@ -655,18 +655,18 @@ size_t NC_STACK_win3d::raster_func192(IDVPair *)
     return 1;
 }
 
-size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
+size_t NC_STACK_win3d::raster_func198(const Common::FLine &arg)
 {
     float tX = _field_554 - 1.0;
     float tY = _field_558 - 1.0;
 
-    int y1 = (arg->y1 + 1.0) * tY;
-    int y2 = (arg->y2 + 1.0) * tY;
-    int x1 = (arg->x1 + 1.0) * tX;
-    int x2 = (arg->x2 + 1.0) * tX;
+    int y1 = (arg.y1 + 1.0) * tY;
+    int y2 = (arg.y2 + 1.0) * tY;
+    int x1 = (arg.x1 + 1.0) * tX;
+    int x2 = (arg.x2 + 1.0) * tX;
 
     GFX::Engine.DrawLine(GFX::Engine.Screen(),
-                      Common::Rect(x1, y1, x2, y2),
+                      Common::Line(x1, y1, x2, y2),
                       (_field_4 >> 16) & 0xFF,
                       (_field_4 >> 8) & 0xFF,
                        _field_4 & 0xFF);
@@ -674,11 +674,11 @@ size_t NC_STACK_win3d::raster_func198(w3d_func198arg *arg)
 }
 
 
-size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
+size_t NC_STACK_win3d::raster_func199(const Common::Line &arg)
 {
     GFX::Engine.DrawLine(GFX::Engine.Screen(),
-                      Common::Rect(_field_54c + arg->x1, _field_550 + arg->y1,
-                                   _field_54c + arg->x2, _field_550 + arg->y2),
+                      Common::Line(_field_54c + arg.x1, _field_550 + arg.y1,
+                                   _field_54c + arg.x2, _field_550 + arg.y2),
                       (_field_4 >> 16) & 0xFF,
                       (_field_4 >> 8) & 0xFF,
                       _field_4 & 0xFF);
@@ -686,52 +686,47 @@ size_t NC_STACK_win3d::raster_func199(w3d_func199arg *arg)
     return 1;
 }
 
-void NC_STACK_win3d::sub_420EDC(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
+void NC_STACK_win3d::sub_420EDC(Common::Line line, uint8_t r, uint8_t g, uint8_t b)
 {
-    Common::Rect tmp1(x1, y1, x2, y2);
-
-    if ( Common::ClipLine(_clip, &tmp1) )
+    if ( line.ClipBy(_clip) )
     {
-        Common::Rect tmp2 = tmp1;
-        
+        Common::Line tmp2 = line;
 
-        if ( _inverseClip.IsEmpty() || !Common::ClipLine(_inverseClip, &tmp2) )
+        if ( _inverseClip.IsEmpty() || !tmp2.ClipBy(_inverseClip) )
         {
-            GFX::Engine.DrawLine(GFX::Engine.Screen(), tmp1, r, g, b);
+            GFX::Engine.DrawLine(GFX::Engine.Screen(), line, r, g, b);
         }
         else
         {
-            if ( tmp2.right != tmp1.right || tmp2.bottom != tmp1.bottom )
+            if ( tmp2.P2() != line.P2() )
             {
-                if ( tmp2.left != tmp1.left || tmp2.top != tmp1.top )
+                if ( tmp2.P1() != line.P1() )
                 {
-                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
-                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Line(line.P1(), tmp2.P1()), r, g, b);
+                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Line(tmp2.P2(), line.P2()), r, g, b);
                 }
                 else
                 {
-                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp2.right, tmp2.bottom, tmp1.right, tmp1.bottom), r, g, b);
+                    GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Line(tmp2.P2(), line.P2()), r, g, b);
                 }
             }
             else
             {
-                GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Rect(tmp1.left, tmp1.top, tmp2.left, tmp2.top), r, g, b);
+                GFX::Engine.DrawLine(GFX::Engine.Screen(), Common::Line(line.P1(), tmp2.P1()), r, g, b);
             }
         }
     }
 }
 
-size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
+size_t NC_STACK_win3d::raster_func200(const Common::FLine &arg)
 {
     float tX = _field_554 - 1.0;
     float tY = _field_558 - 1.0;
 
-    int y1 = (arg->y1 + 1.0) * tY;
-    int y2 = (arg->y2 + 1.0) * tY;
-    int x1 = (arg->x1 + 1.0) * tX;
-    int x2 = (arg->x2 + 1.0) * tX;
-
-    sub_420EDC (x1, y1, x2, y2,
+    sub_420EDC (Common::Line( (arg.x1 + 1.0) * tX
+                            , (arg.y1 + 1.0) * tY
+                            , (arg.x2 + 1.0) * tX
+                            , (arg.y2 + 1.0) * tY),
                (_field_4 >> 16) & 0xFF,
                (_field_4 >> 8) & 0xFF,
                _field_4 & 0xFF);
@@ -739,12 +734,12 @@ size_t NC_STACK_win3d::raster_func200(w3d_func198arg *arg)
     return 1;
 }
 
-size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
+size_t NC_STACK_win3d::raster_func201(const Common::Line &l)
 {
-    sub_420EDC(_field_54c + arg->x1,
-               _field_550 + arg->y1,
-               _field_54c + arg->x2,
-               _field_550 + arg->y2,
+    sub_420EDC( Common::Line( _field_54c + l.x1
+                            , _field_550 + l.y1
+                            , _field_54c + l.x2
+                            , _field_550 + l.y2),
                (_field_4 >> 16) & 0xFF,
                (_field_4 >> 8) & 0xFF,
                _field_4 & 0xFF);
@@ -754,121 +749,70 @@ size_t NC_STACK_win3d::raster_func201(w3d_func199arg *arg)
 
 size_t NC_STACK_win3d::raster_func202(rstr_arg204 *arg)
 {
-    ResBitmap *pbitm = arg->pbitm;
+    Common::Rect r1;
+    r1.left   = (arg->float4.left   + 1.0) * (arg->pbitm->width / 2);
+    r1.top    = (arg->float4.top    + 1.0) * (arg->pbitm->height / 2);
+    r1.right  = (arg->float4.right  + 1.0) * (arg->pbitm->width / 2);
+    r1.bottom = (arg->float4.bottom + 1.0) * (arg->pbitm->height / 2);
 
-    int a1 = (arg->float4 + 1.0) * (arg->pbitm->width / 2);
-    int a2 = (arg->float8 + 1.0) * (arg->pbitm->height / 2);
-    int a3 = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
-    int a4 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
-
-    int a5 = _field_554 * (arg->float14 + 1.0);
-    int a6 = _field_558 * (arg->float18 + 1.0);
-    int a7 = _field_554 * (arg->float1C + 1.0);
-    int a8 = _field_558 * (arg->float20 + 1.0);
+    Common::Rect r2;
+    r2.left   = _field_554 * (arg->float14.left   + 1.0);
+    r2.top    = _field_558 * (arg->float14.top    + 1.0);
+    r2.right  = _field_554 * (arg->float14.right  + 1.0);
+    r2.bottom = _field_558 * (arg->float14.bottom + 1.0);
     
-    SDL_Rect src;
-    src.x = a1;
-    src.y = a2;
-    src.w = a3 - a1;
-    src.h = a4 - a2;
+    SDL_Rect src = r1;
+    SDL_Rect dst = r2;
     
-    SDL_Rect dst;
-    dst.x = a5;
-    dst.y = a6;
-    dst.w = a7 - a5;
-    dst.h = a8 - a6;
-    
-    SDL_BlitScaled(pbitm->swTex, &src, GFX::Engine.Screen(), &dst);
+    SDL_BlitScaled(arg->pbitm->swTex, &src, GFX::Engine.Screen(), &dst);
     
     return 1;
 }
-
-
-int win3d_func204__sub0(NC_STACK_win3d *w3d, rstr_loc204 *arg)
-{
-    if ( w3d->_clip.left > arg->dword20 || w3d->_clip.right < arg->dword18 || w3d->_clip.top > arg->dword24 || w3d->_clip.bottom < arg->dword1C )
-        return 0;
-
-    int d04 = arg->dword4;
-    int d08 = arg->dword8;
-    int d0C = arg->dwordC;
-    int d10 = arg->dword10;
-
-    int d18 = arg->dword18;
-    int d1C = arg->dword1C;
-    int d20 = arg->dword20;
-    int d24 = arg->dword24;
-
-
-    if ( d18 < w3d->_clip.left )
-    {
-        d04 += (w3d->_clip.left - d18) * (d0C - d04) / (d20 - d18);
-        d18 = w3d->_clip.left;
-    }
-
-    if ( d20 > w3d->_clip.right )
-    {
-        d0C += (w3d->_clip.right - d20) * (d0C - d04) / (d20 - d18);
-        d20 = w3d->_clip.right;
-    }
-
-    if ( d1C < w3d->_clip.top )
-    {
-        d08 += (w3d->_clip.top - d1C) * (d10 - d08) / (d24 - d1C);
-        d1C = w3d->_clip.top;
-    }
-
-    if ( d24 > w3d->_clip.bottom )
-    {
-        d10 += (w3d->_clip.bottom - d24) * (d10 - d08) / (d24 - d1C);
-        d24 = w3d->_clip.bottom;
-    }
-
-    arg->dword4 = d04;
-    arg->dword8 = d08;
-    arg->dwordC = d0C;
-    arg->dword10 = d10;
-    arg->dword18 = d18;
-    arg->dword1C = d1C;
-    arg->dword20 = d20;
-    arg->dword24 = d24;
-
-    return 1;
-}
-
 
 size_t NC_STACK_win3d::raster_func204(rstr_arg204 *arg)
-{
-    rstr_loc204 loc;
+{   
+    Common::Rect r1;
+    r1.left   = (arg->float4.left   + 1.0) * (arg->pbitm->width / 2);
+    r1.top    = (arg->float4.top    + 1.0) * (arg->pbitm->height / 2);
+    r1.right  = (arg->float4.right  + 1.0) * (arg->pbitm->width / 2);
+    r1.bottom = (arg->float4.bottom + 1.0) * (arg->pbitm->height / 2);
 
-    loc.pbitm = arg->pbitm;
-    loc.dword4 = (arg->float4 + 1.0) * (arg->pbitm->width / 2);
-    loc.dword8 = (arg->float8 + 1.0) * (arg->pbitm->height / 2);
-    loc.dwordC = (arg->floatC + 1.0) * (arg->pbitm->width / 2);
-    loc.dword10 = (arg->float10 + 1.0) * (arg->pbitm->height / 2);
-
-    loc.dword18 = (arg->float14 + 1.0) * _field_554;
-    loc.dword1C = (arg->float18 + 1.0) * _field_558;
-    loc.dword20 = (arg->float1C + 1.0) * _field_554;
-    loc.dword24 = (arg->float20 + 1.0) * _field_558;
-
-    if ( win3d_func204__sub0(this, &loc) )
+    Common::Rect r2;
+    r2.left   = _field_554 * (arg->float14.left   + 1.0);
+    r2.top    = _field_558 * (arg->float14.top    + 1.0);
+    r2.right  = _field_554 * (arg->float14.right  + 1.0);
+    r2.bottom = _field_558 * (arg->float14.bottom + 1.0);
+    
+    if ( _clip.IsIntersects(r2) )
     {
-        SDL_Rect src;
-        src.x = loc.dword4;
-        src.y = loc.dword8;
-        src.w = loc.dwordC - loc.dword4;
-        src.h = loc.dword10 - loc.dword8;
+        if ( r2.left < _clip.left )
+        {
+            r1.left += (_clip.left - r2.left) * r1.Width() / r2.Width();
+            r2.left = _clip.left;
+        }
 
-        SDL_Rect dst;
-        dst.x = loc.dword18;
-        dst.y = loc.dword1C;
-        dst.w = loc.dword20 - loc.dword18;
-        dst.h = loc.dword24 - loc.dword1C;
+        if ( r2.right > _clip.right )
+        {
+            r1.right += (_clip.right - r2.right) * r1.Width() / r2.Width();
+            r2.right = _clip.right;
+        }
 
-        SDL_BlitScaled(loc.pbitm->swTex, &src, GFX::Engine.Screen(), &dst);
+        if ( r2.top < _clip.top )
+        {
+            r1.top += (_clip.top - r2.top) * r1.Height() / r2.Height();
+            r2.top = _clip.top;
+        }
+
+        if ( r2.bottom > _clip.bottom )
+        {
+            r1.bottom += (_clip.bottom - r2.bottom) * r1.Height() / r2.Height();
+            r2.bottom = _clip.bottom;
+        }
+    
+        SDL_Rect src = r1;
+        SDL_Rect dst = r2;
+        SDL_BlitScaled(arg->pbitm->swTex, &src, GFX::Engine.Screen(), &dst);
     }
-
 
     return 1;
 }
@@ -1515,15 +1459,15 @@ void NC_STACK_win3d::EndScene()
 
 void NC_STACK_win3d::raster_func218(rstr_218_arg *arg)
 {
-    Common::Rect sRect( (arg->rect1.x1 + 1.0) * (arg->bitm_intern->width / 2),
-                        (arg->rect1.y1 + 1.0) * (arg->bitm_intern->height / 2),
-                        (arg->rect1.x2 + 1.0) * (arg->bitm_intern->width / 2),
-                        (arg->rect1.y2 + 1.0) * (arg->bitm_intern->height / 2) );
+    Common::Rect sRect( (arg->rect1.left + 1.0) * (arg->bitm_intern->width / 2),
+                        (arg->rect1.top + 1.0) * (arg->bitm_intern->height / 2),
+                        (arg->rect1.right + 1.0) * (arg->bitm_intern->width / 2),
+                        (arg->rect1.bottom + 1.0) * (arg->bitm_intern->height / 2) );
 
-    Common::Rect dRect( (arg->rect2.x1 + 1.0) * _field_554,
-                        (arg->rect2.y1 + 1.0) * _field_558,
-                        (arg->rect2.x2 + 1.0) * _field_554,
-                        (arg->rect2.y2 + 1.0) * _field_558 );
+    Common::Rect dRect( (arg->rect2.left + 1.0) * _field_554,
+                        (arg->rect2.top + 1.0) * _field_558,
+                        (arg->rect2.right + 1.0) * _field_554,
+                        (arg->rect2.bottom + 1.0) * _field_558 );
 
     GFX::Engine.BlitScaleMasked(arg->bitm_intern->swTex, sRect, arg->bitm_intern2->swTex, arg->flg, GFX::Engine.Screen(), dRect);
 }

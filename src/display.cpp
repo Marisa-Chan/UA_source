@@ -79,25 +79,25 @@ size_t NC_STACK_display::raster_func192(IDVPair *)
 //    return 0;
 //}
 
-size_t NC_STACK_display::raster_func198(w3d_func198arg *)
+size_t NC_STACK_display::raster_func198(const Common::FLine &)
 {
     dprintf("MAKE ME %s\n","raster_func198");
     return 0;
 }
 
-size_t NC_STACK_display::raster_func199(w3d_func199arg *)
+size_t NC_STACK_display::raster_func199(const Common::Line &l)
 {
     dprintf("MAKE ME %s\n","raster_func199");
     return 0;
 }
 
-size_t NC_STACK_display::raster_func200(w3d_func198arg *)
+size_t NC_STACK_display::raster_func200(const Common::FLine &)
 {
     dprintf("MAKE ME %s\n","raster_func200");
     return 0;
 }
 
-size_t NC_STACK_display::raster_func201(w3d_func199arg *)
+size_t NC_STACK_display::raster_func201(const Common::Line &r)
 {
     dprintf("MAKE ME %s\n","raster_func201");
     return 0;
@@ -161,20 +161,20 @@ void NC_STACK_display::raster_func209(w3d_a209 *)
     dprintf("MAKE ME %s\n","raster_func209");
 }
 
-void NC_STACK_display::raster_func210(ua_fRect *arg)
+void NC_STACK_display::raster_func210(const Common::FRect &arg)
 {
-    _clip = Common::Rect(   (arg->x1 + 1.0) * (_field_554 + -1.0),
-                            (arg->y1 + 1.0) * (_field_558 + -1.0),
-                            (arg->x2 + 1.0) * (_field_554 + -1.0),
-                            (arg->y2 + 1.0) * (_field_558 + -1.0) );
+    _clip = Common::Rect(   (arg.left + 1.0) * (_field_554 + -1.0),
+                            (arg.top + 1.0) * (_field_558 + -1.0),
+                            (arg.right + 1.0) * (_field_554 + -1.0),
+                            (arg.bottom + 1.0) * (_field_558 + -1.0) );
     }
 
-void NC_STACK_display::raster_func211(ua_dRect *arg)
+void NC_STACK_display::raster_func211(const Common::Rect &arg)
 {
-    _clip = Common::Rect(   _field_54c + arg->x1,
-                            _field_550 + arg->y1,
-                            _field_54c + arg->x2,
-                            _field_550 + arg->y2 );
+    _clip = Common::Rect(   _field_54c + arg.left,
+                            _field_550 + arg.top,
+                            _field_54c + arg.right,
+                            _field_550 + arg.bottom );
 }
 
 size_t NC_STACK_display::raster_func212(IDVPair *)
@@ -217,12 +217,12 @@ size_t NC_STACK_display::raster_func220(IDVPair *)
     return 0;
 }
 
-void NC_STACK_display::raster_func221(ua_dRect *arg)
+void NC_STACK_display::raster_func221(const Common::Rect &arg)
 {
-    _inverseClip.left = _field_54c + arg->x1;
-    _inverseClip.top = _field_550 + arg->y1;
-    _inverseClip.right = _field_54c + arg->x2;
-    _inverseClip.bottom = _field_550 + arg->y2;
+    _inverseClip.left = _field_54c + arg.left;
+    _inverseClip.top = _field_550 + arg.top;
+    _inverseClip.right = _field_54c + arg.right;
+    _inverseClip.bottom = _field_550 + arg.bottom;
 }
 
 

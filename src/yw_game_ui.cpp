@@ -283,29 +283,25 @@ void sb_0x451034__sub8(NC_STACK_ypaworld *yw)
 }
 
 
-void sub_4F681C(float a1, float a2, int *a3, int *a4)
+Common::Point sub_4F681C(Common::FPoint in)
 {
     if ( robo_map.field_1E8 & 0x100 )
     {
-        float a1a = a1 - robo_map.field_1D8;
-        float a2a = a2 - robo_map.field_1DC;
+        float a1a = in.x - robo_map.field_1D8;
+        float a2a = in.y - robo_map.field_1DC;
 
-        a1 = robo_map.field_1D8 + robo_map.field_264 * a1a + flt_5164F4 * a2a;
-        a2 = robo_map.field_1DC + flt_516504 * a1a + flt_51650C * a2a;
+        in.x = robo_map.field_1D8 + robo_map.field_264 * a1a + flt_5164F4 * a2a;
+        in.y = robo_map.field_1DC + flt_516504 * a1a + flt_51650C * a2a;
     }
 
-    *a3 = robo_map.field_200 + dround(a1 / robo_map.field_1E0) - robo_map.field_1F0;
-    *a4 = robo_map.field_204 + dround(-a2 / robo_map.field_1E4) - robo_map.field_1F4;
+    return Common::Point( robo_map.field_200 + dround(in.x / robo_map.field_1E0) - robo_map.field_1F0
+                        , robo_map.field_204 + dround(-in.y / robo_map.field_1E4) - robo_map.field_1F4 );
 }
 
 void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, uint32_t a7)
 {
-    w3d_func199arg a3a;
-    sub_4F681C(a3, a4, &a3a.x1, &a3a.y1);
-    sub_4F681C(a5, a6, &a3a.x2, &a3a.y2);
-
     displ->raster_func217(a7);
-    displ->raster_func201(&a3a);
+    displ->raster_func201( Common::Line( sub_4F681C({a3, a4}), sub_4F681C({a5, a6}) )  );
 }
 
 
@@ -313,11 +309,10 @@ char * sub_4F6980(char *cur, float a1, float a2, char a3, int a4, int a5)
 {
     char *pcur = cur;
 
-    int a3a, v30;
-    sub_4F681C(a1, a2, &a3a, &v30);
+    Common::Point tmp = sub_4F681C( {a1, a2} );
 
-    int v7 = a3a - a4 / 2 - robo_map.field_200;
-    int v8 = v30 - a5 / 2 - robo_map.field_204;
+    int v7 = tmp.x - a4 / 2 - robo_map.field_200;
+    int v8 = tmp.y - a5 / 2 - robo_map.field_204;
     int v9 = v7 + a4;
     int v10 = v8 + a5;
 
@@ -617,41 +612,27 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
 
         if ( robo_map.field_1E8 & 0x200 )
         {
-
-            w3d_func199arg v23;
-            w3d_func199arg v24;
-            w3d_func199arg v25;
-            w3d_func199arg v26;
-
-            int v21 = yw->screen_width / 2;
-            int v22 = yw->screen_height / 2;
-
-            v24.x1 = dword_516510 - v21;
-            v24.x2 = dword_516518 - v21;
-            v24.y1 = dword_516514 - v22;
-            v24.y2 = dword_516514 - v22;
-
-            v23.x1 = dword_516518 - v21;
-            v23.x2 = dword_516510 - v21;
-            v23.y1 = dword_51651C - v22;
-            v23.y2 = dword_51651C - v22;
-
-            v25.x1 = dword_516510 - v21;
-            v25.x2 = dword_516510 - v21;
-            v25.y1 = dword_51651C - v22;
-            v25.y2 = dword_516514 - v22;
-
-            v26.x1 = dword_516518 - v21;
-            v26.x2 = dword_516518 - v21;
-            v26.y1 = dword_516514 - v22;
-            v26.y2 = dword_51651C - v22;
-
+            int wh = yw->screen_width / 2;
+            int hh = yw->screen_height / 2;
 
             yw->_win3d->raster_func217( yw_GetColor(yw, 12) );
-            yw->_win3d->raster_func201(&v24);
-            yw->_win3d->raster_func201(&v26);
-            yw->_win3d->raster_func201(&v23);
-            yw->_win3d->raster_func201(&v25);
+            
+            yw->_win3d->raster_func201( {dword_516510 - wh,
+                                         dword_516514 - hh,
+                                         dword_516518 - wh,
+                                         dword_516514 - hh} );
+            yw->_win3d->raster_func201( {dword_516518 - wh,
+                                         dword_516514 - hh,
+                                         dword_516518 - wh,
+                                         dword_51651C - hh} );
+            yw->_win3d->raster_func201( {dword_516518 - wh,
+                                         dword_51651C - hh,
+                                         dword_516510 - wh,
+                                         dword_51651C - hh} );
+            yw->_win3d->raster_func201( {dword_516510 - wh,
+                                         dword_51651C - hh,
+                                         dword_516510 - wh,
+                                         dword_516514 - hh} );
         }
     }
 
@@ -664,11 +645,10 @@ char * sb_0x4f8f64__sub2__sub0(char *cur, float a1, float a2, char a3, int a4, i
 {
     char *pcur = cur;
 
-    int a3a, v27;
-    sub_4F681C(a1, a2, &a3a, &v27);
+    Common::Point tmp = sub_4F681C( {a1, a2} );
 
-    int v8 = a3a - a4 / 2 - robo_map.field_200;
-    int v9 = v27 - a4 / 2 - robo_map.field_204;
+    int v8 = tmp.x - a4 / 2 - robo_map.field_200;
+    int v9 = tmp.y - a4 / 2 - robo_map.field_204;
     int v10 = v8 + a4;
     int v11 = v9 + a5;
 
@@ -1211,19 +1191,14 @@ char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const std::string &labl, i
 {
     int v8 = yw->tiles[tileset_id]->GetWidth(labl);
 
-    float a2a = -(a5 * 1200.0);
-    float a1a = a4 * 1200.0;
+    Common::Point tmp = sub_4F681C( {(float)(a4 * 1200.0), (float)-(a5 * 1200.0)} );
 
-    int a4a;
-    int a3a;
-    sub_4F681C(a1a, a2a, &a3a, &a4a);
-
-    int v9 = a3a - robo_map.field_200;
-    int v10 = a4a - robo_map.field_204;
+    int v9 = tmp.x - robo_map.field_200;
+    int v10 = tmp.y - robo_map.field_204;
 
     char *pcur = cur;
 
-    if ( a3a - robo_map.field_200 > 0 && v10 > 0 && a3a - robo_map.field_200 + v8 < robo_map.field_1F8 && a4a - robo_map.field_204 + yw->tiles[tileset_id]->h < robo_map.field_1FC )
+    if ( tmp.x - robo_map.field_200 > 0 && v10 > 0 && tmp.x - robo_map.field_200 + v8 < robo_map.field_1F8 && tmp.y - robo_map.field_204 + yw->tiles[tileset_id]->h < robo_map.field_1FC )
     {
         FontUA::select_tileset(&pcur, tileset_id);
         FontUA::set_center_xpos(&pcur, robo_map.field_200 + v9);
@@ -1573,16 +1548,16 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
     robo_map.field_200 = robo_map.x + robo_map.field_244 - (yw->screen_width / 2);
     robo_map.field_204 = robo_map.y + robo_map.field_23C - (yw->screen_height / 2);
 
-    ua_dRect rect;
-    rect.x1 = robo_map.field_200;
-    rect.x2 = robo_map.w - robo_map.field_24C + robo_map.field_200 - 1;
-    rect.y1 = robo_map.y + robo_map.field_23C - (yw->screen_height / 2);
-    rect.y2 = robo_map.h - robo_map.field_250 + rect.y1 - 1;
+    Common::Rect rect;
+    rect.left = robo_map.field_200;
+    rect.right = robo_map.w - robo_map.field_24C + robo_map.field_200 - 1;
+    rect.top = robo_map.y + robo_map.field_23C - (yw->screen_height / 2);
+    rect.bottom = robo_map.h - robo_map.field_250 + rect.top - 1;
 
     robo_map.field_1F0 = robo_map.field_1D8 / robo_map.field_1E0 - (robo_map.w - robo_map.field_24C) / 2;
     robo_map.field_1F4 = -(robo_map.field_1DC / robo_map.field_1E4 + (robo_map.h - robo_map.field_250) / 2);
 
-    yw->_win3d->raster_func211(&rect);
+    yw->_win3d->raster_func211(rect);
 
     int v33 = robo_map.field_1F0 >> v39;
     int v38 = robo_map.field_1F4 >> v39;
@@ -8803,7 +8778,7 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
 
             if (poly->num_vertices >= 2)
             {
-                w3d_func198arg v29;
+                Common::FLine v29;
                 v29.x1 = wire->tformedVertex[ poly->v[0] ].x;
                 v29.y1 = wire->tformedVertex[ poly->v[0] ].y;
                 v29.x2 = wire->tformedVertex[ poly->v[1] ].x;
@@ -8829,7 +8804,7 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
                     yw->_win3d->raster_func217(v34);
                 }
 
-                yw->_win3d->raster_func200(&v29);
+                yw->_win3d->raster_func200(v29);
             }
         }
     }
@@ -9283,13 +9258,7 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, 
 int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
 {
     //Tech update draw
-    ua_fRect v12;
-    v12.x1 = -1.0;
-    v12.x2 = 1.0;
-    v12.y1 = -1.0;
-    v12.y2 = 1.0;
-
-    yw->_win3d->raster_func210(&v12);
+    yw->_win3d->raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
 
     sklt_wis *wis = &yw->wis_skeletons;
 
@@ -9588,61 +9557,34 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
 char * yw_RenderHUDVectorGFX(NC_STACK_ypaworld *yw, char *cur)
 {
     char *pcur = cur;
+    yw->_win3d->raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
 
-    ua_fRect v9;
-    v9.x1 = -1.0;
-    v9.x2 = 1.0;
-    v9.y1 = -1.0;
-    v9.y2 = 1.0;
+    Common::Rect v7;
 
-    yw->_win3d->raster_func210(&v9);
-
-    ua_dRect v7;
-    ua_dRect v8;
-
-    v8.x1 = 0;
-    v8.x2 = 0;
-    v8.y1 = 0;
-    v8.y2 = 0;
-
-    if ( robo_map.IsClosed() )
+    if ( !robo_map.IsClosed() )
     {
-        v7.x2 = 0;
-        v7.y1 = 0;
-        v7.y2 = 0;
-        v7.x1 = 0;
-    }
-    else
-    {
-        v7.x1 = robo_map.x - (yw->screen_width / 2);
-        v7.y1 = robo_map.y - (yw->screen_height / 2);
-        v7.x2 = robo_map.w + v7.x1;
-        v7.y2 = robo_map.h + v7.y1;
+        v7.left = robo_map.x - (yw->screen_width / 2);
+        v7.top = robo_map.y - (yw->screen_height / 2);
+        v7.right = robo_map.w + v7.left;
+        v7.bottom = robo_map.h + v7.top;
     }
 
-    yw->_win3d->raster_func221(&v7);
+    yw->_win3d->raster_func221(v7);
 
     sklt_wis *wis = &yw->wis_skeletons;
 
     yw_RenderHUDCompass(yw, wis);
 
-    yw->_win3d->raster_func221(&v8);
+    yw->_win3d->raster_func221(Common::Rect());
 
     yw_RenderHUDTarget(yw, wis);
 
-    yw->_win3d->raster_func221(&v7);
+    yw->_win3d->raster_func221(v7);
 
     pcur = yw_RenderHUDInfo(yw, wis, pcur, -0.7, 0.3, yw->UserUnit, -1, 0x10);
 
     if ( robo_map.IsOpen() )
-    {
-        v8.x1 = 0;
-        v8.x2 = 0;
-        v8.y1 = 0;
-        v8.y2 = 0;
-
-        yw->_win3d->raster_func221(&v8);
-    }
+        yw->_win3d->raster_func221(Common::Rect());
 
     return pcur;
 }
@@ -10271,13 +10213,13 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
     robo_map.field_200 = dround(v6 * robo_map.field_254);
     robo_map.field_204 = dround(v7 * robo_map.field_258);
 
-    ua_dRect drect;
-    drect.x1 = robo_map.field_200;
-    drect.y1 = robo_map.field_204;
-    drect.x2 = robo_map.field_1F8 + robo_map.field_200 - 1;
-    drect.y2 = robo_map.field_1FC + robo_map.field_204 - 1;
+    Common::Rect drect;
+    drect.left = robo_map.field_200;
+    drect.top = robo_map.field_204;
+    drect.right = robo_map.field_1F8 + robo_map.field_200 - 1;
+    drect.bottom = robo_map.field_1FC + robo_map.field_204 - 1;
 
-    yw->_win3d->raster_func211(&drect);
+    yw->_win3d->raster_func211(drect);
 
     int v14 = dround(robo_map.field_1F0 * robo_map.field_1E0) / 1200;
     int v29 = dround(robo_map.field_1F4 * robo_map.field_1E4) / 1200;
@@ -10313,15 +10255,12 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
                         int v19 = 0;
                         if ( robo_map.IsOpen() )
                         {
-                            int v20 = robo_map.x - (yw->screen_width / 2);
-                            int v34 = v20 + robo_map.w;
-                            int v37 = robo_map.y - (yw->screen_height / 2);
-                            int v35 = v37 + robo_map.h;
+                            Common::PointRect r { robo_map.x - (yw->screen_width / 2)
+                                                , robo_map.y - (yw->screen_height / 2)
+                                                , robo_map.w
+                                                , robo_map.h };
 
-                            int a3, a4;
-                            sub_4F681C(bact->_position.x, bact->_position.z, &a3, &a4);
-
-                            if ( v20 < a3 && a3 < v34 && a4 > v37 && a4 < v35 )
+                            if ( r.IsIn( sub_4F681C({(float)bact->_position.x, (float)bact->_position.z}) ) )
                                 v19 = 1;
                         }
 
