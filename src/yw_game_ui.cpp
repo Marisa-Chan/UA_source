@@ -294,7 +294,7 @@ Common::Point sub_4F681C(Common::FPoint in)
                         , robo_map.field_204 + dround(-in.y / robo_map.field_1E4) - robo_map.field_1F4 );
 }
 
-void sub_4F68FC(NC_STACK_display *displ, float a3, float a4, float a5, float a6, SDL_Color a7)
+void sub_4F68FC(NC_STACK_win3d *displ, float a3, float a4, float a5, float a6, SDL_Color a7)
 {
     displ->raster_func217(a7);
     displ->raster_func201( Common::Line( sub_4F681C({a3, a4}), sub_4F681C({a5, a6}) )  );

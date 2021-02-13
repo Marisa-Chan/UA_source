@@ -55,7 +55,6 @@
       <in>common.cpp</in>
       <in>crc32.cpp</in>
       <in>def_parser.cpp</in>
-      <in>display.cpp</in>
       <in>embed.cpp</in>
       <in>env.cpp</in>
       <in>env.h</in>
@@ -195,10 +194,6 @@
         </ccTool>
       </item>
       <item path="def_parser.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="display.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
       </item>

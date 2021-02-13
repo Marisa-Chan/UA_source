@@ -5,7 +5,6 @@
 #include "utils.h"
 #include "system/inpt.h"
 
-#include "display.h"
 #include "win3d.h"
 
 #include "skeleton.h"
@@ -318,31 +317,31 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
     if (renderFlags == 0)
         renderFlags = 0;
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_LINMAP;
+        renderFlags = NC_STACK_win3d::RFLAGS_LINMAP;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_PERSPMAP;
+        renderFlags = NC_STACK_win3d::RFLAGS_PERSPMAP;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_LINMAP | NC_STACK_display::RFLAGS_GRADSHD;
+        renderFlags = NC_STACK_win3d::RFLAGS_LINMAP | NC_STACK_win3d::RFLAGS_GRADSHD;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_PERSPMAP | NC_STACK_display::RFLAGS_GRADSHD;
+        renderFlags = NC_STACK_win3d::RFLAGS_PERSPMAP | NC_STACK_win3d::RFLAGS_GRADSHD;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_LINMAP | NC_STACK_display::RFLAGS_ZEROTRACY;
+        renderFlags = NC_STACK_win3d::RFLAGS_LINMAP | NC_STACK_win3d::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_PERSPMAP | NC_STACK_display::RFLAGS_ZEROTRACY;
+        renderFlags = NC_STACK_win3d::RFLAGS_PERSPMAP | NC_STACK_win3d::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_LINMAP | NC_STACK_display::RFLAGS_GRADSHD | NC_STACK_display::RFLAGS_ZEROTRACY;
+        renderFlags = NC_STACK_win3d::RFLAGS_LINMAP | NC_STACK_win3d::RFLAGS_GRADSHD | NC_STACK_win3d::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_PERSPMAP | NC_STACK_display::RFLAGS_GRADSHD | NC_STACK_display::RFLAGS_ZEROTRACY;
+        renderFlags = NC_STACK_win3d::RFLAGS_PERSPMAP | NC_STACK_win3d::RFLAGS_GRADSHD | NC_STACK_win3d::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
-        renderFlags = NC_STACK_display::RFLAGS_LINMAP | NC_STACK_display::RFLAGS_LUMTRACY;
+        renderFlags = NC_STACK_win3d::RFLAGS_LINMAP | NC_STACK_win3d::RFLAGS_LUMTRACY;
     else
         return 1;
 
@@ -351,9 +350,9 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
     skel133.field_4 = 0;
 
-    if ( renderFlags & (NC_STACK_display::RFLAGS_LINMAP | NC_STACK_display::RFLAGS_PERSPMAP ) )
+    if ( renderFlags & (NC_STACK_win3d::RFLAGS_LINMAP | NC_STACK_win3d::RFLAGS_PERSPMAP ) )
         skel133.field_4 |= 1;
-    if ( renderFlags & (NC_STACK_display::RFLAGS_FLATSHD | NC_STACK_display::RFLAGS_GRADSHD) )
+    if ( renderFlags & (NC_STACK_win3d::RFLAGS_FLATSHD | NC_STACK_win3d::RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
     if ( amesh->flags & AMESH_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
@@ -407,7 +406,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
         {
             arg->adeCount++;
 
-            if ( datSub->renderFlags & ( NC_STACK_display::RFLAGS_FLATSHD | NC_STACK_display::RFLAGS_GRADSHD ) )
+            if ( datSub->renderFlags & ( NC_STACK_win3d::RFLAGS_FLATSHD | NC_STACK_win3d::RFLAGS_GRADSHD ) )
             {
                 int v6 = 0;
                 int v8 = 0;
@@ -423,7 +422,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
 
                 if ( v6 == datSub->vertexCount )
                 {
-                    datSub->renderFlags &= ~( NC_STACK_display::RFLAGS_FLATSHD | NC_STACK_display::RFLAGS_GRADSHD );
+                    datSub->renderFlags &= ~( NC_STACK_win3d::RFLAGS_FLATSHD | NC_STACK_win3d::RFLAGS_GRADSHD );
                 }
                 else if ( v8 == datSub->vertexCount )
                 {
@@ -431,7 +430,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                 }
             }
 
-            datSub->renderFlags |= (arg->flags & NC_STACK_display::RFLAGS_SKY);
+            datSub->renderFlags |= (arg->flags & NC_STACK_win3d::RFLAGS_SKY);
 
             float maxz = 0.0;
 
@@ -439,7 +438,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                 if (datSub->vertexes[j].z > maxz)
                     maxz = datSub->vertexes[j].z;
 
-            if ( !(arg->flags & NC_STACK_display::RFLAGS_IGNORE_FALLOFF) && NC_STACK_win3d::win3d_keys[18].Get<bool>() )
+            if ( !(arg->flags & NC_STACK_win3d::RFLAGS_IGNORE_FALLOFF) && NC_STACK_win3d::win3d_keys[18].Get<bool>() )
             {
                 float maxln = 0.0;
 
@@ -451,7 +450,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                 }
 
                 if (maxln > NC_STACK_win3d::win3d_keys[19].Get<int>())
-                    datSub->renderFlags |= NC_STACK_display::RFLAGS_FALLOFF;
+                    datSub->renderFlags |= NC_STACK_win3d::RFLAGS_FALLOFF;
             }
 
             data->range = maxz;

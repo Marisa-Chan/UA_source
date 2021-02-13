@@ -13,7 +13,6 @@
 #include "system/sound.h"
 #include "bitmap.h"
 #include "ilbm.h"
-#include "display.h"
 #include "win3d.h"
 #include "base.h"
 #include "sklt.h"

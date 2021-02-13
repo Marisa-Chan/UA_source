@@ -51,7 +51,7 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
         a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-        NC_STACK_display *win3d = GFX::Engine.C3D();
+        NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
         if ( win3d )
         {
@@ -2091,7 +2091,7 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 
         rndr_params->maxZ = 32000.0;
         if (NC_STACK_win3d::win3d_keys[18].Get<bool>())
-            rndr_params->flags = NC_STACK_display::RFLAGS_SKY;
+            rndr_params->flags = NC_STACK_win3d::RFLAGS_SKY;
 
         yw->sky_loaded_base->base_func77(rndr_params);
 
@@ -3313,9 +3313,9 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
     {
         yw->_win3d->BeginFrame();
 
-        yw->_win3d->setRSTR_BGpen(0);
+        /*yw->_win3d->setRSTR_BGpen(0);
 
-        yw->_win3d->raster_func192(NULL);
+        yw->_win3d->raster_func192(NULL);*/
 
         vec3d a2a = yw->field_1334 + vec3d::OY(50000.0);
 

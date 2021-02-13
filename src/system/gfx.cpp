@@ -6,7 +6,6 @@
 #include "../gui/root.h"
 #include "../bitmap.h"
 #include "../ilbm.h"
-#include "../display.h"
 #include "../win3d.h"
 #include "../log.h"
 #include "../gui/oldcompat.h"
@@ -648,8 +647,8 @@ void GFXEngine::Init()
     cursors[10] = LoadCursor("Build");
 
     
-    win3dObj = Nucleus::CInit<NC_STACK_win3d>( { {NC_STACK_display::ATT_WIDTH, (int32_t)640},
-                                                 {NC_STACK_display::ATT_HEIGHT, (int32_t)480} } );
+    win3dObj = Nucleus::CInit<NC_STACK_win3d>( { {NC_STACK_win3d::ATT_WIDTH, (int32_t)640},
+                                                 {NC_STACK_win3d::ATT_HEIGHT, (int32_t)480} } );
 
     Gui::Instance.SetScreenSize(win3dObj->GetSize());
     portalID = Gui::Instance.AddPortal(Common::Point(640, 480), Common::Rect(0, 0, 640, 480));

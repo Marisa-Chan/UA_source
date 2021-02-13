@@ -6,7 +6,6 @@
 #include "sound.h"
 #include "../common.h"
 
-#include "../display.h"
 #include "../win3d.h"
 
 
@@ -910,7 +909,7 @@ void SFXEngine::sb_0x424c74__sub3()
         i++;
     }
 
-    NC_STACK_display *pwin3d = GFX::Engine.C3D();
+    NC_STACK_win3d *pwin3d = GFX::Engine.C3D();
 
     if ( pwin3d )
     {

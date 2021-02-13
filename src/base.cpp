@@ -8,7 +8,6 @@
 #include "system/inpt.h"
 
 #include "bitmap.h"
-#include "display.h"
 #include "win3d.h"
 #include "base.h"
 #include "skeleton.h"
@@ -90,18 +89,18 @@ bool RenderStack::compare(polysDat *a, polysDat *b)
 
 bool RenderStack::comparePrio(polysDat *a, polysDat *b)
 {
-    if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_display::RFLAGS_SKY )
+    if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_SKY )
     {
-        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_display::RFLAGS_SKY )
+        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_SKY )
             return a->range > b->range;
-        else if ( b->datSub.renderFlags & NC_STACK_display::RFLAGS_SKY )
+        else if ( b->datSub.renderFlags & NC_STACK_win3d::RFLAGS_SKY )
             return false;
     }
-    else if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_display::RFLAGS_FALLOFF )
+    else if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_FALLOFF )
     {
-        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_display::RFLAGS_FALLOFF )
+        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_FALLOFF )
             return a->range > b->range;
-        else if ( b->datSub.renderFlags & NC_STACK_display::RFLAGS_FALLOFF )
+        else if ( b->datSub.renderFlags & NC_STACK_win3d::RFLAGS_FALLOFF )
             return false;
     }
 
@@ -659,8 +658,8 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 
 
     win3d->BeginFrame();
-    win3d->setRSTR_BGpen(0);
-    win3d->raster_func192(NULL);
+    /*win3d->setRSTR_BGpen(0);
+    win3d->raster_func192(NULL);*/
 
     win3d->BeginScene();
 

@@ -12,7 +12,6 @@
 #include "bitmap.h"
 #include "bmpAnm.h"
 #include "base.h"
-#include "display.h"
 #include "win3d.h"
 #include "ilbm.h"
 #include "particle.h"
@@ -530,7 +529,6 @@ int init_classesLists_and_variables()
     Nucleus::ClassList.push_back(NC_STACK_iwimp::description);
     Nucleus::ClassList.push_back(NC_STACK_sample::description);
     Nucleus::ClassList.push_back(NC_STACK_wav::description);
-    Nucleus::ClassList.push_back(NC_STACK_display::description);
     Nucleus::ClassList.push_back(NC_STACK_button::description);
     Nucleus::ClassList.push_back(NC_STACK_network::description);
     Nucleus::ClassList.push_back(NC_STACK_win3d::description);

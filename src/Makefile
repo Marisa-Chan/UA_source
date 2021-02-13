@@ -42,7 +42,6 @@ OBJS =  \
 	common.cpp\
 	crc32.cpp\
 	def_parser.cpp\
-	display.cpp\
 	embed.cpp\
 	env.cpp\
 	fmtlib/format.cc\

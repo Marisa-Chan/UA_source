@@ -859,8 +859,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             if ( !field_138c )
             {
                 _win3d->BeginFrame();
-                _win3d->setRSTR_BGpen(0);
-                _win3d->raster_func192(NULL);
+                /*_win3d->setRSTR_BGpen(0);
+                _win3d->raster_func192(NULL);*/
             }
 
             ypaworld_func64__sub15(this);
@@ -3087,7 +3087,7 @@ void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
 
 bool NC_STACK_ypaworld::GameShellInitBkg()
 {
-    NC_STACK_display *win3d = GFX::Engine.C3D();
+    NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
     win3d->raster_func211(Common::Rect (-(screen_width / 2), -(screen_height / 2), screen_width / 2, screen_height / 2) );
     GameShellInitBkgMode(GameShell->envMode);
@@ -6153,9 +6153,9 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     _win3d->BeginFrame();
 
-    _win3d->setRSTR_BGpen(0);
+    /*_win3d->setRSTR_BGpen(0);
 
-    _win3d->raster_func192(NULL);
+    _win3d->raster_func192(NULL);*/
 
     sub_4C40AC();
 

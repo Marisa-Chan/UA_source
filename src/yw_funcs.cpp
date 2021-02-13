@@ -1488,7 +1488,7 @@ void sb_0x4ea37c(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d = GFX::Engine.C3D();
+    NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
     win3d->display_func272(NULL);
 }
@@ -1612,7 +1612,7 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 }
 
 
-void splashScreen_OutText(NC_STACK_ypaworld *yw, NC_STACK_display *w3d, const std::string &txt, int x, int y)
+void splashScreen_OutText(NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const std::string &txt, int x, int y)
 {
     char cmdbuf[2048];
 
@@ -1855,7 +1855,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
         return 0; // May be HACK
 
     _win3d->display_func271(NULL);
-    _win3d->raster_func192(NULL);
+    //_win3d->raster_func192(NULL);
 
     LevelInfo *backup = new LevelInfo();
     *backup = *_levelInfo;
@@ -3173,7 +3173,7 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_display *win3d = GFX::Engine.C3D();
+    NC_STACK_win3d *win3d = GFX::Engine.C3D();
 
     win3d->display_func272(NULL);
 
