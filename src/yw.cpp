@@ -98,7 +98,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     colcomp_sklt_intrn = NULL;
     tracyrmp_ilbm = NULL;
     shadermp_ilbm = NULL;
-    _win3d = NULL;
     field_138c = 0;
 
 //slurp slurps1[6][6];
@@ -754,8 +753,6 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
     {
         uint32_t v92 = profiler_begin();
 
-        _win3d = GFX::Engine.C3D();
-
         field_7626 = 0;
         b64_parms = arg;
 
@@ -858,7 +855,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             if ( !field_138c )
             {
-                _win3d->BeginFrame();
+                GFX::Engine.BeginFrame();
                 /*_win3d->setRSTR_BGpen(0);
                 _win3d->raster_func192(NULL);*/
             }
@@ -1004,7 +1001,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                         yw_NetDrawStats(this);
                 }
 
-                _win3d->EndFrame();
+                GFX::Engine.EndFrame();
 
                 p_1_grp[0][5] = profiler_end(v62);
             }
@@ -3087,9 +3084,7 @@ void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
 
 bool NC_STACK_ypaworld::GameShellInitBkg()
 {
-    NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
-    win3d->raster_func211(Common::Rect (-(screen_width / 2), -(screen_height / 2), screen_width / 2, screen_height / 2) );
+    GFX::Engine.raster_func211(Common::Rect (-(screen_width / 2), -(screen_height / 2), screen_width / 2, screen_height / 2) );
     GameShellInitBkgMode(GameShell->envMode);
     return true;
 }
@@ -3137,15 +3132,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         return 0;
     }
 
-    _win3d = GFX::Engine.C3D();
-
-    if ( !_win3d )
-    {
-        ypa_log_out("No GfxObject in OpengameShell!\n");
-        return 0;
-    }
-
-    displ_arg263 v233;
+    GFX::displ_arg263 v233;
 
     v233.bitm = pointers__bitm[0];
     v233.pointer_id = 1;
@@ -3154,7 +3141,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     fill_videmodes_list(usr);
 
-    wdd_func324arg v227;
+    GFX::wdd_func324arg v227;
     v227.name = NULL;
     v227.guid = NULL;
     v227.currr = 0;
@@ -3164,7 +3151,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     while ( 1 )
     {
-        _win3d->windd_func324(&v227);
+        GFX::Engine.windd_func324(&v227);
         if ( !v227.name )
             break;
 
@@ -3191,11 +3178,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     if ( usr->GFX_flags & 4 )
     {
-        usr->p_ypaworld->_win3d->setWDD_cursor(1);
+        GFX::Engine.setWDD_cursor(1);
     }
     else
     {
-        usr->p_ypaworld->_win3d->setWDD_cursor(0);
+        GFX::Engine.setWDD_cursor(0);
     }
 
     LoadKeyNames();
@@ -5867,7 +5854,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
         v10.cmdbuf = buf;
         v10.includ = 0;
 
-        yw->_win3d->raster_func209(&v10);
+        GFX::Engine.raster_func209(&v10);
     }
     yw->field_17c8 = -1;
     yw->field_17c4 = 0;
@@ -5876,9 +5863,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 //Make screenshot
 void sub_4476AC(NC_STACK_ypaworld *yw)
 {
-    NC_STACK_win3d *w3d = GFX::Engine.C3D();
-
-    w3d->SaveScreenshot(fmt::sprintf("env:snaps/f_%04d", yw->field_2424));
+    GFX::Engine.SaveScreenshot(fmt::sprintf("env:snaps/f_%04d", yw->field_2424));
     
     yw->field_2424++;
 }
@@ -5904,9 +5889,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     SFXEngine::SFXe.sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
 
-    _win3d = GFX::Engine.C3D();
-
-    _win3d->BeginFrame();
+    GFX::Engine.BeginFrame();
 
     int oldMode = usr->envMode;
     usr->envModeChanged = false;
@@ -5949,7 +5932,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 //  if ( usr->field_0x4 )
 //    nullsub_7();
 
-    _win3d->EndFrame();
+    GFX::Engine.EndFrame();
 
     if ( usr->field_0x4 )
     {
@@ -6138,8 +6121,6 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     recorder *repl = replayer;
     uint32_t v33 = profiler_begin();
 
-    _win3d = GFX::Engine.C3D();
-
     b64_parms = arg;
     field_161c++;
     field_1b24.user_action = World::DOACTION_0;
@@ -6151,7 +6132,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     p_1_grp[0][0] = field_1B6E;
 
-    _win3d->BeginFrame();
+    GFX::Engine.BeginFrame();
 
     /*_win3d->setRSTR_BGpen(0);
 
@@ -6195,7 +6176,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     debug_info_draw(arg->field_8);
 
-    _win3d->EndFrame();
+    GFX::Engine.EndFrame();
 
     p_1_grp[0][5] = profiler_end(v28);
 
@@ -6474,8 +6455,6 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
 
     if ( v19 || load_lang_lng(this, lang_name) )
     {
-        NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
         const char *v11 = NULL;
 
         if ( screen_width >= 512 )
@@ -6483,7 +6462,7 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
         else
             v11 = get_lang_string(string_pointers_p2, 16, "Arial,8,400,0");
 
-        win3d->LoadFontByDescr(v11);
+        GFX::Engine.LoadFontByDescr(v11);
         Gui::UA::LoadFont(v11);
 
         return 1;
@@ -7202,25 +7181,23 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         }
     }
 
-    NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
     if ( usr->GFX_flags & 4 )
     {
-        win3d->setWDD_cursor(1);
+        GFX::Engine.setWDD_cursor(1);
     }
     else
     {
-        win3d->setWDD_cursor(0);
+        GFX::Engine.setWDD_cursor(0);
     }
 
     if ( screen_width >= 512 )
     {
-        win3d->LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+        GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
         Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
     }
     else
     {
-        win3d->LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+        GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
         Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
     }
 

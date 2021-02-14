@@ -3,6 +3,8 @@
 
 #include <inttypes.h>
 
+class NC_STACK_ypaworld;
+
 namespace FontUA
 {
 void store_u32(char **pos, uint32_t val);

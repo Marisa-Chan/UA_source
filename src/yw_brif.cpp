@@ -67,7 +67,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState 
         brf->MapBlitParams.float14 = brf->MapBlitEnd;
         brf->Stage = 6;
 
-        displ_arg263 v4;
+        GFX::displ_arg263 v4;
         v4.bitm = yw->pointers__bitm[5];
         v4.pointer_id = 6;
 
@@ -181,7 +181,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState 
     {
         brf->Stage = 7;
 
-        displ_arg263 v6;
+        GFX::displ_arg263 v6;
         v6.bitm = yw->pointers__bitm[0];
         v6.pointer_id = 1;
 
@@ -787,7 +787,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, BriefengScr
     v28.cmdbuf = v27;
     v28.includ = NULL;
 
-    yw->_win3d->raster_func209(&v28);
+    GFX::Engine.raster_func209(&v28);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
@@ -817,7 +817,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     v32.cmdbuf = buf;
     v32.includ = NULL;
 
-    yw->_win3d->raster_func209(&v32);
+    GFX::Engine.raster_func209(&v32);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *inpt, int obj_id, char a4)
@@ -854,11 +854,11 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
                     v20.x2 = v21.x1;
                 }
 
-                yw->_win3d->raster_func217(GFX::Engine.Color(0, 160, 160));
-                yw->_win3d->raster_func198(v20);
+                GFX::Engine.raster_func217(GFX::Engine.Color(0, 160, 160));
+                GFX::Engine.raster_func198(v20);
 
-                yw->_win3d->raster_func217(GFX::Engine.Color(0, 64, 64));
-                yw->_win3d->raster_func198(v21);
+                GFX::Engine.raster_func217(GFX::Engine.Color(0, 64, 64));
+                GFX::Engine.raster_func198(v21);
             }
         }
 
@@ -893,7 +893,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
                 v23.cmdbuf = cmdbuf;
                 v23.includ = NULL;
 
-                yw->_win3d->raster_func209(&v23);
+                GFX::Engine.raster_func209(&v23);
             }
         }
     }
@@ -1059,19 +1059,19 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, In
 
         if ( brf->BriefingMapImg )
         {
-            rstr_arg204 a4;
+            GFX::rstr_arg204 a4;
 
             a4.pbitm = brf->BriefingMapImg->GetResBmp();
 
             a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
             a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-            yw->_win3d->raster_func204(&a4);
+            GFX::Engine.raster_func204(&a4);
         }
 
-        yw->_win3d->raster_func204(&brf->MapBlitParams);
+        GFX::Engine.raster_func204(&brf->MapBlitParams);
 
-        yw->_win3d->draw2DandFlush();
+        GFX::Engine.draw2DandFlush();
 
         ypaworld_func158__DrawVehicle(yw, brf, inpt);
 
@@ -1081,7 +1081,7 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, In
         w3d_a209 v10;
         v10 = stru_5C91D0.cmdstrm;
 
-        yw->_win3d->raster_func209(&v10);
+        GFX::Engine.raster_func209(&v10);
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
     }
@@ -1390,9 +1390,9 @@ void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
                     arg198_1.x2 = v23;
                     arg198_1.y2 = v21 + v16;
 
-                    yw->_win3d->raster_func217( yw->GetColor(owner) );
-                    yw->_win3d->raster_func198(arg198);
-                    yw->_win3d->raster_func198(arg198_1);
+                    GFX::Engine.raster_func217( yw->GetColor(owner) );
+                    GFX::Engine.raster_func198(arg198);
+                    GFX::Engine.raster_func198(arg198_1);
                 }
             }
 
@@ -1430,7 +1430,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, Brief
     arg209.cmdbuf = cmdBuff;
     arg209.includ = 0;
 
-    yw->_win3d->raster_func209(&arg209);
+    GFX::Engine.raster_func209(&arg209);
 }
 
 char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
@@ -2041,7 +2041,7 @@ void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, BriefengScre
     v24.includ = 0;
     v24.cmdbuf = cmdbuf;
 
-    yw->_win3d->raster_func209(&v24);
+    GFX::Engine.raster_func209(&v24);
 
     int v26 = 0;
     
@@ -2170,16 +2170,16 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
         {
             if ( brf->BriefingMapImg )
             {
-                rstr_arg204 arg204;
+                GFX::rstr_arg204 arg204;
                 arg204.pbitm = brf->BriefingMapImg->GetResBmp();
 
                 arg204.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
                 arg204.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-                yw->_win3d->raster_func204(&arg204);
+                GFX::Engine.raster_func204(&arg204);
             }
 
-            yw->_win3d->raster_func204(&brf->MapBlitParams);
+            GFX::Engine.raster_func204(&brf->MapBlitParams);
         }
 
         switch ( brf->Stage )

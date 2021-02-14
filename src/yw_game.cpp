@@ -44,31 +44,26 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
 {
     if ( splashScreen )
     {
-        rstr_arg204 a4;
+        GFX::rstr_arg204 a4;
 
         a4.pbitm = splashScreen->GetResBmp();
 
         a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-        NC_STACK_win3d *win3d = GFX::Engine.C3D();
+        GFX::displ_arg263 v4;
+        v4.bitm = yw->pointers__bitm[5];
+        v4.pointer_id = 6;
 
-        if ( win3d )
-        {
-            displ_arg263 v4;
-            v4.bitm = yw->pointers__bitm[5];
-            v4.pointer_id = 6;
+        GFX::Engine.SetCursor(v4.pointer_id, 0);
 
-            GFX::Engine.SetCursor(v4.pointer_id, 0);
+        GFX::Engine.BeginFrame();
+        GFX::Engine.raster_func202(&a4);
+        GFX::Engine.EndFrame();
 
-            win3d->BeginFrame();
-            win3d->raster_func202(&a4);
-            win3d->EndFrame();
-
-            win3d->BeginFrame();
-            win3d->raster_func202(&a4);
-            win3d->EndFrame();
-        }
+        GFX::Engine.BeginFrame();
+        GFX::Engine.raster_func202(&a4);
+        GFX::Engine.EndFrame();
     }
 }
 
@@ -76,33 +71,28 @@ void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScree
 {
     if ( splashScreen )
     {
-        rstr_arg204 a4;
+        GFX::rstr_arg204 a4;
 
         a4.pbitm = splashScreen->GetResBmp();
 
         a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-        NC_STACK_win3d *win3d = GFX::Engine.C3D();
+        GFX::displ_arg263 v4;
+        v4.bitm = yw->pointers__bitm[5];
+        v4.pointer_id = 6;
 
-        if ( win3d )
-        {
-            displ_arg263 v4;
-            v4.bitm = yw->pointers__bitm[5];
-            v4.pointer_id = 6;
+        GFX::Engine.SetCursor(v4.pointer_id, 0);
 
-            GFX::Engine.SetCursor(v4.pointer_id, 0);
+        GFX::Engine.BeginFrame();
+        GFX::Engine.raster_func202(&a4);
+        splashScreen_OutText(yw, text, yw->screen_width / 7, yw->screen_height / 5);
+        GFX::Engine.EndFrame();
 
-            win3d->BeginFrame();
-            win3d->raster_func202(&a4);
-            splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
-            win3d->EndFrame();
-
-            win3d->BeginFrame();
-            win3d->raster_func202(&a4);
-            splashScreen_OutText(yw, win3d, text, yw->screen_width / 7, yw->screen_height / 5);
-            win3d->EndFrame();
-        }
+        GFX::Engine.BeginFrame();
+        GFX::Engine.raster_func202(&a4);
+        splashScreen_OutText(yw, text, yw->screen_width / 7, yw->screen_height / 5);
+        GFX::Engine.EndFrame();
     }
 }
 
@@ -550,8 +540,6 @@ void sb_0x44ca90__sub5(NC_STACK_ypaworld *yw)
 
 void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
 {
-    NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
     for (size_t i = 0; i < mapp->Palettes.size(); i++)
     {
         if (!mapp->Palettes[i].empty())
@@ -563,9 +551,9 @@ void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
             if (ilbm)
             {
                 if ( i )
-                    win3d->display_func261(i, *ilbm->getBMD_palette());
+                    GFX::Engine.display_func261(i, *ilbm->getBMD_palette());
                 else
-                    win3d->SetPalette(*ilbm->getBMD_palette());
+                    GFX::Engine.SetPalette(*ilbm->getBMD_palette());
 
                 delete_class_obj(ilbm);
             }
@@ -655,18 +643,17 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
             screen_width = GFX::Engine.GetScreenW();
             screen_height = GFX::Engine.GetScreenH();
-            _win3d = GFX::Engine.C3D();
 
-            _win3d->setWDD_cursor( (field_73CE & 0x40) != 0 );
+            GFX::Engine.setWDD_cursor( (field_73CE & 0x40) != 0 );
 
             if ( screen_width >= 512 )
             {
-                _win3d->LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
                 Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
             }
             else
             {
-                _win3d->LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+                GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
                 Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
             }
         }
@@ -2090,8 +2077,8 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         yw->sky_loaded_base->base_func68(&v5);
 
         rndr_params->maxZ = 32000.0;
-        if (NC_STACK_win3d::win3d_keys[18].Get<bool>())
-            rndr_params->flags = NC_STACK_win3d::RFLAGS_SKY;
+        if (GFX::Engine.win3d_keys[18].Get<bool>())
+            rndr_params->flags = GFX::RFLAGS_SKY;
 
         yw->sky_loaded_base->base_func77(rndr_params);
 
@@ -2404,14 +2391,14 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
         yw->field_1B6A = rndrs.adeCount;
         yw->field_1b6c = rndrs.rndrStack->getSize();
 
-        yw->_win3d->BeginScene();
+        GFX::Engine.BeginScene();
 
-        if (NC_STACK_win3d::win3d_keys[18].Get<bool>())
+        if (GFX::Engine.win3d_keys[18].Get<bool>())
             rndrs.rndrStack->render(true, RenderStack::comparePrio);
         else
             rndrs.rndrStack->render(false);
 
-        yw->_win3d->EndScene();
+        GFX::Engine.EndScene();
 
         if ( a2 )
         {
@@ -3311,7 +3298,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
     }
     else
     {
-        yw->_win3d->BeginFrame();
+        GFX::Engine.BeginFrame();
 
         /*yw->_win3d->setRSTR_BGpen(0);
 
@@ -3341,12 +3328,12 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
             arg209.includ = 0;
             arg209.cmdbuf = v10;
 
-            yw->_win3d->raster_func209(&arg209);
+            GFX::Engine.raster_func209(&arg209);
         }
 
         SFXEngine::SFXe.sb_0x424c74();
 
-        yw->_win3d->EndFrame();
+        GFX::Engine.EndFrame();
     }
     return 1;
 }
@@ -4266,9 +4253,7 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
             yw->ypaworld_func159(&info_msg);
         }
 
-        NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
-        win3d->SaveScreenshot( fmt::sprintf("env:snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id) );
+        GFX::Engine.SaveScreenshot( fmt::sprintf("env:snaps/s%d_%04d", yw->screenshot_seq_id, yw->screenshot_seq_frame_id) );
         
         yw->screenshot_seq_frame_id++;
     }
@@ -5980,7 +5965,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
         arg209.cmdbuf = dbg_txt;
         arg209.includ = 0;
 
-        _win3d->raster_func209(&arg209);
+        GFX::Engine.raster_func209(&arg209);
 
 
         if ( v104 )

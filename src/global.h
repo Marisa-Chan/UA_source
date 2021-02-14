@@ -13,11 +13,6 @@
 
 #include "glob_funcs.h"
 
-
-EXTR int can_srcblend;
-EXTR int can_destblend;
-EXTR int can_stippling;
-
 extern int dword_514EFC;
 EXTR int dword_514F24;
 

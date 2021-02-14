@@ -12,7 +12,6 @@
 #include "bitmap.h"
 #include "bmpAnm.h"
 #include "base.h"
-#include "win3d.h"
 #include "ilbm.h"
 #include "particle.h"
 #include "embed.h"
@@ -531,7 +530,6 @@ int init_classesLists_and_variables()
     Nucleus::ClassList.push_back(NC_STACK_wav::description);
     Nucleus::ClassList.push_back(NC_STACK_button::description);
     Nucleus::ClassList.push_back(NC_STACK_network::description);
-    Nucleus::ClassList.push_back(NC_STACK_win3d::description);
     Nucleus::ClassList.push_back(NC_STACK_winp::description);
     Nucleus::ClassList.push_back(NC_STACK_wintimer::description);
     Nucleus::ClassList.push_back(NC_STACK_windp::description);
@@ -794,16 +792,6 @@ int WinMain__sub0(int argc, char *argv[])
 
 uint32_t maxTicks = 1000/60; // init on 60FPS
 
-void fpsLimitter(int value)
-{
-    if (value > 1000)
-        maxTicks = 0;
-    else if (value <= 0)
-        maxTicks = 0;
-    else
-        maxTicks = 1000/value;
-}
-
 int main(int argc, char *argv[])
 {
 //	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
@@ -872,7 +860,7 @@ int main(int argc, char *argv[])
     while ( true )
     {
 
-        if (maxTicks == 0)
+        if (GFX::Engine.FpsMaxTicks == 0)
         {
             if ( !sb_0x411324() )
                 break;
@@ -896,9 +884,9 @@ int main(int argc, char *argv[])
 
                 uint32_t diffTick = SDL_GetTicks() - curTick;
 
-                if (diffTick < maxTicks)
+                if (diffTick < GFX::Engine.FpsMaxTicks)
                 {
-                    uint16_t delay = maxTicks - diffTick;
+                    uint16_t delay = GFX::Engine.FpsMaxTicks - diffTick;
                     ticks += delay;
                     SDL_Delay(delay);
                 }

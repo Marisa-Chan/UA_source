@@ -941,7 +941,7 @@ void UserData::AfterMapChoose()
             std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_ypaworld->buildDate);
 
             if (p_ypaworld->windp->GetProvType() == 4) //MODEM!!!!
-                p_ypaworld->_win3d->windd_func320(NULL);
+                GFX::Engine.windd_func320(NULL);
 
             windp_openSessionMsg os;
             os.name = bff.c_str();
@@ -950,7 +950,7 @@ void UserData::AfterMapChoose()
             size_t res = p_ypaworld->windp->CreateSession(&os);
 
             if (p_ypaworld->windp->GetProvType() == 4) //MODEM!!!!
-                p_ypaworld->_win3d->windd_func321(NULL);
+                GFX::Engine.windd_func321(NULL);
 
             if ( !res )
                 return;
@@ -989,7 +989,7 @@ void UserData::yw_NetOKProvider()
 {
     if ( netSel == 0 || netSel == 1 )
     {
-        p_ypaworld->_win3d->windd_func320(NULL);
+        GFX::Engine.windd_func320(NULL);
 
         if ( p_ypaworld->windp->SetMode(netSel == 0) )
         {
@@ -1005,7 +1005,7 @@ void UserData::yw_NetOKProvider()
             netNameCurPos = netName.size();
         }
 
-        p_ypaworld->_win3d->windd_func321(NULL);
+        GFX::Engine.windd_func321(NULL);
 
         update_time_norm = 200;
         flush_time_norm = 200;
@@ -1022,12 +1022,12 @@ void UserData::yw_JoinNetGame()
         if ( p_ypaworld->windp->GetSessionName(&gName) )
         {
             if ( p_ypaworld->windp->GetProvType() == 4 )
-                p_ypaworld->_win3d->windd_func320(NULL);
+                GFX::Engine.windd_func320(NULL);
 
             if ( p_ypaworld->windp->JoinSession(gName.name) )
             {
                 if ( p_ypaworld->windp->GetProvType() == 4 )
-                    p_ypaworld->_win3d->windd_func321(NULL);
+                    GFX::Engine.windd_func321(NULL);
 
                 netName = "";
                 netNameCurPos = 0;
@@ -1121,7 +1121,7 @@ void UserData::yw_JoinNetGame()
             else
             {
                 if ( p_ypaworld->windp->GetProvType() == 4 )
-                    p_ypaworld->_win3d->windd_func320(NULL);
+                    GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
                 printf("%s: %s\n", get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
@@ -1141,7 +1141,7 @@ void UserData::yw_JoinNetGame()
     else
     {
         if ( p_ypaworld->windp->GetProvType() == 4 )
-            p_ypaworld->_win3d->windd_func320(NULL);
+            GFX::Engine.windd_func320(NULL);
 
         if ( p_ypaworld->windp->EnumSessions(NULL) )
         {
@@ -1149,7 +1149,7 @@ void UserData::yw_JoinNetGame()
         }
 
         if ( p_ypaworld->windp->GetProvType() == 4 )
-            p_ypaworld->_win3d->windd_func321(NULL);
+            GFX::Engine.windd_func321(NULL);
     }
 }
 
@@ -1246,12 +1246,12 @@ void UserData::JoinLobbyLessGame()
         if ( p_ypaworld->windp->GetSessionName(&gName) )
         {
             if ( p_ypaworld->windp->GetProvType() == 4 )
-                p_ypaworld->_win3d->windd_func320(NULL);
+                GFX::Engine.windd_func320(NULL);
 
             if ( p_ypaworld->windp->JoinSession(gName.name) )
             {
                 if ( p_ypaworld->windp->GetProvType() == 4 )
-                    p_ypaworld->_win3d->windd_func321(NULL);
+                    GFX::Engine.windd_func321(NULL);
 
                 netName = "";
                 netNameCurPos = 0;
@@ -1345,7 +1345,7 @@ void UserData::JoinLobbyLessGame()
             else
             {
                 if ( p_ypaworld->windp->GetProvType() == 4 )
-                    p_ypaworld->_win3d->windd_func320(NULL);
+                    GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
                 printf("%s: %s\n", get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
@@ -1365,7 +1365,7 @@ void UserData::JoinLobbyLessGame()
     else
     {
         if ( p_ypaworld->windp->GetProvType() == 4 )
-            p_ypaworld->_win3d->windd_func320(NULL);
+            GFX::Engine.windd_func320(NULL);
 
         if ( p_ypaworld->windp->EnumSessions(NULL) )
         {
@@ -1373,7 +1373,7 @@ void UserData::JoinLobbyLessGame()
         }
 
         if ( p_ypaworld->windp->GetProvType() == 4 )
-            p_ypaworld->_win3d->windd_func321(NULL);
+            GFX::Engine.windd_func321(NULL);
     }
 }
 

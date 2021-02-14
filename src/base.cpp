@@ -8,7 +8,6 @@
 #include "system/inpt.h"
 
 #include "bitmap.h"
-#include "win3d.h"
 #include "base.h"
 #include "skeleton.h"
 #include "ade.h"
@@ -89,18 +88,18 @@ bool RenderStack::compare(polysDat *a, polysDat *b)
 
 bool RenderStack::comparePrio(polysDat *a, polysDat *b)
 {
-    if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_SKY )
+    if ((a->datSub.renderFlags | b->datSub.renderFlags) & GFX::RFLAGS_SKY )
     {
-        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_SKY )
+        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & GFX::RFLAGS_SKY )
             return a->range > b->range;
-        else if ( b->datSub.renderFlags & NC_STACK_win3d::RFLAGS_SKY )
+        else if ( b->datSub.renderFlags & GFX::RFLAGS_SKY )
             return false;
     }
-    else if ((a->datSub.renderFlags | b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_FALLOFF )
+    else if ((a->datSub.renderFlags | b->datSub.renderFlags) & GFX::RFLAGS_FALLOFF )
     {
-        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & NC_STACK_win3d::RFLAGS_FALLOFF )
+        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & GFX::RFLAGS_FALLOFF )
             return a->range > b->range;
-        else if ( b->datSub.renderFlags & NC_STACK_win3d::RFLAGS_FALLOFF )
+        else if ( b->datSub.renderFlags & GFX::RFLAGS_FALLOFF )
             return false;
     }
 
@@ -122,7 +121,7 @@ void RenderStack::render(bool sorting, tCompare _func, bool Clear)
     }
 
     for(std::deque<polysDat *>::iterator it = que.begin(); it != qEnd; it++)
-        GFX::Engine.C3D()->raster_func206( *it );
+        GFX::Engine.raster_func206( *it );
 
     if (Clear)
         clear();
@@ -653,20 +652,16 @@ size_t NC_STACK_base::base_func64(base_64arg *arg)
 
     arg->field_10 += renderStack.getSize();
 
-    NC_STACK_win3d *win3d;
-    win3d = GFX::Engine.C3D();
-
-
-    win3d->BeginFrame();
+    GFX::Engine.BeginFrame();
     /*win3d->setRSTR_BGpen(0);
     win3d->raster_func192(NULL);*/
 
-    win3d->BeginScene();
+    GFX::Engine.BeginScene();
 
     renderStack.render();
 
-    win3d->EndScene();
-    win3d->EndFrame();
+    GFX::Engine.EndScene();
+    GFX::Engine.EndFrame();
 
     return 1;
 }

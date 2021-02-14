@@ -99,7 +99,7 @@ void sub_4EAC80(NC_STACK_ypaworld *yw);
 
 
 int sb_0x451034(NC_STACK_ypaworld *yw);
-void splashScreen_OutText(NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const std::string &txt, int x, int y);
+void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, int y);
 void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags);
 void sub_44E07C(NC_STACK_ypaworld *yw, struct_44dbf8 &arg);
 void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc);

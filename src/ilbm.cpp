@@ -410,13 +410,13 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
         {
             UA_PALETTE *pal = bitm->palette;
             if (!pal)
-                pal = GFX::Engine.C3D()->GetPalette();
+                pal = GFX::Engine.GetPalette();
             
             //if (alphaPalette && convertColor)
             if (alphaPalette)
             {
                 UA_PALETTE tmp;
-                GFX::Engine.C3D()->ConvAlphaPalette(&tmp, *pal, transp);
+                GFX::Engine.ConvAlphaPalette(&tmp, *pal, transp);
                 SDL_SetPaletteColors(bitm->swTex->format->palette, tmp.data(), 0, 256);
             }
             else
@@ -425,7 +425,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 
         if ( convertColor )
         {
-            SDL_Surface *screenFmt = GFX::Engine.C3D()->ConvertToScreenFormat(bitm->swTex);
+            SDL_Surface *screenFmt = GFX::Engine.ConvertToScreenFormat(bitm->swTex);
             if (screenFmt)
             {
                 SDL_FreeSurface(bitm->swTex);
@@ -452,7 +452,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
     if ( resName.empty() )
         return NULL;
 
-    if ( can_destblend )
+    if ( GFX::Engine.can_destblend )
     {
         if ( !StriCmp(resName, "fx1.ilbm") )
             reassignName = "hi/alpha/fx1.ilbm";
@@ -461,7 +461,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
         else if ( !StriCmp(resName, "fx3.ilbm") )
             reassignName = "hi/alpha/fx3.ilbm";
     }
-    else if ( can_stippling )
+    else if ( GFX::Engine.can_stippling )
     {
         if ( !StriCmp(resName, "fx1.ilbm") )
             reassignName = "hi/beta/fx1.ilbm";
@@ -470,7 +470,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
         else if ( !StriCmp(resName, "fx3.ilbm") )
             reassignName = "hi/beta/fx3.ilbm";
     }
-    else if ( can_srcblend )
+    else if ( GFX::Engine.can_srcblend )
     {
         if ( !StriCmp(resName, "fx1.ilbm") )
             reassignName = "hi/gamma/fx1.ilbm";

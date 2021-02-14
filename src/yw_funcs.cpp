@@ -1212,7 +1212,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
         yw->pointers__bitm[i] = yw->pointers[i]->GetResBmp();
     }
 
-    displ_arg263 arg_263;
+    GFX::displ_arg263 arg_263;
 
     arg_263.bitm = 0;
     arg_263.pointer_id = 0;
@@ -1228,12 +1228,11 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
 
 int NC_STACK_ypaworld::yw_LoadSet(int setID)
 {
-    _win3d = GFX::Engine.C3D();
     _mouseGrabbed = 0;
 
     std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
-    _win3d->display_func271(NULL);
+    GFX::Engine.display_func271(NULL);
 
     colsub_sklt = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("skeleton/colsub.sklt")}});
     if ( !colsub_sklt )
@@ -1419,13 +1418,13 @@ int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod)
 
 void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
 {
-    rstr_arg204 a4;
+    GFX::rstr_arg204 a4;
     a4.pbitm = bitm->GetResBmp();
 
     a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
     a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-    _win3d->raster_func202(&a4);
+    GFX::Engine.raster_func202(&a4);
 }
 
 void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
@@ -1435,7 +1434,7 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
     const char *v6;
     v6 = buf.c_str();
 
-    _win3d->windd_func323(&v6);
+    GFX::Engine.windd_func323(&v6);
 
     INPe.QueryInput(&input_states);
 
@@ -1488,9 +1487,7 @@ void sb_0x4ea37c(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
-    win3d->display_func272(NULL);
+    GFX::Engine.display_func272(NULL);
 }
 
 void sub_4EAC80(NC_STACK_ypaworld *yw)
@@ -1612,7 +1609,7 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 }
 
 
-void splashScreen_OutText(NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const std::string &txt, int x, int y)
+void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, int y)
 {
     char cmdbuf[2048];
 
@@ -1641,7 +1638,7 @@ void splashScreen_OutText(NC_STACK_ypaworld *yw, NC_STACK_win3d *w3d, const std:
         v15.cmdbuf = cmdbuf;
         v15.includ = NULL;
 
-        yw->_win3d->raster_func209(&v15);
+        GFX::Engine.raster_func209(&v15);
     }
 }
 
@@ -1651,13 +1648,13 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map )
     {
-        rstr_arg204 a4;
+        GFX::rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->GetResBmp();
 
         a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-        yw->_win3d->raster_func202(&a4);
+        GFX::Engine.raster_func202(&a4);
 
         for (int i = 0; i < 256; i++)
         {
@@ -1677,7 +1674,7 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
 
                 if ( v20 )
                 {
-                    rstr_218_arg v17;
+                    GFX::rstr_218_arg v17;
                     v17.bitm_intern = v20;
                     v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->GetResBmp();
 
@@ -1685,7 +1682,7 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
                     v17.rect2 = v5->field_9C;
                     v17.rect1 = v17.rect2;
 
-                    yw->_win3d->raster_func218(&v17);
+                    GFX::Engine.raster_func218(&v17);
                 }
             }
         }
@@ -1716,7 +1713,7 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
             v19.cmdbuf = cmdBuff;
             v19.includ = NULL;
 
-            yw->_win3d->raster_func209(&v19);
+            GFX::Engine.raster_func209(&v19);
         }
     }
 
@@ -1728,13 +1725,13 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
 
     if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map && lvlnet->ilbm_finished_map && lvlnet->ilbm_enabled_map )
     {
-        rstr_arg204 a4;
+        GFX::rstr_arg204 a4;
         a4.pbitm = yw->LevelNet->ilbm_menu_map->GetResBmp();
 
         a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
-        yw->_win3d->raster_func202(&a4);
+        GFX::Engine.raster_func202(&a4);
         //printf("field_BE38 %d \n",yw->LevelNet->field_BE38);
 
         for (int i = 0; i < 256; i++)
@@ -1763,7 +1760,7 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
 
                 if ( v20 )
                 {
-                    rstr_218_arg v17;
+                    GFX::rstr_218_arg v17;
                     v17.bitm_intern = v20;
                     v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->GetResBmp();
 
@@ -1771,7 +1768,7 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
                     v17.rect2 = v5->field_9C;
                     v17.rect1 = v17.rect2;
 
-                    yw->_win3d->raster_func218(&v17);
+                    GFX::Engine.raster_func218(&v17);
                 }
             }
         }
@@ -1802,10 +1799,10 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
             v19.cmdbuf = cmdBuff;
             v19.includ = NULL;
 
-            yw->_win3d->raster_func209(&v19);
+            GFX::Engine.raster_func209(&v19);
         }
         const char *v13 = get_lang_string(yw->string_pointers_p2, yw->TOD_ID + 2490, " ");
-        splashScreen_OutText(yw, yw->_win3d, v13, yw->screen_width / 20, yw->screen_width / 20);
+        splashScreen_OutText(yw, v13, yw->screen_width / 20, yw->screen_width / 20);
     }
 }
 
@@ -1854,7 +1851,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
     if ( !ypaworld_func158__sub4__sub1__sub3__sub0() )
         return 0; // May be HACK
 
-    _win3d->display_func271(NULL);
+    GFX::Engine.display_func271(NULL);
     //_win3d->raster_func192(NULL);
 
     LevelInfo *backup = new LevelInfo();
@@ -2012,7 +2009,7 @@ bool NC_STACK_ypaworld::InitDebrief()
 
     brief.ZoomFromGate = _levelInfo->State == 1;
 
-    _win3d->raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
+    GFX::Engine.raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
 
     brief.Stage = 0;
     brief.TimerStatus = 0;
@@ -2368,13 +2365,12 @@ void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
     int v5 = 0;
 
-    wdd_func324arg v15;
+    GFX::wdd_func324arg v15;
     v15.name = NULL;
     v15.guid = NULL;
     v15.currr = 0;
 
-    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(yw->_win3d);
-    windd->windd_func324(&v15);
+    GFX::Engine.windd_func324(&v15);
 
     while (v15.name)
     {
@@ -2396,7 +2392,7 @@ void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             }
             v5++;
         }
-        windd->windd_func324(&v15);
+        GFX::Engine.windd_func324(&v15);
     }
 
 
@@ -3095,14 +3091,11 @@ void yw_freeTileSets(NC_STACK_ypaworld *yw)
 
 void sb_0x44ac24__sub0(NC_STACK_ypaworld *yw)
 {
-    if ( yw->_win3d )
-    {
-        displ_arg263 v5;
-        v5.bitm = 0;
-        v5.pointer_id = 0;
-        
-        GFX::Engine.SetCursor(v5.pointer_id, 0);
-    }
+    GFX::displ_arg263 v5;
+    v5.bitm = 0;
+    v5.pointer_id = 0;
+
+    GFX::Engine.SetCursor(v5.pointer_id, 0);
 
     for (int i = 0; i < 11; i++)
     {
@@ -3173,9 +3166,7 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    NC_STACK_win3d *win3d = GFX::Engine.C3D();
-
-    win3d->display_func272(NULL);
+    GFX::Engine.display_func272(NULL);
 
     sb_0x44ac24__sub0(yw);
 }

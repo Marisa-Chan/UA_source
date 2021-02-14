@@ -13,7 +13,6 @@
 #include "system/sound.h"
 #include "bitmap.h"
 #include "ilbm.h"
-#include "win3d.h"
 #include "base.h"
 #include "sklt.h"
 #include "wav.h"
@@ -1341,7 +1340,7 @@ struct BriefengScreen
     std::string ObjDescription;
     std::string BriefingText;
     
-    rstr_arg204 MapBlitParams;
+    GFX::rstr_arg204 MapBlitParams;
     Common::FRect MapBlitStart;
     Common::FRect MapBlitEnd;
 
@@ -1396,7 +1395,7 @@ struct BriefengScreen
         ViewingObjectAngle = 0;
         ViewingObjectStartTime = 0;
         
-        MapBlitParams = rstr_arg204();
+        MapBlitParams = GFX::rstr_arg204();
         MapBlitStart = Common::FRect();
         MapBlitEnd = Common::FRect();
         AddObjectsFlag = false;
@@ -2695,7 +2694,6 @@ public:
     UAskeleton::Data *colcomp_sklt_intrn;
     NC_STACK_bitmap *tracyrmp_ilbm;
     NC_STACK_bitmap *shadermp_ilbm;
-    NC_STACK_win3d *_win3d;
     int field_138c;
     int str17_NOT_FALSE;
     slurp slurps1[6][6];

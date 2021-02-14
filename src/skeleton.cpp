@@ -6,7 +6,6 @@
 #include "rsrc.h"
 
 #include "bitmap.h"
-#include "win3d.h"
 
 #include "skeleton.h"
 #include "base.h"

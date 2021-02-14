@@ -3295,23 +3295,19 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 {
     if ( !StriCmp(p1, "end") )
     {
-        NC_STACK_win3d *win3d = GFX::Engine.C3D();
+        int txt16bit = GFX::Engine.getWDD_16bitTex();
+        int simple_d3d = GFX::Engine.getWDD_drawPrim();
 
-        if ( win3d )
-        {
-            int txt16bit = win3d->getWDD_16bitTex();
-            int simple_d3d = win3d->getWDD_drawPrim();
+        if ( simple_d3d )
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
+        else
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
 
-            if ( simple_d3d )
-                _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
-            else
-                _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
-
-            if ( txt16bit )
-                _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
-            else
-                _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
-        }
+        if ( txt16bit )
+            _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
+        else
+            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
+        
         return ScriptParser::RESULT_SCOPE_END;
     }
 
@@ -3393,14 +3389,14 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             _o.GameShell->GFX_flags |= World::GFX_FLAG_SOFTMOUSE;
             _o.field_73CE |= World::PREF_SOFTMOUSE;
 
-            _o._win3d->setWDD_cursor(1);
+            GFX::Engine.setWDD_cursor(1);
         }
         else
         {
             _o.GameShell->GFX_flags &= ~World::GFX_FLAG_SOFTMOUSE;
             _o.field_73CE &= ~World::PREF_SOFTMOUSE;
 
-            _o._win3d->setWDD_cursor(0);
+            GFX::Engine.setWDD_cursor(0);
         }
     }
     else if ( !StriCmp(p1, "palettefx") )

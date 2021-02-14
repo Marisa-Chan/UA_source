@@ -4330,14 +4330,14 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
 
     FontUA::set_end(&cur);
 
-    yw->_win3d->BeginFrame();
+    GFX::Engine.BeginFrame();
 
     w3d_a209 arg209;
     arg209.cmdbuf = buf;
     arg209.includ = NULL;
-    yw->_win3d->raster_func209(&arg209);
+    GFX::Engine.raster_func209(&arg209);
 
-    yw->_win3d->EndFrame();
+    GFX::Engine.EndFrame();
 
     return 0;
 }
@@ -4444,7 +4444,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
     v77.cmdbuf = drawbuf;
     v77.includ = NULL;
 
-    yw->_win3d->raster_func209(&v77);
+    GFX::Engine.raster_func209(&v77);
 
     int numelm = 0;
 
@@ -4589,6 +4589,6 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         v77_1.cmdbuf = drawbuf;
         v77_1.includ = NULL;
 
-        yw->_win3d->raster_func209(&v77_1);
+        GFX::Engine.raster_func209(&v77_1);
     }
 }

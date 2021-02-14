@@ -6,8 +6,6 @@
 #include "sound.h"
 #include "../common.h"
 
-#include "../win3d.h"
-
 
 SFXEngine SFXEngine::SFXe;
 
@@ -909,17 +907,12 @@ void SFXEngine::sb_0x424c74__sub3()
         i++;
     }
 
-    NC_STACK_win3d *pwin3d = GFX::Engine.C3D();
+    GFX::rstr_262_arg arg262;
+    arg262.slot = v10;
+    arg262.cnt = i;
+    arg262.weight = v12;
 
-    if ( pwin3d )
-    {
-        rstr_262_arg arg262;
-        arg262.slot = v10;
-        arg262.cnt = i;
-        arg262.weight = v12;
-
-        pwin3d->display_func262(&arg262);
-    }
+    GFX::Engine.display_func262(&arg262);
 }
 
 void SFXEngine::sb_0x424c74__sub4()

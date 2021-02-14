@@ -206,7 +206,7 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, 
 
 void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc)
 {
-    yw->_win3d->BeginScene();
+    GFX::Engine.BeginScene();
 
     brf->ObjRenderParams.frameTime = 1;
     brf->ObjRenderParams.globTime = 1;
@@ -214,7 +214,7 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, I
     brf->ObjRenderParams.ownerID = 1;
     brf->ObjRenderParams.minZ = 17.0;
     brf->ObjRenderParams.maxZ = 32000.0;
-    brf->ObjRenderParams.flags = NC_STACK_win3d::RFLAGS_IGNORE_FALLOFF;
+    brf->ObjRenderParams.flags = GFX::RFLAGS_IGNORE_FALLOFF;
     brf->ObjRenderParams.rndrStack = &NC_STACK_base::renderStack;
 
     if ( brf->ViewingObject ) // Not none
@@ -226,7 +226,7 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, I
 
     brf->ObjRenderParams.rndrStack->render();
 
-    yw->_win3d->EndScene();
+    GFX::Engine.EndScene();
 }
 
 
@@ -494,8 +494,6 @@ void fill_videmodes_list(UserData *usr)
 {
     usr->video_mode_list.clear();
 
-    usr->p_ypaworld->_win3d = GFX::Engine.C3D();
-
     windd_arg256 warg_256;
     warg_256.sort_id = 0;
 
@@ -660,12 +658,10 @@ void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
 {
     if ( !yw->movies[World::MOVIE_INTRO].empty() )
     {
-        yw->_win3d = GFX::Engine.C3D();
-
         std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(yw->movies[World::MOVIE_INTRO]) );
         const char *v5 = buf.c_str();
 
-        yw->_win3d->windd_func323(&v5);
+        GFX::Engine.windd_func323(&v5);
 
         INPe.QueryInput(&input_states);
         input_states.KbdLastHit = Input::KC_NONE;
@@ -1132,13 +1128,13 @@ void UserData::sb_0x46aa8c()
         {
             GFX_flags |= 4;
             yw->field_73CE |= 0x40;
-            yw->_win3d->setWDD_cursor(1);
+            GFX::Engine.setWDD_cursor(1);
         }
         else
         {
             GFX_flags &= 0xFB;
             yw->field_73CE &= 0xBF;
-            yw->_win3d->setWDD_cursor(0);
+            GFX::Engine.setWDD_cursor(0);
         }
 
     }
@@ -1193,13 +1189,13 @@ void UserData::sb_0x46aa8c()
 
                 strcpy(win3d_guid, field_139A);
 
-                wdd_func324arg v37;
+                GFX::wdd_func324arg v37;
 
                 v37.name = win3d_name;
                 v37.guid = win3d_guid;
                 v37.currr = 0;
 
-                yw->_win3d->windd_func325(&v37); //Save to file new resolution
+                GFX::Engine.windd_func325(&v37); //Save to file new resolution
 
                 yw->game_default_res = 0x2801E0; //640 x 480
                 resolution = 0x2801E0; //640 x 480
@@ -1214,12 +1210,12 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13a8 & 0x10 )
         {
             GFX_flags |= 0x10;
-            yw->_win3d->setWDD_16bitTex(1);
+            GFX::Engine.setWDD_16bitTex(1);
         }
         else
         {
             GFX_flags &= 0xEF;
-            yw->_win3d->setWDD_16bitTex(0);
+            GFX::Engine.setWDD_16bitTex(0);
         }
 
         resolution = yw->game_default_res;
@@ -1232,12 +1228,12 @@ void UserData::sb_0x46aa8c()
         if ( field_0x13a8 & 8 )
         {
             GFX_flags |= 8;
-            yw->_win3d->setWDD_drawPrim(1);
+            GFX::Engine.setWDD_drawPrim(1);
         }
         else
         {
             GFX_flags &= 0xF7;
-            yw->_win3d->setWDD_drawPrim(0);
+            GFX::Engine.setWDD_drawPrim(0);
         }
 
 
@@ -2141,7 +2137,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
 {
     int v4 = 0;
 
-    wdd_func324arg a1;
+    GFX::wdd_func324arg a1;
     a1.guid = 0;
     a1.currr = 0;
     a1.name = (const char *)-1;
@@ -2151,7 +2147,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
 
     while ( a1.name )
     {
-        p_ypaworld->_win3d->windd_func324(&a1);
+        GFX::Engine.windd_func324(&a1);
         if ( a1.name )
         {
             if ( v4 == d3d_listvw.selectedEntry )
@@ -2380,8 +2376,6 @@ void UserData::GameShellUiHandleInput()
     if ( netSelMode != NETSCREEN_MODE_SELECT )
         yw_HandleNetMsg(p_ypaworld);
 
-    NC_STACK_win3d *windd = dynamic_cast<NC_STACK_win3d *>(p_ypaworld->_win3d);
-
     if ( netSelMode == NETSCREEN_SESSION_SELECT )
     {
         if ( p_ypaworld->windp->GetProvType() == 4 )
@@ -2390,9 +2384,9 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( _input->KbdLastHit == Input::KC_SPACE )
                 {
-                    windd->windd_func320(NULL);
+                    GFX::Engine.windd_func320(NULL);
                     p_ypaworld->windp->EnumSessions(NULL);
-                    windd->windd_func321(NULL);
+                    GFX::Engine.windd_func321(NULL);
                 }
             }
         }

@@ -89,7 +89,6 @@ OBJS =  \
 	system/system.cpp\
 	utils.cpp\
 	wav.cpp\
-	win3d.cpp\
 	windp.cpp\
 	winp.cpp\
 	wintimer.cpp\

@@ -1,7 +1,6 @@
 #include "3ds.h"
 
 #include "image.h"
-#include "win3d.h"
 #include "env.h"
 
 
@@ -556,8 +555,8 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
 
                 for (int32_t i = 0; i < faceNum; i++)
                 {
-                    int renderFlags = NC_STACK_win3d::RFLAGS_LINMAP | NC_STACK_win3d::RFLAGS_GRADSHD;
-                    //int renderFlags = NC_STACK_win3d::RFLAGS_GRADSHD;
+                    int renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD;
+                    //int renderFlags = GFX::RFLAGS_GRADSHD;
 
                     skeleton_arg133 skel133;
 
@@ -621,7 +620,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                     {
                         arg->adeCount++;
 
-                        if ( datSub->renderFlags & ( NC_STACK_win3d::RFLAGS_FLATSHD | NC_STACK_win3d::RFLAGS_GRADSHD ) )
+                        if ( datSub->renderFlags & ( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD ) )
                         {
                             int v6 = 0;
                             int v8 = 0;
@@ -637,7 +636,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
 
                             if ( v6 == datSub->vertexCount )
                             {
-                                datSub->renderFlags &= ~( NC_STACK_win3d::RFLAGS_FLATSHD | NC_STACK_win3d::RFLAGS_GRADSHD );
+                                datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
                             }
                             else if ( v8 == datSub->vertexCount )
                             {
@@ -645,7 +644,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                             }
                         }
 
-                        datSub->renderFlags |= (arg->flags & NC_STACK_win3d::RFLAGS_SKY);
+                        datSub->renderFlags |= (arg->flags & GFX::RFLAGS_SKY);
 
                         float maxz = 0.0;
 
@@ -653,7 +652,7 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                             if (datSub->vertexes[j].z > maxz)
                                 maxz = datSub->vertexes[j].z;
 
-                        if ( !(arg->flags & NC_STACK_win3d::RFLAGS_IGNORE_FALLOFF) && NC_STACK_win3d::win3d_keys[18].Get<bool>() )
+                        if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && GFX::Engine.win3d_keys[18].Get<bool>() )
                         {
                             float maxln = 0.0;
 
@@ -664,8 +663,8 @@ size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
                                     maxln = datSub->distance[j];
                             }
 
-                            if (maxln > NC_STACK_win3d::win3d_keys[19].Get<int>())
-                                datSub->renderFlags |= NC_STACK_win3d::RFLAGS_FALLOFF;
+                            if (maxln > GFX::Engine.win3d_keys[19].Get<int>())
+                                datSub->renderFlags |= GFX::RFLAGS_FALLOFF;
                         }
 
                         data->range = maxz;

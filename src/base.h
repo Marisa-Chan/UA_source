@@ -18,11 +18,7 @@ typedef std::list<NC_STACK_base *> BaseList;
 
 
 
-struct polysDat
-{
-    int32_t range;
-    polysDatSub datSub;
-};
+
 
 class RenderStack
 {

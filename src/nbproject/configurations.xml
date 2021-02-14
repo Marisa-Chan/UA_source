@@ -79,7 +79,6 @@
       <in>sklt.cpp</in>
       <in>utils.cpp</in>
       <in>wav.cpp</in>
-      <in>win3d.cpp</in>
       <in>windp.cpp</in>
       <in>winp.cpp</in>
       <in>wintimer.cpp</in>
@@ -417,10 +416,6 @@
         </ccTool>
       </item>
       <item path="wav.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-        </ccTool>
-      </item>
-      <item path="win3d.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
       </item>

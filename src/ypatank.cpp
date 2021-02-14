@@ -899,7 +899,7 @@ void NC_STACK_ypatank::User_layer(update_msg *arg)
         v67 = _rotation.AxisZ();
 
         float corW, corH;
-        GFX::Engine.C3D()->getAspectCorrection(corW, corH, true);
+        GFX::Engine.getAspectCorrection(corW, corH, true);
 
         v67 -= _rotation.AxisY() * (_gun_angle_user * corH);
         v67 -= _rotation.AxisX() * (_gun_leftright * corW);

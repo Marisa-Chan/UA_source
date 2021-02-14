@@ -4,7 +4,6 @@
 void nc_FreeMem(void *);
 void *AllocVec(size_t size, int a2);
 
-void fpsLimitter(int value);
 bool tuneGetWeaponRadiusFix();
 
 
