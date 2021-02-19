@@ -128,7 +128,7 @@ int NC_STACK_area::area_func5__sub1(IFFile *mfile)
     if ( (stack__area.polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
         v8 |= AREA_POL_FLAG_TRACYMAPPED;
 
-    NC_STACK_bitmap *objt = dynamic_cast<NC_STACK_bitmap *>( READ_OBJT(mfile) );
+    NC_STACK_bitmap *objt = dynamic_cast<NC_STACK_bitmap *>( LoadObjectFromIFF(mfile) );
     if ( objt )
     {
         if (v8 == AREA_POL_FLAG_TEXUTRED )
@@ -239,14 +239,14 @@ size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
     {
         if ( !area->texImg )
             return 0;
-        if ( !sub_4117F8(area->texImg, mfile) )
+        if ( !area->texImg->SaveObjectIntoIFF(mfile) )
             return 0;
     }
     if ( (area->polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
     {
         if ( !area->tracyImg )
             return 0;
-        if ( !sub_4117F8(area->tracyImg, mfile) )
+        if ( !area->tracyImg->SaveObjectIntoIFF(mfile) )
             return 0;
     }
 

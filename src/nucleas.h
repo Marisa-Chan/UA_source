@@ -36,6 +36,7 @@ public:
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SavingIntoIFF(IFFile **file);
 
+
     NC_STACK_nucleus() {
         NAME.clear();
     };
@@ -61,8 +62,9 @@ public:
     //Get
     virtual const std::string& getName() const;
 
-    //Non-virtual methods
-    static NC_STACK_nucleus *READ_OBJT(IFFile *mfile);
+    //Load/Save from/to IFF
+    static NC_STACK_nucleus *LoadObjectFromIFF(IFFile *mfile);
+    bool SaveObjectIntoIFF(IFFile *mfile);
 
 public:
     //Data
@@ -202,6 +204,6 @@ void Delete(NC_STACK_nucleus *clas);
 
 int delete_class_obj(NC_STACK_nucleus *cls);
 
-int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile);
+
 
 #endif // NUCLEAS_H_INCLUDED

@@ -127,21 +127,10 @@ void RenderStack::render(bool sorting, tCompare _func, bool Clear)
         clear();
 }
 
-
-
-
-int baseIDcounter = 1;
-
-
-
-
 size_t NC_STACK_base::Init(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::Init(stak) )
         return 0;
-
-    _ID = baseIDcounter;
-    baseIDcounter++;
 
     _ADES.clear();
     _KIDS.clear();
@@ -165,26 +154,31 @@ size_t NC_STACK_base::Init(IDVList &stak)
 size_t NC_STACK_base::Deinit()
 {
     if (_skeleton)
-        delete_class_obj(_skeleton);
+        Nucleus::Delete(_skeleton);
 
-    for (AdeList::iterator it = _ADES.begin(); it != _ADES.end(); it = _ADES.erase(it))
+    while (!_ADES.empty())
     {
-        (*it)->AttachedTo = NULL; //Clear ade ield, because we do erase in this list
-        delete_class_obj(*it);
+        NC_STACK_ade * ade = _ADES.front();
+        _ADES.pop_front();
+        
+        ade->AttachedTo = NULL; //Clear ade attached, because we do erase in this list
+        Nucleus::Delete(ade);
     }
 
     if ( _parent )
         _parent->_KIDS.remove(this);
 
-    for (BaseList::iterator it = _KIDS.begin(); it != _KIDS.end(); it = _KIDS.erase(it))
+    while (!_KIDS.empty())
     {
-        (*it)->_parent = NULL; //Clear kid parent field, because we do erase in this list
-        delete_class_obj(*it);
+        NC_STACK_base * kid = _KIDS.front();
+        _KIDS.pop_front();
+        
+        kid->_parent = NULL; //Clear kid parent field, because we do erase in this list
+        Nucleus::Delete(kid);
     }
 
-
     if ( _embed )
-        delete_class_obj(_embed);
+        Nucleus::Delete(_embed);
 
     return NC_STACK_nucleus::Deinit();
 }
@@ -262,7 +256,7 @@ int NC_STACK_base::ReadIFFTagADES(IFFile *mfile)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            NC_STACK_ade *ade = dynamic_cast<NC_STACK_ade *>(READ_OBJT(mfile));
+            NC_STACK_ade *ade = dynamic_cast<NC_STACK_ade *>(LoadObjectFromIFF(mfile));
             if ( !ade )
                 return 0;
 
@@ -292,7 +286,7 @@ int NC_STACK_base::ReadIFFTagKIDS(IFFile *mfile)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            NC_STACK_base *objt = dynamic_cast<NC_STACK_base *>( READ_OBJT(mfile) );
+            NC_STACK_base *objt = dynamic_cast<NC_STACK_base *>( LoadObjectFromIFF(mfile) );
             if ( !objt )
             {
                 return 0;
@@ -346,10 +340,6 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
 
             _transform.Scale = vec3d(1.0, 1.0, 1.0);
 
-            _ID = baseIDcounter;
-
-            baseIDcounter++;
-
 //            kid_node.self_full = this;
 
             _transform.MakeScaleRotationMatrix();
@@ -375,7 +365,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
             {
                 if ( STRC_readed )
                 {
-                    NC_STACK_skeleton *skel = dynamic_cast<NC_STACK_skeleton *>(READ_OBJT(mfile));
+                    NC_STACK_skeleton *skel = dynamic_cast<NC_STACK_skeleton *>(LoadObjectFromIFF(mfile));
                     if ( !skel )
                     {
                         Deinit();
@@ -385,7 +375,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
                 }
                 else
                 {
-                    _embed = READ_OBJT(mfile);
+                    _embed = LoadObjectFromIFF(mfile);
                 }
             }
         }
@@ -457,15 +447,15 @@ size_t NC_STACK_base::SavingIntoIFF(IFFile **file)
 
     if ( _skeleton )
     {
-        if ( !sub_4117F8(_skeleton, mfile) )
+        if ( !_skeleton->SaveObjectIntoIFF(mfile) )
             return 0;
 
         if ( !_ADES.empty() )
         {
             mfile->pushChunk(TAG_ADES, TAG_FORM, -1);
-            for (AdeList::iterator it = _ADES.begin(); it != _ADES.end(); it++)
+            for (NC_STACK_ade *ade : _ADES)
             {
-                if ( !sub_4117F8(*it, mfile) )
+                if ( !ade->SaveObjectIntoIFF(mfile) )
                     return 0;
             }
             mfile->popChunk();
@@ -476,9 +466,9 @@ size_t NC_STACK_base::SavingIntoIFF(IFFile **file)
     {
         mfile->pushChunk(TAG_KIDS, TAG_FORM, -1);
 
-        for (BaseList::iterator it = _KIDS.begin(); it != _KIDS.end(); it++)
+        for (NC_STACK_base *kid : _KIDS)
         {
-            if ( !sub_4117F8(*it, mfile) )
+            if ( !kid->SaveObjectIntoIFF(mfile) )
                 return 0;
         }
         mfile->popChunk();
@@ -634,8 +624,8 @@ size_t NC_STACK_base::Render(baseRender_msg *arg)
             _renderMsg.OBJ_SKELETON = _skeleton;
             _renderMsg.adeCount = 0;
 
-            for (AdeList::iterator it = _ADES.begin(); it != _ADES.end(); it++)
-                (*it)->ade_func65(&_renderMsg);
+            for (NC_STACK_ade *ade : _ADES)
+                ade->ade_func65(&_renderMsg);
 
             arg->adeCount += _renderMsg.adeCount;
         }
@@ -656,7 +646,7 @@ void NC_STACK_base::SetSkeleton(NC_STACK_skeleton *skel)
     if (skel)
     {
         if ( _skeleton )
-            delete_class_obj(_skeleton);
+            Nucleus::Delete(_skeleton);
 
         _skeleton = skel;
         _renderMsg.sklt = skel->GetSkelet();
@@ -807,7 +797,7 @@ NC_STACK_base *NC_STACK_base::LoadBaseFromFile(const std::string &fname)
         {
             chunk = mfile->getCurrentChunk();
             if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
-                result = dynamic_cast<NC_STACK_base *>(READ_OBJT(mfile));
+                result = dynamic_cast<NC_STACK_base *>(LoadObjectFromIFF(mfile));
         }
     }
 

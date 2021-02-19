@@ -611,7 +611,7 @@ size_t NC_STACK_particle::LoadingFromIFF(IFFile **file)
         }
         else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
         {
-            v23[v6] = (NC_STACK_area *)READ_OBJT(mfile);
+            v23[v6] = (NC_STACK_area *)LoadObjectFromIFF(mfile);
             if (!v23[v6])
             {
                 Deinit();
@@ -696,7 +696,7 @@ size_t NC_STACK_particle::SavingIntoIFF(IFFile **file)
     for (int i = 0; i < prtcl->ADEs_count; i++)
     {
         if (prtcl->ADEs[i])
-            if ( !sub_4117F8(prtcl->ADEs[i], mfile))
+            if ( !prtcl->ADEs[i]->SaveObjectIntoIFF(mfile))
                 return 0;
     }
 

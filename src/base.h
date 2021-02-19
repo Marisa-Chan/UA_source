@@ -209,8 +209,6 @@ public:
 
 public:
 
-    int _ID = 0;
-    int _timeStamp = 0;
     NC_STACK_skeleton *_skeleton = NULL;
     AdeList _ADES;
     TF::TForm3D _transform;

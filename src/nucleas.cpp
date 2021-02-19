@@ -177,7 +177,7 @@ int delete_class_obj(NC_STACK_nucleus *cls)
     return ret;
 }
 
-NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
+NC_STACK_nucleus *NC_STACK_nucleus::LoadObjectFromIFF(IFFile *mfile)
 {
     Nucleus::TClassList::iterator clss = Nucleus::ClassList.end();
     NC_STACK_nucleus *obj = NULL;
@@ -234,12 +234,12 @@ NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
     return obj;
 }
 
-int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
+bool NC_STACK_nucleus::SaveObjectIntoIFF(IFFile *mfile)
 {
     if ( mfile->pushChunk(TAG_OBJT, TAG_FORM, -1) )
         return 0;
 
-    std::string clsname = obj->ClassName();
+    std::string clsname = ClassName();
 
     if ( mfile->pushChunk(0, TAG_CLID, clsname.length() + 1) )
         return 0;
@@ -250,7 +250,7 @@ int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
     mfile->popChunk();
 
     IFFile *tmp = mfile;
-    int res = obj->SavingIntoIFF(&tmp);
+    int res = SavingIntoIFF(&tmp);
     mfile->popChunk();
 
     return res;
