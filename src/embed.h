@@ -9,8 +9,8 @@ class NC_STACK_embed: public NC_STACK_nucleus
 public:
     virtual size_t Init(IDVList &);
     virtual size_t Deinit();
-    virtual size_t InitFromIFF(IFFile **file);
-    virtual size_t DeinitFromIFF(IFFile **file);
+    virtual size_t LoadingFromIFF(IFFile **file);
+    virtual size_t SavingIntoIFF(IFFile **file);
 
     NC_STACK_embed() {};
     virtual ~NC_STACK_embed() {};

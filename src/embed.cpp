@@ -31,7 +31,7 @@ size_t NC_STACK_embed::Deinit()
     return NC_STACK_nucleus::Deinit();
 }
 
-size_t NC_STACK_embed::InitFromIFF(IFFile **file)
+size_t NC_STACK_embed::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -54,7 +54,7 @@ size_t NC_STACK_embed::InitFromIFF(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj_ok = NC_STACK_nucleus::InitFromIFF(file);
+            obj_ok = NC_STACK_nucleus::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -100,14 +100,14 @@ size_t NC_STACK_embed::InitFromIFF(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_embed::DeinitFromIFF(IFFile **file)
+size_t NC_STACK_embed::SavingIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
     if ( mfile->pushChunk(TAG_EMBD, TAG_FORM, -1) )
         return 0;
 
-    if ( !NC_STACK_nucleus::DeinitFromIFF(file) )
+    if ( !NC_STACK_nucleus::SavingIntoIFF(file) )
         return 0;
     
     for ( NC_STACK_rsrc *embd_obj : _resources )

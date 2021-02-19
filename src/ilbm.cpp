@@ -92,7 +92,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
     return 0;
 }
 
-size_t NC_STACK_ilbm::InitFromIFF(IFFile **file)
+size_t NC_STACK_ilbm::LoadingFromIFF(IFFile **file)
 {
     uint32_t TAG = (*file)->getCurrentChunk()->TAG_EXTENSION;
 
@@ -102,7 +102,7 @@ size_t NC_STACK_ilbm::InitFromIFF(IFFile **file)
     return 0;
 }
 
-size_t NC_STACK_ilbm::DeinitFromIFF(IFFile **pmfile)
+size_t NC_STACK_ilbm::SavingIntoIFF(IFFile **pmfile)
 {
     IFFile *mfile = *pmfile;
 

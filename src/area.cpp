@@ -157,7 +157,7 @@ int NC_STACK_area::area_func5__sub1(IFFile *mfile)
 }
 
 
-size_t NC_STACK_area::InitFromIFF(IFFile **file)
+size_t NC_STACK_area::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -180,7 +180,7 @@ size_t NC_STACK_area::InitFromIFF(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
-            obj_ok = NC_STACK_ade::InitFromIFF(file);
+            obj_ok = NC_STACK_ade::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -211,7 +211,7 @@ size_t NC_STACK_area::InitFromIFF(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_area::DeinitFromIFF(IFFile **file)
+size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     __NC_STACK_area *area = &stack__area;
@@ -220,7 +220,7 @@ size_t NC_STACK_area::DeinitFromIFF(IFFile **file)
         return 0;
 
 
-    if ( !NC_STACK_ade::DeinitFromIFF(file) )
+    if ( !NC_STACK_ade::SavingIntoIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_STRC, -1);

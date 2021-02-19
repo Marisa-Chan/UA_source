@@ -565,7 +565,7 @@ int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)
     return 1;
 }
 
-size_t NC_STACK_particle::InitFromIFF(IFFile **file)
+size_t NC_STACK_particle::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
@@ -593,7 +593,7 @@ size_t NC_STACK_particle::InitFromIFF(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
-            obj_ok = NC_STACK_ade::InitFromIFF(file);
+            obj_ok = NC_STACK_ade::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 break;
@@ -651,7 +651,7 @@ size_t NC_STACK_particle::InitFromIFF(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_particle::DeinitFromIFF(IFFile **file)
+size_t NC_STACK_particle::SavingIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     __NC_STACK_particle *prtcl = &stack__particle;
@@ -659,7 +659,7 @@ size_t NC_STACK_particle::DeinitFromIFF(IFFile **file)
     if ( mfile->pushChunk(TAG_PTCL, TAG_FORM, -1) != 0)
         return 0;
 
-    if ( !NC_STACK_ade::DeinitFromIFF(file) )
+    if ( !NC_STACK_ade::SavingIntoIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_ATTS, -1);

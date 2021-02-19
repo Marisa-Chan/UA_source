@@ -310,7 +310,7 @@ int NC_STACK_base::ReadIFFTagKIDS(IFFile *mfile)
 }
 
 
-size_t NC_STACK_base::InitFromIFF(IFFile **file)
+size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -336,7 +336,7 @@ size_t NC_STACK_base::InitFromIFF(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj_ok = NC_STACK_nucleus::InitFromIFF(file);
+            obj_ok = NC_STACK_nucleus::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -413,14 +413,14 @@ size_t NC_STACK_base::InitFromIFF(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_base::DeinitFromIFF(IFFile **file)
+size_t NC_STACK_base::SavingIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
     if ( mfile->pushChunk(TAG_BASE, TAG_FORM, -1) )
         return 0;
 
-    if ( !NC_STACK_nucleus::DeinitFromIFF(file) )
+    if ( !NC_STACK_nucleus::SavingIntoIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_STRC, -1);
@@ -488,17 +488,16 @@ size_t NC_STACK_base::DeinitFromIFF(IFFile **file)
 }
 
 // Push parent info to kid
-size_t NC_STACK_base::AddKid(NC_STACK_base *kid)
+void NC_STACK_base::AddKid(NC_STACK_base *kid)
 {
     if ( _skeleton )
         kid->ChangeParentTo(this, &_transform);
     else
         kid->ChangeParentTo(this, NULL);
-    return 1;
 }
 
 // Add object to parent kids list
-size_t NC_STACK_base::ChangeParentTo(NC_STACK_base *parent, TF::TForm3D *parentTForm)
+void NC_STACK_base::ChangeParentTo(NC_STACK_base *parent, TF::TForm3D *parentTForm)
 {
     if ( _parent )
         _parent->_KIDS.remove(this);
@@ -509,8 +508,6 @@ size_t NC_STACK_base::ChangeParentTo(NC_STACK_base *parent, TF::TForm3D *parentT
         _parent->_KIDS.push_back(this);
 
     _transform.Parent = parentTForm;
-
-    return 1;
 }
 
 void NC_STACK_base::SetPosition(const vec3d &v, int flag)

@@ -11,7 +11,7 @@ struct __NC_STACK_sklt
 class NC_STACK_sklt: public NC_STACK_skeleton
 {
 public:
-    virtual size_t InitFromIFF(IFFile **file);
+    virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t func6(IFFile **file);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);

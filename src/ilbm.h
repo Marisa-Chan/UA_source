@@ -37,8 +37,8 @@ class NC_STACK_ilbm: public NC_STACK_bitmap
 {
 public:
     virtual size_t Init(IDVList &stak);
-    virtual size_t InitFromIFF(IFFile **file);
-    virtual size_t DeinitFromIFF(IFFile **pmfile);
+    virtual size_t LoadingFromIFF(IFFile **file);
+    virtual size_t SavingIntoIFF(IFFile **pmfile);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);
 

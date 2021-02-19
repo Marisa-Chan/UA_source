@@ -57,8 +57,8 @@ class NC_STACK_bmpanim: public NC_STACK_bitmap
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t InitFromIFF(IFFile **file);
-    virtual size_t DeinitFromIFF(IFFile **file);
+    virtual size_t LoadingFromIFF(IFFile **file);
+    virtual size_t SavingIntoIFF(IFFile **file);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t rsrc_func66(rsrc_func66_arg *sv);

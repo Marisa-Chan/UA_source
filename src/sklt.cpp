@@ -20,7 +20,7 @@ const Nucleus::ClassDescr NC_STACK_sklt::description("sklt.class", &newinstance)
 
 
 
-size_t NC_STACK_sklt::InitFromIFF(IFFile **file)
+size_t NC_STACK_sklt::LoadingFromIFF(IFFile **file)
 {
     char name[256];
 

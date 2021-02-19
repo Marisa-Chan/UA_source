@@ -96,7 +96,7 @@ size_t NC_STACK_nucleus::Deinit()
     return 1;
 }
 
-size_t NC_STACK_nucleus::InitFromIFF(IFFile **file)
+size_t NC_STACK_nucleus::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
@@ -134,7 +134,7 @@ size_t NC_STACK_nucleus::InitFromIFF(IFFile **file)
 }
 
 
-size_t NC_STACK_nucleus::DeinitFromIFF(IFFile **val)
+size_t NC_STACK_nucleus::SavingIntoIFF(IFFile **val)
 {
     IFFile *mfile = *val;
     if ( mfile->pushChunk(TAG_ROOT, TAG_FORM, -1) )
@@ -216,7 +216,7 @@ NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
 
             obj = clss->_newinstance();
 
-            if ( !obj->InitFromIFF(&v11) )
+            if ( !obj->LoadingFromIFF(&v11) )
             {
                 delete obj;
                 return NULL;
@@ -250,7 +250,7 @@ int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
     mfile->popChunk();
 
     IFFile *tmp = mfile;
-    int res = obj->DeinitFromIFF(&tmp);
+    int res = obj->SavingIntoIFF(&tmp);
     mfile->popChunk();
 
     return res;

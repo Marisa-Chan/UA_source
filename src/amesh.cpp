@@ -139,7 +139,7 @@ size_t NC_STACK_amesh::Deinit()
 }
 
 
-size_t NC_STACK_amesh::InitFromIFF(IFFile **file)
+size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -163,7 +163,7 @@ size_t NC_STACK_amesh::InitFromIFF(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_AREA )
         {
-            obj_ok = NC_STACK_area::InitFromIFF(file);
+            obj_ok = NC_STACK_area::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -244,7 +244,7 @@ size_t NC_STACK_amesh::InitFromIFF(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_amesh::DeinitFromIFF(IFFile **file)
+size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     __NC_STACK_amesh *amesh = &stack__amesh;
@@ -252,7 +252,7 @@ size_t NC_STACK_amesh::DeinitFromIFF(IFFile **file)
     if ( mfile->pushChunk(TAG_AMSH, TAG_FORM, -1) )
         return 0;
 
-    if ( !NC_STACK_area::DeinitFromIFF(file) )
+    if ( !NC_STACK_area::SaveIntoIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_ATTS, -1);

@@ -23,8 +23,8 @@ class NC_STACK_ade: public NC_STACK_nucleus
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t InitFromIFF(IFFile **file);
-    virtual size_t DeinitFromIFF(IFFile **file);
+    virtual size_t LoadingFromIFF(IFFile **file);
+    virtual size_t SavingIntoIFF(IFFile **file);
     virtual size_t ade_func64(AdeList &lst);
     virtual size_t ade_func65(area_arg_65 *arg);
 

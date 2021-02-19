@@ -44,7 +44,7 @@ size_t NC_STACK_bmpanim::Deinit()
 }
 
 
-size_t NC_STACK_bmpanim::InitFromIFF(IFFile **file)
+size_t NC_STACK_bmpanim::LoadingFromIFF(IFFile **file)
 {
     char buf[250];
 
@@ -93,7 +93,7 @@ size_t NC_STACK_bmpanim::InitFromIFF(IFFile **file)
     return Init( stak );
 }
 
-size_t NC_STACK_bmpanim::DeinitFromIFF(IFFile **file)
+size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
 {
     __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
 

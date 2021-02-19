@@ -127,11 +127,11 @@ public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     
-    virtual size_t InitFromIFF(IFFile **file);
-    virtual size_t DeinitFromIFF(IFFile **file);
+    virtual size_t LoadingFromIFF(IFFile **file);
+    virtual size_t SavingIntoIFF(IFFile **file);
     
-    virtual size_t AddKid(NC_STACK_base *kid);
-    virtual size_t ChangeParentTo(NC_STACK_base *parent, TF::TForm3D *tform);
+    virtual void AddKid(NC_STACK_base *kid);
+    virtual void ChangeParentTo(NC_STACK_base *parent, TF::TForm3D *tform);
     
     virtual void SetPosition(const vec3d &v, int flag = UF_XYZ);
     virtual void ChangePosition(const vec3d &v, int flag = UF_XYZ);
