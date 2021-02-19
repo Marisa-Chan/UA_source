@@ -1,6 +1,7 @@
 #ifndef ENGINE_TFORM_H_INCLUDED
 #define ENGINE_TFORM_H_INCLUDED
 
+#include <array>
 #include <inttypes.h>
 #include "../vectors.h"
 #include "../matrix.h"
@@ -78,7 +79,7 @@ public:
     void Deinit();
 
     inline SinCos& Angle(int angle) {
-        return SinCos_table[angle];
+        return SinCos_table.at(angle);
     };
     
     inline TForm3D *GetViewPoint() {
@@ -188,7 +189,7 @@ public:
     static TFEngine Instance;
 
 protected:
-    SinCos *SinCos_table = NULL;
+    std::array<SinCos, 361> SinCos_table;
     TForm3D *viewPoint = NULL;
 };
 

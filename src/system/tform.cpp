@@ -18,17 +18,12 @@ int TFEngine::Init()
 {
     Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &tform_keys);
 
-    SinCos_table = new SinCos[361];
-
-    if ( !SinCos_table)
-        return 0;
-
-    for (int i = 0; i < 361; i++)
+    for (size_t i = 0; i < SinCos_table.size(); i++)
     {
         double rad = i * 0.01745329251994329577; // to rad
 
-        SinCos_table[i].sin = sin(rad);
-        SinCos_table[i].cos = cos(rad);
+        SinCos_table.at(i).sin = sin(rad);
+        SinCos_table.at(i).cos = cos(rad);
     }
 
     return 1;
@@ -36,10 +31,6 @@ int TFEngine::Init()
 
 void TFEngine::Deinit()
 {
-    if (SinCos_table)
-        delete[] SinCos_table;
-
-    SinCos_table = NULL;
 }
 
 
