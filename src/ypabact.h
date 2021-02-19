@@ -60,7 +60,7 @@ struct extra_vproto
     vec3d pos;
     mat3x3 rotate;
     int flags;
-    vhclBases vp;
+    NC_STACK_base *vp;
 };
 
 enum BACT_TGT_TYPE
@@ -420,8 +420,8 @@ public:
         TA_IGNORE
     };
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
     virtual size_t func2(IDVList &stak);
     virtual void Update(update_msg *arg);
     virtual void Render(baseRender_msg *arg);
@@ -512,7 +512,7 @@ public:
         BACT_ATT_VISPROT = 0x8000100C,
         BACT_ATT_AGGRESSION = 0x8000100D,
         BACT_ATT_COLLNODES = 0x8000100E,
-        BACT_ATT_VPTRANSFORM = 0x8000100F,
+        //BACT_ATT_VPTRANSFORM = 0x8000100F,
         BACT_ATT_EXTRAVIEWER = 0x80001010,
         BACT_ATT_P_ATTACKNODE = 0x80001011,
         BACT_ATT_S_ATTACKNODE = 0x80001012,
@@ -528,23 +528,21 @@ public:
     virtual void setBACT_yourLastSeconds(int);
     virtual void setBACT_visProto(NC_STACK_base *);
     virtual void setBACT_aggression(int);
-    virtual void setBACT_vpTransform(TFEngine::TForm3D *);
     virtual void setBACT_extraViewer(int);
     virtual void setBACT_alwaysRender(int);
 
 
     virtual NC_STACK_ypaworld *getBACT_pWorld();
-    virtual TFEngine::TForm3D *getBACT_pTransform();
+    virtual TF::TForm3D *getBACT_pTransform();
     virtual int getBACT_viewer();
     virtual int getBACT_inputting();
     virtual int getBACT_exactCollisions();
     virtual int getBACT_bactCollisions();
     virtual int getBACT_landingOnWait();
     virtual int getBACT_yourLastSeconds();
-    virtual NC_STACK_base *getBACT_visProto();
+    virtual NC_STACK_base *GetVP();
     virtual int getBACT_aggression();
     virtual rbcolls *getBACT_collNodes();
-    virtual TFEngine::TForm3D *getBACT_vpTransform();
     virtual int getBACT_extraViewer();
     virtual int getBACT_alwaysRender();
     
@@ -663,12 +661,12 @@ public:
     float _height;
     float _height_max_user;
     vec3d _scale;
-    vhclBases _vp_normal;
-    vhclBases _vp_fire;
-    vhclBases _vp_wait;
-    vhclBases _vp_dead;
-    vhclBases _vp_megadeth;
-    vhclBases _vp_genesis;
+    NC_STACK_base *_vp_normal;
+    NC_STACK_base *_vp_fire;
+    NC_STACK_base *_vp_wait;
+    NC_STACK_base *_vp_dead;
+    NC_STACK_base *_vp_megadeth;
+    NC_STACK_base *_vp_genesis;
     int _vp_active;
     extra_vproto _vp_extra[3];
     int _vp_extra_mode;
@@ -682,7 +680,7 @@ public:
 //
 //    float pos_y_cntr;
 
-    TFEngine::TForm3D _tForm;
+    TF::TForm3D _tForm;
     int _clock;           // local time
     int _AI_time1;
     int _AI_time2;
@@ -735,11 +733,10 @@ public:
     int _scale_pos;
     int _scale_delay;
     NC_STACK_base *_vp_fx_models[32];
-    TFEngine::TForm3D *_vp_fx_tform[32];
 
     int _oflags;
     NC_STACK_ypaworld *_yw;
-    vhclBases _current_vp;
+    NC_STACK_base *_current_vp;
     World::BactList _attackersList;
     int _yls_time;  
     

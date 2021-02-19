@@ -135,7 +135,7 @@ struct skeleton_arg133
 class NC_STACK_skeleton: public NC_STACK_rsrc
 {
 public:
-    virtual size_t func0(IDVList &stak);
+    virtual size_t Init(IDVList &stak);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual __NC_STACK_skeleton * skeleton_func128(IDVPair *);

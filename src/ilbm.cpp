@@ -7,9 +7,9 @@
 
 const Nucleus::ClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
 
-size_t NC_STACK_ilbm::func0(IDVList &stak)
+size_t NC_STACK_ilbm::Init(IDVList &stak)
 {
-    if ( !NC_STACK_bitmap::func0(stak) )
+    if ( !NC_STACK_bitmap::Init(stak) )
         return 0;
 
     if ( stak.Get<int32_t>(ILBM_ATT_FMT, 0) )
@@ -87,12 +87,12 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
         if ( has_opl )
             stk.Add(BMD_ATT_OUTLINE, (pixel_2d *)opls);
 
-        return NC_STACK_bitmap::func0(stk);
+        return NC_STACK_bitmap::Init(stk);
     }
     return 0;
 }
 
-size_t NC_STACK_ilbm::func5(IFFile **file)
+size_t NC_STACK_ilbm::InitFromIFF(IFFile **file)
 {
     uint32_t TAG = (*file)->getCurrentChunk()->TAG_EXTENSION;
 
@@ -102,7 +102,7 @@ size_t NC_STACK_ilbm::func5(IFFile **file)
     return 0;
 }
 
-size_t NC_STACK_ilbm::func6(IFFile **pmfile)
+size_t NC_STACK_ilbm::DeinitFromIFF(IFFile **pmfile)
 {
     IFFile *mfile = *pmfile;
 

@@ -40,7 +40,6 @@ class NC_STACK_ypaworld;
 class NC_STACK_button;
 class NC_STACK_windp;
 
-struct vhclBases;
 struct cityBases;
 struct subSec;
 struct secType;
@@ -1403,7 +1402,7 @@ struct BriefengScreen
 
         Objects.clear();
 
-        ObjRenderParams.clear();
+        ObjRenderParams = baseRender_msg();
         ZoomFromGate = false;
 
         for (NC_STACK_sklt* &x : VectorGfx)
@@ -2293,8 +2292,8 @@ friend class World::Parsers::SaveSuperBombParser;
 
 
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
     virtual size_t base_func64(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
     virtual size_t ypaworld_func130(yw_130arg *arg);
@@ -2671,7 +2670,7 @@ public:
     NC_STACK_base *additionalSet;
     World::RefBactList _unitsList;
     World::RefBactList _deadCacheList;
-    vhclBases *vhcls_models;
+    std::vector<NC_STACK_base *> vhcls_models;
     cityBases *legos;
     subSec *subSectors;
     secType *secTypes;

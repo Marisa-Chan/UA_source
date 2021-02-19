@@ -69,10 +69,10 @@ public:
 
 
 
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
-    virtual size_t func5(IFFile **file);
-    virtual size_t func6(IFFile **file);
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
+    virtual size_t InitFromIFF(IFFile **file);
+    virtual size_t DeinitFromIFF(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);
     virtual void SetAccel(StartEnd *arg);
     virtual void SetMagnify(StartEnd *arg);

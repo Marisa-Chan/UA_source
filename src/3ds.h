@@ -86,9 +86,9 @@ struct d3dsMaterial
 class NC_STACK_3ds: public NC_STACK_base
 {
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
-    virtual size_t base_func77(baseRender_msg *arg);
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
+    virtual size_t Render(baseRender_msg *arg);
 
     NC_STACK_3ds();
     virtual ~NC_STACK_3ds();

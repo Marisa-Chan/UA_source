@@ -1965,19 +1965,17 @@ void sub_4D7F60(NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_ms
         sct->p_cell = yw->_cells + x + yw->_mapWidth * y;
         sct->smooth_height = sct->p_cell->averg_height;
 
-        flag_xyz grp_1;
-        grp_1.flag = 7;
-        grp_1.v.x = x * 1200.0 + 600.0;
-        grp_1.v.z = -(y * 1200.0 + 600.0);
-        grp_1.v.y = sct->p_cell->height;
+        vec3d pos  {  x * 1200.0 + 600.0
+                    , sct->p_cell->height
+                    ,-(y * 1200.0 + 600.0) };
 
-        sct->x = grp_1.v.x;
-        sct->y = grp_1.v.y;
-        sct->z = grp_1.v.z;
+        sct->x = pos.x;
+        sct->y = pos.y;
+        sct->z = pos.z;
 
-        yw->additionalBeeBox->base_func68(&grp_1);
+        yw->additionalBeeBox->SetPosition(pos);
 
-        if ( yw->additionalBeeBox->base_func77(bs77) )
+        if ( yw->additionalBeeBox->Render(bs77) )
         {
             sct->dword8 = 1;
         }
@@ -1990,22 +1988,14 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
     {
         cellArea *pcell = sct->p_cell;
 
-        flag_xyz grp_1;
-        grp_1.flag = 7;
-        grp_1.v.x = sct->x;
-        grp_1.v.y = sct->y;
-        grp_1.v.z = sct->z;
-
         int v22 = 0;
 
-        flag_xyz scel;
-
+        vec3d scel;
         if ( pcell->w_type == 1 )
         {
             yw_f80 *v5 = &yw->field_80[ pcell->w_id ];
 
-            scel.flag = 2;
-            scel.v.y = (float)v5->field_4 / (float)v5->field_8;
+            scel = vec3d::OY((float)v5->field_4 / (float)v5->field_8);
 
             pcell->type_id = yw->BuildProtos[ v5->blg_ID ].SecType;
             pcell->comp_type = yw->secTypes[ pcell->type_id ].field_0;
@@ -2030,27 +2020,28 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
         {
             for (int xx = 0; xx < v20; xx++)
             {
-                grp_1.v.x = (v17 + xx) * 300.0 + sct->x;
-                grp_1.v.z = (v17 + zz) * 300.0 + sct->z;
+                vec3d pos (  sct->x + (v17 + xx) * 300.0
+                           , sct->y
+                           , sct->z + (v17 + zz) * 300.0);
 
                 if ( v22 )
                 {
                     NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[0] ].base;
 
-                    bld->setBASE_static(0);
+                    bld->SetStatic(false);
 
-                    bld->base_func72(&scel);
-                    bld->base_func68(&grp_1);
-                    bld->base_func77(bs77);
+                    bld->SetScale(scel, NC_STACK_base::UF_Y); //Scale only Y
+                    bld->SetPosition(pos);
+                    bld->Render(bs77);
 
-                    bld->setBASE_static(1);
+                    bld->SetStatic(true);
                 }
                 else
                 {
                     NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[ yw->build_hp_ref[ pcell->buildings_health[xx][zz] ] ] ].base;
 
-                    bld->base_func68(&grp_1);
-                    bld->base_func77(bs77);
+                    bld->SetPosition(pos);
+                    bld->Render(bs77);
                 }
             }
         }
@@ -2070,17 +2061,13 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         float v6 = rndr_params->maxZ;
         uint32_t flags = rndr_params->flags;
 
-        flag_xyz v5;
-        v5.v = yw->current_bact->_position + vec3d::OY(yw->field_15f4);
-        v5.flag = 7;
-
-        yw->sky_loaded_base->base_func68(&v5);
+        yw->sky_loaded_base->SetPosition( yw->current_bact->_position + vec3d::OY(yw->field_15f4) );
 
         rndr_params->maxZ = 32000.0;
         if (GFX::Engine.win3d_keys[18].Get<bool>())
             rndr_params->flags = GFX::RFLAGS_SKY;
 
-        yw->sky_loaded_base->base_func77(rndr_params);
+        yw->sky_loaded_base->Render(rndr_params);
 
         rndr_params->maxZ = v6;
         rndr_params->flags = flags;
@@ -2115,10 +2102,9 @@ void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float po
             {
                 int v10 = yw->VhclProtos[yw->superbomb_wall_vproto].vp_normal;
 
-                NC_STACK_base *wall_base = yw->vhcls_models[v10].base;
-                TFEngine::TForm3D *wall_trigo = yw->vhcls_models[v10].trigo;
+                NC_STACK_base *wall_base = yw->vhcls_models.at(v10);
 
-                if ( wall_base && wall_trigo )
+                if ( wall_base )
                 {
                     float v28 = 0.0;
 
@@ -2147,7 +2133,7 @@ void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float po
                     }
 
 
-                    wall_trigo->locPos = vec3d(xx, v28, yy);
+                    wall_base->TForm().Pos = vec3d(xx, v28, yy);
 
                     float v29 = xx - posx;
                     float v30 = yy - posy;
@@ -2159,17 +2145,11 @@ void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float po
                         v30 /= v27;
                     }
 
-                    wall_trigo->locSclRot.m00 = v30;
-                    wall_trigo->locSclRot.m01 = 0;
-                    wall_trigo->locSclRot.m02 = -v29;
-                    wall_trigo->locSclRot.m10 = 0;
-                    wall_trigo->locSclRot.m11 = 1.0;
-                    wall_trigo->locSclRot.m12 = 0;
-                    wall_trigo->locSclRot.m20 = v29;
-                    wall_trigo->locSclRot.m21 = 0.0;
-                    wall_trigo->locSclRot.m22 = v30;
+                    wall_base->TForm().SclRot =  mat3x3(v30,   0, -v29,
+                                                          0, 1.0,    0,
+                                                        v29, 0.0,  v30);
 
-                    wall_base->base_func77(arg);
+                    wall_base->Render(arg);
                 }
             }
         }
@@ -2223,12 +2203,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(NC_STACK_ypaworld *yw, stru_a3 *sct, str
     NC_STACK_base *bs = yw->slurps2[x][y].skeletons_bas;
     UAskeleton::Data *skel = yw->slurps2[x][y].skeleton_internal;
 
-    flag_xyz grp_1;
-    grp_1.flag = 5;
-    grp_1.v.x = sct2->x;
-    grp_1.v.z = sct2->z;
-
-    bs->base_func68(&grp_1);
+    bs->SetPosition( vec3d(sct2->x, 0, sct2->z), NC_STACK_base::UF_XZ);
 
     for (int i = 0; i < 4; i++)
         skel->POO[i].y = sct->y;
@@ -2253,12 +2228,7 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(NC_STACK_ypaworld *yw, stru_a3 *sct, str
     NC_STACK_base *bs = yw->slurps1[x][y].skeletons_bas;
     UAskeleton::Data *skel = yw->slurps1[x][y].skeleton_internal;
 
-    flag_xyz grp_1;
-    grp_1.flag = 5;
-    grp_1.v.x = sct2->x;
-    grp_1.v.z = sct2->z;
-
-    bs->base_func68(&grp_1);
+    bs->SetPosition( vec3d(sct2->x, 0, sct2->z), NC_STACK_base::UF_XZ );
 
     for (int i = 0; i < 4; i++)
         skel->POO[i].y = sct->y;
@@ -2292,7 +2262,7 @@ void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
             NC_STACK_base *bs = sb_0x4d7c08__sub3__sub0(yw, sct, sct2, h, h2);
             if ( bs )
-                bs->base_func77(arg);
+                bs->Render(arg);
         }
     }
 
@@ -2308,7 +2278,7 @@ void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
             NC_STACK_base *bs = sb_0x4d7c08__sub3__sub1(yw, sct, sct2, h, h2);
             if ( bs )
-                bs->base_func77(arg);
+                bs->Render(arg);
 
         }
     }
@@ -2318,7 +2288,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 {
     if ( yw->current_bact )
     {
-        TFEngine::TForm3D *v5 = TFEngine::Engine.GetViewPoint();
+        TF::TForm3D *v5 = TF::Engine.GetViewPoint();
 
         if ( v5 )
             v5->CalcGlobal();
@@ -4375,29 +4345,29 @@ void NC_STACK_ypaworld::recorder_world_to_frame(recorder *rcrd)
         oinf->rot_y = dround(euler.y * 127.0 / C_2PI);
         oinf->rot_z = dround(euler.z * 127.0 / C_2PI);
 
-        NC_STACK_base *a4 = bact->getBACT_visProto();
+        NC_STACK_base *a4 = bact->GetVP();
 
-        if ( a4 == bact->_vp_normal.base )
+        if ( a4 == bact->_vp_normal )
         {
             oinf->vp_id = 1;
         }
-        else if ( a4 == bact->_vp_fire.base )
+        else if ( a4 == bact->_vp_fire )
         {
             oinf->vp_id = 2;
         }
-        else if ( a4 == bact->_vp_wait.base )
+        else if ( a4 == bact->_vp_wait )
         {
             oinf->vp_id = 3;
         }
-        else if ( a4 == bact->_vp_dead.base )
+        else if ( a4 == bact->_vp_dead )
         {
             oinf->vp_id = 4;
         }
-        else if ( a4 == bact->_vp_megadeth.base )
+        else if ( a4 == bact->_vp_megadeth )
         {
             oinf->vp_id = 5;
         }
-        else if ( a4 == bact->_vp_genesis.base )
+        else if ( a4 == bact->_vp_genesis )
         {
             oinf->vp_id = 6;
         }
@@ -4573,7 +4543,7 @@ void NC_STACK_ypaworld::recorder_write_frame()
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->writeU32L(oinf->bact_id);
-                TFEngine::Vec3dWriteIFF(oinf->pos, rcrd->mfile, false);
+                TF::Engine.Vec3dWriteIFF(oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->writeS8(oinf->rot_x);
                 rcrd->mfile->writeS8(oinf->rot_y);
                 rcrd->mfile->writeS8(oinf->rot_z);
@@ -4846,7 +4816,7 @@ bool NC_STACK_ypaworld::recorder_create_camera()
     UserRobo = bacto;
     _UserRoboKidsList = &bacto->_kidList;
 
-    TFEngine::Engine.SetViewPoint(&bacto->_tForm);
+    TF::Engine.SetViewPoint(&bacto->_tForm);
 
     return true;
 }
@@ -4882,7 +4852,7 @@ void recorder_read_framedata(recorder *rcrd)
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->readU32L(oinf->bact_id);
-                TFEngine::Vec3dReadIFF(oinf->pos, rcrd->mfile, false);
+                TF::Engine.Vec3dReadIFF(oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->readS8(oinf->rot_x);
                 rcrd->mfile->readS8(oinf->rot_y);
                 rcrd->mfile->readS8(oinf->rot_z);
@@ -5047,49 +5017,34 @@ void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *
 
     bact->_rotation = mat3x3::Basis(axisX, axisY, axisZ);
 
-    TFEngine::TForm3D *v43 = NULL;
-    NC_STACK_base *v44 = NULL;
-
     switch ( oinf->vp_id )
     {
     case 1:
-        v43 = bact->_vp_normal.trigo;
-        v44 = bact->_vp_normal.base;
+        bact->_current_vp = bact->_vp_normal;
         break;
 
     case 2:
-        v43 = bact->_vp_fire.trigo;
-        v44 = bact->_vp_fire.base;
+        bact->_current_vp = bact->_vp_fire;
         break;
 
     case 3:
-        v43 = bact->_vp_wait.trigo;
-        v44 = bact->_vp_wait.base;
+        bact->_current_vp = bact->_vp_wait;
         break;
 
     case 4:
-        v43 = bact->_vp_dead.trigo;
-        v44 = bact->_vp_dead.base;
+        bact->_current_vp = bact->_vp_dead;
         break;
 
     case 5:
-        v43 = bact->_vp_megadeth.trigo;
-        v44 = bact->_vp_megadeth.base;
+        bact->_current_vp = bact->_vp_megadeth;
         break;
 
     case 6:
-        v43 = bact->_vp_genesis.trigo;
-        v44 = bact->_vp_genesis.base;
+        bact->_current_vp = bact->_vp_genesis;
         break;
 
     default:
         break;
-    }
-
-    if ( v44 && v43 )
-    {
-        bact->setBACT_visProto(v44);
-        bact->setBACT_vpTransform(v43);
     }
 
     bact->_soundcarrier.samples_data[0].pitch = ssnd[1];
@@ -5413,8 +5368,8 @@ void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *ba
             bact->_fly_dir_length = (v39 / fperiod) / 6.0;
     }
 
-    bact->_tForm.locPos = bact->_position;
-    bact->_tForm.locSclRot = bact->_rotation;
+    bact->_tForm.Pos = bact->_position;
+    bact->_tForm.SclRot = bact->_rotation;
 }
 
 char *sub_445654(NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)

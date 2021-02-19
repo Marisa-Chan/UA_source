@@ -32,7 +32,7 @@ NC_STACK_nucleus *CFInit(const std::string &classname, IDVList &stak)
 
     NC_STACK_nucleus *inst = it->_newinstance();
 
-    if ( !inst->func0(stak) )
+    if ( !inst->Init(stak) )
     {
         delete inst;
         return NULL;
@@ -55,7 +55,7 @@ NC_STACK_nucleus *CFInit(const std::string &classname, IDVList::TInitList lst)
 
 void Delete(NC_STACK_nucleus *clas)
 {
-    clas->func1();
+    clas->Deinit();
     delete clas;
 }
 
@@ -66,7 +66,7 @@ void Delete(NC_STACK_nucleus *clas)
 
 const Nucleus::ClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
 
-size_t NC_STACK_nucleus::func0(IDVList &stak)
+size_t NC_STACK_nucleus::Init(IDVList &stak)
 {
     for( auto& it : stak )
     {
@@ -89,14 +89,14 @@ size_t NC_STACK_nucleus::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_nucleus::func1()
+size_t NC_STACK_nucleus::Deinit()
 {
     NAME.clear();
 
     return 1;
 }
 
-size_t NC_STACK_nucleus::func5(IFFile **file)
+size_t NC_STACK_nucleus::InitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
@@ -107,7 +107,7 @@ size_t NC_STACK_nucleus::func5(IFFile **file)
             break;
         if ( v6 )
         {
-            func1();
+            Deinit();
             return 0;
         }
         if ( mfile->getCurrentChunk()->TAG == TAG_NAME )
@@ -117,7 +117,7 @@ size_t NC_STACK_nucleus::func5(IFFile **file)
 
             if ( !mfile->read(a4, 32) )
             {
-                func1();
+                Deinit();
                 return 0;
             }
 
@@ -134,7 +134,7 @@ size_t NC_STACK_nucleus::func5(IFFile **file)
 }
 
 
-size_t NC_STACK_nucleus::func6(IFFile **val)
+size_t NC_STACK_nucleus::DeinitFromIFF(IFFile **val)
 {
     IFFile *mfile = *val;
     if ( mfile->pushChunk(TAG_ROOT, TAG_FORM, -1) )
@@ -170,7 +170,7 @@ const std::string &NC_STACK_nucleus::getName() const
 
 int delete_class_obj(NC_STACK_nucleus *cls)
 {
-    int ret = cls->func1();
+    int ret = cls->Deinit();
 
     delete cls;
 
@@ -216,7 +216,7 @@ NC_STACK_nucleus *NC_STACK_nucleus::READ_OBJT(IFFile *mfile)
 
             obj = clss->_newinstance();
 
-            if ( !obj->func5(&v11) )
+            if ( !obj->InitFromIFF(&v11) )
             {
                 delete obj;
                 return NULL;
@@ -250,7 +250,7 @@ int sub_4117F8(NC_STACK_nucleus *obj, IFFile *mfile)
     mfile->popChunk();
 
     IFFile *tmp = mfile;
-    int res = obj->func6(&tmp);
+    int res = obj->DeinitFromIFF(&tmp);
     mfile->popChunk();
 
     return res;

@@ -40,8 +40,8 @@ public:
     };
 
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
     virtual bool GetState();
     virtual float GetSlider();
     virtual void QueryKeyboard(InputState *arg);

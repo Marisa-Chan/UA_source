@@ -375,9 +375,9 @@ void NC_STACK_winp::OnMouseMove(Common::Point pos, Common::Point rel)
 }
 
 
-size_t NC_STACK_winp::func0(IDVList &stak)
+size_t NC_STACK_winp::Init(IDVList &stak)
 {
-    if ( !NC_STACK_iwimp::func0(stak) )
+    if ( !NC_STACK_iwimp::Init(stak) )
         return 0;
 
     _bindedKey = -1;
@@ -385,9 +385,9 @@ size_t NC_STACK_winp::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_winp::func1()
+size_t NC_STACK_winp::Deinit()
 {
-    return NC_STACK_iwimp::func1();
+    return NC_STACK_iwimp::Deinit();
 }
 
 

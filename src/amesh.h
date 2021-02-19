@@ -29,10 +29,10 @@ struct __NC_STACK_amesh
 class NC_STACK_amesh: public NC_STACK_area
 {
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
-    virtual size_t func5(IFFile **file);
-    virtual size_t func6(IFFile **file);
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
+    virtual size_t InitFromIFF(IFFile **file);
+    virtual size_t DeinitFromIFF(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg);
 
     NC_STACK_amesh() {

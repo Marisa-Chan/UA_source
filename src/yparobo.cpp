@@ -49,9 +49,9 @@ cellArea * NC_STACK_yparobo::yparobo_func0__sub0()
     return sect_info.pcell;
 }
 
-size_t NC_STACK_yparobo::func0(IDVList &stak)
+size_t NC_STACK_yparobo::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypabact::func0(stak) )
+    if ( !NC_STACK_ypabact::Init(stak) )
         return 0;
 
     _roboEpConquer = 30;
@@ -183,9 +183,9 @@ size_t NC_STACK_yparobo::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_yparobo::func1()
+size_t NC_STACK_yparobo::Deinit()
 {
-    return NC_STACK_ypabact::func1();
+    return NC_STACK_ypabact::Deinit();
 }
 
 size_t NC_STACK_yparobo::func2(IDVList &stak)
@@ -5495,7 +5495,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
 
     _status_flg |= BACT_STFLAG_LAND;
 
-    if ( !_owner || !_vp_genesis.base )
+    if ( _owner == 0 || _vp_genesis == NULL )
     {
         if ( a4 > 0 )
             return;
@@ -5522,8 +5522,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
 
         if ( _scale_time <= 0 )
         {
-            _vp_extra[0].vp.base = NULL;
-            _vp_extra[0].vp.trigo = NULL;
+            _vp_extra[0].vp = NULL;
 
             if ( a4 > 0 )
                 return;

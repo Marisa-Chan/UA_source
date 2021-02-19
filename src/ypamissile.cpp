@@ -13,9 +13,9 @@
 
 const Nucleus::ClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
 
-size_t NC_STACK_ypamissile::func0(IDVList &stak)
+size_t NC_STACK_ypamissile::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypabact::func0(stak) )
+    if ( !NC_STACK_ypabact::Init(stak) )
         return 0;
 
     _bact_type = BACT_TYPES_MISSLE;
@@ -70,9 +70,9 @@ size_t NC_STACK_ypamissile::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ypamissile::func1()
+size_t NC_STACK_ypamissile::Deinit()
 {
-    return NC_STACK_ypabact::func1();
+    return NC_STACK_ypabact::Deinit();
 }
 
 size_t NC_STACK_ypamissile::func2(IDVList &stak)
@@ -739,8 +739,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
     if ( arg->newStatus == BACT_STATUS_DEAD )
     {
-        setBACT_visProto(_vp_dead.base);
-        setBACT_vpTransform(_vp_dead.trigo);
+        _current_vp = _vp_dead;
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
@@ -751,16 +750,14 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
     if ( arg->newStatus == BACT_STATUS_NORMAL )
     {
-        setBACT_visProto(_vp_normal.base);
-        setBACT_vpTransform(_vp_normal.trigo);
+        _current_vp = _vp_normal;
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 0);
     }
 
     if ( arg->unsetFlags == BACT_STFLAG_DEATH2 )
     {
-        setBACT_visProto(_vp_normal.base);
-        setBACT_vpTransform(_vp_normal.trigo);
+        _current_vp = _vp_normal;
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 0);
     }
@@ -769,8 +766,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
     {
         _status = BACT_STATUS_DEAD;
 
-        setBACT_visProto(_vp_megadeth.base);
-        setBACT_vpTransform(_vp_megadeth.trigo);
+        _current_vp = _vp_megadeth;
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 

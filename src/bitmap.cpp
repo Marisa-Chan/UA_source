@@ -60,9 +60,9 @@ int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 }
 
 
-size_t NC_STACK_bitmap::func0(IDVList &stak)
+size_t NC_STACK_bitmap::Init(IDVList &stak)
 {
-    if ( !NC_STACK_rsrc::func0(stak) )
+    if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
     __NC_STACK_bitmap *internal = &stack__bitmap;
@@ -77,7 +77,7 @@ size_t NC_STACK_bitmap::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_bitmap::func1()
+size_t NC_STACK_bitmap::Deinit()
 {
     __NC_STACK_bitmap *internal = &stack__bitmap;
 
@@ -89,7 +89,7 @@ size_t NC_STACK_bitmap::func1()
             nc_FreeMem(internal->outline_coords);
     }
 
-    return NC_STACK_rsrc::func1();
+    return NC_STACK_rsrc::Deinit();
 }
 
 // Create bitmap resource node and fill rsrc field data

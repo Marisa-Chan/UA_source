@@ -128,8 +128,8 @@ public:
 
 // Methods
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
     virtual size_t button_func64(button_64_arg *arg);
     virtual size_t button_func65(int butID);
     virtual size_t button_func66(button_66arg *arg);

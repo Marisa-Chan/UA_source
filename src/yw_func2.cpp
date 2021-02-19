@@ -34,16 +34,12 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
 
-    NC_STACK_base *model_base = yw->vhcls_models[ yw->VhclProtos[ yw->brief.ViewingObject.ID ].vp_normal ].base;
+    NC_STACK_base *model_base = yw->vhcls_models.at( yw->VhclProtos[ yw->brief.ViewingObject.ID ].vp_normal );
 
-    model_base->setBASE_visLimit(16000);
-    model_base->setBASE_fadeLength(100);
+    model_base->SetVizLimit(16000);
+    model_base->SetFadeLength(100);
 
-    flag_xyz tmp;
-    tmp.flag = 7;
-    tmp.v = *pos;
-
-    model_base->base_func68(&tmp);
+    model_base->SetPosition(*pos);
 
     if (clockwise)
     {
@@ -58,22 +54,16 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos
             yw->brief.ViewingObjectAngle += 360;
     }
 
-    flag_xyz2 rot;
-    rot.flag = 7;
-    rot.x = a3 + 10;
-    rot.y = yw->brief.ViewingObjectAngle;
-    rot.z = 0;
-
-    model_base->base_func70(&rot);
+    model_base->SetEulerRotation( a3 + 10, yw->brief.ViewingObjectAngle, 0);
     //printf("Try DRAW %d\n", (int)model_base);
-    model_base->base_func77(arg); //Draw vehicle
+    model_base->Render(arg); //Draw vehicle
 }
 
 void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *pos, baseRender_msg *arg)
 {
     secType *scType = &yw->secTypes[yw->brief.ViewingObject.ID];
 
-    NC_STACK_base *v7 = yw->vhcls_models[0].base;
+    NC_STACK_base *v7 = yw->vhcls_models.at(0);
 
     if (clockwise)
     {
@@ -88,15 +78,7 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
             yw->brief.ViewingObjectAngle += 360;
     }
 
-    flag_xyz2 v17;
-    v17.flag = 7;
-    v17.x = rot + 10;
-    v17.y = yw->brief.ViewingObjectAngle;
-    v17.z = 0;
-
-    v7->base_func70(&v17);
-
-    TFEngine::TForm3D *p3d = v7->getBASE_pTransform();
+    v7->SetEulerRotation(rot + 10, yw->brief.ViewingObjectAngle, 0);
 
     int first;
     int demens;
@@ -118,20 +100,16 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
         int v30 = first;
         for (int j = 0; j < demens; j++)
         {
-            vec3d v13 = vec3d(v30, 0.0, v22) * 300.0;
-
-            flag_xyz v16;
-            v16.flag = 7;
-            v16.v = *pos + p3d->locSclRot.Transform( v13 );
+            vec3d inSectorPos = vec3d(v30, 0.0, v22) * 300.0;
 
             NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
-            lego->setBASE_static(0);
-            lego->setBASE_visLimit(16000);
-            lego->setBASE_fadeLength(100);
+            lego->SetStatic(false);
+            lego->SetVizLimit(16000);
+            lego->SetFadeLength(100);
 
-            lego->base_func70(&v17);
-            lego->base_func68(&v16);
-            lego->base_func77(arg);
+            lego->SetEulerRotation(rot + 10, yw->brief.ViewingObjectAngle, 0);
+            lego->SetPosition( *pos + v7->TForm().SclRot.Transform( inSectorPos ) );
+            lego->Render(arg);
             
             v30++;
         }
@@ -145,12 +123,12 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, 
     brf->ObjRenderParams.globTime = brf->CurrTime;
     brf->ObjRenderParams.ownerID = 1;
 
-    TFEngine::TForm3D v14;
-    memset(&v14, 0, sizeof(TFEngine::TForm3D));
-    v14.scale = vec3d(1.0, 1.0, 1.0);
-    v14.locSclRot = mat3x3::Ident();
+    TF::TForm3D v14;
+    memset(&v14, 0, sizeof(TF::TForm3D));
+    v14.Scale = vec3d(1.0, 1.0, 1.0);
+    v14.SclRot = mat3x3::Ident();
 
-    TFEngine::Engine.SetViewPoint(&v14);
+    TF::Engine.SetViewPoint(&v14);
     v14.CalcGlobal();
 
     vec3d pos;
@@ -476,7 +454,7 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
 {
     std::string skyfilename = fmt::sprintf("data:%s", skyname);
 
-    NC_STACK_base *sky = NC_STACK_base::READ_BAS_FILE(skyfilename);
+    NC_STACK_base *sky = NC_STACK_base::LoadBaseFromFile(skyfilename);
     yw->sky_loaded_base = sky;
     if ( !sky )
     {
@@ -484,9 +462,9 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
         return 0;
     }
 
-    sky->setBASE_static(1); // Don't rotate sky
-    sky->setBASE_visLimit(yw->field_15ec);
-    sky->setBASE_fadeLength(yw->field_15f0);
+    sky->SetStatic(true); // Don't rotate sky
+    sky->SetVizLimit(yw->field_15ec);
+    sky->SetFadeLength(yw->field_15f0);
     return 1;
 }
 

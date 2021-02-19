@@ -19,9 +19,9 @@ rsrc *rsrc_find(RSRCList *list, const std::string &name)
     return NULL;
 }
 
-size_t NC_STACK_rsrc::func0(IDVList &stak)
+size_t NC_STACK_rsrc::Init(IDVList &stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak) )
+    if ( !NC_STACK_nucleus::Init(stak) )
         return 0;
 
     int reuse_loaded = 1;
@@ -31,7 +31,7 @@ size_t NC_STACK_rsrc::func0(IDVList &stak)
 
     if ( res_name.empty() )
     {
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -55,12 +55,12 @@ size_t NC_STACK_rsrc::func0(IDVList &stak)
     }
     else
     {
-        func1();
+        Deinit();
         return 0;
     }
 }
 
-size_t NC_STACK_rsrc::func1()
+size_t NC_STACK_rsrc::Deinit()
 {
     if ( resource )
     {
@@ -72,7 +72,7 @@ size_t NC_STACK_rsrc::func1()
         resource = NULL;
     }
 
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
 // Allocate resource node

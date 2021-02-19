@@ -12,9 +12,9 @@
 
 const Nucleus::ClassDescr NC_STACK_area::description("area.class", &newinstance);
 
-size_t NC_STACK_area::func0(IDVList &stak)
+size_t NC_STACK_area::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ade::func0(stak) )
+    if ( !NC_STACK_ade::Init(stak) )
         return 0;
 
     stack__area.colorVal = 1;
@@ -83,7 +83,7 @@ size_t NC_STACK_area::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_area::func1()
+size_t NC_STACK_area::Deinit()
 {
     __NC_STACK_area *area = &stack__area;
 
@@ -91,7 +91,7 @@ size_t NC_STACK_area::func1()
         delete_class_obj(area->texImg);
     if ( area->tracyImg )
         delete_class_obj(area->tracyImg);
-    return NC_STACK_ade::func1();
+    return NC_STACK_ade::Deinit();
 }
 
 
@@ -157,7 +157,7 @@ int NC_STACK_area::area_func5__sub1(IFFile *mfile)
 }
 
 
-size_t NC_STACK_area::func5(IFFile **file)
+size_t NC_STACK_area::InitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -172,7 +172,7 @@ size_t NC_STACK_area::func5(IFFile **file)
         if ( iff_res )
         {
             if ( obj_ok )
-                func1();
+                Deinit();
             return 0;
         }
 
@@ -180,7 +180,7 @@ size_t NC_STACK_area::func5(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
-            obj_ok = NC_STACK_ade::func5(file);
+            obj_ok = NC_STACK_ade::InitFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -189,7 +189,7 @@ size_t NC_STACK_area::func5(IFFile **file)
         {
             if ( obj_ok && !area_func5__sub0(mfile) )
             {
-                func1();
+                Deinit();
                 return 0;
             }
             mfile->parse();
@@ -198,7 +198,7 @@ size_t NC_STACK_area::func5(IFFile **file)
         {
             if ( obj_ok && !area_func5__sub1(mfile) )
             {
-                func1();
+                Deinit();
                 return 0;
             }
         }
@@ -211,7 +211,7 @@ size_t NC_STACK_area::func5(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_area::func6(IFFile **file)
+size_t NC_STACK_area::DeinitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     __NC_STACK_area *area = &stack__area;
@@ -220,7 +220,7 @@ size_t NC_STACK_area::func6(IFFile **file)
         return 0;
 
 
-    if ( !NC_STACK_ade::func6(file) )
+    if ( !NC_STACK_ade::DeinitFromIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_STRC, -1);

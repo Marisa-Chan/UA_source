@@ -11,7 +11,7 @@
 class NC_STACK_iwimp: public NC_STACK_idev
 {
 public:
-    virtual size_t func0(IDVList &stak);
+    virtual size_t Init(IDVList &stak);
     virtual bool HasFocus() {
         return true;
     };

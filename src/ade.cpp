@@ -7,9 +7,9 @@
 const Nucleus::ClassDescr NC_STACK_ade::description("ade.class", &newinstance);
 
 
-size_t NC_STACK_ade::func0(IDVList &stak)
+size_t NC_STACK_ade::Init(IDVList &stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak) )
+    if ( !NC_STACK_nucleus::Init(stak) )
         return 0;
 
     for( auto& it : stak )
@@ -41,7 +41,7 @@ size_t NC_STACK_ade::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ade::func1()
+size_t NC_STACK_ade::Deinit()
 {
     if ( AttachedTo )
     {
@@ -49,10 +49,10 @@ size_t NC_STACK_ade::func1()
         AttachedTo = NULL;
     }
 
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
-size_t NC_STACK_ade::func5(IFFile **file)
+size_t NC_STACK_ade::InitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -66,7 +66,7 @@ size_t NC_STACK_ade::func5(IFFile **file)
         if ( iff_res )
         {
             if ( obj_ok )
-                func1();
+                Deinit();
             return 0;
         }
 
@@ -74,7 +74,7 @@ size_t NC_STACK_ade::func5(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj_ok = NC_STACK_nucleus::func5(file);
+            obj_ok = NC_STACK_nucleus::InitFromIFF(file);
 
             if ( !obj_ok )
                 break;
@@ -111,14 +111,14 @@ size_t NC_STACK_ade::func5(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_ade::func6(IFFile **file)
+size_t NC_STACK_ade::DeinitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
     if ( mfile->pushChunk(TAG_ADE, TAG_FORM, -1) )
         return 0;
 
-    if ( !NC_STACK_nucleus::func6(file) )
+    if ( !NC_STACK_nucleus::DeinitFromIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_STRC, -1);

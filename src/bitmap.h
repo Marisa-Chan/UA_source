@@ -36,8 +36,8 @@ class NC_STACK_bitmap: public NC_STACK_rsrc
 {
     
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t bitmap_func128(IDVPair *);

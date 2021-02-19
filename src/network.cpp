@@ -10,16 +10,16 @@ const Nucleus::ClassDescr NC_STACK_network::description("network.class", &newins
 
 
 
-size_t NC_STACK_network::func0(IDVList &stak)
+size_t NC_STACK_network::Init(IDVList &stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak) )
+    if ( !NC_STACK_nucleus::Init(stak) )
         return 0;
 
     return 1;
 }
 
-size_t NC_STACK_network::func1()
+size_t NC_STACK_network::Deinit()
 {
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 

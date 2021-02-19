@@ -55,10 +55,10 @@ struct __attribute__((packed)) bmpanm_loc
 class NC_STACK_bmpanim: public NC_STACK_bitmap
 {
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
-    virtual size_t func5(IFFile **file);
-    virtual size_t func6(IFFile **file);
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
+    virtual size_t InitFromIFF(IFFile **file);
+    virtual size_t DeinitFromIFF(IFFile **file);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t rsrc_func66(rsrc_func66_arg *sv);

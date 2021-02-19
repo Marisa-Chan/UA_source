@@ -7,9 +7,9 @@
 const Nucleus::ClassDescr NC_STACK_sample::description("sample.class", &newinstance);
 
 
-size_t NC_STACK_sample::func0(IDVList &stak)
+size_t NC_STACK_sample::Init(IDVList &stak)
 {
-    if ( !NC_STACK_rsrc::func0(stak) )
+    if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
     stack__sample.p_sampl = (sampl *)getRsrc_pData();

@@ -20,9 +20,9 @@ NC_STACK_ypacar::NC_STACK_ypacar()
     _carBlast = 0;
 }
     
-size_t NC_STACK_ypacar::func0(IDVList &stak)
+size_t NC_STACK_ypacar::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypatank::func0(stak) )
+    if ( !NC_STACK_ypatank::Init(stak) )
         return 0;
 
     _bact_type = BACT_TYPES_CAR;
@@ -52,9 +52,9 @@ size_t NC_STACK_ypacar::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ypacar::func1()
+size_t NC_STACK_ypacar::Deinit()
 {
-    return NC_STACK_ypatank::func1();
+    return NC_STACK_ypatank::Deinit();
 }
 
 size_t NC_STACK_ypacar::func2(IDVList &stak)

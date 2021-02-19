@@ -20,7 +20,7 @@ const Nucleus::ClassDescr NC_STACK_sklt::description("sklt.class", &newinstance)
 
 
 
-size_t NC_STACK_sklt::func5(IFFile **file)
+size_t NC_STACK_sklt::InitFromIFF(IFFile **file)
 {
     char name[256];
 
@@ -55,7 +55,7 @@ size_t NC_STACK_sklt::func5(IFFile **file)
         {RSRC_ATT_NAME, std::string(name)},
         {RSRC_ATT_TRYSHARED, (int32_t)1} };
 
-    if ( !NC_STACK_skeleton::func0(stak) 
+    if ( !NC_STACK_skeleton::Init(stak) 
         )
         return 0;
 

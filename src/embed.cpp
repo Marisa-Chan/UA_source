@@ -15,23 +15,23 @@ const Nucleus::ClassDescr NC_STACK_embed::description("embed.class", &newinstanc
 
 
 // Create embed resource node and fill rsrc field data
-size_t NC_STACK_embed::func0(IDVList &)
+size_t NC_STACK_embed::Init(IDVList &)
 {
     dprintf("MAKE ME %s\n","embed_func0");
     return 0;
 }
 
-size_t NC_STACK_embed::func1()
+size_t NC_STACK_embed::Deinit()
 {
     for ( NC_STACK_rsrc *res : _resources )
         Nucleus::Delete(res);
     
     _resources.clear();
     
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
-size_t NC_STACK_embed::func5(IFFile **file)
+size_t NC_STACK_embed::InitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -46,7 +46,7 @@ size_t NC_STACK_embed::func5(IFFile **file)
         if ( v5 )
         {
             if ( obj_ok )
-                func1();
+                Deinit();
             return 0;
         }
 
@@ -54,7 +54,7 @@ size_t NC_STACK_embed::func5(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
         {
-            obj_ok = NC_STACK_nucleus::func5(file);
+            obj_ok = NC_STACK_nucleus::InitFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -85,7 +85,7 @@ size_t NC_STACK_embed::func5(IFFile **file)
 
             if ( !embd_class )
             {
-                func1();
+                Deinit();
                 return 0;
             }
             
@@ -100,14 +100,14 @@ size_t NC_STACK_embed::func5(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_embed::func6(IFFile **file)
+size_t NC_STACK_embed::DeinitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
     if ( mfile->pushChunk(TAG_EMBD, TAG_FORM, -1) )
         return 0;
 
-    if ( !NC_STACK_nucleus::func6(file) )
+    if ( !NC_STACK_nucleus::DeinitFromIFF(file) )
         return 0;
     
     for ( NC_STACK_rsrc *embd_obj : _resources )

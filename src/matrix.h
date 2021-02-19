@@ -7,6 +7,13 @@
 #define MAT_FLAG_INV_SIN   1
 #define MAT_FLAG_INV_COS   2
 
+template <typename T, typename K> struct Tmat3x3;
+template <typename T, typename K> struct Tmat4x4;
+
+typedef Tmat3x3<double, double> mat3x3;
+typedef Tmat4x4<double, double> mat4x4;
+
+
 template <typename T, typename K>
 struct Tmat3x3
 {

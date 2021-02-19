@@ -25,17 +25,17 @@ NC_STACK_3ds::~NC_STACK_3ds()
         delete *it;
 }
 
-size_t NC_STACK_3ds::func0(IDVList &stak)
+size_t NC_STACK_3ds::Init(IDVList &stak)
 {
-    if ( !NC_STACK_base::func0(stak) )
+    if ( !NC_STACK_base::Init(stak) )
         return 0;
 
     return 1;
 }
 
-size_t NC_STACK_3ds::func1()
+size_t NC_STACK_3ds::Deinit()
 {
-    return NC_STACK_base::func1();
+    return NC_STACK_base::Deinit();
 }
 
 bool NC_STACK_3ds::readFile(const char *filename)
@@ -210,12 +210,12 @@ size_t NC_STACK_3ds::readChunkVertex(FSMgr::FileHandle *fil, size_t sz)
 
     printf("vtx %d\n", numvertex);
 
-    OBJ_SKELETON = Nucleus::CInit<NC_STACK_skeleton>( {
+    _skeleton = Nucleus::CInit<NC_STACK_skeleton>( {
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string("3ds_sklt")},
         {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)2},
         {NC_STACK_skeleton::SKEL_ATT_POINTSCNT, (int32_t)numvertex}});
         
-    UAskeleton::Data *dat = OBJ_SKELETON->GetSkelet();
+    UAskeleton::Data *dat = _skeleton->GetSkelet();
 
     for (int i = 0; i < numvertex; i++)
     {
@@ -238,13 +238,13 @@ size_t NC_STACK_3ds::readChunkFaces(FSMgr::FileHandle *fil, size_t sz)
     readed += 2;
     printf("faces %d\n", numfaces);
 
-    UAskeleton::Data *dat = OBJ_SKELETON->GetSkelet();
+    UAskeleton::Data *dat = _skeleton->GetSkelet();
 
     skeleton_130_arg arg;
     arg.skeleton = dat;
     arg.pol_count = numfaces;
 
-    OBJ_SKELETON->skeleton_func130(&arg);
+    _skeleton->skeleton_func130(&arg);
 
     if (faceMaterial)
         delete [] faceMaterial;
@@ -512,165 +512,162 @@ d3dsMaterial * NC_STACK_3ds::findMaterial(const char *name)
     return NULL;
 }
 
-size_t NC_STACK_3ds::base_func77(baseRender_msg *arg)
+size_t NC_STACK_3ds::Render(baseRender_msg *arg)
 {
     int v12 = 0;
 
-    if ( OBJ_SKELETON )
+    if ( _skeleton )
     {
-        UAskeleton::Data *skeldat = OBJ_SKELETON->GetSkelet();
+        UAskeleton::Data *skeldat = _skeleton->GetSkelet();
 
-        if ( !(flags & FLAG_MAINOBJT) )
+        _transform.CalcGlobal();
+
+        TF::TForm3D *view = TF::Engine.GetViewPoint();
+
+        skeleton_arg_132 skel132;
+        skel132.minZ = arg->minZ;
+        skel132.maxZ = arg->maxZ;
+        skel132.tform = view->CalcSclRot;
+
+        if ( !(_transform.flags & TF::TForm3D::FLAG_NO_WRLD_ROT) )
+            skel132.tform *= (_transform.TForm - view->CalcPos);
+        else
+            skel132.tform *= mat4x4(_transform.CalcPos - view->CalcPos);
+
+        v12 = _skeleton->skeleton_func132(&skel132);
+
+        if ( v12 )
         {
-            transform.CalcGlobal();
+            _renderMsg.ownerID = arg->ownerID;
+            _renderMsg.timeStamp = arg->globTime;
+            _renderMsg.frameTime = arg->frameTime;
+            _renderMsg.minZ = arg->minZ;
+            _renderMsg.maxZ = arg->maxZ;
+            _renderMsg.rndrStack = arg->rndrStack;
+            _renderMsg.view = view;
+            _renderMsg.owner = &_transform;
+            _renderMsg.flags = arg->flags;
 
-            TFEngine::TForm3D *view = TFEngine::Engine.GetViewPoint();
+            _renderMsg.OBJ_SKELETON = _skeleton;
+            _renderMsg.adeCount = 0;
 
-            skeleton_arg_132 skel132;
-            skel132.minZ = arg->minZ;
-            skel132.maxZ = arg->maxZ;
-            skel132.tform = view->globSclRot;
-
-            if ( !(transform.flags & TFEngine::TForm3D::FLAG_NO_WRLD_ROT) )
-                skel132.tform *= (transform.tform - view->globPos);
-            else
-                skel132.tform *= mat4x4(transform.globPos - view->globPos);
-
-            v12 = OBJ_SKELETON->skeleton_func132(&skel132);
-
-            if ( v12 )
+            for (int32_t i = 0; i < faceNum; i++)
             {
-                renderMsg.ownerID = arg->ownerID;
-                renderMsg.timeStamp = arg->globTime;
-                renderMsg.frameTime = arg->frameTime;
-                renderMsg.minZ = arg->minZ;
-                renderMsg.maxZ = arg->maxZ;
-                renderMsg.rndrStack = arg->rndrStack;
-                renderMsg.view = view;
-                renderMsg.owner = &transform;
-                renderMsg.flags = arg->flags;
+                int renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD;
+                //int renderFlags = GFX::RFLAGS_GRADSHD;
 
-                renderMsg.OBJ_SKELETON = OBJ_SKELETON;
-                renderMsg.adeCount = 0;
+                skeleton_arg133 skel133;
 
-                for (int32_t i = 0; i < faceNum; i++)
+                skel133.field_4 = 1 | 2;
+                skel133.minZ = arg->minZ;
+                skel133.maxZ = arg->maxZ;
+                skel133.fadeStart = _renderMsg.fadeStart;
+                skel133.fadeLength = _renderMsg.fadeLength;
+
+                ResBitmap *bitm = NULL;
+
+                if ( faceMaterial[i] )
                 {
-                    int renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD;
-                    //int renderFlags = GFX::RFLAGS_GRADSHD;
-
-                    skeleton_arg133 skel133;
-
-                    skel133.field_4 = 1 | 2;
-                    skel133.minZ = arg->minZ;
-                    skel133.maxZ = arg->maxZ;
-                    skel133.fadeStart = renderMsg.fadeStart;
-                    skel133.fadeLength = renderMsg.fadeLength;
-
-                    ResBitmap *bitm = NULL;
-
-                    if ( faceMaterial[i] )
+                    if (faceMaterial[i]->texture1_map.tex)
                     {
-                        if (faceMaterial[i]->texture1_map.tex)
-                        {
-                            bitmap_arg130 bitm130;
+                        bitmap_arg130 bitm130;
 
-                            bitm130.time_stmp = arg->globTime;
-                            bitm130.frame_time = arg->frameTime;
-                            faceMaterial[i]->texture1_map.tex->bitmap_func130(&bitm130);
-                            bitm = bitm130.pbitm;
-                        }
+                        bitm130.time_stmp = arg->globTime;
+                        bitm130.frame_time = arg->frameTime;
+                        faceMaterial[i]->texture1_map.tex->bitmap_func130(&bitm130);
+                        bitm = bitm130.pbitm;
                     }
+                }
 
-                    polysDat *data = arg->rndrStack->get();
-                    polysDatSub *datSub = &data->datSub;
+                polysDat *data = arg->rndrStack->get();
+                polysDatSub *datSub = &data->datSub;
 
-                    datSub->renderFlags = renderFlags;
+                datSub->renderFlags = renderFlags;
 
-                    if (faceMaterial[i])
-                    {
-                        datSub->r = faceMaterial[i]->diffuse[0];
-                        datSub->g = faceMaterial[i]->diffuse[1];
-                        datSub->b = faceMaterial[i]->diffuse[2];
-                    }
+                if (faceMaterial[i])
+                {
+                    datSub->r = faceMaterial[i]->diffuse[0];
+                    datSub->g = faceMaterial[i]->diffuse[1];
+                    datSub->b = faceMaterial[i]->diffuse[2];
+                }
+                else
+                {
+                    datSub->r = 1.0;
+                    datSub->g = 1.0;
+                    datSub->b = 1.0;
+                }
+                datSub->pbitm = bitm;
+
+                skel133.polyID = i;
+                skel133.rndrArg = datSub;
+                skel133.shadeVal = 0;
+
+                tUtV coo[3];
+                for (int j = 0; j < 3; j++)
+                    if (texCoords)
+                        coo[j] = texCoords[ skeldat->polygons[i].v[j] ];
                     else
                     {
-                        datSub->r = 1.0;
-                        datSub->g = 1.0;
-                        datSub->b = 1.0;
+                        coo[j].tu = 0.0;
+                        coo[j].tv = 0.0;
                     }
-                    datSub->pbitm = bitm;
 
-                    skel133.polyID = i;
-                    skel133.rndrArg = datSub;
-                    skel133.shadeVal = 0;
+                skel133.texCoords = coo;
 
-                    tUtV coo[3];
-                    for (int j = 0; j < 3; j++)
-                        if (texCoords)
-                            coo[j] = texCoords[ skeldat->polygons[i].v[j] ];
-                        else
-                        {
-                            coo[j].tu = 0.0;
-                            coo[j].tv = 0.0;
-                        }
+                if (_skeleton->skeleton_func133(&skel133))
+                {
+                    arg->adeCount++;
 
-                    skel133.texCoords = coo;
-
-                    if (OBJ_SKELETON->skeleton_func133(&skel133))
+                    if ( datSub->renderFlags & ( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD ) )
                     {
-                        arg->adeCount++;
-
-                        if ( datSub->renderFlags & ( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD ) )
-                        {
-                            int v6 = 0;
-                            int v8 = 0;
-
-                            for (int j = 0; j < datSub->vertexCount; j++)
-                            {
-                                float clr = datSub->color[j];
-                                if (clr < 0.01)
-                                    v6++;
-                                else if (clr > 0.99)
-                                    v8++;
-                            }
-
-                            if ( v6 == datSub->vertexCount )
-                            {
-                                datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
-                            }
-                            else if ( v8 == datSub->vertexCount )
-                            {
-                                datSub->renderFlags = 0;
-                            }
-                        }
-
-                        datSub->renderFlags |= (arg->flags & GFX::RFLAGS_SKY);
-
-                        float maxz = 0.0;
+                        int v6 = 0;
+                        int v8 = 0;
 
                         for (int j = 0; j < datSub->vertexCount; j++)
-                            if (datSub->vertexes[j].z > maxz)
-                                maxz = datSub->vertexes[j].z;
-
-                        if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && GFX::Engine.win3d_keys[18].Get<bool>() )
                         {
-                            float maxln = 0.0;
-
-                            for (int j = 0; j < datSub->vertexCount; j++)
-                            {
-                                datSub->distance[j] = sqrt(POW2(datSub->vertexes[j].x) + POW2(datSub->vertexes[j].z));
-                                if (datSub->distance[j] > maxln)
-                                    maxln = datSub->distance[j];
-                            }
-
-                            if (maxln > GFX::Engine.win3d_keys[19].Get<int>())
-                                datSub->renderFlags |= GFX::RFLAGS_FALLOFF;
+                            float clr = datSub->color[j];
+                            if (clr < 0.01)
+                                v6++;
+                            else if (clr > 0.99)
+                                v8++;
                         }
 
-                        data->range = maxz;
-
-                        arg->rndrStack->commit();
+                        if ( v6 == datSub->vertexCount )
+                        {
+                            datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
+                        }
+                        else if ( v8 == datSub->vertexCount )
+                        {
+                            datSub->renderFlags = 0;
+                        }
                     }
+
+                    datSub->renderFlags |= (arg->flags & GFX::RFLAGS_SKY);
+
+                    float maxz = 0.0;
+
+                    for (int j = 0; j < datSub->vertexCount; j++)
+                        if (datSub->vertexes[j].z > maxz)
+                            maxz = datSub->vertexes[j].z;
+
+                    if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && GFX::Engine.win3d_keys[18].Get<bool>() )
+                    {
+                        float maxln = 0.0;
+
+                        for (int j = 0; j < datSub->vertexCount; j++)
+                        {
+                            datSub->distance[j] = sqrt(POW2(datSub->vertexes[j].x) + POW2(datSub->vertexes[j].z));
+                            if (datSub->distance[j] > maxln)
+                                maxln = datSub->distance[j];
+                        }
+
+                        if (maxln > GFX::Engine.win3d_keys[19].Get<int>())
+                            datSub->renderFlags |= GFX::RFLAGS_FALLOFF;
+                    }
+
+                    data->range = maxz;
+
+                    arg->rndrStack->commit();
                 }
             }
         }

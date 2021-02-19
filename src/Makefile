@@ -87,6 +87,7 @@ OBJS =  \
 	system/inpt.cpp\
 	system/sound.cpp\
 	system/system.cpp\
+	system/tform.cpp\
 	utils.cpp\
 	wav.cpp\
 	windp.cpp\

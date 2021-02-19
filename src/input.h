@@ -195,8 +195,8 @@ class NC_STACK_input: public NC_STACK_nucleus
 public:
     typedef std::list<InputNode> InputNodeList;
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
     virtual bool SetInputExpression(bool slider, uint32_t index, const std::string &val);
     bool InitDriver(uint8_t type, const std::string &val);
     virtual void QueryInput(InputState *arg);

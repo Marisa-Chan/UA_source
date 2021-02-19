@@ -73,7 +73,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     additionalSet = NULL;
 //nlist bact_list;
 //nlist dead_cache;
-    vhcls_models = NULL;
     legos = NULL;
     subSectors = NULL;
     secTypes = NULL;
@@ -551,9 +550,9 @@ void yw_setInitScriptLoc(NC_STACK_ypaworld *yw)
         yw->initScriptLoc = "data:scripts/startup.scr";
 }
 
-size_t NC_STACK_ypaworld::func0(IDVList &stak)
+size_t NC_STACK_ypaworld::Init(IDVList &stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak) )
+    if ( !NC_STACK_nucleus::Init(stak) )
     {
         ypa_log_out("yw_main.c/OM_NEW: _supermethoda() failed!\n");
         return 0;
@@ -577,7 +576,7 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     if ( !yw_InitLocale(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitLocale() failed!\n");
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -590,21 +589,21 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
 //			return NULL;
 //		}
 
-    vhcls_models = (vhclBases *)AllocVec(sizeof(vhclBases) * 512, 65537);
+    vhcls_models.clear();
     legos = (cityBases *)AllocVec(sizeof(cityBases) * 256, 65537);
     subSectors = (subSec *)AllocVec(sizeof(subSec) * 256, 65537);
     secTypes = (secType *)AllocVec(sizeof(secType) * 256, 65537);
 
-    if ( !vhcls_models || !legos || !subSectors || !secTypes )
+    if ( !legos || !subSectors || !secTypes )
     {
-        func1();
+        Deinit();
         return 0;
     }
 
     if ( !init_prototypes(this) )
     {
         ypa_log_out("ERROR: couldn't initialize prototypes.\n");
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -662,19 +661,19 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     if ( !_cells )
     {
         ypa_log_out("yw_main.c/OM_NEW: alloc of cell area failed!\n");
-        func1();
+        Deinit();
         return 0;
     }
     if ( !yw_InitSceneRecorder(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: init scene recorder failed!\n");
-        func1();
+        Deinit();
         return 0;
     }
     if ( !yw_InitTooltips(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitTooltips() failed!\n");
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -685,7 +684,7 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     if ( !yw_InitLevelNet() )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitLevelNet() failed!\n");
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -694,7 +693,7 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
     if ( !yw_InitNetwork(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitNetwork() failed!\n");
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -706,10 +705,10 @@ size_t NC_STACK_ypaworld::func0(IDVList &stak)
 }
 
 
-size_t NC_STACK_ypaworld::func1()
+size_t NC_STACK_ypaworld::Deinit()
 {
     dprintf("MAKE ME %s\n","ypaworld_func1");
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
 void sub_445230(NC_STACK_ypaworld *yw)
@@ -980,9 +979,9 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             }
 
             const mat3x3 &v57 = SFXEngine::SFXe.sb_0x424c74();
-            TFEngine::TForm3D *v58 = TFEngine::Engine.GetViewPoint();
+            TF::TForm3D *v58 = TF::Engine.GetViewPoint();
 
-            v58->locSclRot = v57 * v58->locSclRot;
+            v58->SclRot = v57 * v58->SclRot;
 
             if ( sceneRecorder->do_record )
                 recorder_write_frame();
@@ -1850,24 +1849,18 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bacto->_gun_angle_user = vhcl->gun_angle;
         bacto->_num_weapons = vhcl->num_weapons;
         bacto->_kill_after_shot = vhcl->kill_after_shot;
-        bacto->_vp_normal.base = vhcls_models[ vhcl->vp_normal ].base;
-        bacto->_vp_normal.trigo = vhcls_models[ vhcl->vp_normal ].trigo;
-        bacto->_vp_fire.base = vhcls_models[ vhcl->vp_fire ].base;
-        bacto->_vp_fire.trigo = vhcls_models[ vhcl->vp_fire ].trigo;
-        bacto->_vp_dead.base = vhcls_models[ vhcl->vp_dead ].base;
-        bacto->_vp_dead.trigo = vhcls_models[ vhcl->vp_dead ].trigo;
-        bacto->_vp_wait.base = vhcls_models[ vhcl->vp_wait ].base;
-        bacto->_vp_wait.trigo = vhcls_models[ vhcl->vp_wait ].trigo;
-        bacto->_vp_megadeth.base = vhcls_models[ vhcl->vp_megadeth ].base;
-        bacto->_vp_megadeth.trigo = vhcls_models[ vhcl->vp_megadeth ].trigo;
-        bacto->_vp_genesis.base = vhcls_models[ vhcl->vp_genesis ].base;
-        bacto->_vp_genesis.trigo = vhcls_models[ vhcl->vp_genesis ].trigo;
+        bacto->_vp_normal = vhcls_models.at( vhcl->vp_normal );
+        bacto->_vp_fire = vhcls_models.at( vhcl->vp_fire );
+        bacto->_vp_dead = vhcls_models.at( vhcl->vp_dead );
+        bacto->_vp_wait = vhcls_models.at( vhcl->vp_wait );
+        bacto->_vp_megadeth = vhcls_models.at( vhcl->vp_megadeth );
+        bacto->_vp_genesis = vhcls_models.at( vhcl->vp_genesis );
 
         bacto->_destroyFX = vhcl->dest_fx;
         bacto->_extDestroyFX = vhcl->ExtDestroyFX;
 
-        memset(bacto->_vp_fx_models, 0, sizeof(NC_STACK_base *) * 32);
-        memset(bacto->_vp_fx_tform, 0, sizeof(TFEngine::TForm3D *) * 32);
+        for (NC_STACK_base *& vp_fx : bacto->_vp_fx_models)
+            vp_fx = NULL;
 
         bacto->_scale_start = vhcl->scale_fx_p0;
         bacto->_scale_speed = vhcl->scale_fx_p1;
@@ -1877,8 +1870,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 
         for (int i = 0; vhcl->scale_fx_pXX[ i ]; i++ )
         {
-            bacto->_vp_fx_models[i] = vhcls_models[ vhcl->scale_fx_pXX[ i ] ].base;
-            bacto->_vp_fx_tform[i] = vhcls_models[ vhcl->scale_fx_pXX[ i ] ].trigo;
+            bacto->_vp_fx_models[i] = vhcls_models.at( vhcl->scale_fx_pXX[ i ] );
 
             bacto->_status_flg |= BACT_STFLAG_SEFFECT;
         }
@@ -1988,12 +1980,12 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wobj->_vehicleID = arg->vehicle_id;
     wobj->_weapon = 0;
 
-    wobj->_vp_normal =   vhcls_models[wproto->vp_normal];
-    wobj->_vp_fire =     vhcls_models[wproto->vp_fire];
-    wobj->_vp_dead =     vhcls_models[wproto->vp_dead];
-    wobj->_vp_wait =     vhcls_models[wproto->vp_wait];
-    wobj->_vp_megadeth = vhcls_models[wproto->vp_megadeth];
-    wobj->_vp_genesis =  vhcls_models[wproto->vp_genesis];
+    wobj->_vp_normal =   vhcls_models.at(wproto->vp_normal);
+    wobj->_vp_fire =     vhcls_models.at(wproto->vp_fire);
+    wobj->_vp_dead =     vhcls_models.at(wproto->vp_dead);
+    wobj->_vp_wait =     vhcls_models.at(wproto->vp_wait);
+    wobj->_vp_megadeth = vhcls_models.at(wproto->vp_megadeth);
+    wobj->_vp_genesis =  vhcls_models.at(wproto->vp_genesis);
 
     wobj->_destroyFX = wproto->dfx;
     wobj->_extDestroyFX = wproto->ExtDestroyFX;
@@ -6154,9 +6146,9 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     for ( NC_STACK_ypabact* &bct : UserUnit->_kidList )
     {
-        bct->_tForm.locPos = bct->_position;
+        bct->_tForm.Pos = bct->_position;
 
-        bct->_tForm.locSclRot = bct->_rotation.Transpose();
+        bct->_tForm.SclRot = bct->_rotation.Transpose();
 
         bct->_soundcarrier.field_0 = bct->_position;
 
@@ -6166,9 +6158,9 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
     }
 
     const mat3x3 &v25 = SFXEngine::SFXe.sb_0x424c74();
-    TFEngine::TForm3D *v26 = TFEngine::Engine.GetViewPoint();
+    TF::TForm3D *v26 = TF::Engine.GetViewPoint();
 
-    v26->locSclRot = v25 * v26->locSclRot;
+    v26->SclRot = v25 * v26->SclRot;
 
     uint32_t v28 = profiler_begin();
 

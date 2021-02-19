@@ -32,9 +32,9 @@ void NC_STACK_button::clear()
     screen_height = 0;
 }
 
-size_t NC_STACK_button::func0(IDVList &stak)
+size_t NC_STACK_button::Init(IDVList &stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak) )
+    if ( !NC_STACK_nucleus::Init(stak) )
         return 0;
 
     field_19F = 97;
@@ -82,14 +82,14 @@ size_t NC_STACK_button::func0(IDVList &stak)
     }
     else
     {
-        func1();
+        Deinit();
         return 0;
     }
 
     return 1;
 }
 
-size_t NC_STACK_button::func1()
+size_t NC_STACK_button::Deinit()
 {
     for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
     {
@@ -100,7 +100,7 @@ size_t NC_STACK_button::func1()
     field_d8.clear();
     buttons.clear();
 
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
 

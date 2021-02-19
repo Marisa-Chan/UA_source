@@ -10,9 +10,9 @@
 
 const Nucleus::ClassDescr NC_STACK_ypaflyer::description("ypaflyer.class", &newinstance);
 
-size_t NC_STACK_ypaflyer::func0(IDVList &stak)
+size_t NC_STACK_ypaflyer::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypabact::func0(stak) )
+    if ( !NC_STACK_ypabact::Init(stak) )
         return 0;
 
     for( auto& it : stak )
@@ -40,9 +40,9 @@ size_t NC_STACK_ypaflyer::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ypaflyer::func1()
+size_t NC_STACK_ypaflyer::Deinit()
 {
-    return NC_STACK_ypabact::func1();
+    return NC_STACK_ypabact::Deinit();
 }
 
 size_t NC_STACK_ypaflyer::func2(IDVList &stak)

@@ -12,9 +12,9 @@
 const Nucleus::ClassDescr NC_STACK_ypaufo::description("ypaufo.class", &newinstance);
 
 
-size_t NC_STACK_ypaufo::func0(IDVList &stak)
+size_t NC_STACK_ypaufo::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypabact::func0(stak) )
+    if ( !NC_STACK_ypabact::Init(stak) )
         return 0;
 
     _bact_type = BACT_TYPES_UFO;
@@ -46,9 +46,9 @@ size_t NC_STACK_ypaufo::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ypaufo::func1()
+size_t NC_STACK_ypaufo::Deinit()
 {
-    return NC_STACK_ypabact::func1();
+    return NC_STACK_ypabact::Deinit();
 }
 
 size_t NC_STACK_ypaufo::func2(IDVList &stak)

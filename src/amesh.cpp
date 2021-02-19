@@ -68,9 +68,9 @@ int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
     return 1;
 }
 
-size_t NC_STACK_amesh::func0(IDVList &stak)
+size_t NC_STACK_amesh::Init(IDVList &stak)
 {
-    if ( !NC_STACK_area::func0(stak) )
+    if ( !NC_STACK_area::Init(stak) )
         return 0;
 
     for( auto& it : stak )
@@ -99,7 +99,7 @@ size_t NC_STACK_amesh::func0(IDVList &stak)
             case AMESH_ATT_ATTPOLYS:
                 if ( !setAMESH_polys( val.Get<ATTS *>() ) )
                 {
-                    func1();
+                    Deinit();
                     return 0;
                 }
                 break;
@@ -107,7 +107,7 @@ size_t NC_STACK_amesh::func0(IDVList &stak)
             case AMESH_ATT_OTLPOOL:
                 if ( !setAMESH_otls(val.Get<tUtV **>()) )
                 {
-                    func1();
+                    Deinit();
                     return 0;
                 }
                 break;
@@ -122,7 +122,7 @@ size_t NC_STACK_amesh::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_amesh::func1()
+size_t NC_STACK_amesh::Deinit()
 {
     __NC_STACK_amesh *amesh = &stack__amesh;
 
@@ -135,11 +135,11 @@ size_t NC_STACK_amesh::func1()
     if ( amesh->texCoordsData )
         delete[] amesh->texCoordsData;
 
-    return NC_STACK_area::func1();
+    return NC_STACK_area::Deinit();
 }
 
 
-size_t NC_STACK_amesh::func5(IFFile **file)
+size_t NC_STACK_amesh::InitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
@@ -155,7 +155,7 @@ size_t NC_STACK_amesh::func5(IFFile **file)
         if ( iff_res )
         {
             if ( obj_ok )
-                func1();
+                Deinit();
             return 0;
         }
 
@@ -163,7 +163,7 @@ size_t NC_STACK_amesh::func5(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_AREA )
         {
-            obj_ok = NC_STACK_area::func5(file);
+            obj_ok = NC_STACK_area::InitFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
@@ -179,7 +179,7 @@ size_t NC_STACK_amesh::func5(IFFile **file)
 
                 if ( !amesh->atts )
                 {
-                    func1();
+                    Deinit();
                     return 0;
                 }
 
@@ -203,7 +203,7 @@ size_t NC_STACK_amesh::func5(IFFile **file)
 
                 if ( !amesh->texCoords || !amesh->texCoordsData)
                 {
-                    func1();
+                    Deinit();
                     return 0;
                 }
 
@@ -244,7 +244,7 @@ size_t NC_STACK_amesh::func5(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_amesh::func6(IFFile **file)
+size_t NC_STACK_amesh::DeinitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     __NC_STACK_amesh *amesh = &stack__amesh;
@@ -252,7 +252,7 @@ size_t NC_STACK_amesh::func6(IFFile **file)
     if ( mfile->pushChunk(TAG_AMSH, TAG_FORM, -1) )
         return 0;
 
-    if ( !NC_STACK_area::func6(file) )
+    if ( !NC_STACK_area::DeinitFromIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_ATTS, -1);

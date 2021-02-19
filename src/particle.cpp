@@ -2,6 +2,7 @@
 #include "nucleas.h"
 #include "particle.h"
 #include "utils.h"
+#include "system/tform.h"
 
 #include <math.h>
 
@@ -388,14 +389,14 @@ int sub_41A954(NC_STACK_particle::__NC_STACK_particle *prtcl)
 }
 
 
-size_t NC_STACK_particle::func0(IDVList &stak)
+size_t NC_STACK_particle::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ade::func0(stak) )
+    if ( !NC_STACK_ade::Init(stak) )
         return 0;
 
     if (!sub_41A8D0(&stack__particle))
     {
-        func1();
+        Deinit();
         return 0;
     }
 
@@ -483,14 +484,14 @@ size_t NC_STACK_particle::func0(IDVList &stak)
 
     if (!endSetter())
     {
-        func1();
+        Deinit();
         return 0;
     }
 
     return 1;
 }
 
-size_t NC_STACK_particle::func1()
+size_t NC_STACK_particle::Deinit()
 {
     __NC_STACK_particle *prtcl = &stack__particle;
 
@@ -515,7 +516,7 @@ size_t NC_STACK_particle::func1()
     if ( prtcl->particle_sklt )
         delete_class_obj(prtcl->particle_sklt);
 
-    return NC_STACK_ade::func1();
+    return NC_STACK_ade::Deinit();
 }
 
 int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)
@@ -524,11 +525,11 @@ int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)
 
     mfile->readS16B(atts.version);
 
-    TFEngine::Vec3dReadIFF(atts.accel.start, mfile, true);
-    TFEngine::Vec3dReadIFF(atts.accel.end, mfile, true);
+    TF::Engine.Vec3dReadIFF(atts.accel.start, mfile, true);
+    TF::Engine.Vec3dReadIFF(atts.accel.end, mfile, true);
 
-    TFEngine::Vec3dReadIFF(atts.magnify.start, mfile, true);
-    TFEngine::Vec3dReadIFF(atts.magnify.end, mfile, true);
+    TF::Engine.Vec3dReadIFF(atts.magnify.start, mfile, true);
+    TF::Engine.Vec3dReadIFF(atts.magnify.end, mfile, true);
 
     mfile->readS32B(atts.collide);
     mfile->readS32B(atts.startSpeed);
@@ -564,7 +565,7 @@ int NC_STACK_particle::particle_func5__sub0(IFFile *mfile)
     return 1;
 }
 
-size_t NC_STACK_particle::func5(IFFile **file)
+size_t NC_STACK_particle::InitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
@@ -584,7 +585,7 @@ size_t NC_STACK_particle::func5(IFFile **file)
         if ( iff_res )
         {
             if ( obj_ok )
-                func1();
+                Deinit();
             return 0;
         }
 
@@ -592,7 +593,7 @@ size_t NC_STACK_particle::func5(IFFile **file)
 
         if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
         {
-            obj_ok = NC_STACK_ade::func5(file);
+            obj_ok = NC_STACK_ade::InitFromIFF(file);
 
             if ( !obj_ok )
                 break;
@@ -603,7 +604,7 @@ size_t NC_STACK_particle::func5(IFFile **file)
         {
             if ( !particle_func5__sub0(mfile) )
             {
-                func1();
+                Deinit();
                 return 0;
             }
             mfile->parse();
@@ -613,7 +614,7 @@ size_t NC_STACK_particle::func5(IFFile **file)
             v23[v6] = (NC_STACK_area *)READ_OBJT(mfile);
             if (!v23[v6])
             {
-                func1();
+                Deinit();
                 return 0;
             }
             v6++;
@@ -628,13 +629,13 @@ size_t NC_STACK_particle::func5(IFFile **file)
     {
         if ( !sub_41A8D0(prtcl) )
         {
-            func1();
+            Deinit();
             return 0;
         }
 
         if ( !sub_41A954(prtcl) )
         {
-            func1();
+            Deinit();
             return 0;
         }
 
@@ -650,7 +651,7 @@ size_t NC_STACK_particle::func5(IFFile **file)
     return obj_ok;
 }
 
-size_t NC_STACK_particle::func6(IFFile **file)
+size_t NC_STACK_particle::DeinitFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     __NC_STACK_particle *prtcl = &stack__particle;
@@ -658,7 +659,7 @@ size_t NC_STACK_particle::func6(IFFile **file)
     if ( mfile->pushChunk(TAG_PTCL, TAG_FORM, -1) != 0)
         return 0;
 
-    if ( !NC_STACK_ade::func6(file) )
+    if ( !NC_STACK_ade::DeinitFromIFF(file) )
         return 0;
 
     mfile->pushChunk(0, TAG_ATTS, -1);
@@ -730,13 +731,13 @@ void particle_func65__sub0__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, 
 
 void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STACK_particle::Particle *tp2, area_arg_65 *arg, float a3, unsigned int a4)
 {
-    TFEngine::TForm3D *glob = arg->view;
-    mat3x3 *pmat = &glob->globSclRot;
+    TF::TForm3D *glob = arg->view;
+    mat3x3 *pmat = &glob->CalcSclRot;
     UAskeleton::Vertex *v14 = prtcl->particle_sklt_intern->tformedVertex;
 
     int v27 = -1;
 
-    vec3d v31 = tp2->pos - ((glob->globSclRot.AxisX() + glob->globSclRot.AxisY()) * a3 * 0.5);
+    vec3d v31 = tp2->pos - ((glob->CalcSclRot.AxisX() + glob->CalcSclRot.AxisY()) * a3 * 0.5);
 
     vec3d v37;//, v36, v37;
 
@@ -761,7 +762,7 @@ void particle_func65__sub0__sub1(NC_STACK_particle::__NC_STACK_particle *prtcl, 
             break;
         }
 
-        v37 -= glob->globPos;
+        v37 -= glob->CalcPos;
 
         int v20 = 0;
 
@@ -853,10 +854,10 @@ void particle_func65__sub0(NC_STACK_particle::__NC_STACK_particle *prtcl, NC_STA
     else if ( age >= prtcl->ctxGenStart && ctx->time >= 0 )
     {
         vec3d v = prtcl->magnify.start + prtcl->magnifyDelta * age;
-        vec3d v44 = arg->owner->globSclRot.Transform(v);
+        vec3d v44 = arg->owner->CalcSclRot.Transform(v);
 
         //xyz v45 = arg->owner->globPos + arg->owner->globSclRot.Transform(*v19);
-        vec3d v45 = arg->owner->tform * ( arg->sklt->POO[prtcl->field_c] );
+        vec3d v45 = arg->owner->TForm * ( arg->sklt->POO[prtcl->field_c] );
 
         float v61 = 0.0;
         float tmp = prtcl->field_8c * 0.001;

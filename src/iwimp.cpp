@@ -11,9 +11,9 @@ const Nucleus::ClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstanc
 
 
 
-size_t NC_STACK_iwimp::func0(IDVList &stak)
+size_t NC_STACK_iwimp::Init(IDVList &stak)
 {
-    if ( !NC_STACK_idev::func0(stak) )
+    if ( !NC_STACK_idev::Init(stak) )
         return 0;
 
     cboxList.clear();

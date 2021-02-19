@@ -31,10 +31,10 @@ class NC_STACK_nucleus
 public:
     static constexpr const char * DefaultIniFile {"nucleus.ini"};
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
-    virtual size_t func5(IFFile **file);
-    virtual size_t func6(IFFile **file);
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
+    virtual size_t InitFromIFF(IFFile **file);
+    virtual size_t DeinitFromIFF(IFFile **file);
 
     NC_STACK_nucleus() {
         NAME.clear();
@@ -102,7 +102,7 @@ T* CInit(IDVList &stak)
     if (!tmp)
         return NULL;
 
-    if (!tmp->func0(stak))
+    if (!tmp->Init(stak))
     {
         delete tmp;
         return NULL;
@@ -132,7 +132,7 @@ T* CInit()
         return NULL;
 
     IDVList stak;
-    if (!tmp->func0(stak))
+    if (!tmp->Init(stak))
     {
         delete tmp;
         return NULL;
@@ -169,7 +169,7 @@ T *CTFInit(const std::string &classname, IDVList &stak)
     NC_STACK_nucleus *inst = it->_newinstance();
     T *tInst = dynamic_cast<T *>(inst);
 
-    if (!tInst || !tInst->func0(stak) )
+    if (!tInst || !tInst->Init(stak) )
     {
         delete inst;
         return NULL;

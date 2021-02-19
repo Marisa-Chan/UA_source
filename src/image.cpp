@@ -19,9 +19,9 @@ NC_STACK_image::~NC_STACK_image()
 {
 }
 
-size_t NC_STACK_image::func0(IDVList &stak)
+size_t NC_STACK_image::Init(IDVList &stak)
 {
-    if ( !NC_STACK_bitmap::func0(stak) )
+    if ( !NC_STACK_bitmap::Init(stak) )
         return 0;
 
     return 1;

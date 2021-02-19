@@ -119,13 +119,12 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
         }
 
         int kid_id = 0;
-        BaseList &kids_list = yw->additionalSet->getBASE_kidList();
 
-        for(BaseList::iterator it = kids_list.begin(); it != kids_list.end(); it++)
+        for( NC_STACK_base *& bs : yw->additionalSet->GetKidList() )
         {
             if ( kid_id == 0 )
             {
-                if ( !sub_44A12C(yw, *it) )
+                if ( !sub_44A12C(yw, bs) )
                 {
                     delete fil;
                     return 0;
@@ -133,7 +132,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 1 )
             {
-                if ( !yw_parse_lego(yw, fil, *it) )
+                if ( !yw_parse_lego(yw, fil, bs) )
                 {
                     delete fil;
                     return 0;
@@ -153,7 +152,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
             }
             else if ( kid_id == 2 )
             {
-                if ( !sub_44A97C(yw, *it) )
+                if ( !sub_44A97C(yw, bs) )
                 {
                     delete fil;
                     return 0;

@@ -8,8 +8,8 @@
 class NC_STACK_network: public NC_STACK_nucleus
 {
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
 
     NC_STACK_network() {
 

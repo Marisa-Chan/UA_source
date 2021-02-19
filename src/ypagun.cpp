@@ -10,9 +10,9 @@
 
 const Nucleus::ClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
 
-size_t NC_STACK_ypagun::func0(IDVList &stak)
+size_t NC_STACK_ypagun::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypabact::func0(stak) )
+    if ( !NC_STACK_ypabact::Init(stak) )
         return 0;
 
     _bact_type = BACT_TYPES_GUN;
@@ -65,9 +65,9 @@ size_t NC_STACK_ypagun::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ypagun::func1()
+size_t NC_STACK_ypagun::Deinit()
 {
-    return NC_STACK_ypabact::func1();
+    return NC_STACK_ypabact::Deinit();
 }
 
 size_t NC_STACK_ypagun::func2(IDVList &stak)

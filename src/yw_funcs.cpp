@@ -781,7 +781,7 @@ NC_STACK_base * sub_44AD8C(const std::string &fname)
 
             std::string basName = fmt::sprintf("rsrc:objects/%s", line);
 
-            NC_STACK_base *kid = NC_STACK_base::READ_BAS_FILE(basName);
+            NC_STACK_base *kid = NC_STACK_base::LoadBaseFromFile(basName);
 
             if ( !kid )
             {
@@ -791,7 +791,7 @@ NC_STACK_base * sub_44AD8C(const std::string &fname)
                 return NULL;
             }
 
-            obj->base_func65(kid); //Add to kid list
+            obj->AddKid(kid); //Add to kid list
         }
         delete fil;
     }
@@ -800,7 +800,7 @@ NC_STACK_base * sub_44AD8C(const std::string &fname)
 
 NC_STACK_base *load_set_base()
 {
-    NC_STACK_base *base = NC_STACK_base::READ_BAS_FILE("rsrc:objects/set.base");
+    NC_STACK_base *base = NC_STACK_base::LoadBaseFromFile("rsrc:objects/set.base");
     if ( !base )
     {
         ypa_log_out("init: no set.base, trying fragment load.\n");
@@ -808,7 +808,7 @@ NC_STACK_base *load_set_base()
         base = Nucleus::CInit<NC_STACK_base>();
         if ( base )
         {
-            NC_STACK_base *visproto = NC_STACK_base::READ_BAS_FILE("rsrc:objects/visproto.base");
+            NC_STACK_base *visproto = NC_STACK_base::LoadBaseFromFile("rsrc:objects/visproto.base");
             if ( !visproto )
             {
                 ypa_log_out("init: no visproto.base, trying single load.\n");
@@ -819,9 +819,9 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            base->base_func65(visproto);
+            base->AddKid(visproto);
 
-            NC_STACK_base *lego = NC_STACK_base::READ_BAS_FILE("rsrc:objects/lego.base");
+            NC_STACK_base *lego = NC_STACK_base::LoadBaseFromFile("rsrc:objects/lego.base");
             if ( !lego )
             {
                 ypa_log_out("init: no lego.base, trying single load.\n");
@@ -832,9 +832,9 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            base->base_func65(lego);
+            base->AddKid(lego);
 
-            NC_STACK_base *slurp = NC_STACK_base::READ_BAS_FILE("rsrc:objects/slurp.base");
+            NC_STACK_base *slurp = NC_STACK_base::LoadBaseFromFile("rsrc:objects/slurp.base");
             if ( !slurp )
             {
                 ypa_log_out("init: no slurp.base, trying single load.\n");
@@ -845,7 +845,7 @@ NC_STACK_base *load_set_base()
                 delete_class_obj(base);
                 return NULL;
             }
-            base->base_func65(slurp);
+            base->AddKid(slurp);
         }
     }
     return base;
@@ -853,16 +853,11 @@ NC_STACK_base *load_set_base()
 
 int sub_44A12C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
 {
-    int id = 0;
-    BaseList &kid_list = base->getBASE_kidList();
-
-    for(BaseList::iterator it = kid_list.begin(); it != kid_list.end(); it++)
+    for( NC_STACK_base * kd : base->GetKidList() )
     {
-        yw->vhcls_models[id].base = *it;
-        (*it)->setBASE_visLimit(yw->field_15e4);
-        (*it)->setBASE_fadeLength(yw->field_15e8);
-        yw->vhcls_models[id].trigo = (*it)->getBASE_pTransform();
-        id++;
+        yw->vhcls_models.push_back(kd);
+        kd->SetVizLimit(yw->field_15e4);
+        kd->SetFadeLength(yw->field_15e8);
     }
 
     return 1;
@@ -871,14 +866,13 @@ int sub_44A12C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
 int yw_parse_lego(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil, NC_STACK_base *base)
 {
     int id = 0;
-    BaseList &kid_list = base->getBASE_kidList();
 
-    for(BaseList::iterator it = kid_list.begin(); it != kid_list.end(); it++)
+    for( NC_STACK_base *& bs : base->GetKidList() )
     {
-        yw->legos[id].base = *it;
-        (*it)->setBASE_visLimit(yw->field_15e4);
-        (*it)->setBASE_fadeLength(yw->field_15e8);
-        (*it)->setBASE_static(1);
+        yw->legos[id].base = bs;
+        bs->SetVizLimit(yw->field_15e4);
+        bs->SetFadeLength(yw->field_15e8);
+        bs->SetStatic(true);
         id++;
     }
 
@@ -1114,7 +1108,7 @@ int yw_parse_sektor(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
 {
-    BaseList &kid_list = base->getBASE_kidList();
+    BaseList &kid_list = base->GetKidList();
     BaseList::iterator it = kid_list.begin();
 
     for (int i = 0; i < 2; i++)
@@ -1128,11 +1122,11 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
                     ypa_log_out("Too few slurps in slurp child.\n");
                     return 0;
                 }
-                (*it)->setBASE_visLimit(yw->field_15e4);
-                (*it)->setBASE_fadeLength(yw->field_15e8);
-                (*it)->setBASE_static(1);
+                (*it)->SetVizLimit(yw->field_15e4);
+                (*it)->SetFadeLength(yw->field_15e8);
+                (*it)->SetStatic(true);
 
-                NC_STACK_skeleton *skeleton = (*it)->getBASE_skeleton();
+                NC_STACK_skeleton *skeleton = (*it)->GetSkeleton();
 
                 UAskeleton::Data *skeleton_internal = skeleton->GetSkelet();
                 if (i == 0)
@@ -1288,15 +1282,13 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
             return 0;
         }
 
-        BaseList &kid_list = additionalSet->getBASE_kidList();
-
         int kid_id = 0;
 
-        for(BaseList::iterator it = kid_list.begin(); it != kid_list.end(); it++)
+        for( NC_STACK_base *& bs : additionalSet->GetKidList() )
         {
             if ( kid_id == 0 )
             {
-                if ( !sub_44A12C(this, *it) )
+                if ( !sub_44A12C(this, bs) )
                 {
                     delete fil;
                     return 0;
@@ -1304,7 +1296,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
             }
             else if ( kid_id == 1 )
             {
-                if ( !yw_parse_lego(this, fil, *it) )
+                if ( !yw_parse_lego(this, fil, bs) )
                 {
                     delete fil;
                     return 0;
@@ -1324,7 +1316,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
             }
             else if ( kid_id == 2 )
             {
-                if ( !sub_44A97C(this, *it) )
+                if ( !sub_44A97C(this, bs) )
                 {
                     delete fil;
                     return 0;
@@ -1354,14 +1346,14 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
     GFX::Engine.SetTracyRmp( tracyrmp_ilbm->GetResBmp() );
     GFX::Engine.SetShadeRmp( shadermp_ilbm->GetResBmp() );
 
-    additionalBeeBox = NC_STACK_base::READ_BAS_FILE("rsrc:objects/beebox.base");
+    additionalBeeBox = NC_STACK_base::LoadBaseFromFile("rsrc:objects/beebox.base");
     if ( !additionalBeeBox )
     {
         ypa_log_out("Couldn't load bbox object, set %d.\n", setID);
         return 0;
     }
 
-    additionalBeeBox->setBASE_static(1);
+    additionalBeeBox->SetStatic(true);
 
     if ( setID == 46 || setID == 42 )
     {
@@ -1474,7 +1466,7 @@ void sb_0x4ea37c__sub1(NC_STACK_ypaworld *yw)
 
 void sb_0x4ea37c(NC_STACK_ypaworld *yw)
 {
-    memset(yw->vhcls_models, 0, sizeof(vhclBases) * 512);
+    yw->vhcls_models.clear();
     sb_0x4ea37c__sub1(yw);
     sub_44A908(yw);
     memset(yw->subSectors, 0, sizeof(subSec) * 256);
@@ -3110,7 +3102,7 @@ void sb_0x44ac24__sub0(NC_STACK_ypaworld *yw)
 
 void sb_0x44ac24(NC_STACK_ypaworld *yw)
 {
-    memset(yw->vhcls_models, 0, sizeof(vhclBases) * 512);
+    yw->vhcls_models.clear();
 
     for (int i = 0; i < 256; i++)
     {

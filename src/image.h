@@ -6,7 +6,7 @@
 class NC_STACK_image: public NC_STACK_bitmap
 {
 public:
-    virtual size_t func0(IDVList &stak);
+    virtual size_t Init(IDVList &stak);
     virtual rsrc * rsrc_func64(IDVList &stak);
 
     NC_STACK_image();

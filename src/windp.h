@@ -121,8 +121,8 @@ void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, InputState *inpt);
 class NC_STACK_windp: public NC_STACK_network
 {
 public:
-    virtual size_t func0(IDVList &stak);
-    virtual size_t func1();
+    virtual size_t Init(IDVList &stak);
+    virtual size_t Deinit();
 
     virtual size_t SetMode(bool hosting);
     size_t GetMode();

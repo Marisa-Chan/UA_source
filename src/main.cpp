@@ -551,7 +551,7 @@ int init_classesLists_and_variables()
 void deinit_globl_engines()
 {
     if ( tform_inited )
-        TFEngine::Engine.deinit();
+        TF::Engine.Deinit();
     if ( input_inited )
         INPe.deinit();
     if ( audio_inited )
@@ -600,7 +600,7 @@ int WinMain__sub0__sub0()
 
     audio_inited = SFXEngine::SFXe.init();
     input_inited = INPe.init();
-    tform_inited = TFEngine::Engine.init();
+    tform_inited = TF::Engine.Init();
 
     if ( !audio_inited )
     {

@@ -9,9 +9,9 @@
 const Nucleus::ClassDescr NC_STACK_input::description("input.class", &newinstance);
 
 
-size_t NC_STACK_input::func0(IDVList &stak)
+size_t NC_STACK_input::Init(IDVList &stak)
 {
-    if ( !NC_STACK_nucleus::func0(stak) )
+    if ( !NC_STACK_nucleus::Init(stak) )
         return 0;
 
     for (InputNodeList &lst : _buttons)
@@ -26,7 +26,7 @@ size_t NC_STACK_input::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_input::func1()
+size_t NC_STACK_input::Deinit()
 {
     if ( _timer )
         delete_class_obj(_timer);
@@ -43,7 +43,7 @@ size_t NC_STACK_input::func1()
     for (InputNodeList &lst : _sliders)
         FreeKNodes(&lst);
     
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
 std::string NC_STACK_input::ParseInputNodeNext(const std::string &inputStr, InputNodeList *lst)

@@ -38,6 +38,8 @@
         <in>sound.h</in>
         <in>system.cpp</in>
         <in>system.h</in>
+        <in>tform.cpp</in>
+        <in>tform.h</in>
       </df>
       <df name="world">
         <in>parsers.cpp</in>
@@ -410,6 +412,10 @@
         </ccTool>
       </item>
       <item path="system/system.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/tform.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/tform.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="utils.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">

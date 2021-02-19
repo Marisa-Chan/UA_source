@@ -20,9 +20,9 @@ Common::Ini::KeyList windp_keys
     Common::Ini::Key("game.debug", Common::Ini::KT_BOOL)
 };
 
-size_t NC_STACK_windp::func0(IDVList &stak)
+size_t NC_STACK_windp::Init(IDVList &stak)
 {
-    if ( !NC_STACK_network::func0(stak))
+    if ( !NC_STACK_network::Init(stak))
         return 0;
 
     if (!init())
@@ -104,9 +104,9 @@ void NC_STACK_windp::deinit()
 
 }
 
-size_t NC_STACK_windp::func1()
+size_t NC_STACK_windp::Deinit()
 {
-    return NC_STACK_nucleus::func1();
+    return NC_STACK_nucleus::Deinit();
 }
 
 

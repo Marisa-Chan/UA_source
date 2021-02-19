@@ -2898,8 +2898,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         bbact->_vp_extra[0].rotate = plasmaMsg->dir;
         bbact->_vp_extra[0].pos = plasmaMsg->pos;
 
-        bbact->_vp_extra[0].vp.base = bbact->_vp_genesis.base;
-        bbact->_vp_extra[0].vp.trigo = bbact->_vp_genesis.trigo;
+        bbact->_vp_extra[0].vp = bbact->_vp_genesis;
         bbact->_vp_extra[0].flags |= EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE;
 
         bbact->_vp_extra_mode = 1;

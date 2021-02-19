@@ -17,9 +17,9 @@
 
 const Nucleus::ClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
 
-size_t NC_STACK_skeleton::func0(IDVList &stak)
+size_t NC_STACK_skeleton::Init(IDVList &stak)
 {
-    if ( !NC_STACK_rsrc::func0(stak) )
+    if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
     stack__skeleton.data = (UAskeleton::Data *)getRsrc_pData();

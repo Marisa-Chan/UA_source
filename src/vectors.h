@@ -3,6 +3,14 @@
 
 #include <math.h>
 
+
+template <typename T> struct Tvec2d;
+template <typename T> struct Tvec3d;
+
+typedef Tvec2d<double> vec2d;
+typedef Tvec3d<double> vec3d;
+typedef Tvec3d<int32_t> vec3i;
+
 template <typename T>
 struct Tvec2d
 {

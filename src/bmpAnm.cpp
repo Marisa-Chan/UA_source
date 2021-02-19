@@ -15,7 +15,7 @@ static int dword_5B2410;
 static tUtV *dword_5A11A0[256];
 
 
-size_t NC_STACK_bmpanim::func0(IDVList &stak)
+size_t NC_STACK_bmpanim::Init(IDVList &stak)
 {
 //    if (stak)
 //    {
@@ -24,7 +24,7 @@ size_t NC_STACK_bmpanim::func0(IDVList &stak)
 //            (*it).id = RSRC_ATT_NAME;
 //    }
 
-    if ( !NC_STACK_bitmap::func0(stak) )
+    if ( !NC_STACK_bitmap::Init(stak) )
         return 0;
 
     stack__bmpanim.bmpanm_intern = (bmpAnim_t1 *)getRsrc_pData();
@@ -38,13 +38,13 @@ size_t NC_STACK_bmpanim::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_bmpanim::func1()
+size_t NC_STACK_bmpanim::Deinit()
 {
-    return NC_STACK_bitmap::func1();
+    return NC_STACK_bitmap::Deinit();
 }
 
 
-size_t NC_STACK_bmpanim::func5(IFFile **file)
+size_t NC_STACK_bmpanim::InitFromIFF(IFFile **file)
 {
     char buf[250];
 
@@ -90,10 +90,10 @@ size_t NC_STACK_bmpanim::func5(IFFile **file)
         {BANM_ATT_NAME, std::string(anmName)},
         {BANM_ATT_ANIMTYPE, (int32_t)animType}};
 
-    return func0( stak );
+    return Init( stak );
 }
 
-size_t NC_STACK_bmpanim::func6(IFFile **file)
+size_t NC_STACK_bmpanim::DeinitFromIFF(IFFile **file)
 {
     __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
 

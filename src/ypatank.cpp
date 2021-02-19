@@ -23,9 +23,9 @@ NC_STACK_ypatank::NC_STACK_ypatank()
     _tankExpectTgt = false;
 }
 
-size_t NC_STACK_ypatank::func0(IDVList &stak)
+size_t NC_STACK_ypatank::Init(IDVList &stak)
 {
-    if ( !NC_STACK_ypabact::func0(stak) )
+    if ( !NC_STACK_ypabact::Init(stak) )
         return 0;
 
     _bact_type = BACT_TYPES_TANK;
@@ -53,9 +53,9 @@ size_t NC_STACK_ypatank::func0(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_ypatank::func1()
+size_t NC_STACK_ypatank::Deinit()
 {
-    return NC_STACK_ypabact::func1();
+    return NC_STACK_ypabact::Deinit();
 }
 
 
@@ -1354,8 +1354,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                                     if ( _owner != v12->_owner )
                                     {
                                         v12->_vp_extra[0].flags = 0;
-                                        v12->_vp_extra[0].vp.trigo = NULL;
-                                        v12->_vp_extra[0].vp.base = NULL;
+                                        v12->_vp_extra[0].vp = NULL;
                                     }
                                 }
                                 break;
