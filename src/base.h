@@ -180,7 +180,7 @@ public:
     TF::TForm3D &TForm();
     virtual BaseList &GetKidList();
 
-    virtual area_arg_65 *getBASE_renderParams();
+    virtual area_arg_65 *GetRenderParams();
 
     virtual int32_t GetFadeLength();
     virtual bool IsStatic();

@@ -156,7 +156,7 @@ size_t NC_STACK_base::Init(IDVList &stak)
     _renderMsg.fadeLength = 600.0;
     _renderMsg.ambientLight = 255;
 
-    ___svdFlags |= FLAG_RENDERALL;
+    ___svdFlags |= (FLAG_RENDERALL | FLAG_FOLLOWPARENT);
     _transform.flags |= TF::TForm3D::FLAG_FOLLOW_PARENT;
 
     return 1;
@@ -767,7 +767,7 @@ BaseList &NC_STACK_base::GetKidList()
     return _KIDS;
 }
 
-area_arg_65 *NC_STACK_base::getBASE_renderParams()
+area_arg_65 *NC_STACK_base::GetRenderParams()
 {
     return &_renderMsg;
 }
