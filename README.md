@@ -23,11 +23,13 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 - Liberation Mono, Liberation Sans, Liberation Serif.  Version 2.00.1
 - Xolonium
 - Press Start 2P
+- Textar
 
 
 **Licenses of used fonts**:
 - The Liberation(tm) version 2.00.0 onward are Licensed under the SIL Open Font License, Version 1.1.
 - Xolonium by Severin Meyer. License: SIL Open Font License (OFL)
 - Press Start 2P by Cody 'CodeMan38' Boisclair. License: SIL Open Font License (OFL)
+- Textar (https://github.com/yamacraft/textar-font) License: IPA-1
 
 

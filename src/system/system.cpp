@@ -87,7 +87,9 @@ static TFontLookup FontsLookup[]
     {"dungeon", "xolonium bold", "xolonium regular"},
     {"ms sans serif", "microsoft sans serif", "liberation serif"},
     {"courier", "liberation mono", ""},
-    {"small font", "press start 2p", ""}
+    {"small font", "press start 2p", ""},
+    {"ＭＳ Ｐゴシック", "MS PGothic", "Textar"},
+    {"MS PGothic", "Textar", ""}
 };
     
     
