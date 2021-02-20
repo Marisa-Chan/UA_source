@@ -15,7 +15,6 @@
 #include "gui/uamsgbox.h"
 #include "env.h"
 
-extern char **ypaworld__string_pointers;
 extern int word_5A50C2;
 extern int word_5A50AC;
 extern int word_5A50B0;
@@ -261,10 +260,10 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                     posKeyName = "-";
 
                 if ( usr->InputConfig[ v24 ].SetFlags & 1 )
-                    posKeyName = get_lang_string(ypaworld__string_pointers, 308, "?");
+                    posKeyName = yw->GetLocaleString(308, "?");
 
                 if ( usr->InputConfig[ v24 ].SetFlags & 2 )
-                    negKeyName = get_lang_string(ypaworld__string_pointers, 308, "?");
+                    negKeyName = yw->GetLocaleString(308, "?");
 
                 v19 = fmt::sprintf("%s/%s", negKeyName, posKeyName);
             }
@@ -276,7 +275,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                     v19 = "-";
 
                 if ( usr->InputConfig[ v24 ].SetFlags & 1 )
-                    v19 = get_lang_string(ypaworld__string_pointers, 308, "?");
+                    v19 = yw->GetLocaleString(308, "?");
             }
 
             a1a[0].txt = usr->InputConfigTitle[v24];
@@ -330,123 +329,123 @@ void NC_STACK_ypaworld::LoadKeyNames()
         a.clear();
 
     NC_STACK_input::KeyTitle[Input::KC_NONE]       = "*";
-    NC_STACK_input::KeyTitle[Input::KC_ESCAPE]     = get_lang_string(string_pointers_p2, 1001, "ESC");
-    NC_STACK_input::KeyTitle[Input::KC_SPACE]      = get_lang_string(string_pointers_p2, 1002, "SPACE");
-    NC_STACK_input::KeyTitle[Input::KC_UP]         = get_lang_string(string_pointers_p2, 1003, "UP");
-    NC_STACK_input::KeyTitle[Input::KC_DOWN]       = get_lang_string(string_pointers_p2, 1004, "DOWN");
-    NC_STACK_input::KeyTitle[Input::KC_LEFT]       = get_lang_string(string_pointers_p2, 1005, "LEFT");
-    NC_STACK_input::KeyTitle[Input::KC_RIGHT]      = get_lang_string(string_pointers_p2, 1006, "RIGHT");
-    NC_STACK_input::KeyTitle[Input::KC_F1]         = get_lang_string(string_pointers_p2, 1007, "F1");
-    NC_STACK_input::KeyTitle[Input::KC_F2]         = get_lang_string(string_pointers_p2, 1008, "F2");
-    NC_STACK_input::KeyTitle[Input::KC_F3]         = get_lang_string(string_pointers_p2, 1009, "F3");
-    NC_STACK_input::KeyTitle[Input::KC_F4]         = get_lang_string(string_pointers_p2, 1010, "F4");
-    NC_STACK_input::KeyTitle[Input::KC_F5]         = get_lang_string(string_pointers_p2, 1011, "F5");
-    NC_STACK_input::KeyTitle[Input::KC_F6]         = get_lang_string(string_pointers_p2, 1012, "F6");
-    NC_STACK_input::KeyTitle[Input::KC_F7]         = get_lang_string(string_pointers_p2, 1013, "F7");
-    NC_STACK_input::KeyTitle[Input::KC_F8]         = get_lang_string(string_pointers_p2, 1014, "F8");
-    NC_STACK_input::KeyTitle[Input::KC_F9]         = get_lang_string(string_pointers_p2, 1015, "F9");
-    NC_STACK_input::KeyTitle[Input::KC_F10]        = get_lang_string(string_pointers_p2, 1016, "F10");
-    NC_STACK_input::KeyTitle[Input::KC_F11]        = get_lang_string(string_pointers_p2, 1017, "F11");
-    NC_STACK_input::KeyTitle[Input::KC_F12]        = get_lang_string(string_pointers_p2, 1018, "F12");
-    NC_STACK_input::KeyTitle[Input::KC_BACKSPACE]  = get_lang_string(string_pointers_p2, 1019, "BACK");
-    NC_STACK_input::KeyTitle[Input::KC_TAB]        = get_lang_string(string_pointers_p2, 1020, "TAB");
-    NC_STACK_input::KeyTitle[Input::KC_CLEAR]      = get_lang_string(string_pointers_p2, 1021, "CLEAR");
-    NC_STACK_input::KeyTitle[Input::KC_RETURN]     = get_lang_string(string_pointers_p2, 1022, "RETURN");
-    NC_STACK_input::KeyTitle[Input::KC_CTRL]       = get_lang_string(string_pointers_p2, 1023, "CTRL");
-    NC_STACK_input::KeyTitle[Input::KC_SHIFT]      = get_lang_string(string_pointers_p2, 1024, "SHIFT");
-    NC_STACK_input::KeyTitle[Input::KC_ALT]        = get_lang_string(string_pointers_p2, 1025, "ALT");
-    NC_STACK_input::KeyTitle[Input::KC_PAUSE]      = get_lang_string(string_pointers_p2, 1026, "PAUSE");
-    NC_STACK_input::KeyTitle[Input::KC_PGUP]       = get_lang_string(string_pointers_p2, 1027, "PGUP");
-    NC_STACK_input::KeyTitle[Input::KC_PGDOWN]     = get_lang_string(string_pointers_p2, 1028, "PGDOWN");
-    NC_STACK_input::KeyTitle[Input::KC_END]        = get_lang_string(string_pointers_p2, 1029, "END");
-    NC_STACK_input::KeyTitle[Input::KC_HOME]       = get_lang_string(string_pointers_p2, 1030, "HOME");
-    NC_STACK_input::KeyTitle[Input::KC_SELECT]     = get_lang_string(string_pointers_p2, 1031, "SELECT");
-    NC_STACK_input::KeyTitle[Input::KC_EXECUTE]    = get_lang_string(string_pointers_p2, 1032, "EXEC");
-    NC_STACK_input::KeyTitle[Input::KC_SNAPSHOT]   = get_lang_string(string_pointers_p2, 1033, "PRINT");
-    NC_STACK_input::KeyTitle[Input::KC_INSERT]     = get_lang_string(string_pointers_p2, 1034, "INS");
-    NC_STACK_input::KeyTitle[Input::KC_DELETE]     = get_lang_string(string_pointers_p2, 1035, "DEL");
-    NC_STACK_input::KeyTitle[Input::KC_HELP]       = get_lang_string(string_pointers_p2, 1036, "HELP");
-    NC_STACK_input::KeyTitle[Input::KC_1]          = get_lang_string(string_pointers_p2, 1037, "1");
-    NC_STACK_input::KeyTitle[Input::KC_2]          = get_lang_string(string_pointers_p2, 1038, "2");
-    NC_STACK_input::KeyTitle[Input::KC_3]          = get_lang_string(string_pointers_p2, 1039, "3");
-    NC_STACK_input::KeyTitle[Input::KC_4]          = get_lang_string(string_pointers_p2, 1040, "4");
-    NC_STACK_input::KeyTitle[Input::KC_5]          = get_lang_string(string_pointers_p2, 1041, "5");
-    NC_STACK_input::KeyTitle[Input::KC_6]          = get_lang_string(string_pointers_p2, 1042, "6");
-    NC_STACK_input::KeyTitle[Input::KC_7]          = get_lang_string(string_pointers_p2, 1043, "7");
-    NC_STACK_input::KeyTitle[Input::KC_8]          = get_lang_string(string_pointers_p2, 1044, "8");
-    NC_STACK_input::KeyTitle[Input::KC_9]          = get_lang_string(string_pointers_p2, 1045, "9");
-    NC_STACK_input::KeyTitle[Input::KC_0]          = get_lang_string(string_pointers_p2, 1046, "0");
-    NC_STACK_input::KeyTitle[Input::KC_A]          = get_lang_string(string_pointers_p2, 1047, "A");
-    NC_STACK_input::KeyTitle[Input::KC_B]          = get_lang_string(string_pointers_p2, 1048, "B");
-    NC_STACK_input::KeyTitle[Input::KC_C]          = get_lang_string(string_pointers_p2, 1049, "C");
-    NC_STACK_input::KeyTitle[Input::KC_D]          = get_lang_string(string_pointers_p2, 1050, "D");
-    NC_STACK_input::KeyTitle[Input::KC_E]          = get_lang_string(string_pointers_p2, 1051, "E");
-    NC_STACK_input::KeyTitle[Input::KC_F]          = get_lang_string(string_pointers_p2, 1052, "F");
-    NC_STACK_input::KeyTitle[Input::KC_G]          = get_lang_string(string_pointers_p2, 1053, "G");
-    NC_STACK_input::KeyTitle[Input::KC_H]          = get_lang_string(string_pointers_p2, 1054, "H");
-    NC_STACK_input::KeyTitle[Input::KC_I]          = get_lang_string(string_pointers_p2, 1055, "I");
-    NC_STACK_input::KeyTitle[Input::KC_J]          = get_lang_string(string_pointers_p2, 1056, "J");
-    NC_STACK_input::KeyTitle[Input::KC_K]          = get_lang_string(string_pointers_p2, 1057, "K");
-    NC_STACK_input::KeyTitle[Input::KC_L]          = get_lang_string(string_pointers_p2, 1058, "L");
-    NC_STACK_input::KeyTitle[Input::KC_M]          = get_lang_string(string_pointers_p2, 1059, "M");
-    NC_STACK_input::KeyTitle[Input::KC_N]          = get_lang_string(string_pointers_p2, 1060, "N");
-    NC_STACK_input::KeyTitle[Input::KC_O]          = get_lang_string(string_pointers_p2, 1061, "O");
-    NC_STACK_input::KeyTitle[Input::KC_P]          = get_lang_string(string_pointers_p2, 1062, "P");
-    NC_STACK_input::KeyTitle[Input::KC_Q]          = get_lang_string(string_pointers_p2, 1063, "Q");
-    NC_STACK_input::KeyTitle[Input::KC_R]          = get_lang_string(string_pointers_p2, 1064, "R");
-    NC_STACK_input::KeyTitle[Input::KC_S]          = get_lang_string(string_pointers_p2, 1065, "S");
-    NC_STACK_input::KeyTitle[Input::KC_T]          = get_lang_string(string_pointers_p2, 1066, "T");
-    NC_STACK_input::KeyTitle[Input::KC_U]          = get_lang_string(string_pointers_p2, 1067, "U");
-    NC_STACK_input::KeyTitle[Input::KC_V]          = get_lang_string(string_pointers_p2, 1068, "V");
-    NC_STACK_input::KeyTitle[Input::KC_W]          = get_lang_string(string_pointers_p2, 1069, "W");
-    NC_STACK_input::KeyTitle[Input::KC_X]          = get_lang_string(string_pointers_p2, 1070, "X");
-    NC_STACK_input::KeyTitle[Input::KC_Y]          = get_lang_string(string_pointers_p2, 1071, "Y");
-    NC_STACK_input::KeyTitle[Input::KC_Z]          = get_lang_string(string_pointers_p2, 1072, "Z");
-    NC_STACK_input::KeyTitle[Input::KC_NUM0]       = get_lang_string(string_pointers_p2, 1073, "NUM 0");
-    NC_STACK_input::KeyTitle[Input::KC_NUM1]       = get_lang_string(string_pointers_p2, 1074, "NUM 1");
-    NC_STACK_input::KeyTitle[Input::KC_NUM2]       = get_lang_string(string_pointers_p2, 1075, "NUM 2");
-    NC_STACK_input::KeyTitle[Input::KC_NUM3]       = get_lang_string(string_pointers_p2, 1076, "NUM 3");
-    NC_STACK_input::KeyTitle[Input::KC_NUM4]       = get_lang_string(string_pointers_p2, 1077, "NUM 4");
-    NC_STACK_input::KeyTitle[Input::KC_NUM5]       = get_lang_string(string_pointers_p2, 1078, "NUM 5");
-    NC_STACK_input::KeyTitle[Input::KC_NUM6]       = get_lang_string(string_pointers_p2, 1079, "NUM 6");
-    NC_STACK_input::KeyTitle[Input::KC_NUM7]       = get_lang_string(string_pointers_p2, 1080, "NUM 7");
-    NC_STACK_input::KeyTitle[Input::KC_NUM8]       = get_lang_string(string_pointers_p2, 1081, "NUM 8");
-    NC_STACK_input::KeyTitle[Input::KC_NUM9]       = get_lang_string(string_pointers_p2, 1082, "NUM 9");
-    NC_STACK_input::KeyTitle[Input::KC_NUMMUL]     = get_lang_string(string_pointers_p2, 1083, "MUL");
-    NC_STACK_input::KeyTitle[Input::KC_NUMPLUS]    = get_lang_string(string_pointers_p2, 1084, "ADD");
-    NC_STACK_input::KeyTitle[Input::KC_NUMDOT]     = get_lang_string(string_pointers_p2, 1085, "DOT");
-    NC_STACK_input::KeyTitle[Input::KC_NUMMINUS]   = get_lang_string(string_pointers_p2, 1086, "SUB");
-    NC_STACK_input::KeyTitle[Input::KC_NUMENTER]   = get_lang_string(string_pointers_p2, 1087, "ENTER");
-    NC_STACK_input::KeyTitle[Input::KC_NUMDIV]     = get_lang_string(string_pointers_p2, 1088, "DIV");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA1]     = get_lang_string(string_pointers_p2, 1089, "EXTRA_1");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA2]     = get_lang_string(string_pointers_p2, 1090, "EXTRA_2");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA3]     = get_lang_string(string_pointers_p2, 1091, "EXTRA_3");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA4]     = get_lang_string(string_pointers_p2, 1092, "EXTRA_4");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA5]     = get_lang_string(string_pointers_p2, 1093, "EXTRA_5");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA6]     = get_lang_string(string_pointers_p2, 1094, "EXTRA_6");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA7]     = get_lang_string(string_pointers_p2, 1095, "EXTRA_7");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA8]     = get_lang_string(string_pointers_p2, 1096, "EXTRA_8");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA9]     = get_lang_string(string_pointers_p2, 1097, "EXTRA_9");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA10]    = get_lang_string(string_pointers_p2, 1098, "EXTRA_10");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA11]    = get_lang_string(string_pointers_p2, 1099, "EXTRA_11");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA12]    = get_lang_string(string_pointers_p2, 1100, "EXTRA_12");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA13]    = get_lang_string(string_pointers_p2, 1101, "EXTRA_13");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA14]    = get_lang_string(string_pointers_p2, 1102, "EXTRA_14");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA15]    = get_lang_string(string_pointers_p2, 1103, "EXTRA_15");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA16]    = get_lang_string(string_pointers_p2, 1104, "EXTRA_16");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA17]    = get_lang_string(string_pointers_p2, 1105, "EXTRA_17");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA18]    = get_lang_string(string_pointers_p2, 1106, "EXTRA_18");
+    NC_STACK_input::KeyTitle[Input::KC_ESCAPE]     = GetLocaleString(1001, "ESC");
+    NC_STACK_input::KeyTitle[Input::KC_SPACE]      = GetLocaleString(1002, "SPACE");
+    NC_STACK_input::KeyTitle[Input::KC_UP]         = GetLocaleString(1003, "UP");
+    NC_STACK_input::KeyTitle[Input::KC_DOWN]       = GetLocaleString(1004, "DOWN");
+    NC_STACK_input::KeyTitle[Input::KC_LEFT]       = GetLocaleString(1005, "LEFT");
+    NC_STACK_input::KeyTitle[Input::KC_RIGHT]      = GetLocaleString(1006, "RIGHT");
+    NC_STACK_input::KeyTitle[Input::KC_F1]         = GetLocaleString(1007, "F1");
+    NC_STACK_input::KeyTitle[Input::KC_F2]         = GetLocaleString(1008, "F2");
+    NC_STACK_input::KeyTitle[Input::KC_F3]         = GetLocaleString(1009, "F3");
+    NC_STACK_input::KeyTitle[Input::KC_F4]         = GetLocaleString(1010, "F4");
+    NC_STACK_input::KeyTitle[Input::KC_F5]         = GetLocaleString(1011, "F5");
+    NC_STACK_input::KeyTitle[Input::KC_F6]         = GetLocaleString(1012, "F6");
+    NC_STACK_input::KeyTitle[Input::KC_F7]         = GetLocaleString(1013, "F7");
+    NC_STACK_input::KeyTitle[Input::KC_F8]         = GetLocaleString(1014, "F8");
+    NC_STACK_input::KeyTitle[Input::KC_F9]         = GetLocaleString(1015, "F9");
+    NC_STACK_input::KeyTitle[Input::KC_F10]        = GetLocaleString(1016, "F10");
+    NC_STACK_input::KeyTitle[Input::KC_F11]        = GetLocaleString(1017, "F11");
+    NC_STACK_input::KeyTitle[Input::KC_F12]        = GetLocaleString(1018, "F12");
+    NC_STACK_input::KeyTitle[Input::KC_BACKSPACE]  = GetLocaleString(1019, "BACK");
+    NC_STACK_input::KeyTitle[Input::KC_TAB]        = GetLocaleString(1020, "TAB");
+    NC_STACK_input::KeyTitle[Input::KC_CLEAR]      = GetLocaleString(1021, "CLEAR");
+    NC_STACK_input::KeyTitle[Input::KC_RETURN]     = GetLocaleString(1022, "RETURN");
+    NC_STACK_input::KeyTitle[Input::KC_CTRL]       = GetLocaleString(1023, "CTRL");
+    NC_STACK_input::KeyTitle[Input::KC_SHIFT]      = GetLocaleString(1024, "SHIFT");
+    NC_STACK_input::KeyTitle[Input::KC_ALT]        = GetLocaleString(1025, "ALT");
+    NC_STACK_input::KeyTitle[Input::KC_PAUSE]      = GetLocaleString(1026, "PAUSE");
+    NC_STACK_input::KeyTitle[Input::KC_PGUP]       = GetLocaleString(1027, "PGUP");
+    NC_STACK_input::KeyTitle[Input::KC_PGDOWN]     = GetLocaleString(1028, "PGDOWN");
+    NC_STACK_input::KeyTitle[Input::KC_END]        = GetLocaleString(1029, "END");
+    NC_STACK_input::KeyTitle[Input::KC_HOME]       = GetLocaleString(1030, "HOME");
+    NC_STACK_input::KeyTitle[Input::KC_SELECT]     = GetLocaleString(1031, "SELECT");
+    NC_STACK_input::KeyTitle[Input::KC_EXECUTE]    = GetLocaleString(1032, "EXEC");
+    NC_STACK_input::KeyTitle[Input::KC_SNAPSHOT]   = GetLocaleString(1033, "PRINT");
+    NC_STACK_input::KeyTitle[Input::KC_INSERT]     = GetLocaleString(1034, "INS");
+    NC_STACK_input::KeyTitle[Input::KC_DELETE]     = GetLocaleString(1035, "DEL");
+    NC_STACK_input::KeyTitle[Input::KC_HELP]       = GetLocaleString(1036, "HELP");
+    NC_STACK_input::KeyTitle[Input::KC_1]          = GetLocaleString(1037, "1");
+    NC_STACK_input::KeyTitle[Input::KC_2]          = GetLocaleString(1038, "2");
+    NC_STACK_input::KeyTitle[Input::KC_3]          = GetLocaleString(1039, "3");
+    NC_STACK_input::KeyTitle[Input::KC_4]          = GetLocaleString(1040, "4");
+    NC_STACK_input::KeyTitle[Input::KC_5]          = GetLocaleString(1041, "5");
+    NC_STACK_input::KeyTitle[Input::KC_6]          = GetLocaleString(1042, "6");
+    NC_STACK_input::KeyTitle[Input::KC_7]          = GetLocaleString(1043, "7");
+    NC_STACK_input::KeyTitle[Input::KC_8]          = GetLocaleString(1044, "8");
+    NC_STACK_input::KeyTitle[Input::KC_9]          = GetLocaleString(1045, "9");
+    NC_STACK_input::KeyTitle[Input::KC_0]          = GetLocaleString(1046, "0");
+    NC_STACK_input::KeyTitle[Input::KC_A]          = GetLocaleString(1047, "A");
+    NC_STACK_input::KeyTitle[Input::KC_B]          = GetLocaleString(1048, "B");
+    NC_STACK_input::KeyTitle[Input::KC_C]          = GetLocaleString(1049, "C");
+    NC_STACK_input::KeyTitle[Input::KC_D]          = GetLocaleString(1050, "D");
+    NC_STACK_input::KeyTitle[Input::KC_E]          = GetLocaleString(1051, "E");
+    NC_STACK_input::KeyTitle[Input::KC_F]          = GetLocaleString(1052, "F");
+    NC_STACK_input::KeyTitle[Input::KC_G]          = GetLocaleString(1053, "G");
+    NC_STACK_input::KeyTitle[Input::KC_H]          = GetLocaleString(1054, "H");
+    NC_STACK_input::KeyTitle[Input::KC_I]          = GetLocaleString(1055, "I");
+    NC_STACK_input::KeyTitle[Input::KC_J]          = GetLocaleString(1056, "J");
+    NC_STACK_input::KeyTitle[Input::KC_K]          = GetLocaleString(1057, "K");
+    NC_STACK_input::KeyTitle[Input::KC_L]          = GetLocaleString(1058, "L");
+    NC_STACK_input::KeyTitle[Input::KC_M]          = GetLocaleString(1059, "M");
+    NC_STACK_input::KeyTitle[Input::KC_N]          = GetLocaleString(1060, "N");
+    NC_STACK_input::KeyTitle[Input::KC_O]          = GetLocaleString(1061, "O");
+    NC_STACK_input::KeyTitle[Input::KC_P]          = GetLocaleString(1062, "P");
+    NC_STACK_input::KeyTitle[Input::KC_Q]          = GetLocaleString(1063, "Q");
+    NC_STACK_input::KeyTitle[Input::KC_R]          = GetLocaleString(1064, "R");
+    NC_STACK_input::KeyTitle[Input::KC_S]          = GetLocaleString(1065, "S");
+    NC_STACK_input::KeyTitle[Input::KC_T]          = GetLocaleString(1066, "T");
+    NC_STACK_input::KeyTitle[Input::KC_U]          = GetLocaleString(1067, "U");
+    NC_STACK_input::KeyTitle[Input::KC_V]          = GetLocaleString(1068, "V");
+    NC_STACK_input::KeyTitle[Input::KC_W]          = GetLocaleString(1069, "W");
+    NC_STACK_input::KeyTitle[Input::KC_X]          = GetLocaleString(1070, "X");
+    NC_STACK_input::KeyTitle[Input::KC_Y]          = GetLocaleString(1071, "Y");
+    NC_STACK_input::KeyTitle[Input::KC_Z]          = GetLocaleString(1072, "Z");
+    NC_STACK_input::KeyTitle[Input::KC_NUM0]       = GetLocaleString(1073, "NUM 0");
+    NC_STACK_input::KeyTitle[Input::KC_NUM1]       = GetLocaleString(1074, "NUM 1");
+    NC_STACK_input::KeyTitle[Input::KC_NUM2]       = GetLocaleString(1075, "NUM 2");
+    NC_STACK_input::KeyTitle[Input::KC_NUM3]       = GetLocaleString(1076, "NUM 3");
+    NC_STACK_input::KeyTitle[Input::KC_NUM4]       = GetLocaleString(1077, "NUM 4");
+    NC_STACK_input::KeyTitle[Input::KC_NUM5]       = GetLocaleString(1078, "NUM 5");
+    NC_STACK_input::KeyTitle[Input::KC_NUM6]       = GetLocaleString(1079, "NUM 6");
+    NC_STACK_input::KeyTitle[Input::KC_NUM7]       = GetLocaleString(1080, "NUM 7");
+    NC_STACK_input::KeyTitle[Input::KC_NUM8]       = GetLocaleString(1081, "NUM 8");
+    NC_STACK_input::KeyTitle[Input::KC_NUM9]       = GetLocaleString(1082, "NUM 9");
+    NC_STACK_input::KeyTitle[Input::KC_NUMMUL]     = GetLocaleString(1083, "MUL");
+    NC_STACK_input::KeyTitle[Input::KC_NUMPLUS]    = GetLocaleString(1084, "ADD");
+    NC_STACK_input::KeyTitle[Input::KC_NUMDOT]     = GetLocaleString(1085, "DOT");
+    NC_STACK_input::KeyTitle[Input::KC_NUMMINUS]   = GetLocaleString(1086, "SUB");
+    NC_STACK_input::KeyTitle[Input::KC_NUMENTER]   = GetLocaleString(1087, "ENTER");
+    NC_STACK_input::KeyTitle[Input::KC_NUMDIV]     = GetLocaleString(1088, "DIV");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA1]     = GetLocaleString(1089, "EXTRA_1");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA2]     = GetLocaleString(1090, "EXTRA_2");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA3]     = GetLocaleString(1091, "EXTRA_3");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA4]     = GetLocaleString(1092, "EXTRA_4");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA5]     = GetLocaleString(1093, "EXTRA_5");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA6]     = GetLocaleString(1094, "EXTRA_6");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA7]     = GetLocaleString(1095, "EXTRA_7");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA8]     = GetLocaleString(1096, "EXTRA_8");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA9]     = GetLocaleString(1097, "EXTRA_9");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA10]    = GetLocaleString(1098, "EXTRA_10");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA11]    = GetLocaleString(1099, "EXTRA_11");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA12]    = GetLocaleString(1100, "EXTRA_12");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA13]    = GetLocaleString(1101, "EXTRA_13");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA14]    = GetLocaleString(1102, "EXTRA_14");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA15]    = GetLocaleString(1103, "EXTRA_15");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA16]    = GetLocaleString(1104, "EXTRA_16");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA17]    = GetLocaleString(1105, "EXTRA_17");
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA18]    = GetLocaleString(1106, "EXTRA_18");
     
-    NC_STACK_input::KeyTitle[Input::KC_MMB]        = get_lang_string(string_pointers_p2, 1121, "MIDDLE MOUSE");
+    NC_STACK_input::KeyTitle[Input::KC_MMB]        = GetLocaleString(1121, "MIDDLE MOUSE");
 
-    NC_STACK_input::KeyTitle[Input::KC_JOYB0]      = get_lang_string(string_pointers_p2, 1123, "JOYB0");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB1]      = get_lang_string(string_pointers_p2, 1124, "JOYB1");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB2]      = get_lang_string(string_pointers_p2, 1125, "JOYB2");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB3]      = get_lang_string(string_pointers_p2, 1126, "JOYB3");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB4]      = get_lang_string(string_pointers_p2, 1127, "JOYB4");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB5]      = get_lang_string(string_pointers_p2, 1128, "JOYB5");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB6]      = get_lang_string(string_pointers_p2, 1129, "JOYB6");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB7]      = get_lang_string(string_pointers_p2, 1130, "JOYB7");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB0]      = GetLocaleString(1123, "JOYB0");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB1]      = GetLocaleString(1124, "JOYB1");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB2]      = GetLocaleString(1125, "JOYB2");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB3]      = GetLocaleString(1126, "JOYB3");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB4]      = GetLocaleString(1127, "JOYB4");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB5]      = GetLocaleString(1128, "JOYB5");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB6]      = GetLocaleString(1129, "JOYB6");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB7]      = GetLocaleString(1130, "JOYB7");
 }
 
 
@@ -565,7 +564,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
 
             if ( v18->getType() == FSMgr::iNode::NTYPE_FILE && v3 != std::string::npos )
             {
-                tmp[v3] = 0;
+                tmp.erase(v3);
 
                 for (size_t i = 0; i < tmp.length(); i++)
                     tmp[i] = std::toupper(tmp[i]);
@@ -590,7 +589,7 @@ void listLocaleDir(UserData *usr, const char *dirname)
 
                     elm = tmp;
 
-                    if ( !strcasecmp(elm.c_str(), "language") )
+                    if ( !StriCmp(elm, "language") )
                         deflng = &elm;
                 }
             }
@@ -648,9 +647,9 @@ void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
     }
 }
 
-int sub_4DE9F4(const void *a1, const void *a2)
+bool sub_4DE9F4(const usr_str &a1, const usr_str &a2)
 {
-    return strcasecmp(((usr_str *)a1)->pstring, ((usr_str *)a2)->pstring);
+    return StriCmp(a1.pstring, a2.pstring) > 0;
 }
 
 void ypaworld_func156__sub1(UserData *usr)
@@ -661,14 +660,14 @@ void ypaworld_func156__sub1(UserData *usr)
         if (usr->p_ypaworld->LevelNet->mapInfos[i].field_0 == 4)
         {
             usr->map_descriptions[v2].id = i;
-            usr->map_descriptions[v2].pstring = get_lang_string(ypaworld__string_pointers, i + 1800, usr->p_ypaworld->LevelNet->mapInfos[i].map_name.c_str());
+            usr->map_descriptions[v2].pstring = usr->p_ypaworld->GetLocaleString(i + 1800, usr->p_ypaworld->LevelNet->mapInfos[i].map_name);
             v2++;
         }
     }
 
     usr->map_descriptions_count = v2;
 
-    qsort(usr->map_descriptions, v2, sizeof(usr_str), sub_4DE9F4);
+    std::stable_sort(std::begin(usr->map_descriptions), std::end(usr->map_descriptions), sub_4DE9F4);
 }
 
 
@@ -1163,7 +1162,7 @@ void UserData::sb_0x46aa8c()
         {
             if ( strcasecmp(field_139A, win3d_guid) )
             {
-                strcpy(win3d_name, field_139E);
+                strcpy(win3d_name, field_139E.c_str());
 
                 strcpy(win3d_guid, field_139A);
 
@@ -1751,11 +1750,11 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
     Common::Env.SetPrefix("rsrc", oldRsrc);
 }
 
-void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
+void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string &a2)
 {
     UserData *usr = yw->GameShell;
 
-    if ( strcasecmp(a1, usr->lastSender) )
+    if ( StriCmp(a1, usr->lastSender) )
     {
         if ( usr->msgBuffLine >= 31 )
         {
@@ -1766,9 +1765,9 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
         }
 
         memset(usr->msgBuffers[usr->msgBuffLine], 0, 64);
-        sprintf(usr->msgBuffers[usr->msgBuffLine], "> %s:", a1);
+        sprintf(usr->msgBuffers[usr->msgBuffLine], "> %s:", a1.c_str());
         memset(usr->lastSender, 0, 64);
-        strncpy(usr->lastSender, a1, 63);
+        strncpy(usr->lastSender, a1.c_str(), 63);
 
         usr->msgBuffLine++;
     }
@@ -1782,7 +1781,7 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const char *a1, const char *a2)
     }
 
     memset(usr->msgBuffers[usr->msgBuffLine], 0, 64);
-    strncpy(usr->msgBuffers[usr->msgBuffLine], a2, 63);
+    strncpy(usr->msgBuffers[usr->msgBuffLine], a2.c_str(), 63);
 
     usr->msgBuffLine++;
 
@@ -1864,7 +1863,7 @@ void UserData::ShowMenuMsgBox(int code, const std::string &txt1, const std::stri
 }
 
 
-void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
+void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &txt2, int a5)
 {
     field_0x2fb4 = a2;
 
@@ -1903,7 +1902,7 @@ void UserData::sub_46D9E0( int a2, const char *txt1, const char *txt2, int a5)
 
     confirm_button->button_func71(1302, txt1);
 
-    if ( txt2 )
+    if ( !txt2.empty() )
         confirm_button->button_func71(1303, txt2);
     else
         confirm_button->button_func71(1303, " ");
@@ -1978,7 +1977,7 @@ void UserData::InputConfCopyToBackup()
 
 int NC_STACK_ypaworld::InputConfigLoadDefault()
 {
-    std::string file = fmt::sprintf("data:settings/%s/input.def", lang_name);
+    std::string file = fmt::sprintf("data:settings/%s/input.def", _localeName);
 
     ScriptParser::HandlersList hndls
     {
@@ -2120,7 +2119,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
     a1.currr = 0;
     a1.name = (const char *)-1;
 
-    const char *v2;
+    std::string v2;
     const char *v12;
 
     while ( a1.name )
@@ -2131,7 +2130,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
             if ( v4 == d3d_listvw.selectedEntry )
             {
                 if ( !strcmp(a1.name, "software") )
-                    v2 = get_lang_string(p_ypaworld->string_pointers_p2, 2472, "2472 = Software");
+                    v2 = p_ypaworld->GetLocaleString(2472, "2472 = Software");
                 else
                     v2 = a1.name;
 
@@ -2424,7 +2423,7 @@ void UserData::GameShellUiHandleInput()
     v393.xpos = word_5A50C0 + dword_5A50B6_h;
     sub_bar_button->button_func76(&v393);
 
-    sub_bar_button->button_func71(1019,  get_lang_string(ypaworld__string_pointers, 644, "GO BACK"));
+    sub_bar_button->button_func71(1019,  p_ypaworld->GetLocaleString(644, "GO BACK"));
 
     if ( sub_4EDCC4(p_ypaworld) )
     {
@@ -2441,7 +2440,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            sub_bar_button->button_func71(1019, get_lang_string(ypaworld__string_pointers, 2438, "2438 == BACK"));
+            sub_bar_button->button_func71(1019, p_ypaworld->GetLocaleString(2438, "2438 == BACK"));
         }
 
         if ( p_ypaworld->_levelInfo->State == 9 )
@@ -2453,7 +2452,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            sub_bar_button->button_func71(1019, get_lang_string(ypaworld__string_pointers, 2420, "CONTINUE"));
+            sub_bar_button->button_func71(1019, p_ypaworld->GetLocaleString(2420, "CONTINUE"));
         }
 
         v410.butID = 1019;
@@ -2673,7 +2672,7 @@ void UserData::GameShellUiHandleInput()
     
 
     if ( envMode == ENVMODE_TITLE && _input->HotKeyID == 43 )
-        p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
+        p_ypaworld->field_81AF = p_ypaworld->GetLocaleString(750, "help\\start.html");
 
     r = titel_button->button_func69(_input);
 
@@ -2720,7 +2719,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1025 )
         {
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 750, "help\\start.html");
+            p_ypaworld->field_81AF = p_ypaworld->GetLocaleString(750, "help\\start.html");
         }
     }
 
@@ -2799,15 +2798,13 @@ void UserData::GameShellUiHandleInput()
         case 1021:
             if ( ypaworld_func158__sub0__sub7() )
             {
-                const char *v18 = get_lang_string(ypaworld__string_pointers, 2439, "2439");
-                const char *v19 = get_lang_string(ypaworld__string_pointers, 2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?");
-                sub_46D9E0(1, v19, v18, 0);
+                sub_46D9E0(1, p_ypaworld->GetLocaleString(2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?")
+                            , p_ypaworld->GetLocaleString(2439, "2439"), 0);
             }
             else
             {
-                const char *v20 = get_lang_string(ypaworld__string_pointers, 2440, "2440");
-                const char *v21 = get_lang_string(ypaworld__string_pointers, 2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?");
-                sub_46D9E0(1, v21, v20, 0);
+                sub_46D9E0(1, p_ypaworld->GetLocaleString(2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?")
+                            , p_ypaworld->GetLocaleString(2440, "2440"), 0);
             }
             break;
 
@@ -2832,7 +2829,7 @@ void UserData::GameShellUiHandleInput()
     if ( envMode == ENVMODE_INPUT )
     {
         if ( !field_D52 && _input->HotKeyID == 43 )
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
+            p_ypaworld->field_81AF = p_ypaworld->GetLocaleString(759, "help\\19.html");
 
         if ( _input->KbdLastHit != Input::KC_NONE )
         {
@@ -2988,7 +2985,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 759, "help\\19.html");
+            p_ypaworld->field_81AF = p_YW->GetLocaleString(759, "help\\19.html");
             field_D52 = 0;
         }
     }
@@ -3016,10 +3013,8 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( field_13C2 & 1 && game_default_res != p_ypaworld->game_default_res && game_default_res )
                 {
-                    const char *v44 = get_lang_string(ypaworld__string_pointers, 342, "THIS CAN ... PROBLEMS");
-                    const char *v45 = get_lang_string(ypaworld__string_pointers, 341, "DO YOU WANT TO CHANGE VIDEOMODE?");
-
-                    sub_46D9E0(5, v45, v44, 0);
+                    sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
+                                , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
                 }
                 else
                 {
@@ -3050,7 +3045,7 @@ void UserData::GameShellUiHandleInput()
             envMode = ENVMODE_TITLE;
         }
         if ( _input->HotKeyID == 43 )
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
+            p_ypaworld->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
     }
 
 
@@ -3133,9 +3128,8 @@ void UserData::GameShellUiHandleInput()
         {
             if ( (field_13C2 & 1) &&  game_default_res != p_ypaworld->game_default_res && game_default_res )
             {
-                const char *v51 = get_lang_string(ypaworld__string_pointers, 342, "THIS CAN ... PROBLEMS");
-                const char *v52 = get_lang_string(ypaworld__string_pointers, 341, "DO YOU WANT TO CHANGE VIDEOMODE?");
-                sub_46D9E0(5, v52, v51, 0);
+                sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
+                            , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
             }
             else
             {
@@ -3198,7 +3192,7 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinClose( &d3d_listvw );
         }
         else if ( r.code == 1250 )
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 760, "help\\110.html");
+            p_ypaworld->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
     }
 
     if ( envMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
@@ -3293,9 +3287,8 @@ void UserData::GameShellUiHandleInput()
                     case 1:
                         if ( field_1612 )
                         {
-                            const char *v88 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
-                            const char *v89 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                            sub_46D9E0(3, v89, v88, 0);
+                            sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                                        , p_YW->GetLocaleString(2441, "2441"), 0);
                         }
                         else if (usernamedir.size() > 0)
                         {
@@ -3310,9 +3303,8 @@ void UserData::GameShellUiHandleInput()
                     case 3:
                         if ( field_1612 )
                         {
-                            const char *v90 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
-                            const char *v91 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                            sub_46D9E0(6, v91, v90, 0);
+                            sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                                        , p_YW->GetLocaleString(2441, "2441"), 0);
                         }
                         else if (usernamedir.size() > 0)
                         {
@@ -3366,7 +3358,7 @@ void UserData::GameShellUiHandleInput()
                     sub_46A7F8();
 
                 if ( _input->HotKeyID == 43 )
-                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
+                    p_ypaworld->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
 
             }
 
@@ -3406,7 +3398,7 @@ void UserData::GameShellUiHandleInput()
 
             if ( !field_1612 )
             {
-                usernamedir = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
+                usernamedir = p_YW->GetLocaleString(366, "NEW GAME");
             }
             
             usernamedir_len = usernamedir.size();
@@ -3418,7 +3410,7 @@ void UserData::GameShellUiHandleInput()
             field_0x1744 = 4;
             if ( !field_1612 )
             {
-                usernamedir = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
+                usernamedir = p_YW->GetLocaleString(366, "NEW GAME");
             }
             
             usernamedir_len = usernamedir.size();
@@ -3429,7 +3421,7 @@ void UserData::GameShellUiHandleInput()
         {
             field_0x1744 = 3;
 
-            std::string tmp = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
+            std::string tmp = p_YW->GetLocaleString(366, "NEW GAME");
 
             int maxN = 0;
 
@@ -3455,7 +3447,7 @@ void UserData::GameShellUiHandleInput()
             field_0x1744 = 1;
             if ( !field_1612 )
             {
-                usernamedir = get_lang_string(ypaworld__string_pointers, 366, "NEW GAME");
+                usernamedir = p_YW->GetLocaleString(366, "NEW GAME");
             }
 
             usernamedir_len = usernamedir.size();
@@ -3469,9 +3461,8 @@ void UserData::GameShellUiHandleInput()
             case 1:
                 if ( field_1612 )
                 {
-                    const char *v112 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
-                    const char *v113 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                    sub_46D9E0(3, v113, v112, 0);
+                    sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                                , p_YW->GetLocaleString(2441, "2441"), 0);
                 }
                 else
                 {
@@ -3484,9 +3475,8 @@ void UserData::GameShellUiHandleInput()
             case 3:
                 if ( field_1612 )
                 {
-                    const char *v114 = get_lang_string(ypaworld__string_pointers, 2441, "2441");
-                    const char *v115 = get_lang_string(ypaworld__string_pointers, 2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?");
-                    sub_46D9E0(6, v115, v114, 0);
+                    sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                                , p_YW->GetLocaleString(2441, "2441"), 0);
                 }
                 else
                 {
@@ -3511,7 +3501,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if (r.code == 1250)
         {
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 758, "help\\18.html");
+            p_ypaworld->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
             field_0x1744 = 0;
         }
     }
@@ -3643,7 +3633,7 @@ void UserData::GameShellUiHandleInput()
         }
 
         if ( _input->HotKeyID == 43 )
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
+            p_ypaworld->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
     }
 
 
@@ -3660,7 +3650,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 761, "help\\111.html");
+            p_ypaworld->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
         }
         else if ( r.code == 1300 )
         {
@@ -3897,7 +3887,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
+                p_ypaworld->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
             }
             break;
 
@@ -3915,7 +3905,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
+                p_ypaworld->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
             }
             break;
 
@@ -3955,7 +3945,7 @@ void UserData::GameShellUiHandleInput()
                         }
 
                         _connString = connStr;
-                        ShowMenuMsgBox(17, get_lang_string(ypaworld__string_pointers, 421, "Connect to"), connStr, false);
+                        ShowMenuMsgBox(17, p_YW->GetLocaleString(421, "Connect to"), connStr, false);
                     }
                         break;
 
@@ -3970,9 +3960,9 @@ void UserData::GameShellUiHandleInput()
 //                    windd_dlgBox v339;
 //                    memset(&v339, 0, sizeof(windd_dlgBox));
 //
-//                    v339.title = get_lang_string(ypaworld__string_pointers, 413, "ENTER CALLSIGN");
-//                    v339.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-//                    v339.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+//                    v339.title = get_lang_string(413, "ENTER CALLSIGN");
+//                    v339.ok = get_lang_string(2, "OK");
+//                    v339.cancel = get_lang_string(3, "CANCEL");
 //                    v339.maxLen = 32;
 //                    v339.timer_func = NULL;
 //                    v339.startText = netName;
@@ -3988,7 +3978,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
+                p_ypaworld->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
             }
             break;
 
@@ -3999,7 +3989,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
+                p_ypaworld->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
             }
             break;
 
@@ -4008,14 +3998,13 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( isHost )
                 {
-                    const char *v425;
-                    const char *v425_1;
+                    std::string v425;
+                    std::string v425_1;
 
                     if ( p_ypaworld->windp->CountPlayers(NULL) <= 1 )
                     {
-                        const char *v217 = get_lang_string(ypaworld__string_pointers, 2442, "2442");
-                        const char *v218 = get_lang_string(ypaworld__string_pointers, 2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?");
-                        sub_46D9E0(2, v218, v217, 0);
+                        sub_46D9E0(2, p_YW->GetLocaleString(2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?")
+                                    , p_YW->GetLocaleString(2442, "2442"), 0);
                     }
                     else if ( ypaworld_func158__sub0__sub8(&v425, &v425_1) )
                     {
@@ -4115,9 +4104,9 @@ void UserData::GameShellUiHandleInput()
 //                    windd_dlgBox v316;
 //                    memset(&v316, 0, sizeof(windd_dlgBox));
 //
-//                    v316.title = get_lang_string(ypaworld__string_pointers, 422, "ENTER MESSAGE");
-//                    v316.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-//                    v316.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+//                    v316.title = get_lang_string(422, "ENTER MESSAGE");
+//                    v316.ok = get_lang_string(2, "OK");
+//                    v316.cancel = get_lang_string(3, "CANCEL");
 //                    v316.startText = netName;
 //                    v316.timer_func = NULL;
 //                    v316.maxLen = 64;
@@ -4149,7 +4138,7 @@ void UserData::GameShellUiHandleInput()
 
                     p_ypaworld->ypaworld_func181(&v346);
 
-                    sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
+                    sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
 
                     netName = "";
                     netNameCurPos = 0;
@@ -4161,7 +4150,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
+                p_ypaworld->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
             }
             break;
         default:
@@ -4327,7 +4316,7 @@ void UserData::GameShellUiHandleInput()
 
                         p_ypaworld->ypaworld_func181(&v325);
 
-                        sub_4D0C24(p_ypaworld, callSIGN.c_str(), msgMsg.message);
+                        sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
                         netName.clear();
                         netNameCurPos = 0;
 
@@ -4350,19 +4339,19 @@ void UserData::GameShellUiHandleInput()
                 switch ( netSelMode )
                 {
                 case NETSCREEN_MODE_SELECT:
-                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 753, "help\\13.html");
+                    p_ypaworld->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
                     break;
                 case NETSCREEN_SESSION_SELECT:
-                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 755, "help\\15.html");
+                    p_ypaworld->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
                     break;
                 case NETSCREEN_ENTER_NAME:
-                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 754, "help\\14.html");
+                    p_ypaworld->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
                     break;
                 case NETSCREEN_CHOOSE_MAP:
-                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 756, "help\\16.html");
+                    p_ypaworld->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
                     break;
                 case NETSCREEN_INSESSION:
-                    p_ypaworld->field_81AF = get_lang_string(ypaworld__string_pointers, 757, "help\\17.html");
+                    p_ypaworld->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
                     break;
                 default:
                     break;
@@ -4421,7 +4410,7 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1227;
     network_button->button_func67(&v410);
 
-    network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 2, "OK"));
+    network_button->button_func71(1201, p_YW->GetLocaleString(2, "OK"));
 
     v410.butID = 1220;
     network_button->button_func67(&v410);
@@ -4482,15 +4471,14 @@ void UserData::GameShellUiHandleInput()
 
         if ( netSelMode != NETSCREEN_MODE_SELECT )
         {
-            v280 = get_lang_string(ypaworld__string_pointers, 2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
+            v280 = p_YW->GetLocaleString(2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
         }
         else
         {
             if ( p_ypaworld->field_75E2[0] )
             {
                 char *v278 = p_ypaworld->field_75E2;
-                const char *v279 = get_lang_string(ypaworld__string_pointers, 2437, "YOUR TCP/IP ADDRESS");
-                v280 = fmt::sprintf("%s  %s", v279, v278);
+                v280 = fmt::sprintf("%s  %s",  p_YW->GetLocaleString(2437, "YOUR TCP/IP ADDRESS") , v278);
             }
             else
                 v280 = " ";
@@ -4558,35 +4546,35 @@ void UserData::GameShellUiHandleInput()
 
         network_button->button_func67(&v410);
 
-        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER"));
+        network_button->button_func71(1204, p_YW->GetLocaleString(410, "SELECT PROVIDER"));
 
-        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 425, "2"));
+        network_button->button_func71(1222, p_YW->GetLocaleString(425, "2"));
 
-        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 426, "3"));
+        network_button->button_func71(1223, p_YW->GetLocaleString(426, "3"));
         break;
 
     case NETSCREEN_SESSION_SELECT:
     {
         if ( p_ypaworld->windp->GetProvType() != 4 || !modemAskSession )
         {
-            network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 402, "NEW"));
+            network_button->button_func71(1202, p_YW->GetLocaleString(402, "NEW"));
 
             v410.butID = 1202;
             network_button->button_func66(&v410);
         }
 
-        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 411, "SELECT SESSION"));
+        network_button->button_func71(1204, p_YW->GetLocaleString(411, "SELECT SESSION"));
 
-        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 428, "5"));
+        network_button->button_func71(1222, p_YW->GetLocaleString(428, "5"));
 
-        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 429, "6"));
+        network_button->button_func71(1223, p_YW->GetLocaleString(429, "6"));
 
         windp_getNameMsg msg;
         msg.id = 0;
 
         if ( p_ypaworld->windp->GetSessionName(&msg) )
         {
-            network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 406, "JOIN"));
+            network_button->button_func71(1201, p_YW->GetLocaleString(406, "JOIN"));
         }
         else if ( p_ypaworld->windp->GetProvType() != 4 || modemAskSession )
         {
@@ -4595,24 +4583,24 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 421, "SEARCH"));
+            network_button->button_func71(1201, p_YW->GetLocaleString(421, "SEARCH"));
         }
     }
     break;
 
     case NETSCREEN_ENTER_NAME:
-        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 413, "ENTER PLAYER"));
+        network_button->button_func71(1204, p_YW->GetLocaleString(413, "ENTER PLAYER"));
 
-        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 434, "11"));
+        network_button->button_func71(1222, p_YW->GetLocaleString(434, "11"));
 
-        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 435, "12"));
+        network_button->button_func71(1223, p_YW->GetLocaleString(435, "12"));
 
 //        if ( str17_NOT_FALSE )
 //        {
 //            v410.butID = 1202;
 //            network_button->button_func66(&v410);
 //
-//            network_button->button_func71(1202, get_lang_string(ypaworld__string_pointers, 423, "CHANGE"));
+//            network_button->button_func71(1202, get_lang_string(423, "CHANGE"));
 //        }
         break;
 
@@ -4623,18 +4611,18 @@ void UserData::GameShellUiHandleInput()
             network_button->button_func67(&v410);
         }
 
-        network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 412, "SELECT LEVEL"));
+        network_button->button_func71(1204, p_YW->GetLocaleString(412, "SELECT LEVEL"));
 
-        network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 431, "8"));
+        network_button->button_func71(1222, p_YW->GetLocaleString(431, "8"));
 
-        network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 432, "9"));
+        network_button->button_func71(1223, p_YW->GetLocaleString(432, "9"));
         break;
 
     case NETSCREEN_INSESSION:
         v410.butID = 1225;
         network_button->button_func66(&v410);
 
-        network_button->button_func71(1225, get_lang_string(ypaworld__string_pointers, 405, "SEND"));
+        network_button->button_func71(1225, p_YW->GetLocaleString(405, "SEND"));
 
         v410.butID = 1226;
         network_button->button_func66(&v410);
@@ -4830,13 +4818,13 @@ void UserData::GameShellUiHandleInput()
 
         if ( isHost )
         {
-            network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
+            network_button->button_func71(1204, p_YW->GetLocaleString(414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
 
-            network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 437, "14"));
+            network_button->button_func71(1222, p_YW->GetLocaleString(437, "14"));
 
-            network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 438, "15"));
+            network_button->button_func71(1223, p_YW->GetLocaleString(438, "15"));
 
-            network_button->button_func71(1201, get_lang_string(ypaworld__string_pointers, 407, "START"));
+            network_button->button_func71(1201, p_YW->GetLocaleString(407, "START"));
 
             if ( !field_1CD7 )
             {
@@ -4847,11 +4835,11 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            network_button->button_func71(1204, get_lang_string(ypaworld__string_pointers, 415, "WAIT FOR START OR SEND MESSAGES"));
+            network_button->button_func71(1204, p_YW->GetLocaleString(415, "WAIT FOR START OR SEND MESSAGES"));
 
-            network_button->button_func71(1222, get_lang_string(ypaworld__string_pointers, 440, "17"));
+            network_button->button_func71(1222, p_YW->GetLocaleString(440, "17"));
 
-            network_button->button_func71(1223, get_lang_string(ypaworld__string_pointers, 441, "18"));
+            network_button->button_func71(1223, p_YW->GetLocaleString(441, "18"));
 
             if ( field_1CE8 )
             {

@@ -27,7 +27,7 @@ char byte_5FFF80[8192];
 
 ////////////////////////////////////////
 GuiBase *dword_5BAFAC = NULL;
-const char *dword_5BAF98;
+std::string dword_5BAF98;
 
 ////////////////////////////////////////
 
@@ -129,7 +129,7 @@ void sub_481204(NC_STACK_ypaworld *yw, int a2, int a3)
 }
 
 
-void NC_STACK_ypaworld::sb_0x4c87fc(const char *a2, GuiBase *lstvw)
+void NC_STACK_ypaworld::sb_0x4c87fc(const std::string &a2, GuiBase *lstvw)
 {
     GuiWinOpen(&lstvw2);
     GuiWinToFront(&lstvw2);
@@ -139,17 +139,15 @@ void NC_STACK_ypaworld::sb_0x4c87fc(const char *a2, GuiBase *lstvw)
     dword_5BAF9C = 3;
 }
 
-void NC_STACK_ypaworld::sub_449DE8(const char *a2)
+void NC_STACK_ypaworld::sub_449DE8(const std::string &a2)
 {
     if ( !isNetGame )
     {
-        const char *v4 = get_lang_string(string_pointers_p2, 2486, "REALLY LAUNCH ONLINE HELP ?");
-
-        sb_0x4c87fc(v4, &exit_menu);
+        sb_0x4c87fc( GetLocaleString(2486, "REALLY LAUNCH ONLINE HELP ?") , &exit_menu);
 
         dword_5C8B78 = 13;
 
-        field_81AF = NULL;
+        field_81AF.clear();
         field_81B3 = a2;
     }
 }
@@ -171,7 +169,7 @@ void create_squad_man(NC_STACK_ypaworld *yw)
     int v11 = 4 * fnt0[65].w + v8 + fnt28[97].w + f0c32_w + 8;
 
     GuiList::tInit args;
-    args.title = get_lang_string(yw->string_pointers_p2, 51, "FINDER");
+    args.title = yw->GetLocaleString(51, "FINDER");
     args.resizeable = true;
     args.numEntries = 0;
     args.shownEntries = 12;
@@ -1768,8 +1766,7 @@ void sub_4C0C00(NC_STACK_ypaworld *yw)
     else
         v7 = 'q'; //default fon (
 
-    const char *v10 = get_lang_string(yw->string_pointers_p2, 50, "MAP");
-    char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, v10, robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
+    char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, yw->GetLocaleString(50, "MAP"), robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
 
     FontUA::next_line(&pcur);
     FontUA::reset_tileset(&pcur, 13);
@@ -2674,7 +2671,7 @@ void create_info_log(NC_STACK_ypaworld *yw)
     memset(&info_log, 0, sizeof(info_log));
 
     GuiList::tInit args;
-    args.title = get_lang_string(yw->string_pointers_p2, 52, "MESSAGE LOG");
+    args.title = yw->GetLocaleString(52, "MESSAGE LOG");
     args.resizeable = true;
     args.numEntries = 1;
     args.shownEntries = 6;
@@ -2696,10 +2693,14 @@ void create_info_log(NC_STACK_ypaworld *yw)
         if ( yw->timeStamp )
         {
             std::string tmp = fmt::sprintf("<%02d:%02d:%02d>", (yw->timeStamp >> 10) / 60 / 60 % 24, (yw->timeStamp >> 10) / 60 % 60, (yw->timeStamp >> 10) % 60);
-            sprintf(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 12, "GAME CONTINUED AT TIME INDEX %s."), tmp.c_str());
+            std::string tmp2 = yw->GetLocaleString(12, "GAME CONTINUED AT TIME INDEX %s.");
+            sprintf(info_log.msgs[0].txt, tmp2.c_str(), tmp.c_str());
         }
         else
-            strcpy(info_log.msgs[0].txt, get_lang_string(yw->string_pointers_p2, 6, "WELCOME TO YOUR PERSONAL AMOK!"));
+        {
+            std::string tmp = yw->GetLocaleString(6, "WELCOME TO YOUR PERSONAL AMOK!");
+            strcpy(info_log.msgs[0].txt, tmp.c_str());
+        }
 
         info_log.msgs[0].field_4 = yw->timeStamp + 1;
         info_log.field_255C = 0;
@@ -2721,7 +2722,7 @@ void create_exit_menu(NC_STACK_ypaworld *yw)
     int tmp = yw->tiles[0]->GetWidth("WWWWWWW");
 
     GuiList::tInit args;
-    args.title = get_lang_string(yw->string_pointers_p2, 53, "GAME PAUSED");
+    args.title = yw->GetLocaleString(53, "GAME PAUSED");
     args.resizeable = false;
     args.numEntries = 5;
     args.shownEntries = 5;
@@ -3044,7 +3045,7 @@ void sb_0x4d7c08__sub0(NC_STACK_ypaworld *yw)
 }
 
 
-char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *cur, char a5, const char *a6, int a7)
+char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *cur, char a5, const std::string &a6, int a7)
 {
     int v33 = lstvw->entryWidth - 2 * yw->font_default_w__b;
 
@@ -3180,7 +3181,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
 
             int v17 = dround(yw->sub_4498F4() * 2 * v6->energy / 100.0);
 
-            const char *v8 = get_lang_string(yw->string_pointers_p2, v5 + 1200, v6->name.c_str());
+            const std::string v8 = yw->GetLocaleString(v5 + 1200, v6->name);
 
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
@@ -3200,7 +3201,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
             else
                 v12 = v9 + 1500;
 
-            const char *v13 = get_lang_string(yw->string_pointers_p2, v12, v10->Name.c_str());
+            const std::string v13 = yw->GetLocaleString(v12, v10->Name);
 
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
@@ -3528,7 +3529,7 @@ char *gui_update_tools(NC_STACK_ypaworld *yw, char *cur)
     return pcur;
 }
 
-char * sub_449970(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char *a5, int a6, int a7)
+char * sub_449970(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::string &a5, int a6, int a7)
 {
     char *pcur = cur;
 
@@ -3615,27 +3616,27 @@ char *ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, char *cur)
 
             FontUA::set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2474, "2474 == VS ROBO:"), v5, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2474, "2474 == VS ROBO:"), v5, v6);
 
             v30 += yw->font_default_h;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2475, "2475 == VS TANK:"), a6, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2475, "2475 == VS TANK:"), a6, v6);
 
             v30 += yw->font_default_h;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2476, "2476 == VS PLANE:"), v26, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2476, "2476 == VS PLANE:"), v26, v6);
 
             v30 += yw->font_default_h;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2477, "2477 == VS HELI:"), v25, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2477, "2477 == VS HELI:"), v25, v6);
 
             v30 += yw->font_default_h;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2479, "2479 == CAPTURE:"), v28, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2479, "2479 == CAPTURE:"), v28, v6);
 
             v30 += yw->font_default_h;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  get_lang_string(yw->string_pointers_p2, 2478, "2478 == RECON:"), v29, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2478, "2478 == RECON:"), v29, v6);
         }
     }
     return pcur;
@@ -4024,7 +4025,7 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, InputState *inpt)
         break;
 
     case 43:
-        yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
+        yw->sub_449DE8(yw->GetLocaleString(767, "help\\l17.html")); //MAKE ME
         break;
 
     case 46:
@@ -4336,7 +4337,6 @@ void sb_0x4c66f8__sub0(NC_STACK_ypaworld *yw)
         yw_arg159 arg159;
         arg159.unit = yw->UserRobo;
         arg159.field_4 = 10;
-        arg159.txt = NULL;
         arg159.field_C = 39;
 
         yw->ypaworld_func159(&arg159);
@@ -4378,7 +4378,6 @@ void sb_0x4c66f8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabac
                 arg159.unit = yw->UserUnit;
                 arg159.field_4 = 33;
                 arg159.field_C = 17;
-                arg159.txt = 0;
 
                 yw->ypaworld_func159(&arg159);
             }
@@ -4649,7 +4648,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, InputState *inpt)
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
-                    yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 767, "help\\l17.html")); //MAKE ME
+                    yw->sub_449DE8(yw->GetLocaleString(767, "help\\l17.html")); //MAKE ME
                 }
 
                 sub_481204(yw, 48, 43);
@@ -5861,7 +5860,7 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(InputState *inpt)
             {
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
-                    sub_449DE8(get_lang_string(string_pointers_p2, 765, "help\\l15.html")); //MAKE ME
+                    sub_449DE8(GetLocaleString(765, "help\\l15.html")); //MAKE ME
                 }
                 sub_4811E8(0x30);
             }
@@ -6416,7 +6415,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
                 {
                     robo_map.flags &= ~GuiBase::FLAG_HELP_DOWN;
-                    yw->sub_449DE8(get_lang_string(yw->string_pointers_p2, 764, "help\\l14.html")); //MAKE ME
+                    yw->sub_449DE8(yw->GetLocaleString(764, "help\\l14.html")); //MAKE ME
                 }
 
                 yw->sub_4811E8(48);
@@ -6595,7 +6594,7 @@ char * sub_451714(TileMap *, char *cur, const std::string &txt, int a2, uint8_t 
 }
 
 
-char *sub_4DA8DC(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const char *a5)
+char *sub_4DA8DC(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::string &a5)
 {
     std::string v5 = a5;
 
@@ -6680,11 +6679,11 @@ void ypaworld_func64__sub7__sub6__sub3(NC_STACK_ypaworld *yw, int a2, int a4)
 
     FontUA::set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
 
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, get_lang_string(yw->string_pointers_p2, 7, "CANCEL MISSION"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, get_lang_string(yw->string_pointers_p2, 5, "SAVE"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x400, a2 & 0x400, get_lang_string(yw->string_pointers_p2, 4, "LOAD"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x800, a2 & 0x800, get_lang_string(yw->string_pointers_p2, 8, "RESTART"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x1000, a2 & 0x1000, get_lang_string(yw->string_pointers_p2, 9, "RESUME"));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, yw->GetLocaleString(7, "CANCEL MISSION"));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, yw->GetLocaleString(5, "SAVE"));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x400, a2 & 0x400, yw->GetLocaleString(4, "LOAD"));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x800, a2 & 0x800, yw->GetLocaleString(8, "RESTART"));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x1000, a2 & 0x1000, yw->GetLocaleString(9, "RESUME"));
 
     pcur = exit_menu.ItemsPostLayout(yw, pcur, 0, "xyz");
 
@@ -6703,7 +6702,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                 yw_arg159 v18;
                 v18.unit = 0;
                 v18.field_4 = 10;
-                v18.txt = get_lang_string(string_pointers_p2, 259, "GAME SAVED OK.");
+                v18.txt = GetLocaleString(259, "GAME SAVED OK.");
                 v18.field_C = 0;
 
                 ypaworld_func159(&v18);
@@ -6760,7 +6759,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
 
             case 13:
                 field_81AF = field_81B3;
-                field_81B3 = NULL;
+                field_81B3.clear();
                 break;
 
             default:
@@ -6813,7 +6812,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
             {
             case 7:
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
-                    sub_449DE8(get_lang_string(string_pointers_p2, 766, "help\\l16.html"));
+                    sub_449DE8(GetLocaleString(766, "help\\l16.html"));
 
                 sub_4811E8(0x30);
                 break;
@@ -6829,8 +6828,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                     if ( sub_4C885C() != 3 )
                         GuiWinClose( &exit_menu );
 
-                    const char *v13 = get_lang_string(string_pointers_p2, 2480, "REALLY EXIT MISSION ?");
-                    sb_0x4c87fc(v13, &exit_menu);
+                    sb_0x4c87fc( GetLocaleString(2480, "REALLY EXIT MISSION ?") , &exit_menu);
                 }
                 break;
 
@@ -6847,8 +6845,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                         if ( sub_4C885C() != 3 )
                             GuiWinClose( &exit_menu );
 
-                        const char *v14 = get_lang_string(string_pointers_p2, 2481, "REALLY SAVE GAME ?");
-                        sb_0x4c87fc(v14, &exit_menu);
+                        sb_0x4c87fc( GetLocaleString(2481, "REALLY SAVE GAME ?") , &exit_menu);
                     }
                 }
                 break;
@@ -6866,8 +6863,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                         if ( sub_4C885C() != 3 )
                             GuiWinClose( &exit_menu );
 
-                        const char *v15 = get_lang_string(string_pointers_p2, 2482, "REALLY LOAD GAME ?");
-                        sb_0x4c87fc(v15, &exit_menu);
+                        sb_0x4c87fc( GetLocaleString(2482, "REALLY LOAD GAME ?") , &exit_menu);
                     }
                 }
                 break;
@@ -6885,8 +6881,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                         if ( sub_4C885C() != 3 )
                             GuiWinClose( &exit_menu );
 
-                        const char *v16 = get_lang_string(string_pointers_p2, 2483, "REALLY RESTART MISSION ?");
-                        sb_0x4c87fc(v16, &exit_menu);
+                        sb_0x4c87fc(GetLocaleString(2483, "REALLY RESTART MISSION ?") , &exit_menu);
                     }
                 }
                 break;
@@ -6914,7 +6909,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
 
 
 
-char * sub_4C8534(NC_STACK_ypaworld *yw, char *cur, const char *a2)
+char * sub_4C8534(NC_STACK_ypaworld *yw, char *cur, const std::string &a2)
 {
     char *pcur = cur;
 
@@ -6941,9 +6936,6 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
     FontUA::store_u8(&pcur, 32);
     FontUA::store_u8(&pcur, 32);
 
-    const char *v5 = get_lang_string(yw->string_pointers_p2, 2, "OK");
-
-
     int v8;
 
     if ( a3 & 0x100 )
@@ -6960,7 +6952,7 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
 
     FontUA::store_u8(&pcur, 98);
 
-    pcur = sub_451714(yw->tiles[v8], pcur, v5, dword_5BAFA0 - 2 * yw->font_default_w__b, 32);
+    pcur = sub_451714(yw->tiles[v8], pcur, yw->GetLocaleString(2, "OK"), dword_5BAFA0 - 2 * yw->font_default_w__b, 32);
 
     FontUA::unset_flag(&pcur, 0x10);
 
@@ -6971,8 +6963,6 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
     FontUA::op10(&pcur, dword_5BAFA4);
 
     FontUA::store_u8(&pcur, 32);
-
-    v5 = get_lang_string(yw->string_pointers_p2, 3, "CANCEL");
 
     if ( a3 & 0x200 )
     {
@@ -6988,7 +6978,7 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
 
     FontUA::store_u8(&pcur, 98);
 
-    pcur = sub_451714(yw->tiles[v8], pcur, v5, dword_5BAFA0 - 2 * yw->font_default_w__b, 32);
+    pcur = sub_451714(yw->tiles[v8], pcur, yw->GetLocaleString(3, "CANCEL"), dword_5BAFA0 - 2 * yw->font_default_w__b, 32);
 
     FontUA::unset_flag(&pcur, 0x10);
 
@@ -7713,15 +7703,10 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
 
     std::string filename = "sounds/speech/";
 
-    if ( yw->lang_name[0] )
-    {
-        filename += yw->lang_name;
-        filename += "/";
-    }
+    if ( !yw->_localeName.empty() )
+        filename += yw->_localeName + "/";
     else
-    {
         filename += "language/";
-    }
 
     filename += flname;
 
@@ -8458,7 +8443,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
     info_log.field_2560 = obj->timeStamp;
     info_log.field_2564 = arg->field_C;
 
-    if ( arg->txt )
+    if ( !arg->txt.empty() )
     {
         inflog_msg *v6;
 
@@ -8505,7 +8490,7 @@ void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
         v6->field_8 = 7000;
         v6->field_4 = obj->timeStamp;
 
-        const char *v5 = arg->txt;
+        const char *v5 = arg->txt.c_str();
 
         int v10 = 0;
 
@@ -8579,12 +8564,12 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
             
             if ( yw->field_81CB.field_0 == 1 )
             {
-                str = get_lang_string(yw->string_pointers_p2, 2468, "2468 == *** VICTORY IS YOURS ***");
+                str = yw->GetLocaleString(2468, "2468 == *** VICTORY IS YOURS ***");
                 v6 = 40000;
             }
             else if ( yw->field_81CB.field_0 > 1 && yw->field_81CB.field_0 <= 4 )
             {
-                str = fmt::sprintf( get_lang_string(yw->string_pointers_p2, 2469, "2469 == *** %s HAS BEEN DEFEATED ***") , yw->field_81CB.field_8);
+                str = fmt::sprintf( yw->GetLocaleString(2469, "2469 == *** %s HAS BEEN DEFEATED ***") , yw->field_81CB.field_8);
 
                 v6 = 20000;
             }
@@ -8962,7 +8947,7 @@ char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_
         a6a = vhcl->energy;
     }
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, get_lang_string(yw->string_pointers_p2, 35, "HP"), fmt::sprintf("%d", (a6a + 99) / 100));
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, yw->GetLocaleString(35, "HP"), fmt::sprintf("%d", (a6a + 99) / 100));
 }
 
 
@@ -8975,7 +8960,7 @@ char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
     else
         v10 = vhcl->shield;
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, get_lang_string(yw->string_pointers_p2, 36, "AMR"), fmt::sprintf("%d%%", v10), 2);
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, yw->GetLocaleString(36, "AMR"), fmt::sprintf("%d%%", v10), 2);
 }
 
 
@@ -9114,11 +9099,11 @@ char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         std::string txt2;
 
         if ( v12 == 100 )
-            txt2 = get_lang_string(yw->string_pointers_p2, 34, "OK");
+            txt2 = yw->GetLocaleString(34, "OK");
         else
             txt2 = fmt::sprintf("%d%%", v12);
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, get_lang_string(yw->string_pointers_p2, 33, "RLD"), txt2);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, yw->GetLocaleString(33, "RLD"), txt2);
     }
     return pcur;
 }
@@ -9136,7 +9121,7 @@ char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         else
             txt2 = fmt::sprintf("%d x%d", weap->energy / 100, vhcl->num_weapons);
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, get_lang_string(yw->string_pointers_p2, 32, "DMG"), txt2, 1 | 2);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, yw->GetLocaleString(32, "DMG"), txt2, 1 | 2);
     }
 
     return pcur;
@@ -9206,9 +9191,8 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
         if ( vhcl->model_id != 9 )
         {
             float v15 = wis->field_92 * 12.0 + ypos;
-            const char *v16 = get_lang_string(yw->string_pointers_p2, vhclid + 1200, vhcl->name.c_str());
 
-            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v16, xpos, v15);
+            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, yw->GetLocaleString(vhclid + 1200, vhcl->name), xpos, v15);
         }
     }
 
@@ -9243,9 +9227,7 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, 
             else
                 v11 = a6 + 1500;
 
-            const char *v12 = get_lang_string(yw->string_pointers_p2, v11, yw->BuildProtos[a6].Name.c_str());
-
-            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, v12, a4, a5);
+            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, yw->GetLocaleString(v11, yw->BuildProtos[a6].Name), a4, a5);
         }
     }
     return pcur;
@@ -9588,31 +9570,17 @@ void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
 
     if ( yw->UserUnit->_status == BACT_STATUS_DEAD )
     {
-        const char *msg;
+        std::string msg;
 
-        if ( yw->UserRobo->_status_flg & BACT_STFLAG_CLEAN )
+        if ( !(yw->UserRobo->_status_flg & BACT_STFLAG_CLEAN) )
         {
-            msg = NULL;
-        }
-        else
-        {
-            int strid;
-            const char *defMsg;
-
             if ( yw->UserRobo->_status == BACT_STATUS_DEAD )
-            {
-                defMsg = "* * *  H O S T  S T A T I O N  D E S T R O Y E D  * * *";
-                strid = 11;
-            }
+                msg = yw->GetLocaleString(11, "* * *  H O S T  S T A T I O N  D E S T R O Y E D  * * *");
             else
-            {
-                defMsg = "* * *  D R O N E  D E S T R O Y E D  * * *";
-                strid = 10;
-            }
-            msg = get_lang_string(yw->string_pointers_p2, strid, defMsg);
+                msg = yw->GetLocaleString(10, "* * *  D R O N E  D E S T R O Y E D  * * *");
         }
 
-        if ( msg && yw->timeStamp / 500 & 1 )
+        if ( !msg.empty() && yw->timeStamp / 500 & 1 )
         {
             FontUA::select_tileset(&pcur, 15);
             FontUA::set_xpos(&pcur, 0);
@@ -10387,52 +10355,50 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
 
         for (int i = 0; i < nums; i++)
         {
-            const char *v12;
             int clrid;
+            
+            FontUA::ColumnItem a4a[2];
 
             switch ( v25[i].a )
             {
             case 1:
-                v12 = get_lang_string(yw->string_pointers_p2, 2411, "RESISTANCE");
+                a4a[0].txt = yw->GetLocaleString(2411, "RESISTANCE");
                 clrid = 1;
                 break;
 
             case 2:
-                v12 = get_lang_string(yw->string_pointers_p2, 2412, "SULGOGARS");
+                a4a[0].txt = yw->GetLocaleString(2412, "SULGOGARS");
                 clrid = 2;
                 break;
 
             case 3:
-                v12 = get_lang_string(yw->string_pointers_p2, 2413, "MYKONIANS");
+                a4a[0].txt = yw->GetLocaleString(2413, "MYKONIANS");
                 clrid = 3;
                 break;
 
             case 4:
-                v12 = get_lang_string(yw->string_pointers_p2, 2414, "TAERKASTEN");
+                a4a[0].txt = yw->GetLocaleString(2414, "TAERKASTEN");
                 clrid = 4;
                 break;
 
             case 5:
-                v12 = get_lang_string(yw->string_pointers_p2, 2415, "BLACK SECT");
+                a4a[0].txt = yw->GetLocaleString(2415, "BLACK SECT");
                 clrid = 5;
                 break;
 
             case 6:
-                v12 = get_lang_string(yw->string_pointers_p2, 2416, "GHORKOV");
+                a4a[0].txt = yw->GetLocaleString(2416, "GHORKOV");
                 clrid = 6;
                 break;
 
             default:
-                v12 = get_lang_string(yw->string_pointers_p2, 2417, "NEUTRAL");
+                a4a[0].txt = yw->GetLocaleString(2417, "NEUTRAL");
                 clrid = 7;
                 break;
             }
 
             FontUA::set_txtColor(&pcur, yw->iniColors[clrid].r, yw->iniColors[clrid].g, yw->iniColors[clrid].b);
 
-            FontUA::ColumnItem a4a[2];
-
-            a4a[0].txt = v12;
             a4a[0].spaceChar = 32;
             a4a[0].prefixChar = 0;
             a4a[0].postfixChar = 0;
@@ -10472,7 +10438,7 @@ char * sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
 
         FontUA::ColumnItem a4[2];
 
-        a4[0].txt = get_lang_string(yw->string_pointers_p2, 2473, "2473 == Units:");
+        a4[0].txt = yw->GetLocaleString(2473, "2473 == Units:");
         a4[0].width = a3 * 0.5;
         a4[0].spaceChar = 32;
         a4[0].fontID = 15;
@@ -10518,9 +10484,9 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
             std::string typeStr = "SUPER ITEM";
 
             if (sitem.Type == 1)
-                typeStr = get_lang_string(yw->string_pointers_p2, 18, "18 == STOUDSON BOMB");
+                typeStr = yw->GetLocaleString(18, "18 == STOUDSON BOMB");
             else if ( sitem.Type == 2 )
-                typeStr = get_lang_string(yw->string_pointers_p2, 19, "19 == STOUDSON WAVE");
+                typeStr = yw->GetLocaleString(19, "19 == STOUDSON WAVE");
 
             int v23 = 0;
 
@@ -10537,7 +10503,7 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
             }
             else if ( sitem.State == 3 )
             {
-                timeStr = fmt::sprintf("%s: %s", typeStr,  get_lang_string(yw->string_pointers_p2, 2471, "2471 == TRIGGERED") );
+                timeStr = fmt::sprintf("%s: %s", typeStr,  yw->GetLocaleString(2471, "2471 == TRIGGERED") );
 
                 v23 = 1;
             }

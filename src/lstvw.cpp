@@ -498,10 +498,10 @@ int GuiList::Init(NC_STACK_ypaworld *yw, tInit &in)
     if ( in.enabled )
         listFlags |= GLIST_FLAG_ENABLED;
 
-    if ( in.title )
+    if ( !in.title.empty() )
     {
         listFlags |= GLIST_FLAG_WITH_TITLEBAR;
-        strncpy(title, in.title, 64);
+        strncpy(title, in.title.c_str(), 64);
     }
 
 

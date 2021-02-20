@@ -1688,7 +1688,7 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
             {
                 if ( !yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.empty() )
                 {
-                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.c_str());
+                    const std::string &v12 = yw->GetLocaleString(yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
@@ -1774,7 +1774,7 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
             {
                 if ( !yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.empty() )
                 {
-                    const char *v12 = get_lang_string(yw->string_pointers_p2, yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.c_str());
+                    const std::string &v12 = yw->GetLocaleString(yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
@@ -1793,7 +1793,7 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
 
             GFX::Engine.raster_func209(&v19);
         }
-        const char *v13 = get_lang_string(yw->string_pointers_p2, yw->TOD_ID + 2490, " ");
+        const std::string &v13 = yw->GetLocaleString(yw->TOD_ID + 2490, " ");
         splashScreen_OutText(yw, v13, yw->screen_width / 20, yw->screen_width / 20);
     }
 }
@@ -1869,7 +1869,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
     {
         if ( (brief.Desc.Flags & 0x7F) == 127 )
         {
-            brief.BriefingText = get_lang_string(string_pointers_p2, _levelInfo->LevelID + 2100, "<NO INFO AVAILABLE>");
+            brief.BriefingText = GetLocaleString(_levelInfo->LevelID + 2100, "<NO INFO AVAILABLE>");
 
             if ( !mproto->Mbmaps.empty() )
             {
@@ -2273,7 +2273,7 @@ int NC_STACK_ypaworld::sub_4DA41C(LevelDesc *mapp, const std::string &fname)
 }
 
 
-char * sub_4C4284(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const char *txt)
+char * sub_4C4284(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const std::string &txt)
 {
     char * tmp = out;
 
@@ -2296,7 +2296,7 @@ char * sub_4C4284(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const char *
     return tmp;
 }
 
-char * sub_4C41DC(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const char *txt)
+char * sub_4C41DC(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const std::string &txt)
 {
 
     char * tmp = out;
@@ -2327,9 +2327,9 @@ void ypaworld_func158__video_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         if ( index >= usr->video_listvw.firstShownEntries && index < usr->video_listvw.firstShownEntries + usr->video_listvw.shownEntries)
         {
             if ( usr->video_listvw.selectedEntry == index )
-                v3 = sub_4C4284(yw, &usr->video_listvw, v3, nod.name.c_str());
+                v3 = sub_4C4284(yw, &usr->video_listvw, v3, nod.name);
             else
-                v3 = sub_4C41DC(yw, &usr->video_listvw, v3, nod.name.c_str());
+                v3 = sub_4C41DC(yw, &usr->video_listvw, v3, nod.name);
         }
         index++;
     }
@@ -2368,10 +2368,10 @@ void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     {
         if ( v15.name )
         {
-            const char *v6;
+            std::string v6;
 
             if ( !strcmp(v15.name, "software") )
-                v6 = get_lang_string(yw->string_pointers_p2, 2472, "2472 = Software");
+                v6 = yw->GetLocaleString(2472, "2472 = Software");
             else
                 v6 = v15.name;
 
@@ -2479,7 +2479,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                 int lvlid = std::stoi(str1);
 
-                str1 = get_lang_string( yw->string_pointers_p2, lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name.c_str() );
+                str1 = yw->GetLocaleString(lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name);
 
                 if (msg.name[j] == 0)
                     str4 = "";
@@ -2807,9 +2807,9 @@ void ypaworld_func158__locale_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         if ( v5 >= usr->local_listvw.firstShownEntries && v5 < usr->local_listvw.shownEntries + usr->local_listvw.firstShownEntries)
         {
             if ( v5 == usr->local_listvw.selectedEntry )
-                v3 = sub_4C4284(yw, &usr->local_listvw, v3, x.c_str());
+                v3 = sub_4C4284(yw, &usr->local_listvw, v3, x);
             else
-                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, x.c_str());
+                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, x);
         }
 
         v5++;
@@ -3218,7 +3218,7 @@ void UserData::clear()
     memset(win3d_name, 0, sizeof(win3d_name));
 
     field_139A = NULL;
-    field_139E = NULL;
+    
     fxnumber = 0;
     field_0x13a4 = 0;
     GFX_flags = 0;
@@ -3279,7 +3279,7 @@ void UserData::clear()
 
     netNameCurPos = 0;
     netLevelID = 0;
-    netLevelName = NULL;
+    netLevelName.clear();
 
     callSIGN.clear();
 

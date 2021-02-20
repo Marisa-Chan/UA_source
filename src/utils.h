@@ -106,8 +106,6 @@ int read_yes_no_status(const std::string &file, int result);
 
 float SWAP32F(float f);
 
-const char *get_lang_string(char **array, int id, const char *def);
-
 #ifndef strnicmp
 int strnicmp (const char *s1, const char *s2, size_t n);
 #endif

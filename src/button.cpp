@@ -130,8 +130,9 @@ void NC_STACK_button::sub_436F58(NC_STACK_button *btn, button_str2 *sbt)
     if ( sbttt->field_8_ > sbt->width )
         sbttt->field_8_ = sbt->width;
 
-    char *cpt = sbt->caption;
 
+    char captionbuf[512];
+    char *cpt = captionbuf;
     if ( sbttt->field_6_ > 0 )
     {
         if ( sbt->flags & FLAG_BORDER )
@@ -175,6 +176,8 @@ void NC_STACK_button::sub_436F58(NC_STACK_button *btn, button_str2 *sbt)
         FontUA::store_u8(&cpt, btn->field_1A0);
     }
     FontUA::set_end(&cpt);
+    
+    sbt->caption.assign(captionbuf, cpt);
 }
 
 size_t NC_STACK_button::button_func64(button_64_arg *arg)
@@ -199,15 +202,15 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
 
     if ( arg->button_type != NC_STACK_button::TYPE_SLIDER )
     {
-        if ( !arg->caption )
+        if ( arg->caption.empty() )
             return 0;
 
-        strncpy(sbt.caption, arg->caption, 511);
+        sbt.caption = arg->caption;
 
-        if ( arg->caption2 )
-            strncpy(sbt.caption2, arg->caption2, 511);
+        if ( !arg->caption2.empty() )
+            sbt.caption2 = arg->caption2;
         else
-            strcpy(sbt.caption2, sbt.caption);
+            sbt.caption2 = sbt.caption;
     }
 
     sbt.xpos = arg->xpos;
@@ -583,7 +586,7 @@ void NC_STACK_button::button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt
     }
 
     int v17;
-    char *v18;
+    std::string v18;
 
     if ( sbt->flags & FLAG_PRESSED )
     {
@@ -645,14 +648,14 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
 
     if ( sbt->flags & FLAG_PRESSED )
     {
-        int caplen = strlen(sbt->caption2);
+        int caplen = sbt->caption2.size();
 
         for (int i = 0; i < caplen; i++)
             strwdth += v8->map[(uint8_t)sbt->caption2[i]].w;
     }
     else
     {
-        int caplen = strlen(sbt->caption);
+        int caplen = sbt->caption.size();
 
         for (int i = 0; i < caplen; i++)
             strwdth += v8->map[(uint8_t)sbt->caption[i]].w;
@@ -700,15 +703,15 @@ void NC_STACK_button::button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt
             }
         }
 
-        char *capt;
+        std::string capt;
 
         if ( sbt->flags & FLAG_PRESSED )
             capt = sbt->caption2;
         else
             capt = sbt->caption;
 
-        int v26 = 0;
-        while ( capt[v26] )
+        size_t v26 = 0;
+        while ( capt[v26] && v26 < capt.size() )
         {
             Common::PointRect &pr = v8->map[(uint8_t)capt[v26]];
             if ( pr.w + v6 > ttmp )
@@ -793,16 +796,13 @@ bool NC_STACK_button::button_func71(int butID, const std::string &field_4, const
     {
         button_str2 &v7 = field_d8[v5];
 
-        strncpy(v7.caption, field_4.c_str(), 511);
+        v7.caption = field_4;
 
         if ( !field_8.empty() )
-        {
-            strncpy(v7.caption2, field_8.c_str(), 511);
-        }
+            v7.caption2 = field_8;
         else
-        {
-            strcpy(v7.caption2, v7.caption);
-        }
+            v7.caption2 = v7.caption;
+
         return true;
     }
 
@@ -817,8 +817,8 @@ bool NC_STACK_button::button_func71(int butID, const std::string &field_4)
     {
         button_str2 &v7 = field_d8[v5];
 
-        strncpy(v7.caption, field_4.c_str(), 511);
-        strncpy(v7.caption2, field_4.c_str(), 511);
+        v7.caption = field_4;
+        v7.caption2 = field_4;
 
         return true;
     }

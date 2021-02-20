@@ -41,8 +41,6 @@ int word_5A50C0;
 int dword_5A50B6;
 int dword_5A50B6_h;
 
-char **ypaworld__string_pointers;
-
 GuiList stru_5C91D0;
 
 uint32_t bact_id = 0x10000;
@@ -242,12 +240,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     field_7278 = 0;
     field_727c = 0;
     field_7280 = 0;
-    memset(lang_name, 0, sizeof(lang_name));
-    lang_strings = NULL;
-    very_big_array__p_begin = NULL;
-    lang_strings__end = NULL;
-    string_pointers = NULL;
-    string_pointers_p2 = NULL;
+
     typ_map = NULL;
     own_map = NULL;
     blg_map = NULL;
@@ -328,8 +321,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 		movie.clear();
 
     field_81AB = 0;
-    field_81AF = NULL;
-    field_81B3 = NULL;
+
     one_game_res = 0;
     shell_default_res = 0;
     game_default_res = 0;
@@ -359,6 +351,8 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     
     _extraViewEnable = false;
     _extraViewNumber = -1;
+    
+    _localeStrings.resize(2600);
 }
 
 namespace World
@@ -398,51 +392,12 @@ bool ParseAssignFile(const std::string &file)
 
 
 
-void sub_4711E0(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::SetLangDefault()
 {
-    yw->very_big_array__p_begin = yw->lang_strings;
-    yw->lang_strings__end = yw->lang_strings + 0x20000;
+    for( std::string &s : _localeStrings )
+        s.clear();
 
-    memset(yw->lang_strings, 0, 0x20000);
-    memset(yw->string_pointers, 0, sizeof(char *) * 2600);
-
-    memset(yw->lang_name, 0, sizeof(yw->lang_name));
-    strcpy(yw->lang_name, "default");
-}
-
-int yw_InitLocale(NC_STACK_ypaworld *yw)
-{
-    int v3 = 0;
-    yw->lang_strings = (char *)AllocVec(0x20000, 1);
-
-    if ( yw->lang_strings )
-    {
-        yw->string_pointers = (char **)AllocVec(sizeof(char *) * 2600, 65537);
-
-        if ( yw->string_pointers )
-        {
-            yw->string_pointers_p2 = yw->string_pointers;
-            sub_4711E0(yw);
-            v3 = 1;
-        }
-    }
-
-    if ( !v3 )
-    {
-////	sub_4D99C4(); // free language dll
-
-        if ( yw->lang_strings )
-            nc_FreeMem(yw->lang_strings);
-
-        if ( yw->string_pointers )
-            nc_FreeMem(yw->string_pointers);
-
-        yw->very_big_array__p_begin = NULL;
-        yw->lang_strings__end = NULL;
-        yw->string_pointers = NULL;
-        yw->lang_strings = NULL;
-    }
-    return v3;
+    _localeName = "default";
 }
 
 bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
@@ -573,15 +528,8 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
 
     yw_setInitScriptLoc(this);
 
-    if ( !yw_InitLocale(this) )
-    {
-        ypa_log_out("yw_main.c/OM_NEW: yw_InitLocale() failed!\n");
-        Deinit();
-        return 0;
-    }
-
-    const char *langname = "language";
-    ypaworld_func166(&langname); // Load lang strings
+    SetLangDefault();
+    ypaworld_func166("language"); // Load lang strings
 
 //		if ( !make_CD_CHECK(1, 1, v10, v9) )
 //		{
@@ -781,7 +729,6 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             yw_arg159 arg159;
             arg159.unit = UserRobo;
             arg159.field_4 = 128;
-            arg159.txt = NULL;
             arg159.field_C = 41;
 
             ypaworld_func159(&arg159);
@@ -1022,15 +969,15 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
                     dprintf("MAKE ME %s (multiplayer part Messaging)\n", "ypaworld_func64");
 
-//          v66 = get_lang_string(ypaworld__string_pointers, 650, "MESSAGE TO");
+//          v66 = get_lang_string(650, "MESSAGE TO");
 //
 //          sprintf(&v68, "%s %s", v66, yw->field_762E);
 //
 //          memset(&dlgBox, 0, 40);
 //
 //          dlgBox.title = &v68;
-//          dlgBox.ok = get_lang_string(ypaworld__string_pointers, 2, "OK");
-//          dlgBox.cancel = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+//          dlgBox.ok = get_lang_string(2, "OK");
+//          dlgBox.cancel = get_lang_string(3, "CANCEL");
 //          dlgBox.result = 0;
 //          dlgBox.timer_context = yw;
 //          dlgBox.maxLen = 64;
@@ -1047,10 +994,10 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 }
             }
 
-            if ( field_81AF )
+            if ( !field_81AF.empty() )
             {
-                const char *help_link = field_81AF;
-                field_81AF = 0;
+                const std::string help_link = field_81AF;
+                field_81AF.clear();
 
                 ypaworld_func185(&help_link); //launch online help
             }
@@ -1118,10 +1065,8 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         yw->BuildProtos[a4].EnableMask |= 1 << yw->GameShell->netPlayerOwner;
     }
 
-    std::string v11 = get_lang_string(yw->string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
-
     yw_arg159 v14;
-    v14.txt = v11.c_str();
+    v14.txt = yw->GetLocaleString(221, "TECHNOLOGY UPGRADE!\n");
     v14.unit = 0;
     v14.field_4 = 48;
 
@@ -1171,13 +1116,12 @@ void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     if ( a4 )
         yw->BuildProtos[a4].EnableMask = 0;
 
-    std::string v13 = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST!  ");
-    v13 += gem.MsgDefault;
+    std::string v13 = yw->GetLocaleString(229, "TECH-UPGRADE LOST!  ") + gem.MsgDefault;
 
     yw_arg159 arg159;
     arg159.unit = 0;
     arg159.field_4 = 80;
-    arg159.txt = v13.c_str();
+    arg159.txt = v13;
     arg159.field_C = 29;
 
     yw->ypaworld_func159(&arg159);
@@ -1234,12 +1178,10 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
         Common::Env.SetPrefix("rsrc", tmp);
     }
 
-    std::string txt = get_lang_string(string_pointers_p2, 221, "TECHNOLOGY UPGRADE!\n");
-
     yw_arg159 arg159;
     arg159.unit = NULL;
     arg159.field_4 = 48;
-    arg159.txt = txt.c_str();
+    arg159.txt = GetLocaleString(221, "TECHNOLOGY UPGRADE!\n");
 
     if ( gem.Type )
         arg159.field_C = World::Log::GetUpgradeLogID(gem.Type);
@@ -1332,7 +1274,6 @@ void ypaworld_func129__sub0(NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *ar
                     yw_arg159 arg159;
                     arg159.unit = NULL;
                     arg159.field_4 = 77;
-                    arg159.txt = NULL;
                     arg159.field_C = 33;
 
                     yw->ypaworld_func159(&arg159);
@@ -2598,8 +2539,6 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     netgame_exclusivegem = ypaworld_keys[0].Get<bool>();
 
-    ypaworld__string_pointers = getYW_localeStrings();
-
     usr->profiles.clear();
     usr->video_mode_list.clear();
     usr->lang_dlls.clear();
@@ -3102,13 +3041,12 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     usr->lastInputEvent = 0;
     usr->p_ypaworld->icon_energy__h = 0;
     usr->field_D52 = 0;
-    usr->p_ypaworld->field_81AF = NULL;
+    usr->p_ypaworld->field_81AF.clear();
     usr->blocked = 0;
 
     if ( usr->default_lang_dll )
     {
-        const char *v237 = usr->default_lang_dll->c_str();
-        if ( ! ypaworld_func166(&v237) )
+        if ( ! ypaworld_func166(*usr->default_lang_dll) )
             ypa_log_out("Warning: Catalogue not found\n");
     }
     else
@@ -3155,7 +3093,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                 if ( !strcmp(v227.name, "software") )
                 {
-                    strcpy(usr->win3d_name, get_lang_string(string_pointers_p2, 2472, "2472 = Software"));
+                    const std::string tmp = GetLocaleString(2472, "2472 = Software");
+                    strcpy(usr->win3d_name, tmp.c_str());
                 }
                 else
                 {
@@ -3179,51 +3118,51 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     LoadKeyNames();
 
-    usr->InputConfigTitle[World::INPUT_BIND_PAUSE]       = get_lang_string(ypaworld__string_pointers, 544, "PAUSE");
-    usr->InputConfigTitle[World::INPUT_BIND_QUIT]        = get_lang_string(ypaworld__string_pointers, 536, "QUIT");
-    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = get_lang_string(ypaworld__string_pointers, 500, "DRIVE DIR");
-    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = get_lang_string(ypaworld__string_pointers, 501, "DRIVE SPEED");
-    usr->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = get_lang_string(ypaworld__string_pointers, 511, "GUN HEIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = get_lang_string(ypaworld__string_pointers, 502, "FLY HEIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = get_lang_string(ypaworld__string_pointers, 503, "FLY SPEED");
-    usr->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = get_lang_string(ypaworld__string_pointers, 504, "FLY DIR");
-    usr->InputConfigTitle[World::INPUT_BIND_BRAKE]       = get_lang_string(ypaworld__string_pointers, 505, "STOP");
-    usr->InputConfigTitle[World::INPUT_BIND_FIRE]        = get_lang_string(ypaworld__string_pointers, 506, "FIRE");
-    usr->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = get_lang_string(ypaworld__string_pointers, 507, "FIRE VIEW");
-    usr->InputConfigTitle[World::INPUT_BIND_GUN]         = get_lang_string(ypaworld__string_pointers, 508, "FIRE GUN");
-    usr->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = get_lang_string(ypaworld__string_pointers, 561, "MAKE CURRENT VEHICLE COMMANDER");
-    usr->InputConfigTitle[World::INPUT_BIND_HUD]         = get_lang_string(ypaworld__string_pointers, 541, "HEADUP DISPLAY");
-    usr->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = get_lang_string(ypaworld__string_pointers, 520, "AUTOPILOT");
-    usr->InputConfigTitle[World::INPUT_BIND_ORDER]       = get_lang_string(ypaworld__string_pointers, 513, "ORDER");
-    usr->InputConfigTitle[World::INPUT_BIND_NEW]         = get_lang_string(ypaworld__string_pointers, 515, "NEW");
-    usr->InputConfigTitle[World::INPUT_BIND_ADD]         = get_lang_string(ypaworld__string_pointers, 516, "ADD");
-    usr->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = get_lang_string(ypaworld__string_pointers, 522, "FINDER");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = get_lang_string(ypaworld__string_pointers, 553, "AGGR: COME BACK");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = get_lang_string(ypaworld__string_pointers, 554, "AGGR: FIGHT TARGET");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = get_lang_string(ypaworld__string_pointers, 555, "AGGR: FIGHT ENEMIES TOO");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = get_lang_string(ypaworld__string_pointers, 556, "AGGR: CONQUER ALL ENEMY AREA TOO");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = get_lang_string(ypaworld__string_pointers, 557, "AGGR: GO AMOK");
-    usr->InputConfigTitle[World::INPUT_BIND_MAP]         = get_lang_string(ypaworld__string_pointers, 521, "MAP");
-    usr->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = get_lang_string(ypaworld__string_pointers, 558, "SELECT WAYPOINT");
-    usr->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = get_lang_string(ypaworld__string_pointers, 523, "LANDSCAPE");
-    usr->InputConfigTitle[World::INPUT_BIND_OWNER]       = get_lang_string(ypaworld__string_pointers, 524, "OWNER");
-    usr->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = get_lang_string(ypaworld__string_pointers, 525, "HEIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = get_lang_string(ypaworld__string_pointers, 531, "MAP MINI");
-    usr->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = get_lang_string(ypaworld__string_pointers, 527, "LOCK VIEWER");
-    usr->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = get_lang_string(ypaworld__string_pointers, 529, "ZOOM IN");
-    usr->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = get_lang_string(ypaworld__string_pointers, 530, "ZOOM OUT");
-    usr->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = get_lang_string(ypaworld__string_pointers, 538, "LOGWIN");
-    usr->InputConfigTitle[World::INPUT_BIND_CONTROL]     = get_lang_string(ypaworld__string_pointers, 517, "CONTROL");
-    usr->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = get_lang_string(ypaworld__string_pointers, 560, "GOTO LAST OCCUPIED VEHICLE");
-    usr->InputConfigTitle[World::INPUT_BIND_ATTACK]      = get_lang_string(ypaworld__string_pointers, 514, "FIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = get_lang_string(ypaworld__string_pointers, 533, "TO ROBO");
-    usr->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = get_lang_string(ypaworld__string_pointers, 535, "TO COMMANDER");
-    usr->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = get_lang_string(ypaworld__string_pointers, 534, "NEXT MAN");
-    usr->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = get_lang_string(ypaworld__string_pointers, 532, "NEXT COM");
-    usr->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = get_lang_string(ypaworld__string_pointers, 543, "JUMP TO LASTMSG-SENDER");
-    usr->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = get_lang_string(ypaworld__string_pointers, 552, "MESSAGE TO ALL PLAYERS");
-    usr->InputConfigTitle[World::INPUT_BIND_HELP]        = get_lang_string(ypaworld__string_pointers, 559, "HELP");
-    usr->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = get_lang_string(ypaworld__string_pointers, 562, "SITUATION ANALYZER");
+    usr->InputConfigTitle[World::INPUT_BIND_PAUSE]       = GetLocaleString(544, "PAUSE");
+    usr->InputConfigTitle[World::INPUT_BIND_QUIT]        = GetLocaleString(536, "QUIT");
+    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = GetLocaleString(500, "DRIVE DIR");
+    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = GetLocaleString(501, "DRIVE SPEED");
+    usr->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = GetLocaleString(511, "GUN HEIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = GetLocaleString(502, "FLY HEIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = GetLocaleString(503, "FLY SPEED");
+    usr->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = GetLocaleString(504, "FLY DIR");
+    usr->InputConfigTitle[World::INPUT_BIND_BRAKE]       = GetLocaleString(505, "STOP");
+    usr->InputConfigTitle[World::INPUT_BIND_FIRE]        = GetLocaleString(506, "FIRE");
+    usr->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = GetLocaleString(507, "FIRE VIEW");
+    usr->InputConfigTitle[World::INPUT_BIND_GUN]         = GetLocaleString(508, "FIRE GUN");
+    usr->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = GetLocaleString(561, "MAKE CURRENT VEHICLE COMMANDER");
+    usr->InputConfigTitle[World::INPUT_BIND_HUD]         = GetLocaleString(541, "HEADUP DISPLAY");
+    usr->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = GetLocaleString(520, "AUTOPILOT");
+    usr->InputConfigTitle[World::INPUT_BIND_ORDER]       = GetLocaleString(513, "ORDER");
+    usr->InputConfigTitle[World::INPUT_BIND_NEW]         = GetLocaleString(515, "NEW");
+    usr->InputConfigTitle[World::INPUT_BIND_ADD]         = GetLocaleString(516, "ADD");
+    usr->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = GetLocaleString(522, "FINDER");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = GetLocaleString(553, "AGGR: COME BACK");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = GetLocaleString(554, "AGGR: FIGHT TARGET");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = GetLocaleString(555, "AGGR: FIGHT ENEMIES TOO");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = GetLocaleString(556, "AGGR: CONQUER ALL ENEMY AREA TOO");
+    usr->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = GetLocaleString(557, "AGGR: GO AMOK");
+    usr->InputConfigTitle[World::INPUT_BIND_MAP]         = GetLocaleString(521, "MAP");
+    usr->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = GetLocaleString(558, "SELECT WAYPOINT");
+    usr->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = GetLocaleString(523, "LANDSCAPE");
+    usr->InputConfigTitle[World::INPUT_BIND_OWNER]       = GetLocaleString(524, "OWNER");
+    usr->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = GetLocaleString(525, "HEIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = GetLocaleString(531, "MAP MINI");
+    usr->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = GetLocaleString(527, "LOCK VIEWER");
+    usr->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = GetLocaleString(529, "ZOOM IN");
+    usr->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = GetLocaleString(530, "ZOOM OUT");
+    usr->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = GetLocaleString(538, "LOGWIN");
+    usr->InputConfigTitle[World::INPUT_BIND_CONTROL]     = GetLocaleString(517, "CONTROL");
+    usr->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = GetLocaleString(560, "GOTO LAST OCCUPIED VEHICLE");
+    usr->InputConfigTitle[World::INPUT_BIND_ATTACK]      = GetLocaleString(514, "FIGHT");
+    usr->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = GetLocaleString(533, "TO ROBO");
+    usr->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = GetLocaleString(535, "TO COMMANDER");
+    usr->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = GetLocaleString(534, "NEXT MAN");
+    usr->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = GetLocaleString(532, "NEXT COM");
+    usr->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = GetLocaleString(543, "JUMP TO LASTMSG-SENDER");
+    usr->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = GetLocaleString(552, "MESSAGE TO ALL PLAYERS");
+    usr->InputConfigTitle[World::INPUT_BIND_HELP]        = GetLocaleString(559, "HELP");
+    usr->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = GetLocaleString(562, "SITUATION ANALYZER");
 
     int v259_4;
 
@@ -3302,8 +3241,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.xpos = screen_width * 0.3328125;
     btn_64arg.ypos = screen_height * 0.2291666666666666;
     btn_64arg.width = screen_width / 3;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 80, "GAME");
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption = GetLocaleString(80, "GAME");
+    btn_64arg.caption2.clear();
     btn_64arg.down_id = 1251;
     btn_64arg.pressed_id = 0;
     btn_64arg.button_id = 1018;
@@ -3316,8 +3255,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( usr->titel_button->button_func64(&btn_64arg) )
     {
         btn_64arg.ypos = screen_height * 0.3083333333333334;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 81, "NETWORK");
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption = GetLocaleString(81, "NETWORK");
+        btn_64arg.caption2.clear();
         btn_64arg.up_id = 1022;
         btn_64arg.pressed_id = 0;
         btn_64arg.down_id = 1251;
@@ -3328,8 +3267,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.xpos = screen_width * 0.3328125;
             btn_64arg.ypos = screen_height * 0.4333333333333334;
             btn_64arg.width = screen_width / 3;
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 83, "INPUT");
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption = GetLocaleString(83, "INPUT");
+            btn_64arg.caption2.clear();
             btn_64arg.pressed_id = 0;
             btn_64arg.down_id = 1251;
             btn_64arg.button_id = 1003;
@@ -3338,8 +3277,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             if ( usr->titel_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.ypos = screen_height * 0.5125;
-                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 84, "SETTINGS");
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption = GetLocaleString(84, "SETTINGS");
+                btn_64arg.caption2.clear();
                 btn_64arg.up_id = 1005;
                 btn_64arg.pressed_id = 0;
                 btn_64arg.down_id = 1251;
@@ -3348,8 +3287,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 if ( usr->titel_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.ypos = screen_height * 0.5916666666666667;
-                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 85, "PLAYER");
-                    btn_64arg.caption2 = 0;
+                    btn_64arg.caption = GetLocaleString(85, "PLAYER");
+                    btn_64arg.caption2.clear();
                     btn_64arg.pressed_id = 0;
                     btn_64arg.down_id = 1251;
                     btn_64arg.up_id = 1001;
@@ -3360,8 +3299,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.xpos = screen_width * 0.890625;
                         btn_64arg.ypos = screen_height * 0.9583333333333334;
                         btn_64arg.width = screen_width * 0.1;
-                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 86, "LOCALE");
-                        btn_64arg.caption2 = 0;
+                        btn_64arg.caption = GetLocaleString(86, "LOCALE");
+                        btn_64arg.caption2.clear();
                         btn_64arg.up_id = 1011;
                         btn_64arg.pressed_id = 0;
                         btn_64arg.down_id = 1251;
@@ -3372,8 +3311,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.xpos = screen_width * 0.3328125;
                             btn_64arg.ypos = screen_height * 0.7166666666666667;
                             btn_64arg.width = screen_width / 3;
-                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 87, "HELP");
-                            btn_64arg.caption2 = 0;
+                            btn_64arg.caption = GetLocaleString(87, "HELP");
+                            btn_64arg.caption2.clear();
                             btn_64arg.pressed_id = 0;
                             btn_64arg.down_id = 1251;
                             btn_64arg.button_id = 1017;
@@ -3382,8 +3321,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             if ( usr->titel_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.ypos = screen_height * 0.7958333333333333;
-                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 88, "QUIT");
-                                btn_64arg.caption2 = 0;
+                                btn_64arg.caption = GetLocaleString(88, "QUIT");
+                                btn_64arg.caption2.clear();
                                 btn_64arg.up_id = 1013;
                                 btn_64arg.pressed_id = 0;
                                 btn_64arg.down_id = 1251;
@@ -3439,8 +3378,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.tileset_up = 18;
     btn_64arg.xpos = dword_5A50B6_h + word_5A50C0;
     btn_64arg.width = dword_5A50B6_h;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 640, "REWIND");
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption = GetLocaleString(640, "REWIND");
+    btn_64arg.caption2.clear();
     btn_64arg.down_id = 1251;
     btn_64arg.pressed_id = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
@@ -3450,8 +3389,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( usr->sub_bar_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 2 * (word_5A50C0 + dword_5A50B6_h);
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 641, "STEP FORWARD");
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption = GetLocaleString(641, "STEP FORWARD");
+        btn_64arg.caption2.clear();
         btn_64arg.down_id = 0;
         btn_64arg.up_id = 1020;
         btn_64arg.pressed_id = 1018;
@@ -3460,8 +3399,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         if ( usr->sub_bar_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 643, "START GAME");
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption = GetLocaleString(643, "START GAME");
+            btn_64arg.caption2.clear();
             btn_64arg.up_id = 1019;
             btn_64arg.pressed_id = 0;
             btn_64arg.down_id = 1251;
@@ -3470,8 +3409,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             if ( usr->sub_bar_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = (screen_width - 3 * dword_5A50B6_h - 2 * word_5A50C0);
-                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2422, "GOTO LOADSAVE");
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption = GetLocaleString(2422, "GOTO LOADSAVE");
+                btn_64arg.caption2.clear();
                 btn_64arg.pressed_id = 0;
                 btn_64arg.down_id = 1251;
                 btn_64arg.button_id = 1020;
@@ -3480,8 +3419,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 if ( usr->sub_bar_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.xpos = (screen_width - 2 * dword_5A50B6_h - word_5A50C0);
-                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 642, "LOAD GAME");
-                    btn_64arg.caption2 = 0;
+                    btn_64arg.caption = GetLocaleString(642, "LOAD GAME");
+                    btn_64arg.caption2.clear();
                     btn_64arg.up_id = 1021;
                     btn_64arg.pressed_id = 0;
                     btn_64arg.down_id = 1251;
@@ -3490,8 +3429,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     if ( usr->sub_bar_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.xpos = screen_width - dword_5A50B6_h;
-                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 644, "GO BACK");
-                        btn_64arg.caption2 = 0;
+                        btn_64arg.caption = GetLocaleString(644, "GO BACK");
+                        btn_64arg.caption2.clear();
                         btn_64arg.pressed_id = 0;
                         btn_64arg.down_id = 1251;
                         btn_64arg.button_id = 1019;
@@ -3549,8 +3488,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.xpos = screen_width * 0.25;
     btn_64arg.ypos = screen_height * 0.53125;
     btn_64arg.width = screen_width * 0.125;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption = GetLocaleString(2, "OK");
+    btn_64arg.caption2.clear();
     btn_64arg.pressed_id = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
     btn_64arg.up_id = 1350;
@@ -3563,9 +3502,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( usr->confirm_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = screen_width * 0.625;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+        btn_64arg.caption = GetLocaleString(3, "CANCEL");
         btn_64arg.up_id = 1351;
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption2.clear();
         btn_64arg.button_id = 1301;
         btn_64arg.down_id = 1251;
         btn_64arg.pressed_id = 0;
@@ -3579,7 +3518,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.xpos = screen_width * 0.25;
             btn_64arg.ypos = screen_height * 0.4375;
             btn_64arg.caption = " ";
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption2.clear();
             btn_64arg.down_id = 0;
             btn_64arg.up_id = 0;
             btn_64arg.pressed_id = 0;
@@ -3596,7 +3535,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.ypos = screen_height * 0.46875;
                 btn_64arg.caption = " ";
                 btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption2.clear();
 
                 usr->confirm_button->button_func64(&btn_64arg);
             }
@@ -3661,9 +3600,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 309, "INPUT SETTINGS");
+    btn_64arg.caption = GetLocaleString(309, "INPUT SETTINGS");
     btn_64arg.down_id = 0;
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption2.clear();
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
     btn_64arg.button_id = 1057;
@@ -3676,8 +3615,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + font_default_h;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 310, "2");
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption = GetLocaleString(310, "2");
+        btn_64arg.caption2.clear();
         btn_64arg.pressed_id = 0;
         btn_64arg.button_id = 1058;
         btn_64arg.txt_r = iniColors[60].r;
@@ -3688,8 +3627,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 311, "3");
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption = GetLocaleString(311, "3");
+            btn_64arg.caption2.clear();
             btn_64arg.pressed_id = 0;
             btn_64arg.button_id = 1059;
 
@@ -3697,8 +3636,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
-                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 312, "4");
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption = GetLocaleString(312, "4");
+                btn_64arg.caption2.clear();
                 btn_64arg.pressed_id = 0;
                 btn_64arg.button_id = 1060;
 
@@ -3727,9 +3666,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.xpos = (v259_4 + word_5A50C0 + v278_4 / 6);
                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                         btn_64arg.width = (v278_4 / 2 - word_5A50C0);
-                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 305, "JOYSTICK");
+                        btn_64arg.caption = GetLocaleString(305, "JOYSTICK");
                         btn_64arg.button_id = 2;
-                        btn_64arg.caption2 = 0;
+                        btn_64arg.caption2.clear();
                         btn_64arg.down_id = 0;
                         btn_64arg.up_id = 0;
                         btn_64arg.pressed_id = 0;
@@ -3762,8 +3701,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                 btn_64arg.xpos = (v259_4 + (v278_4 / 2) + 2 * word_5A50C0);
                                 btn_64arg.width = ((v278_4 / 2) - word_5A50C0);
-                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2433, "ALTERNATE JOYSTICK MODEL");
-                                btn_64arg.caption2 = 0;
+                                btn_64arg.caption = GetLocaleString(2433, "ALTERNATE JOYSTICK MODEL");
+                                btn_64arg.caption2.clear();
                                 btn_64arg.down_id = 0;
                                 btn_64arg.up_id = 0;
                                 btn_64arg.pressed_id = 0;
@@ -3798,9 +3737,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                         btn_64arg.xpos = (v259_4 + (v278_4 / 3) + word_5A50C0);
                                         btn_64arg.width = v278_4 / 2;
-                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 306, "DISABLE FORCE FEEDBACK");
+                                        btn_64arg.caption = GetLocaleString(306, "DISABLE FORCE FEEDBACK");
                                         btn_64arg.button_id = 2;
-                                        btn_64arg.caption2 = 0;
+                                        btn_64arg.caption2.clear();
                                         btn_64arg.down_id = 0;
                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                         btn_64arg.up_id = 0;
@@ -3815,10 +3754,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.xpos = v278_4 / 6;
                                             btn_64arg.ypos = 5 * word_5A50C2 + 13 * font_default_h;
                                             btn_64arg.width = (v278_4 / 3 - word_5A50C0);
-                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 307, "SWITCH OFF");
+                                            btn_64arg.caption = GetLocaleString(307, "SWITCH OFF");
                                             btn_64arg.down_id = 1251;
                                             btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                            btn_64arg.caption2 = 0;
+                                            btn_64arg.caption2.clear();
                                             btn_64arg.pressed_id = 0;
                                             btn_64arg.up_id = 1057;
                                             btn_64arg.button_id = 1056;
@@ -3829,8 +3768,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             if ( usr->button_input_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.xpos = word_5A50C0 + v278_4 / 2;
-                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 13, "RESET");
-                                                btn_64arg.caption2 = 0;
+                                                btn_64arg.caption = GetLocaleString(13, "RESET");
+                                                btn_64arg.caption2.clear();
                                                 btn_64arg.pressed_id = 0;
                                                 btn_64arg.up_id = 1053;
                                                 btn_64arg.button_id = 1053;
@@ -3841,8 +3780,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.ypos = v269;
                                                     btn_64arg.width = v270;
                                                     btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                                                    btn_64arg.caption2 = 0;
+                                                    btn_64arg.caption = GetLocaleString(2, "OK");
+                                                    btn_64arg.caption2.clear();
                                                     btn_64arg.pressed_id = 0;
                                                     btn_64arg.button_id = 1051;
                                                     btn_64arg.up_id = 1052;
@@ -3853,9 +3792,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.xpos = v274;
                                                         btn_64arg.ypos = v258;
                                                         btn_64arg.width = v262;
-                                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
+                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
                                                         btn_64arg.up_id = 1250;
-                                                        btn_64arg.caption2 = 0;
+                                                        btn_64arg.caption2.clear();
                                                         btn_64arg.button_id = 1052;
                                                         btn_64arg.pressed_id = 0;
 
@@ -3864,10 +3803,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             btn_64arg.xpos = v264;
                                                             btn_64arg.ypos = v276;
                                                             btn_64arg.width = v298;
-                                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+                                                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
                                                             btn_64arg.up_id = 1054;
                                                             btn_64arg.button_id = 1054;
-                                                            btn_64arg.caption2 = 0;
+                                                            btn_64arg.caption2.clear();
                                                             btn_64arg.pressed_id = 0;
 
                                                             if ( usr->button_input_button->button_func64(&btn_64arg) )
@@ -3975,8 +3914,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.xpos = 0;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 327, "GAME SETTINGS");
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption = GetLocaleString(327, "GAME SETTINGS");
+    btn_64arg.caption2.clear();
     btn_64arg.down_id = 0;
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
@@ -3991,8 +3930,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + font_default_h;
         btn_64arg.width = v278_4;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 328, "2");
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption = GetLocaleString(328, "2");
+        btn_64arg.caption2.clear();
         btn_64arg.button_id = 1169;
         btn_64arg.txt_r = iniColors[60].r;
         btn_64arg.txt_g = iniColors[60].g;
@@ -4003,17 +3942,17 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
             btn_64arg.width = v278_4;
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 329, "3");
+            btn_64arg.caption = GetLocaleString(329, "3");
             btn_64arg.button_id = 1170;
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption2.clear();
 
             if ( usr->video_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.width = v278_4;
                 btn_64arg.ypos = 3 * (font_default_h + word_5A50C2);
-                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 330, "4");
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption = GetLocaleString(330, "4");
+                btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1171;
 
                 if ( usr->video_button->button_func64(&btn_64arg) )
@@ -4025,8 +3964,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                     btn_64arg.ypos = 5 * (font_default_h + word_5A50C2);
                     btn_64arg.width = v98;
-                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 340, "RESOLUTION SHELL");
-                    btn_64arg.caption2 = 0;
+                    btn_64arg.caption = GetLocaleString(340, "RESOLUTION SHELL");
+                    btn_64arg.caption2.clear();
                     btn_64arg.down_id = 0;
                     btn_64arg.up_id = 0;
                     btn_64arg.pressed_id = 0;
@@ -4052,7 +3991,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.field_3A = 30;
                         btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                         btn_64arg.caption = name.c_str();
-                        btn_64arg.caption2 = 0;
+                        btn_64arg.caption2.clear();
                         btn_64arg.pressed_id = 0;
                         btn_64arg.tileset_up = 18;
                         btn_64arg.down_id = 1100;
@@ -4074,8 +4013,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.xpos = 0;
                             btn_64arg.ypos = 2 * (3 * (word_5A50C2 + font_default_h));
                             btn_64arg.width = v294 * 0.4;
-                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 352, "SELECT 3D DEVICE");
-                            btn_64arg.caption2 = 0;
+                            btn_64arg.caption = GetLocaleString(352, "SELECT 3D DEVICE");
+                            btn_64arg.caption2.clear();
                             btn_64arg.down_id = 0;
                             btn_64arg.up_id = 0;
                             btn_64arg.pressed_id = 0;
@@ -4094,7 +4033,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.down_id = 1134;
                                 btn_64arg.up_id = 1135;
                                 btn_64arg.tileset_up = 18;
-                                btn_64arg.caption2 = 0;
+                                btn_64arg.caption2.clear();
                                 btn_64arg.pressed_id = 0;
                                 btn_64arg.xpos = word_5A50C0 + v294 * 0.4;
                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
@@ -4133,8 +4072,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                         btn_64arg.width = v120;
-                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 344, "FAR VIEW");
-                                        btn_64arg.caption2 = 0;
+                                        btn_64arg.caption = GetLocaleString(344, "FAR VIEW");
+                                        btn_64arg.caption2.clear();
                                         btn_64arg.down_id = 0;
                                         btn_64arg.up_id = 0;
                                         btn_64arg.pressed_id = 0;
@@ -4168,8 +4107,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.width = v120;
                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 345, "HEAVEN");
-                                                btn_64arg.caption2 = 0;
+                                                btn_64arg.caption = GetLocaleString(345, "HEAVEN");
+                                                btn_64arg.caption2.clear();
                                                 btn_64arg.down_id = 0;
                                                 btn_64arg.up_id = 0;
                                                 btn_64arg.pressed_id = 0;
@@ -4201,8 +4140,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.width = v120;
                                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 350, "SW MOUSEPOINTER");
-                                                        btn_64arg.caption2 = 0;
+                                                        btn_64arg.caption = GetLocaleString(350, "SW MOUSEPOINTER");
+                                                        btn_64arg.caption2.clear();
                                                         btn_64arg.down_id = 0;
                                                         btn_64arg.up_id = 0;
                                                         btn_64arg.pressed_id = 0;
@@ -4233,9 +4172,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
                                                                 btn_64arg.width = v120;
-                                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2432, "OPENGL LIKE (:-)");
+                                                                btn_64arg.caption = GetLocaleString(2432, "OPENGL LIKE (:-)");
                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                btn_64arg.caption2 = 0;
+                                                                btn_64arg.caption2.clear();
                                                                 btn_64arg.down_id = 0;
                                                                 btn_64arg.up_id = 0;
                                                                 btn_64arg.pressed_id = 0;
@@ -4247,9 +4186,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                     btn_64arg.xpos = v259_4 + word_5A50C0;
                                                                     btn_64arg.ypos = 9 * (word_5A50C2 + font_default_h);
                                                                     btn_64arg.width = v120;
-                                                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2431, "USE 16BIT TEXTURE");
+                                                                    btn_64arg.caption = GetLocaleString(2431, "USE 16BIT TEXTURE");
                                                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                    btn_64arg.caption2 = 0;
+                                                                    btn_64arg.caption2.clear();
                                                                     btn_64arg.down_id = 0;
                                                                     btn_64arg.up_id = 0;
                                                                     btn_64arg.pressed_id = 0;
@@ -4279,8 +4218,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                             btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
                                                                             btn_64arg.width = v120;
-                                                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 326, "ENABLE CD AUDIO");
-                                                                            btn_64arg.caption2 = 0;
+                                                                            btn_64arg.caption = GetLocaleString(326, "ENABLE CD AUDIO");
+                                                                            btn_64arg.caption2.clear();
                                                                             btn_64arg.down_id = 0;
                                                                             btn_64arg.up_id = 0;
                                                                             btn_64arg.pressed_id = 0;
@@ -4328,8 +4267,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                                                                         btn_64arg.width = v120 - v259_4;
-                                                                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 325, "ENEMY INDICATOR");
-                                                                                        btn_64arg.caption2 = 0;
+                                                                                        btn_64arg.caption = GetLocaleString(325, "ENEMY INDICATOR");
+                                                                                        btn_64arg.caption2.clear();
                                                                                         btn_64arg.down_id = 0;
                                                                                         btn_64arg.up_id = 0;
                                                                                         btn_64arg.pressed_id = 0;
@@ -4344,8 +4283,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                             btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
                                                                                             btn_64arg.width = v120;
-                                                                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 323, "INVERT LEFT-RIGHT DIVISION ");
-                                                                                            btn_64arg.caption2 = 0;
+                                                                                            btn_64arg.caption = GetLocaleString(323, "INVERT LEFT-RIGHT DIVISION ");
+                                                                                            btn_64arg.caption2.clear();
                                                                                             btn_64arg.down_id = 0;
                                                                                             btn_64arg.up_id = 0;
                                                                                             btn_64arg.pressed_id = 0;
@@ -4377,8 +4316,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.xpos = 0;
                                                                                                     btn_64arg.ypos = 11 * (font_default_h + word_5A50C2);
                                                                                                     btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 343, "DESTRUCTION FX");
-                                                                                                    btn_64arg.caption2 = 0;
+                                                                                                    btn_64arg.caption = GetLocaleString(343, "DESTRUCTION FX");
+                                                                                                    btn_64arg.caption2.clear();
                                                                                                     btn_64arg.down_id = 0;
                                                                                                     btn_64arg.up_id = 0;
                                                                                                     btn_64arg.pressed_id = 0;
@@ -4393,7 +4332,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         v225.max = 16;
                                                                                                         v225.min = 0;
 
-                                                                                                        btn_64arg.caption2 = 0;
+                                                                                                        btn_64arg.caption2.clear();
                                                                                                         btn_64arg.tileset_down = 18;
                                                                                                         btn_64arg.tileset_up = 18;
                                                                                                         btn_64arg.field_3A = 30;
@@ -4414,7 +4353,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                             btn_64arg.tileset_up = 16;
                                                                                                             btn_64arg.field_3A = 16;
                                                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                            btn_64arg.caption2 = 0;
+                                                                                                            btn_64arg.caption2.clear();
                                                                                                             btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.85;
                                                                                                             btn_64arg.down_id = 0;
                                                                                                             btn_64arg.up_id = 0;
@@ -4430,8 +4369,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.xpos = 0;
                                                                                                                 btn_64arg.ypos = 12 * (word_5A50C2 + font_default_h);
                                                                                                                 btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 321, "FX VOLUME");
-                                                                                                                btn_64arg.caption2 = 0;
+                                                                                                                btn_64arg.caption = GetLocaleString(321, "FX VOLUME");
+                                                                                                                btn_64arg.caption2.clear();
                                                                                                                 btn_64arg.down_id = 0;
                                                                                                                 btn_64arg.up_id = 0;
                                                                                                                 btn_64arg.pressed_id = 0;
@@ -4450,7 +4389,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                     btn_64arg.tileset_down = 18;
                                                                                                                     btn_64arg.tileset_up = 18;
                                                                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
-                                                                                                                    btn_64arg.caption2 = 0;
+                                                                                                                    btn_64arg.caption2.clear();
                                                                                                                     btn_64arg.button_id = 1152;
                                                                                                                     btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                                     btn_64arg.caption = " ";
@@ -4468,7 +4407,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                         btn_64arg.field_3A = 16;
                                                                                                                         btn_64arg.caption = "4";
                                                                                                                         btn_64arg.button_id = 1153;
-                                                                                                                        btn_64arg.caption2 = 0;
+                                                                                                                        btn_64arg.caption2.clear();
                                                                                                                         btn_64arg.xpos = (2 * word_5A50C0) + (dword_5A50B2 - 5 * word_5A50C0) * 0.85;
                                                                                                                         btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.15;
                                                                                                                         btn_64arg.down_id = 0;
@@ -4482,8 +4421,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                             btn_64arg.xpos = 0;
                                                                                                                             btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                                             btn_64arg.ypos = 13 * (word_5A50C2 + font_default_h);
-                                                                                                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 324, "CD VOLUME");
-                                                                                                                            btn_64arg.caption2 = 0;
+                                                                                                                            btn_64arg.caption = GetLocaleString(324, "CD VOLUME");
+                                                                                                                            btn_64arg.caption2.clear();
                                                                                                                             btn_64arg.down_id = 0;
                                                                                                                             btn_64arg.up_id = 0;
                                                                                                                             btn_64arg.pressed_id = 0;
@@ -4502,7 +4441,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                 btn_64arg.up_id = 1120;
                                                                                                                                 btn_64arg.field_3A = 30;
                                                                                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
-                                                                                                                                btn_64arg.caption2 = 0;
+                                                                                                                                btn_64arg.caption2.clear();
                                                                                                                                 btn_64arg.down_id = 1118;
                                                                                                                                 btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                                                 btn_64arg.caption = " ";
@@ -4518,7 +4457,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                     btn_64arg.field_3A = 16;
                                                                                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                                     btn_64arg.caption = "4";
-                                                                                                                                    btn_64arg.caption2 = 0;
+                                                                                                                                    btn_64arg.caption2.clear();
                                                                                                                                     btn_64arg.down_id = 0;
                                                                                                                                     btn_64arg.up_id = 0;
                                                                                                                                     btn_64arg.pressed_id = 0;
@@ -4536,9 +4475,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                         btn_64arg.ypos = v269;
                                                                                                                                         btn_64arg.width = v270;
                                                                                                                                         btn_64arg.tileset_down = 19;
-                                                                                                                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
+                                                                                                                                        btn_64arg.caption = GetLocaleString(2, "OK");
                                                                                                                                         btn_64arg.up_id = 1124;
-                                                                                                                                        btn_64arg.caption2 = 0;
+                                                                                                                                        btn_64arg.caption2.clear();
                                                                                                                                         btn_64arg.down_id = 0;
                                                                                                                                         btn_64arg.pressed_id = 0;
                                                                                                                                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
@@ -4552,9 +4491,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                             btn_64arg.xpos = v274;
                                                                                                                                             btn_64arg.ypos = v258;
                                                                                                                                             btn_64arg.width = v262;
-                                                                                                                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
+                                                                                                                                            btn_64arg.caption = GetLocaleString(20, "HELP");
                                                                                                                                             btn_64arg.up_id = 1250;
-                                                                                                                                            btn_64arg.caption2 = 0;
+                                                                                                                                            btn_64arg.caption2.clear();
                                                                                                                                             btn_64arg.down_id = 0;
                                                                                                                                             btn_64arg.pressed_id = 0;
                                                                                                                                             btn_64arg.button_id = 1167;
@@ -4564,9 +4503,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                                 btn_64arg.xpos = v264;
                                                                                                                                                 btn_64arg.ypos = v276;
                                                                                                                                                 btn_64arg.width = v298;
-                                                                                                                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+                                                                                                                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
                                                                                                                                                 btn_64arg.up_id = 1125;
-                                                                                                                                                btn_64arg.caption2 = 0;
+                                                                                                                                                btn_64arg.caption2.clear();
                                                                                                                                                 btn_64arg.down_id = 0;
                                                                                                                                                 btn_64arg.pressed_id = 0;
                                                                                                                                                 btn_64arg.button_id = 1162;
@@ -4688,8 +4627,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.xpos = 0;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 367, "LOAD, CREATE OR DELETE PLAYER");
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption = GetLocaleString(367, "LOAD, CREATE OR DELETE PLAYER");
+    btn_64arg.caption2.clear();
     btn_64arg.button_id = 1108;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.txt_r = iniColors[68].r;
@@ -4700,9 +4639,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C0 + font_default_h;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 368, "2");
+        btn_64arg.caption = GetLocaleString(368, "2");
         btn_64arg.button_id = 1109;
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption2.clear();
         btn_64arg.txt_r = iniColors[60].r;
         btn_64arg.txt_g = iniColors[60].g;
         btn_64arg.txt_b = iniColors[60].b;
@@ -4711,16 +4650,16 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C0);
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 369, "3");
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption = GetLocaleString(369, "3");
+            btn_64arg.caption2.clear();
             btn_64arg.button_id = 1110;
 
             if ( usr->disk_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C0 + font_default_h);
-                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 370, "4");
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption = GetLocaleString(370, "4");
+                btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1111;
 
                 if ( usr->disk_button->button_func64(&btn_64arg) )
@@ -4731,7 +4670,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.xpos = 0;
                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                     btn_64arg.width = v278_4;
-                    btn_64arg.caption2 = 0;
+                    btn_64arg.caption2.clear();
                     btn_64arg.down_id = 0;
                     btn_64arg.up_id = 0;
                     btn_64arg.pressed_id = 0;
@@ -4749,10 +4688,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.xpos = word_5A50C0 + (v278_4 - 3 * word_5A50C0) * 0.25;
                         btn_64arg.ypos = 7 * word_5A50C0 + 15 * font_default_h;
                         btn_64arg.width = (v278_4 - 3 * word_5A50C0) * 0.25;
-                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 360, "LOAD");
+                        btn_64arg.caption = GetLocaleString(360, "LOAD");
                         btn_64arg.down_id = 1251;
                         btn_64arg.up_id = 1160;
-                        btn_64arg.caption2 = 0;
+                        btn_64arg.caption2.clear();
                         btn_64arg.pressed_id = 0;
                         btn_64arg.button_id = 1101;
                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
@@ -4763,25 +4702,25 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         if ( usr->disk_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.xpos = (3 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.75;
-                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 362, "DELETE");
-                            btn_64arg.caption2 = 0;
+                            btn_64arg.caption = GetLocaleString(362, "DELETE");
+                            btn_64arg.caption2.clear();
                             btn_64arg.up_id = 1161;
                             btn_64arg.button_id = 1102;
 
                             if ( usr->disk_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.xpos = 0;
-                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 363, "NEW GAME");
+                                btn_64arg.caption = GetLocaleString(363, "NEW GAME");
                                 btn_64arg.button_id = 1103;
-                                btn_64arg.caption2 = 0;
+                                btn_64arg.caption2.clear();
                                 btn_64arg.up_id = 1162;
 
                                 if ( usr->disk_button->button_func64(&btn_64arg) )
                                 {
                                     btn_64arg.xpos = (2 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.5;
-                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 361, "SAVE");
+                                    btn_64arg.caption = GetLocaleString(361, "SAVE");
                                     btn_64arg.button_id = 1104;
-                                    btn_64arg.caption2 = 0;
+                                    btn_64arg.caption2.clear();
                                     btn_64arg.up_id = 1163;
 
                                     if ( usr->disk_button->button_func64(&btn_64arg) )
@@ -4789,8 +4728,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.xpos = v267;
                                         btn_64arg.ypos = v269;
                                         btn_64arg.width = v270;
-                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                                        btn_64arg.caption2 = 0;
+                                        btn_64arg.caption = GetLocaleString(2, "OK");
+                                        btn_64arg.caption2.clear();
                                         btn_64arg.down_id = 1251;
                                         btn_64arg.button_id = 1105;
                                         btn_64arg.pressed_id = 0;
@@ -4801,9 +4740,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.ypos = v258;
                                             btn_64arg.width = v262;
                                             btn_64arg.xpos = v274;
-                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
+                                            btn_64arg.caption = GetLocaleString(20, "HELP");
                                             btn_64arg.button_id = 1107;
-                                            btn_64arg.caption2 = 0;
+                                            btn_64arg.caption2.clear();
                                             btn_64arg.up_id = 1250;
 
                                             if ( usr->disk_button->button_func64(&btn_64arg) )
@@ -4811,9 +4750,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.ypos = v276;
                                                 btn_64arg.width = v298;
                                                 btn_64arg.xpos = v264;
-                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
+                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
                                                 btn_64arg.button_id = 1106;
-                                                btn_64arg.caption2 = 0;
+                                                btn_64arg.caption2.clear();
                                                 btn_64arg.up_id = 1165;
 
                                                 if ( usr->disk_button->button_func64(&btn_64arg) )
@@ -4890,8 +4829,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.width = v278_4;
     btn_64arg.field_3A = 30;
     btn_64arg.ypos = 0;
-    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 395, "SELECT NEW LANGUAGE");
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption = GetLocaleString(395, "SELECT NEW LANGUAGE");
+    btn_64arg.caption2.clear();
     btn_64arg.down_id = 0;
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
@@ -4905,8 +4844,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + font_default_h;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 396, "2");
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption = GetLocaleString(396, "2");
+        btn_64arg.caption2.clear();
         btn_64arg.button_id = 1254;
         btn_64arg.txt_r = iniColors[60].r;
         btn_64arg.txt_g = iniColors[60].g;
@@ -4916,16 +4855,16 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 397, "3");
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption = GetLocaleString(397, "3");
+            btn_64arg.caption2.clear();
             btn_64arg.button_id = 1255;
 
             if ( usr->locale_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
-                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 398, "4");
-                btn_64arg.caption2 = 0;
+                btn_64arg.caption = GetLocaleString(398, "4");
+                btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1256;
 
                 if ( usr->locale_button->button_func64(&btn_64arg) )
@@ -4937,8 +4876,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.xpos = v267 - (usr->field_19C6 - v278);
                     btn_64arg.ypos = v269 - (usr->field_0x19c8 - v273);
                     btn_64arg.width = v270;
-                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2, "OK");
-                    btn_64arg.caption2 = 0;
+                    btn_64arg.caption = GetLocaleString(2, "OK");
+                    btn_64arg.caption2.clear();
                     btn_64arg.down_id = 0;
                     btn_64arg.pressed_id = 0;
                     btn_64arg.up_id = 1300;
@@ -4953,9 +4892,9 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.xpos = v274 - (usr->field_19C6 - v278);
                         btn_64arg.ypos = v258 - (usr->field_0x19c8 - v273);
                         btn_64arg.width = v262;
-                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
+                        btn_64arg.caption = GetLocaleString(20, "HELP");
                         btn_64arg.button_id = 1252;
-                        btn_64arg.caption2 = 0;
+                        btn_64arg.caption2.clear();
                         btn_64arg.down_id = 0;
                         btn_64arg.up_id = 1250;
                         btn_64arg.pressed_id = 0;
@@ -4965,8 +4904,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.xpos = v264 - (usr->field_19C6 - v278);
                             btn_64arg.ypos = v276 - (usr->field_0x19c8 - v273);
                             btn_64arg.width = v298;
-                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 3, "CANCEL");
-                            btn_64arg.caption2 = 0;
+                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                            btn_64arg.caption2.clear();
                             btn_64arg.down_id = 0;
                             btn_64arg.pressed_id = 0;
                             btn_64arg.up_id = 1301;
@@ -5010,7 +4949,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
     btn_64arg.width = (screen_width - 4 * word_5A50C0);
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption2.clear();
     btn_64arg.down_id = 0;
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
@@ -5170,7 +5109,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.xpos = 0;
     btn_64arg.caption = "???";
-    btn_64arg.caption2 = 0;
+    btn_64arg.caption2.clear();
     btn_64arg.down_id = 0;
     btn_64arg.up_id = 0;
     btn_64arg.pressed_id = 0;
@@ -5192,8 +5131,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.field_3A = 30;
         btn_64arg.width = dword_5A50B6 * 0.2 - word_5A50C0;
         btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 405, "SEND");
-        btn_64arg.caption2 = 0;
+        btn_64arg.caption = GetLocaleString(405, "SEND");
+        btn_64arg.caption2.clear();
         btn_64arg.up_id = 1210;
         btn_64arg.pressed_id = 0;
         btn_64arg.button_id = 1225;
@@ -5215,8 +5154,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.ypos = (15 * (word_5A50C2 + font_default_h));
             btn_64arg.xpos = 0;
             btn_64arg.width = dword_5A50B6 * 0.4 - 2 * word_5A50C0;
-            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 424, "SELECT YOUR RACE");
-            btn_64arg.caption2 = 0;
+            btn_64arg.caption = GetLocaleString(424, "SELECT YOUR RACE");
+            btn_64arg.caption2.clear();
             btn_64arg.down_id = 0;
             btn_64arg.flags = NC_STACK_button::FLAG_TEXT | NC_STACK_button::FLAG_RALIGN;
             btn_64arg.button_id = 1220;
@@ -5270,8 +5209,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                 btn_64arg.xpos += v284 + 2 * word_5A50C0;
                                 btn_64arg.width = dword_5A50B2_h - btn_64arg.xpos;
-                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 401, "BACK");
-                                btn_64arg.caption2 = 0;
+                                btn_64arg.caption = GetLocaleString(401, "BACK");
+                                btn_64arg.caption2.clear();
                                 btn_64arg.pressed_id = 0;
                                 btn_64arg.button_id = 1205;
                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
@@ -5290,8 +5229,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.field_3A = 16;
                                     btn_64arg.width = dword_5A50B2_h;
                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 410, "SELECT PROVIDER");
-                                    btn_64arg.caption2 = 0;
+                                    btn_64arg.caption = GetLocaleString(410, "SELECT PROVIDER");
+                                    btn_64arg.caption2.clear();
                                     btn_64arg.down_id = 0;
                                     btn_64arg.up_id = 0;
                                     btn_64arg.button_id = 1204;
@@ -5302,8 +5241,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     {
                                         btn_64arg.xpos = 0;
                                         btn_64arg.ypos = word_5A50C0 + font_default_h;
-                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 425, "2");
-                                        btn_64arg.caption2 = 0;
+                                        btn_64arg.caption = GetLocaleString(425, "2");
+                                        btn_64arg.caption2.clear();
                                         btn_64arg.button_id = 1222;
                                         btn_64arg.txt_r = iniColors[60].r;
                                         btn_64arg.txt_g = iniColors[60].g;
@@ -5313,8 +5252,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         {
                                             btn_64arg.xpos = 0;
                                             btn_64arg.ypos = 2 * (font_default_h + word_5A50C0);
-                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 426, "3");
-                                            btn_64arg.caption2 = 0;
+                                            btn_64arg.caption = GetLocaleString(426, "3");
+                                            btn_64arg.caption2.clear();
                                             btn_64arg.button_id = 1223;
 
                                             if ( usr->network_button->button_func64(&btn_64arg) )
@@ -5326,12 +5265,12 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.xpos = dword_5A50B6 * 0.3;
                                                 btn_64arg.ypos = (word_5A50C0 + font_default_h) * 15.2;
                                                 btn_64arg.width = dword_5A50B6 * 0.4;
-                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 402, "NEW");
+                                                btn_64arg.caption = GetLocaleString(402, "NEW");
                                                 btn_64arg.button_id = 1202;
                                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                                 btn_64arg.down_id = 1251;
                                                 btn_64arg.up_id = 1201;
-                                                btn_64arg.caption2 = 0;
+                                                btn_64arg.caption2.clear();
                                                 btn_64arg.pressed_id = 0;
                                                 btn_64arg.txt_r = iniColors[68].r;
                                                 btn_64arg.txt_g = iniColors[68].g;
@@ -5342,8 +5281,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.xpos = v267;
                                                     btn_64arg.ypos = v269 + font_default_h;
                                                     btn_64arg.width = v270;
-                                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 400, "NEXT");
-                                                    btn_64arg.caption2 = 0;
+                                                    btn_64arg.caption = GetLocaleString(400, "NEXT");
+                                                    btn_64arg.caption2.clear();
                                                     btn_64arg.pressed_id = 0;
                                                     btn_64arg.button_id = 1201;
                                                     btn_64arg.up_id = 1200;
@@ -5353,8 +5292,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.xpos = v274;
                                                         btn_64arg.ypos = v258 + font_default_h;
                                                         btn_64arg.width = v262;
-                                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 20, "HELP");
-                                                        btn_64arg.caption2 = 0;
+                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                        btn_64arg.caption2.clear();
                                                         btn_64arg.up_id = 1250;
                                                         btn_64arg.pressed_id = 0;
                                                         btn_64arg.button_id = 1218;
@@ -5364,8 +5303,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             btn_64arg.xpos = v264;
                                                             btn_64arg.ypos = v276 + font_default_h;
                                                             btn_64arg.width = v298;
-                                                            btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 403, "CANCEL");
-                                                            btn_64arg.caption2 = 0;
+                                                            btn_64arg.caption = GetLocaleString(403, "CANCEL");
+                                                            btn_64arg.caption2.clear();
                                                             btn_64arg.up_id = 1202;
                                                             btn_64arg.pressed_id = 0;
                                                             btn_64arg.button_id = 1203;
@@ -5388,7 +5327,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.caption = " ";
                                                                 btn_64arg.width = dword_5A50B2_h - v204 - v259_4;
                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                btn_64arg.caption2 = 0;
+                                                                btn_64arg.caption2.clear();
                                                                 btn_64arg.down_id = 0;
                                                                 btn_64arg.up_id = 0;
                                                                 btn_64arg.pressed_id = 0;
@@ -5420,7 +5359,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                 btn_64arg.xpos = 0;
                                                                                 btn_64arg.width = v204;
-                                                                                btn_64arg.caption2 = 0;
+                                                                                btn_64arg.caption2.clear();
                                                                                 btn_64arg.down_id = 0;
                                                                                 btn_64arg.up_id = 0;
                                                                                 btn_64arg.ypos = 4 * (font_default_h + word_5A50C0);
@@ -5472,8 +5411,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                     btn_64arg.xpos += word_5A50C0 + v259_4;
                                                                                                     btn_64arg.width = v270 - v259_4 - word_5A50C0;
-                                                                                                    btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 409, "READY");
-                                                                                                    btn_64arg.caption2 = 0;
+                                                                                                    btn_64arg.caption = GetLocaleString(409, "READY");
+                                                                                                    btn_64arg.caption2.clear();
                                                                                                     btn_64arg.down_id = 0;
                                                                                                     btn_64arg.up_id = 0;
                                                                                                     btn_64arg.pressed_id = 0;
@@ -5489,8 +5428,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                         btn_64arg.ypos = 3 * (font_default_h + word_5A50C0);
                                                                                                         btn_64arg.width = dword_5A50B6 * 0.3;
-                                                                                                        btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 600, "YOU PLAY");
-                                                                                                        btn_64arg.caption2 = 0;
+                                                                                                        btn_64arg.caption = GetLocaleString(600, "YOU PLAY");
+                                                                                                        btn_64arg.caption2.clear();
                                                                                                         btn_64arg.down_id = 0;
                                                                                                         btn_64arg.up_id = 0;
                                                                                                         btn_64arg.pressed_id = 0;
@@ -5518,8 +5457,8 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.xpos = 0;
                                                                                                                 btn_64arg.ypos = (14 * (word_5A50C2 + font_default_h));
                                                                                                                 btn_64arg.width = dword_5A50B2_h;
-                                                                                                                btn_64arg.caption = get_lang_string(ypaworld__string_pointers, 2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
-                                                                                                                btn_64arg.caption2 = 0;
+                                                                                                                btn_64arg.caption = GetLocaleString(2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
+                                                                                                                btn_64arg.caption2.clear();
                                                                                                                 btn_64arg.down_id = 0;
                                                                                                                 btn_64arg.up_id = 0;
                                                                                                                 btn_64arg.pressed_id = 0;
@@ -5798,7 +5737,6 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 {
     if ( yw->_mouseGrabbed || (yw->field_17c4 && !yw->field_1b1c) )
     {
-        const char *tooltip = get_lang_string(yw->string_pointers_p2, yw->field_17c4 + 800, yw->tooltips[ yw->field_17c4 ]);
         int v15 = -(yw->font_default_h + yw->icon0___h + yw->font_default_h / 4);
         std::string v2;
         
@@ -5837,7 +5775,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 
         FontUA::set_txtColor(&pos, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
 
-        pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos, tooltip, yw->screen_width);
+        pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos,  yw->GetLocaleString(yw->field_17c4 + 800, yw->tooltips[ yw->field_17c4 ]) , yw->screen_width);
 
         FontUA::set_end(&pos);
 
@@ -5949,12 +5887,12 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
     usr->field_0xc = 0;
 
-    if ( field_81AF )
+    if ( !field_81AF.empty() )
     {
-        const char *v22 = field_81AF;
+        const std::string v22 = field_81AF;
         ypaworld_func185(&v22);
 
-        field_81AF = NULL;
+        field_81AF.clear();
     }
 }
 
@@ -6263,205 +6201,98 @@ void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
     }
 }
 
-
-char * sb_0x471428__sub0(char *a1, const char *a2)
-{
-    const char *tmp = a2;
-
-    while ( *tmp )
-    {
-        if (tmp[0] == '\\')
-        {
-            if (tmp[1] == '\\')
-            {
-                *a1 = '\n';
-                tmp++;
-            }
-        }
-        else
-            *a1 = *tmp;
-
-        a1++;
-        tmp++;
-    }
-    *a1 = 0;
-    a1++;
-    return a1;
-}
-
-int simple_lang_parser(NC_STACK_ypaworld *yw, const std::string &filename)
+bool NC_STACK_ypaworld::LngFileLoad(const std::string &filename)
 {
     FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
     if ( !fil )
-        return 0;
-
-    char buf[4096];
+        return false;
 
     bool multiline = false;
-    int strid = -1;
-
-    while (fil->gets(buf, 4096))
+    int32_t strid = -1;
+    std::string buf;
+    
+    while (fil->ReadLine(&buf))
     {
-        char *line_end = strpbrk(buf, "\n\r");
-        if ( line_end )
-            *line_end = 0;
-
-        int line_sz = strlen(buf);
-
+        size_t lend = buf.find_first_of("\n\r");
+        if (lend != std::string::npos)
+            buf.erase(lend);
+        
         if (multiline && strid != -1)
         {
             multiline = false;
 
-            if ( buf[line_sz - 1] == '\\' )
-            {
-                buf[line_sz - 1] = '\n';
+            if ( buf.back() == '\\' ) // next line too
                 multiline = true;
-            }
-
-            if (yw->very_big_array__p_begin + line_sz < yw->lang_strings__end)
-            {
-                yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin - 1, buf);
-            }
-            else
-            {
-                ypa_log_out("Locale parser: buffer overflow at id [%d].\n", strid);
-            }
+            
+            std::replace(buf.begin(), buf.end(), '\\', '\n');
+            _localeStrings.at(strid) += buf;
         }
         else
         {
             strid = -1;
             multiline = false;
-
-            int phase = 0;
-
-            char *tmp1 = buf;
-            char *tmp2 = NULL;
-
-            while( phase >= 0 && phase < 4  && *tmp1 )
+            
+            size_t pos1 = buf.find_first_not_of(" \t");
+            if (pos1 != std::string::npos)
             {
-                switch(phase)
+                size_t pos2 = buf.find_first_of("= \t", pos1);
+                if (pos2 != std::string::npos)
                 {
-                case 0:
-                    if (strchr(" \t", *tmp1) == NULL )
-                    {
-                        tmp2 = tmp1;
-                        phase++;
-                    }
-                    break;
-
-                case 1:
-                    if (strchr("= \t", *tmp1) != NULL )
-                    {
-                        *tmp1 = 0;
-                        strid = strtol(tmp2, NULL, 0);
-
-                        tmp2 = NULL;
-
-                        if (strid >= 0 && strid < 2600 )
-                            phase++;
-                        else
-                            phase = -1;
-                    }
-                    break;
-
-                case 2:
-                    if ( *tmp1 == '=' && tmp1[1] != 0 )
-                    {
-                        tmp2 = tmp1 + 1;
-                        phase++;
-                    }
-                    break;
-
-                case 3:
-                    if ( strchr(" \t", *tmp1) == NULL )
-                    {
-                        tmp2 = tmp1;
-                        phase++;
-                    }
-                    break;
-
-                default:
-                    break;
+                    strid = std::stol(buf.substr(pos1, pos2 - pos1), NULL, 0);
+                    
+                    if (strid < 0 || strid >= (int32_t)_localeStrings.size() )
+                        strid = -1;
                 }
-
-                tmp1++;
-            }
-
-            if ( phase >= 2 )
-            {
-                if (tmp2)
+                
+                if (strid != -1)
                 {
-                    if (yw->very_big_array__p_begin + (line_sz - (tmp2 - buf)) + 1 < yw->lang_strings__end)
+                    pos1 = buf.find_first_of("=", pos2);
+                    if (pos1 != std::string::npos && pos1 + 1 < buf.size())
                     {
-                        if ( buf[line_sz - 1] == '\\' )
-                        {
-                            buf[line_sz - 1] = '\n';
+                        pos1 += 1; // Next after '='
+                        pos2 = buf.find_first_not_of(" \t", pos1);
+                        if (pos2 != std::string::npos)
+                            pos1 = pos2;
+                        
+                        if ( buf.back() == '\\' ) // Multiline
                             multiline = true;
-                        }
-
-                        yw->string_pointers[strid] = yw->very_big_array__p_begin;
-                        yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, tmp2);
+                        
+                        std::string &s = _localeStrings.at(strid);
+                        s = buf.substr(pos1);
+                        std::replace(s.begin(), s.end(), '\\', '\n');
                     }
-                    else
-                        ypa_log_out("Locale parser: buffer overflow at id [%d].\n", strid);
-                }
-                else
-                {
-                    yw->string_pointers[strid] = yw->very_big_array__p_begin;
-                    yw->very_big_array__p_begin = sb_0x471428__sub0(yw->very_big_array__p_begin, " ");
                 }
             }
         }
     }
 
     delete fil;
-    return 1;
+    return true;
 }
 
-int load_lang_lng(NC_STACK_ypaworld *yw, const std::string &lang)
+size_t NC_STACK_ypaworld::ypaworld_func166(const std::string &langname)
 {
-    std::string buf = fmt::sprintf("locale:%s.lng", lang);
+    SetLangDefault();
+    
+    _localeName = langname;
 
-    if ( !simple_lang_parser(yw, buf) )
+    if ( !LngFileLoad( fmt::sprintf("locale:%s.lng", _localeName) ) )
     {
-        ypa_log_out("ERROR: Could not load language file '%s'!!!\n", buf);
+        SetLangDefault();
         return 0;
     }
+    
+    std::string fontStr;
+
+    if ( screen_width >= 512 )
+        fontStr = GetLocaleString(15, "MS Sans Serif,12,400,0");
+    else
+        fontStr = GetLocaleString(16, "Arial,8,400,0");
+
+    GFX::Engine.LoadFontByDescr(fontStr);
+    Gui::UA::LoadFont(fontStr);
 
     return 1;
-}
-
-size_t NC_STACK_ypaworld::ypaworld_func166(const char **langname)
-{
-    sub_4711E0(this);
-    strcpy(lang_name, *langname);
-
-    int v19 = 0;
-//// We do not use this dll-garbage
-//  char buf[256];
-//  char LibFileName[256];
-//  sprintf(buf, "locale/%s.dll", yw->lang_name);
-//  sub_412810(buf, LibFileName, 256);
-//  if ( load_lang_dll(LibFileName, yw->lang_strings, yw->lang_strings__end, yw->string_pointers, 2600) )
-//    v19 = 1;
-
-    if ( v19 || load_lang_lng(this, lang_name) )
-    {
-        const char *v11 = NULL;
-
-        if ( screen_width >= 512 )
-            v11 = get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0");
-        else
-            v11 = get_lang_string(string_pointers_p2, 16, "Arial,8,400,0");
-
-        GFX::Engine.LoadFontByDescr(v11);
-        Gui::UA::LoadFont(v11);
-
-        return 1;
-    }
-
-    sub_4711E0(this);
-    return 0;
 }
 
 
@@ -7184,13 +7015,13 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
 
     if ( screen_width >= 512 )
     {
-        GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
-        Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+        GFX::Engine.LoadFontByDescr( GetLocaleString(15, "MS Sans Serif,12,400,0") );
+        Gui::UA::LoadFont( GetLocaleString(15, "MS Sans Serif,12,400,0") );
     }
     else
     {
-        GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
-        Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+        GFX::Engine.LoadFontByDescr( GetLocaleString(16, "Arial,8,400,0") );
+        Gui::UA::LoadFont( GetLocaleString(16, "Arial,8,400,0") );
     }
 
     return 1;
@@ -7217,8 +7048,7 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
         v6 = 0;
     }
 
-    const char *v7 = usr->default_lang_dll->c_str();
-    if ( !ypaworld_func166(&v7) )
+    if ( !ypaworld_func166(*usr->default_lang_dll) )
         ypa_log_out("Warning: SETLANGUAGE failed\n");
 
     if ( v6 && !ypaworld_func156(usr) )
@@ -7485,7 +7315,7 @@ void NC_STACK_ypaworld::HistoryEventAdd(const World::History::Record &arg)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func185(void *arg)
+void NC_STACK_ypaworld::ypaworld_func185(const void *arg)
 {
     dprintf("MAKE ME %s\n","ypaworld_func185");
 }
@@ -7676,11 +7506,6 @@ int NC_STACK_ypaworld::getYW_screenH()
     return screen_height;
 }
 
-char **NC_STACK_ypaworld::getYW_localeStrings()
-{
-    return string_pointers;
-}
-
 LevelInfo *NC_STACK_ypaworld::getYW_levelInfo()
 {
     return _levelInfo;
@@ -7810,4 +7635,12 @@ void NC_STACK_ypaworld::DeleteNewGuiElements()
 SDL_Color NC_STACK_ypaworld::GetColor(int colorID)
 {
     return iniColors.at(colorID);
+}
+
+std::string NC_STACK_ypaworld::GetLocaleString(int32_t id, const std::string &def) const
+{
+    const std::string &tmp = _localeStrings.at(id);
+    if ( tmp.empty() || !StriCmp(tmp, "<>") )
+        return def;
+    return tmp;
 }

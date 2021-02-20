@@ -97,7 +97,7 @@ public:
 
     struct tInit
     {
-        const char *title; //1
+        std::string title; //1
         bool resizeable; //2
         int numEntries; //3
         int shownEntries; //4
@@ -129,7 +129,6 @@ public:
 
         void Init()
         {
-            title = NULL;
             resizeable = false;
             numEntries = 0;
             shownEntries = 0;

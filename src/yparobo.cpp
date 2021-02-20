@@ -14,7 +14,6 @@
 const Nucleus::ClassDescr NC_STACK_yparobo::description("yparobo.class", &newinstance);
 
 
-char **dword_54B0E0; // ypaworld strings
 int dword_5B1128 = 1;
 
 Common::Ini::KeyList yparobo_keys
@@ -177,8 +176,6 @@ size_t NC_STACK_yparobo::Init(IDVList &stak)
     _bact_type = BACT_TYPES_ROBO;
 
     _roboPCells = yparobo_func0__sub0();
-
-    dword_54B0E0 = _world->getYW_localeStrings();
 
     return 1;
 }
@@ -5847,66 +5844,6 @@ bool NC_STACK_yparobo::MakeSquad(const std::vector<int> &VhclIDS, vec3d pos, boo
 }
 
 
-const char * NC_STACK_yparobo::yparobo_func134__sub0(char **strings, int a2)
-{
-    const char *result;
-
-    switch ( a2 )
-    {
-    case 2:
-        result = get_lang_string(strings, 202, "SECTOR CONQUERED");
-        break;
-
-    case 6:
-        result = get_lang_string(strings, 206, "FOUND ENEMY STATION");
-        break;
-
-    case 11:
-        result = get_lang_string(strings, 211, "STATION IS DEAD ");
-        break;
-
-    case 12:
-        result = get_lang_string(strings, 212, "YOUR STATION IS DEAD!");
-        break;
-
-    case 13:
-        result = get_lang_string(strings, 213, "ENEMY NEAR STATION!");
-        break;
-
-    case 18:
-        result = get_lang_string(strings, 218, "REQUEST SUPPORT");
-        break;
-
-    case 31:
-        result = get_lang_string(strings, 231, "FLAK DESTROYED");
-        break;
-
-    case 32:
-        result = get_lang_string(strings, 232, "RADAR STATION DESTROYED");
-        break;
-
-    case 33:
-        result = get_lang_string(strings, 233, "ATTACK POWERSTATION");
-        break;
-
-    case 34:
-        result = get_lang_string(strings, 234, "ATTACK FLAK");
-        break;
-
-    case 35:
-        result = get_lang_string(strings, 235, "ATTACK RADAR STATION");
-        break;
-
-    case 40:
-        result = get_lang_string(strings, 240, "HOST ENERGY CRITICAL");
-        break;
-
-    default:
-        result = NULL;
-        break;
-    }
-    return result;
-}
 
 int NC_STACK_yparobo::yparobo_func134__sub1(robo_arg134 *arg)
 {
@@ -6004,16 +5941,56 @@ int NC_STACK_yparobo::placeMessage(robo_arg134 *arg)
     if ( arg->unit && arg->unit->_bact_type == BACT_TYPES_GUN && arg->field_4 != 7 && arg->field_4 != 19 && arg->field_4 != 6 )
         return 0;
 
-    char **strngs = _world->getYW_localeStrings();
-
     if ( !yparobo_func134__sub1(arg) )
         return 0;
 
     yw_arg159 v8;
     v8.field_4 = arg->field_14;
-    v8.txt = yparobo_func134__sub0(strngs, arg->field_4);
     v8.unit = arg->unit;
     v8.field_C = arg->field_4;
+    
+    switch ( arg->field_4 )
+    {
+    case 2:
+        v8.txt = _world->GetLocaleString(202, "SECTOR CONQUERED");
+
+    case 6:
+        v8.txt =  _world->GetLocaleString(206, "FOUND ENEMY STATION");
+
+    case 11:
+        v8.txt = _world->GetLocaleString(211, "STATION IS DEAD ");
+
+    case 12:
+        v8.txt = _world->GetLocaleString(212, "YOUR STATION IS DEAD!");
+
+    case 13:
+        v8.txt = _world->GetLocaleString(213, "ENEMY NEAR STATION!");
+
+    case 18:
+        v8.txt = _world->GetLocaleString(218, "REQUEST SUPPORT");
+
+    case 31:
+        v8.txt = _world->GetLocaleString(231, "FLAK DESTROYED");
+
+    case 32:
+        v8.txt = _world->GetLocaleString(232, "RADAR STATION DESTROYED");
+
+    case 33:
+        v8.txt = _world->GetLocaleString(233, "ATTACK POWERSTATION");
+
+    case 34:
+        v8.txt = _world->GetLocaleString(234, "ATTACK FLAK");
+
+    case 35:
+        v8.txt = _world->GetLocaleString(235, "ATTACK RADAR STATION");
+
+    case 40:
+        v8.txt = _world->GetLocaleString(240, "HOST ENERGY CRITICAL");
+
+    default:
+        break;
+    }
+    
     _world->ypaworld_func159(&v8);
 
     return 1;

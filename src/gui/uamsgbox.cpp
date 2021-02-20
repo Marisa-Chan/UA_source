@@ -19,14 +19,14 @@ void UAMessageBox::Init(uint8_t type)
 {
     _flags |= FLAG_ENABLED;
     
-    std::string tmp = get_lang_string(yw->getYW_localeStrings(), 2, "OK");
+    std::string tmp = yw->GetLocaleString(2, "OK");
     
     _okBtn = new UATextButton(this, tmp, Common::PointRect());
     _okBtn->SetBtnFlags(UABaseButton::FLAG_CENTER);
     _okBtn->SetColor(_UAButtonTextColor);
     _okBtn->Tag = 1;
     
-    tmp = get_lang_string(yw->getYW_localeStrings(), 3, "CANCEL");
+    tmp = yw->GetLocaleString(3, "CANCEL");
     
     _cancelBtn = new UATextButton(this, tmp, Common::PointRect());
     _cancelBtn->SetBtnFlags(UABaseButton::FLAG_CENTER);

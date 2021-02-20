@@ -18,7 +18,6 @@ const Nucleus::ClassDescr NC_STACK_ypabact::description("ypabact.class", &newins
 
 
 int ypabact_id = 1;
-char **dword_5490B0; // ypaworld strings
 
 
 uint8_t DestFX::ParseTypeName(const std::string &in)
@@ -344,8 +343,6 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
     _wrldY = -secMaxY * 1200.0;
     _secMaxX = secMaxX;
     _secMaxY = secMaxY;
-
-    dword_5490B0 = _world->getYW_localeStrings();
 
     return 1;
 }

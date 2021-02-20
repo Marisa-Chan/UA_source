@@ -150,18 +150,18 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
                     usr->netCRC != 0 )
             {
                 err = true;
-                strs[errmsg] = fmt::sprintf("%s %s", yw->GameShell->players2[i].name, get_lang_string(yw->string_pointers_p2, 2404, "HAS OTHER FILES THAN YOU") );
+                strs[errmsg] = fmt::sprintf("%s %s", yw->GameShell->players2[i].name, yw->GetLocaleString(2404, "HAS OTHER FILES THAN YOU") );
                 errmsg++;
             }
         }
 
         if ( err )
         {
-            const char *lngstr = get_lang_string(yw->string_pointers_p2, 2403, "COMPUTER");
+            const std::string lngstr = yw->GetLocaleString(2403, "COMPUTER");
 
             for (int i = 0; i < errmsg; i++)
             {
-                sub_4D0C24(yw, lngstr, strs[i].c_str());
+                sub_4D0C24(yw, lngstr, strs[i]);
             }
         }
     }
@@ -2097,7 +2097,6 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                 yw_arg159 arg159;
                 arg159.field_4 = 10;
                 arg159.field_C = 91;
-                arg159.txt = 0;
                 arg159.unit = 0;
                 yw->ypaworld_func159(&arg159);
 
@@ -2129,7 +2128,6 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                 }
 
                 yw_arg159 arg159;
-                arg159.txt = 0;
                 arg159.unit = 0;
                 arg159.field_4 = 50;
                 switch ( hdMsg->owner)
@@ -2219,10 +2217,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                 {
                     if ( yw->netGameStarted )
                     {
-                        std::string bff = fmt::sprintf("%s: %s", msg->senderName.c_str(), msgMsg->message);
+                        std::string bff = fmt::sprintf("%s: %s", msg->senderName, msgMsg->message);
 
                         yw_arg159 arg159;
-                        arg159.txt = bff.c_str();
+                        arg159.txt = bff;
                         arg159.field_C = 93;
                         arg159.field_4 = 10;
                         arg159.unit = NULL;
@@ -2231,7 +2229,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                     }
                     else
                     {
-                        sub_4D0C24(yw, msg->senderName.c_str(), msgMsg->message);
+                        sub_4D0C24(yw, msg->senderName, msgMsg->message);
                     }
                 }
 
@@ -2337,12 +2335,12 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( cl->w_type != 4 )
         {
-            std::string bff = get_lang_string(yw->string_pointers_p2, 229, "TECH-UPGRADE LOST! ");
+            std::string bff = yw->GetLocaleString(229, "TECH-UPGRADE LOST! ");
             bff += gemProt->MsgDefault;
 
             yw_arg159 arg159;
             arg159.field_4 = 80;
-            arg159.txt = bff.c_str();
+            arg159.txt = bff;
             arg159.field_C = 29;
             arg159.unit = NULL;
 
@@ -2655,7 +2653,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         yw->GameShell->netLevelID = lobbyMsg->lvlID;
-        yw->GameShell->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name.c_str());
+        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name);
 
         windp_arg79 plDat;
         plDat.ID = 0;
@@ -2771,7 +2769,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         yw->GameShell->netLevelID = stlvlMsg->lvlID;
-        yw->GameShell->netLevelName = get_lang_string(yw->string_pointers_p2, 1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name.c_str());
+        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name);
 
         for (int i = 0; i < 4; i++)
         {
@@ -3012,7 +3010,6 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         yw_arg159 arg159;
         arg159.field_4 = 50;
-        arg159.txt = NULL;
         arg159.unit = NULL;
 
         switch ( exitMsg->owner )
@@ -4258,7 +4255,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     FontUA::set_xpos(&cur, 0);
     FontUA::set_ypos(&cur, 0);
     FontUA::copy_position(&cur);
-    FontUA::add_txt(&cur, 2 * yw->screen_width / 3 - 1, 1,  get_lang_string(ypaworld__string_pointers, 651, "WAITING FOR PLAYERS: ") );
+    FontUA::add_txt(&cur, 2 * yw->screen_width / 3 - 1, 1,  yw->GetLocaleString(651, "WAITING FOR PLAYERS: ") );
     FontUA::next_line(&cur);
 
     yw->netStartTime -= inpt.Period;
@@ -4456,27 +4453,27 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         case 1:
             if ( usr->isHost )
             {
-                t[0] = get_lang_string(ypaworld__string_pointers, 2405, "HOST: LATENCY PROBLEMS.");
-                t[1] = fmt::sprintf("%s %d", get_lang_string(ypaworld__string_pointers, 2423, "PLEASE WAIT"), usr->netProblemCount);
+                t[0] = yw->GetLocaleString(2405, "HOST: LATENCY PROBLEMS.");
+                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2423, "PLEASE WAIT"), usr->netProblemCount);
                 numelm = 2;
             }
             else
             {
-                t[0] = get_lang_string(ypaworld__string_pointers, 2406, "CLIENT: LATENCY PROBLEMS.");
-                t[1] = fmt::sprintf("%s %d", get_lang_string(ypaworld__string_pointers, 2424, "PLEASE WAIT"), usr->netProblemCount);
+                t[0] = yw->GetLocaleString(2406, "CLIENT: LATENCY PROBLEMS.");
+                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2424, "PLEASE WAIT"), usr->netProblemCount);
                 numelm = 2;
             }
             break;
 
         case 3:
-            t[0] = get_lang_string(ypaworld__string_pointers, 2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE");
-            t[1] = fmt::sprintf("%s %d", get_lang_string(ypaworld__string_pointers, 2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCount / 1000);
+            t[0] = yw->GetLocaleString(2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE");
+            t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCount / 1000);
             numelm = 2;
             break;
 
         case 4:
-            t[0] = get_lang_string(ypaworld__string_pointers, 2427, "FOLLOWING PLAYERES WERE REMOVED");
-            t[1] = fmt::sprintf(get_lang_string(ypaworld__string_pointers, 2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
+            t[0] = yw->GetLocaleString(2427, "FOLLOWING PLAYERES WERE REMOVED");
+            t[1] = fmt::sprintf(yw->GetLocaleString(2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
             numelm = 2;
 
             for(int i = 0; i < 8; i++)
@@ -4490,8 +4487,8 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
             break;
 
         case 5:
-            t[0] = get_lang_string(ypaworld__string_pointers, 2429, "NO CONNECTION TO FOLLOWING PLAYERS");
-            t[1] = fmt::sprintf(get_lang_string(ypaworld__string_pointers, 2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
+            t[0] = yw->GetLocaleString(2429, "NO CONNECTION TO FOLLOWING PLAYERS");
+            t[1] = fmt::sprintf(yw->GetLocaleString(2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
             numelm = 2;
 
             for(int i = 0; i < 8; i++)
@@ -4523,11 +4520,11 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
 
             if ( usr->netAllOk == 1 )
             {
-                t[0] = get_lang_string(ypaworld__string_pointers, 2409, "NETWORK IS NOW OK");
+                t[0] = yw->GetLocaleString(2409, "NETWORK IS NOW OK");
             }
             else if ( usr->netAllOk == 2 )
             {
-                t[0] = get_lang_string(ypaworld__string_pointers, 2408, "THERE WAS NO CHANCE TO SOLVE THIS PROBLEM");
+                t[0] = yw->GetLocaleString(2408, "THERE WAS NO CHANCE TO SOLVE THIS PROBLEM");
             }
             else if ( usr->netAllOk == 3 )
             {
@@ -4553,7 +4550,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         cur = GuiBase::FormateTitle(yw, yw->screen_width / 4 - yw->screen_width / 2,
                                     12 - yw->screen_height / 2,
                                     yw->screen_width / 2,
-                                    get_lang_string(ypaworld__string_pointers, 2407, "NETZWERKSTATUS"),
+                                    yw->GetLocaleString(2407, "NETZWERKSTATUS"),
                                     cur, 0, 0);
 
         FontUA::next_line(&cur);

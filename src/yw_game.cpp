@@ -67,7 +67,7 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
     }
 }
 
-void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen, const char *text)
+void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen, const std::string &text)
 {
     if ( splashScreen )
     {
@@ -612,7 +612,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     field_7882 = 1;
     field_7886 = 1;
     field_788A = 0;
-    field_81AF = 0;
+    field_81AF.clear();
     field_241c = 0;
     field_1628 = 0;
     field_162A = 0;
@@ -648,13 +648,13 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
             if ( screen_width >= 512 )
             {
-                GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
-                Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 15, "MS Sans Serif,12,400,0") );
+                GFX::Engine.LoadFontByDescr( GetLocaleString(15, "MS Sans Serif,12,400,0") );
+                Gui::UA::LoadFont( GetLocaleString(15, "MS Sans Serif,12,400,0") );
             }
             else
             {
-                GFX::Engine.LoadFontByDescr( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
-                Gui::UA::LoadFont( get_lang_string(string_pointers_p2, 16, "Arial,8,400,0") );
+                GFX::Engine.LoadFontByDescr( GetLocaleString(16, "Arial,8,400,0") );
+                Gui::UA::LoadFont( GetLocaleString(16, "Arial,8,400,0") );
             }
         }
     }
@@ -676,8 +676,6 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
     int tod = loadTOD(this, "tod.def");
 
-    const char *text = get_lang_string(string_pointers_p2, tod + 2490, " ");
-
     tod++;
     if ( tod + 2490 > 2512 )
         tod = 0;
@@ -686,7 +684,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
     if ( diskScreenImage )
     {
-        drawSplashScreenWithTOD(this, diskScreenImage, text);
+        drawSplashScreenWithTOD(this, diskScreenImage, GetLocaleString(tod + 2490, " "));
         deleteSplashScreen(this, diskScreenImage);
     }
 
@@ -1277,7 +1275,6 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                     yw_arg159 v21;
                     v21.unit = a5->unit;
                     v21.field_4 = 78;
-                    v21.txt = NULL;
                     v21.field_C = 45;
 
                     ypaworld_func159(&v21);
@@ -1288,7 +1285,6 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                 yw_arg159 v24;
                 v24.unit = NULL;
                 v24.field_4 = 78;
-                v24.txt = NULL;
                 v24.field_C = 67;
 
                 ypaworld_func159(&v24);
@@ -1307,7 +1303,6 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                             yw_arg159 v23;
                             v23.unit = NULL;
                             v23.field_4 = 80;
-                            v23.txt = NULL;
                             v23.field_C = 82;
 
                             ypaworld_func159(&v23);
@@ -1317,7 +1312,6 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                             yw_arg159 v22;
                             v22.unit = NULL;
                             v22.field_4 = 80;
-                            v22.txt = NULL;
                             v22.field_C = 81;
 
                             ypaworld_func159(&v22);
@@ -2802,7 +2796,6 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *yw, int dtime)
                         yw_arg159 arg159;
 
                         arg159.unit = yw->UserRobo;
-                        arg159.txt = 0;
                         arg159.field_4 = 65;
 
                         if ( yw->BuildProtos[a6].ModelID == 1 )
@@ -3045,12 +3038,12 @@ void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 
     if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 250, "Superbomb activated.");
+        arg159.txt = GetLocaleString(250, "Superbomb activated.");
         arg159.field_C = 70;
     }
     else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 254, "Superwave activated.");
+        arg159.txt = GetLocaleString(254, "Superwave activated.");
         arg159.field_C = 74;
     }
     else
@@ -3088,12 +3081,12 @@ void NC_STACK_ypaworld::sub_4D1594(int id)
 
     if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 252, "Superbomb frozen.");
+        arg159.txt = GetLocaleString(252, "Superbomb frozen.");
         arg159.field_C = 72;
     }
     else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 256, "Superwave frozen.");
+        arg159.txt = GetLocaleString(256, "Superwave frozen.");
         arg159.field_C = 76;
     }
     else
@@ -3133,12 +3126,12 @@ void NC_STACK_ypaworld::sub_4D1444(int id)
 
     if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 251, "Superbomb triggered.");
+        arg159.txt = GetLocaleString(251, "Superbomb triggered.");
         arg159.field_C = 71;
     }
     else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 255, "Superwave triggered.");
+        arg159.txt = GetLocaleString(255, "Superwave triggered.");
         arg159.field_C = 75;
     }
     else
@@ -3280,7 +3273,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
 
         if ( arg->TimeStamp / 500 & 1 )
         {
-            const char *v6 = get_lang_string(yw->string_pointers_p2, 14, "*** GAME PAUSED, HIT KEY TO CONTINUE ***");
+            const std::string &v6 = yw->GetLocaleString(14, "*** GAME PAUSED, HIT KEY TO CONTINUE ***");
 
             char v10[256];
             char *pcur = v10;
@@ -3378,7 +3371,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                 yw_arg159 arg159;
                 arg159.unit = 0;
                 arg159.field_4 = 65;
-                arg159.txt = get_lang_string(yw->string_pointers_p2, 224, "TRANSPORTER GATE CLOSED!");
+                arg159.txt = yw->GetLocaleString(224, "TRANSPORTER GATE CLOSED!");
                 arg159.field_C = 24;
 
                 yw->ypaworld_func159(&arg159);
@@ -3410,7 +3403,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                     yw_arg159 arg159_1;
                     arg159_1.unit = 0;
                     arg159_1.field_4 = 49;
-                    arg159_1.txt = get_lang_string(yw->string_pointers_p2, 223, "TRANSPORTER GATE OPENED!");
+                    arg159_1.txt = yw->GetLocaleString(223, "TRANSPORTER GATE OPENED!");
                     arg159_1.field_C = 23;
 
                     yw->ypaworld_func159(&arg159_1);
@@ -3424,7 +3417,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                     yw_arg159 arg159_2;
                     arg159_2.unit = 0;
                     arg159_2.field_4 = 10;
-                    arg159_2.txt = get_lang_string(yw->string_pointers_p2, 258, "WARNING: BEAM GATE FULL!");
+                    arg159_2.txt = yw->GetLocaleString(258, "WARNING: BEAM GATE FULL!");
                     arg159_2.field_C = 46;
 
                     yw->ypaworld_func159(&arg159_2);
@@ -3495,12 +3488,12 @@ void NC_STACK_ypaworld::sub_4D16C4(int id)
 
     if ( sitem.Type == 1 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 253, "Superbomb deactivated.");
+        arg159.txt = GetLocaleString(253, "Superbomb deactivated.");
         arg159.field_C = 73;
     }
     else if ( sitem.Type == 2 )
     {
-        arg159.txt = get_lang_string(string_pointers_p2, 257, "Superwave deactivated.");
+        arg159.txt = GetLocaleString(257, "Superwave deactivated.");
         arg159.field_C = 77;
     }
     else
@@ -3812,7 +3805,7 @@ void ypaworld_func64__sub3(NC_STACK_ypaworld *yw)
                     yw_arg159 arg159;
                     arg159.unit = yw->UserUnit;
                     arg159.field_4 = 24;
-                    arg159.txt = get_lang_string(yw->string_pointers_p2, 222, "ENEMY SECTOR ENTERED");
+                    arg159.txt = yw->GetLocaleString(222, "ENEMY SECTOR ENTERED");
                     arg159.field_C = 22;
 
                     yw->ypaworld_func159(&arg159);
@@ -4692,8 +4685,7 @@ int ypaworld_func64__sub22__sub0(NC_STACK_ypaworld *yw, int event_id)
             extern GuiList exit_menu;
 
             dword_5C8B78 = 8;
-            const char *v14 = get_lang_string(yw->string_pointers_p2, 2470, "2470 == EXIT TUTORIAL MISSION ?");
-            yw->sb_0x4c87fc(v14, &exit_menu);
+            yw->sb_0x4c87fc( yw->GetLocaleString(2470, "2470 == EXIT TUTORIAL MISSION ?") , &exit_menu);
         }
         return 6;
     }
@@ -4719,8 +4711,6 @@ void ypaworld_func64__sub22__sub1(NC_STACK_ypaworld *yw, int evnt_id)
 
     if ( ev->field_14 >= ev->field_18 )
         ev->field_14 = 0;
-
-    arg159.txt = NULL;
 
     yw->ypaworld_func159(&arg159);
 }

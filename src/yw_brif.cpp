@@ -203,7 +203,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, InputState 
     brf->StartTime = brf->CurrTime;
 
     brf->SelectedObjID = -1;
-    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 150, "YOU ARE HERE");
+    brf->ObjDescription = yw->GetLocaleString(150, "YOU ARE HERE");
 }
 
 void NC_STACK_ypaworld::BriefingSetObject(const BriefObject &obj, bool doAdd)
@@ -228,12 +228,11 @@ void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, InputState 
     else if ( brf->ActiveElementID )
     {
         MapRobo &robo = brf->Desc.Robos[0];
-        const char *v6 = get_lang_string(yw->string_pointers_p2, robo.VhclID + 1200, yw->VhclProtos[ robo.VhclID ].name.c_str());
 
         brf->ActiveElementID = 0;
         yw->BriefingSetObject( BriefObject(BriefObject::TYPE_VEHICLE, robo.VhclID, robo.Pos.x, robo.Pos.z,
                                            26, 128 + robo.Owner, 25,
-                                           v6), 
+                                           yw->GetLocaleString(robo.VhclID + 1200, yw->VhclProtos[ robo.VhclID ].name)), 
                                brf->AddObjectsFlag);
     }
 }
@@ -246,7 +245,7 @@ void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengSc
     brf->ElementsCount = 0;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 151, "PRIMARY TARGETS");
+    brf->ObjDescription = yw->GetLocaleString(151, "PRIMARY TARGETS");
 
     for (const MapGate &gate : yw->_levelInfo->Gates )
     {
@@ -284,10 +283,9 @@ void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengS
                         float xpos = ks.x * 1200.0 + 600.0;
                         float ypos = -(ks.y * 1200.0 + 600.0);
                         uint8_t v12 = (*yw->typ_map)(ks.x, ks.y);
-                        const char *v13 = get_lang_string(yw->string_pointers_p2, 157, "KEY SECTOR");
 
                         yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v12, xpos, ypos, 26, 146, 25, 
-                                                            v13),
+                                                            yw->GetLocaleString(157, "KEY SECTOR")),
                                                brf->AddObjectsFlag);
                     }
 
@@ -305,7 +303,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, InputState
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
     brf->StartTime = brf->CurrTime;
-    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 152, "TECHNOLOGY UPGRADES");
+    brf->ObjDescription = yw->GetLocaleString(152, "TECHNOLOGY UPGRADES");
 
     for ( const MapGem &gem : yw->_Gems)
     {
@@ -345,10 +343,9 @@ void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, InputState
         float xpos = pGem->SecX * 1200.0 + 600.0;
         float ypos = -(pGem->SecY * 1200.0 + 600.0);
         int v13 = yw->BuildProtos[pGem->BuildingID].SecType;
-        const char *v14 = get_lang_string(yw->string_pointers_p2, 158, "TECH UPGRADE");
 
         yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, xpos, ypos, 26, 144, 25, 
-                                            v14 ),  
+                                            yw->GetLocaleString(158, "TECH UPGRADE") ),  
                                brf->AddObjectsFlag);
     }
 }
@@ -360,7 +357,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, InputState
     brf->ActiveElementID = -1;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 153, "ENEMY DEFENSE STATIONS");
+    brf->ObjDescription = yw->GetLocaleString(153, "ENEMY DEFENSE STATIONS");
     brf->ElementsCount = 0;
 
     for (size_t i = 1; i < brf->Desc.Robos.size(); i++)
@@ -400,9 +397,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, InputState
             }
         }
 
-        const char *v11 = get_lang_string(yw->string_pointers_p2, robo->VhclID + 1200, yw->VhclProtos[ robo->VhclID ].name.c_str());
         yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, robo->VhclID, robo->Pos.x, robo->Pos.z, 26, 128 + robo->Owner, 25, 
-                                            v11 ),  
+                                            yw->GetLocaleString(robo->VhclID + 1200, yw->VhclProtos[ robo->VhclID ].name) ),  
                                brf->AddObjectsFlag);
     }
 }
@@ -415,7 +411,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, InputState
     brf->ElementsCount = 0;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 154, "ENEMY FORCES");
+    brf->ObjDescription = yw->GetLocaleString(154, "ENEMY FORCES");
 
     for ( const MapSquad &squad : brf->Desc.Squads )
     {
@@ -454,10 +450,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, InputState
 
         if ( squad )
         {
-            const char *v11 = get_lang_string(yw->string_pointers_p2, squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name.c_str());
+            std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetLocaleString(squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name));
 
             yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 36, 
-                                                fmt::sprintf("%d %s", squad->Count, v11) ),  
+                                                nm ),  
                                    brf->AddObjectsFlag);
         }
     }
@@ -512,10 +508,10 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, InputState
 
         if ( squad )
         {
-            const char *v11 = get_lang_string(yw->string_pointers_p2, squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name.c_str());
+            std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetLocaleString(squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name));
 
             yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 25, 
-                                                fmt::sprintf("%d %s", squad->Count, v11) ),  
+                                                nm ),  
                                    brf->AddObjectsFlag);
         }
     }
@@ -531,7 +527,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, InputState
     brf->Stage = 26;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = get_lang_string(yw->string_pointers_p2, 156, "TRANSPORTER GATES");
+    brf->ObjDescription = yw->GetLocaleString(156, "TRANSPORTER GATES");
 
     for ( const MapGate &gate : yw->_levelInfo->Gates )
     {
@@ -572,10 +568,9 @@ void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, InputState
         float xpos = pGate->SecX * 1200.0 + 600.0;
         float ypos = -(pGate->SecY * 1200.0 + 600.0);
         int v13 = yw->BuildProtos[ pGate->ClosedBldID ].SecType;
-        const char *v14 = get_lang_string(yw->string_pointers_p2, 159, "BEAM GATE");
 
         yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, xpos, ypos, 26, 145, 25, 
-                                            v14 ),  
+                                            yw->GetLocaleString(159, "BEAM GATE") ),  
                                brf->AddObjectsFlag);
     }
 }
@@ -709,7 +704,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, BriefengScreen *brf)
     {
         int v20 = brf->CurrTime - brf->PreTextTime;
 
-        const char *v21 = get_lang_string(yw->string_pointers_p2, 2467, "LOADING MISSION OBJECTIVES...");
+        const std::string v21 = yw->GetLocaleString(2467, "LOADING MISSION OBJECTIVES...");
 
         int v24;
 
@@ -807,7 +802,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     FontUA::set_center_ypos(&pos, 4 + v37);
     FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
 
-    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName.c_str());
+    const std::string v7 = yw->GetLocaleString(yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName);
 
     pos = FontUA::FormateCenteredSkipableItem(yw->tiles[16], pos, v7, v34 - v35);
     FontUA::set_end(&pos);
@@ -1410,7 +1405,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, Brief
     int v13 = (yw->screen_width / 2) * 0.03125;
     int v16 = (yw->screen_height / 2) * -0.9333333333333333;
 
-    const char *v7 = get_lang_string(yw->string_pointers_p2, yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName.c_str());
+    const std::string v7 = yw->GetLocaleString(yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName);
 
     char cmdBuff[264];
     char *cur = cmdBuff;
@@ -1439,7 +1434,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, char
     FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
     FontUA::ColumnItem elms[3];
 
-    elms[0].txt = get_lang_string(yw->string_pointers_p2, 2450, "KILLS");
+    elms[0].txt = yw->GetLocaleString(2450, "KILLS");
     elms[0].spaceChar = 32;
     elms[0].prefixChar = 0;
     elms[0].postfixChar = 0;
@@ -1447,7 +1442,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, char
     elms[0].flags = 36;
     elms[0].fontID = 15;
 
-    elms[1].txt = get_lang_string(yw->string_pointers_p2, 2451, "BY PLAYER");
+    elms[1].txt = yw->GetLocaleString(2451, "BY PLAYER");
     elms[1].fontID = 15;
     elms[1].width = a4 * 0.3;
     elms[1].spaceChar = 32;
@@ -1455,7 +1450,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, char
     elms[1].prefixChar = 0;
     elms[1].postfixChar = 0;
 
-    elms[2].txt = get_lang_string(yw->string_pointers_p2, 2452, "ALL");
+    elms[2].txt = yw->GetLocaleString(2452, "ALL");
     elms[2].width = a4 * 0.3;
     elms[2].fontID = 15;
     elms[2].spaceChar = 32;
@@ -1499,37 +1494,37 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
         switch ( v28[i].owner )
         {
         case 1:
-            who = get_lang_string(yw->string_pointers_p2, 2411, "RESISTANCE");
+            who = yw->GetLocaleString(2411, "RESISTANCE");
             clr_id = 1;
             break;
 
         case 2:
-            who = get_lang_string(yw->string_pointers_p2, 2412, "SULGOGARS");
+            who = yw->GetLocaleString(2412, "SULGOGARS");
             clr_id = 2;
             break;
 
         case 3:
-            who = get_lang_string(yw->string_pointers_p2, 2413, "MYKONIANS");
+            who = yw->GetLocaleString(2413, "MYKONIANS");
             clr_id = 3;
             break;
 
         case 4:
-            who = get_lang_string(yw->string_pointers_p2, 2414, "TAERKASTEN");
+            who = yw->GetLocaleString(2414, "TAERKASTEN");
             clr_id = 4;
             break;
 
         case 5:
-            who = get_lang_string(yw->string_pointers_p2, 2415, "BLACK SECT");
+            who = yw->GetLocaleString(2415, "BLACK SECT");
             clr_id = 5;
             break;
 
         case 6:
-            who = get_lang_string(yw->string_pointers_p2, 2416, "GHORKOV");
+            who = yw->GetLocaleString(2416, "GHORKOV");
             clr_id = 6;
             break;
 
         default:
-            who = get_lang_string(yw->string_pointers_p2, 2417, "NEUTRAL");
+            who = yw->GetLocaleString(2417, "NEUTRAL");
             clr_id = 7;
             break;
         }
@@ -1581,7 +1576,7 @@ char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
 
     FontUA::ColumnItem elm;
 
-    elm.txt = get_lang_string(yw->string_pointers_p2, 2453, "SCORE");
+    elm.txt = yw->GetLocaleString(2453, "SCORE");
     elm.width = a4;
     elm.spaceChar = 32;
     elm.fontID = 15;
@@ -1625,37 +1620,37 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
             switch ( v32[i].owner )
             {
             case 1:
-                who = get_lang_string(yw->string_pointers_p2, 2411, "RESISTANCE");
+                who = yw->GetLocaleString(2411, "RESISTANCE");
                 clr_id = 1;
                 break;
 
             case 2:
-                who = get_lang_string(yw->string_pointers_p2, 2412, "SULGOGARS");
+                who = yw->GetLocaleString(2412, "SULGOGARS");
                 clr_id = 2;
                 break;
 
             case 3:
-                who = get_lang_string(yw->string_pointers_p2, 2413, "MYKONIANS");
+                who = yw->GetLocaleString(2413, "MYKONIANS");
                 clr_id = 3;
                 break;
 
             case 4:
-                who = get_lang_string(yw->string_pointers_p2, 2414, "TAERKASTEN");
+                who = yw->GetLocaleString(2414, "TAERKASTEN");
                 clr_id = 4;
                 break;
 
             case 5:
-                who = get_lang_string(yw->string_pointers_p2, 2415, "BLACK SECT");
+                who = yw->GetLocaleString(2415, "BLACK SECT");
                 clr_id = 5;
                 break;
 
             case 6:
-                who = get_lang_string(yw->string_pointers_p2, 2416, "GHORKOV");
+                who = yw->GetLocaleString(2416, "GHORKOV");
                 clr_id = 6;
                 break;
 
             default:
-                who = get_lang_string(yw->string_pointers_p2, 2417, "NEUTRAL");
+                who = yw->GetLocaleString(2417, "NEUTRAL");
                 clr_id = 7;
                 break;
             }
@@ -1691,7 +1686,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
 
         FontUA::ColumnItem v35[2];
 
-        v35[0].txt = get_lang_string(yw->string_pointers_p2, 2457, "SCORE THIS MISSION:");
+        v35[0].txt = yw->GetLocaleString(2457, "SCORE THIS MISSION:");
         v35[0].spaceChar = 32;
         v35[0].prefixChar = 0;
         v35[0].postfixChar = 0;
@@ -1711,7 +1706,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
 
         FontUA::next_line(&cur);
 
-        v35[0].txt = get_lang_string(yw->string_pointers_p2, 2458, "SCORE OVERALL:");
+        v35[0].txt = yw->GetLocaleString(2458, "SCORE OVERALL:");
         v35[0].flags = 36;
         v35[0].spaceChar = 32;
         v35[0].width = a4 * 0.7;
@@ -1744,7 +1739,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
     if ( yw->field_727c )
     {
         FontUA::ColumnItem v30[2];
-        v30[0].txt = get_lang_string(yw->string_pointers_p2, 2456, "PLAYING TIME:");
+        v30[0].txt = yw->GetLocaleString(2456, "PLAYING TIME:");
         v30[0].spaceChar = 32;
         v30[0].prefixChar = 0;
         v30[0].postfixChar = 0;
@@ -1768,7 +1763,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
     {
 
         FontUA::ColumnItem a4a[2];
-        a4a[0].txt = get_lang_string(yw->string_pointers_p2, 2454, "PLAYING TIME THIS MISSION:");
+        a4a[0].txt = yw->GetLocaleString(2454, "PLAYING TIME THIS MISSION:");
         a4a[0].spaceChar = 32;
         a4a[0].prefixChar = 0;
         a4a[0].postfixChar = 0;
@@ -1790,7 +1785,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
 
         FontUA::next_line(&cur);
 
-        a4a[0].txt = get_lang_string(yw->string_pointers_p2, 2455, "PLAYING TIME OVERALL:");
+        a4a[0].txt = yw->GetLocaleString(2455, "PLAYING TIME OVERALL:");
         a4a[0].flags = 36;
         a4a[0].spaceChar = 32;
         a4a[0].width = a4 * 0.7;
@@ -1891,14 +1886,14 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
 
     if ( vhcl )
     {
-        v33 = get_lang_string(yw->string_pointers_p2, lastVhcl + 1200, vhcl->name.c_str());
+        v33 = yw->GetLocaleString(lastVhcl + 1200, vhcl->name);
     }
     else if ( bld )
     {
         if ( yw->field_727c )
-            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->Name.c_str());
+            v33 = yw->GetLocaleString(lastBuild + 1700, bld->Name);
         else
-            v33 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->Name.c_str());
+            v33 = yw->GetLocaleString(lastBuild + 1500, bld->Name);
     }
 
     switch ( upg.upgradeType )
@@ -1908,7 +1903,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
         {
             if ( vhcl )
             {
-                v13 = get_lang_string(yw->string_pointers_p2, 2459, "WEAPON UPGRADE:");
+                v13 = yw->GetLocaleString(2459, "WEAPON UPGRADE:");
 
                 if ( vhcl->num_weapons > 1 )
                     v14 = fmt::sprintf("(%d x%d)", wpn->energy / 100, vhcl->num_weapons);
@@ -1921,7 +1916,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
     case World::UPGRADE_ARMOR:
         if ( vhcl )
         {
-            v13 = get_lang_string(yw->string_pointers_p2, 2460, "ARMOR UPGRADE:");
+            v13 = yw->GetLocaleString(2460, "ARMOR UPGRADE:");
 
             v14 = fmt::sprintf("(%d%%)", vhcl->shield);
         }
@@ -1930,21 +1925,21 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
     case World::UPGRADE_VEHICLE:
         if ( vhcl )
         {
-            v13 = get_lang_string(yw->string_pointers_p2, 2461, "NEW VEHICLE TECH:");
+            v13 = yw->GetLocaleString(2461, "NEW VEHICLE TECH:");
         }
         break;
 
     case World::UPGRADE_BUILDING:
         if ( bld )
         {
-            v13 = get_lang_string(yw->string_pointers_p2, 2462, "NEW BUILDING TECH:");
+            v13 = yw->GetLocaleString(2462, "NEW BUILDING TECH:");
         }
         break;
 
     case World::UPGRADE_RADARE:
         if ( vhcl )
         {
-            v13 = get_lang_string(yw->string_pointers_p2, 2463, "RADAR UPGRADE:");
+            v13 = yw->GetLocaleString(2463, "RADAR UPGRADE:");
         }
         break;
 
@@ -1954,17 +1949,17 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
             if ( bld )
             {
                 if ( yw->field_727c )
-                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1700, bld->Name.c_str());
+                    v14 = yw->GetLocaleString(lastBuild + 1700, bld->Name);
                 else
-                    v14 = get_lang_string(yw->string_pointers_p2, lastBuild + 1500, bld->Name.c_str());
+                    v14 = yw->GetLocaleString(lastBuild + 1500, bld->Name);
 
-                v13 = get_lang_string(yw->string_pointers_p2, 2464, "COMBINED UPGRADE:");
+                v13 = yw->GetLocaleString(2464, "COMBINED UPGRADE:");
             }
         }
         break;
 
     case World::UPGRADE_GENERIC:
-        v13 = get_lang_string(yw->string_pointers_p2, 2465, "GENERIC TECH UPGRADE");
+        v13 = yw->GetLocaleString(2465, "GENERIC TECH UPGRADE");
         break;
 
     default:

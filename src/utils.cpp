@@ -35,14 +35,6 @@ float SWAP32F(float f)
 }
 
 
-const char *get_lang_string(char **array, int id, const char *def)
-{
-    const char *v4 = array[id];
-    if ( !v4 || !strcmp(v4, "<>") )
-        return def;
-    return v4;
-}
-
 
 #ifndef strnicmp
 int strnicmp (const char *s1, const char *s2, size_t n)

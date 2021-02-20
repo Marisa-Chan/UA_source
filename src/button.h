@@ -55,8 +55,8 @@ public:
         int16_t ypos;
         int16_t width;
         int16_t height;
-        char caption[512];
-        char caption2[512];
+        std::string caption;
+        std::string caption2;
         int16_t flags;
         int down_id;
         int up_id;
@@ -81,8 +81,8 @@ public:
         int ypos;
         int width;
         int field_10;
-        const char *caption;
-        const char *caption2;
+        std::string caption;
+        std::string caption2;
         int down_id;
         int up_id;
         int pressed_id;

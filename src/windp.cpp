@@ -1046,7 +1046,7 @@ void UserData::yw_JoinNetGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
+                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
 
                 windp_arg79 plData;
                 plData.ID = 0;
@@ -1124,7 +1124,7 @@ void UserData::yw_JoinNetGame()
                     GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
-                printf("%s: %s\n", get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
+                fmt::printf("%s: %s\n", p_YW->GetLocaleString(2400, "YPA ERROR MESSAGE"), p_YW->GetLocaleString(2401, "SESSION NOT LONGER AVAILABLE"));
 
                 if ( p_ypaworld->windp->GetProvType() == 4 )
                 {
@@ -1181,7 +1181,7 @@ void UserData::JoinLobbyLessGame()
                 }
             }
             network_listvw.firstShownEntries = 0;
-            netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
+            netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
 
             windp_arg79 plData;
             plData.ID = 0;
@@ -1270,7 +1270,7 @@ void UserData::JoinLobbyLessGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = get_lang_string(p_ypaworld->string_pointers_p2, 1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
+                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
 
                 windp_arg79 plData;
                 plData.ID = 0;
@@ -1348,7 +1348,7 @@ void UserData::JoinLobbyLessGame()
                     GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
-                printf("%s: %s\n", get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
+                fmt::printf("%s: %s\n", p_YW->GetLocaleString(2400, "YPA ERROR MESSAGE"), p_YW->GetLocaleString(2401, "SESSION NOT LONGER AVAILABLE"));
 
                 if ( p_ypaworld->windp->GetProvType() == 4 )
                 {
@@ -1503,8 +1503,6 @@ bool yw_initNetLogFile()
 
 void UserData::yw_NetPrintStartInfo()
 {
-    extern char **ypaworld__string_pointers; //declared in yw.cpp
-
     if ( yw_initNetLogFile() )
     {
         log_netlog("-------------- Start YPA network session ------------------\n\n");
@@ -1568,8 +1566,8 @@ void UserData::yw_NetPrintStartInfo()
         else
             log_netlog("\nThe local player is %s and is CLIENT\n", callSIGN.c_str());
 
-        const char *tmp = get_lang_string(ypaworld__string_pointers, netLevelID + 1800, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name.c_str());
-        log_netlog("They play level %d, this is %s\n", netLevelID, tmp);
+        std::string tmp = p_YW->GetLocaleString(netLevelID + 1800, p_ypaworld->LevelNet->mapInfos[ netLevelID ].map_name);
+        log_netlog("They play level %d, this is %s\n", netLevelID, tmp.c_str());
         log_netlog("the session started at timeindex %d\n", p_ypaworld->timeStamp / 1000);
         log_netlog("\n\n--------------------------------------------------------\n");
     }
@@ -1579,10 +1577,8 @@ void UserData::yw_NetPrintStartInfo()
     }
 }
 
-int UserData::ypaworld_func158__sub0__sub8(const char **a2, const char **a3)
+int UserData::ypaworld_func158__sub0__sub8(std::string *a2, std::string *a3)
 {
-    extern char **ypaworld__string_pointers; //declared in yw.cpp
-
     int numPlayers = p_ypaworld->windp->CountPlayers(NULL);
     int hasCD = 0;
 
@@ -1594,14 +1590,14 @@ int UserData::ypaworld_func158__sub0__sub8(const char **a2, const char **a3)
 
     if ( numPlayers > 3 && hasCD < 2 )
     {
-        *a2 = get_lang_string(ypaworld__string_pointers, 2485, "YOU NEED 2 CD TO START 4 PLAYER GAME");
-        *a3 = get_lang_string(ypaworld__string_pointers, 2444, "2444");
+        *a2 = p_YW->GetLocaleString(2485, "YOU NEED 2 CD TO START 4 PLAYER GAME");
+        *a3 = p_YW->GetLocaleString(2444, "2444");
         return 1;
     }
     else if ( hasCD < 1 )
     {
-        *a2 = get_lang_string(ypaworld__string_pointers, 2484, "YOU NEED A CD TO START THIS GAME");
-        *a3 = get_lang_string(ypaworld__string_pointers, 2443, "2443");
+        *a2 = p_YW->GetLocaleString(2484, "YOU NEED A CD TO START THIS GAME");
+        *a3 = p_YW->GetLocaleString(2443, "2443");
         return 1;
     }
 

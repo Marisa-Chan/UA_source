@@ -40,7 +40,7 @@ bool UserParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
     if (!_o.GameShell->remoteMode)
     {
         if ( !ReadUserNameFile("callsign.def") )
-            _o.GameShell->callSIGN =  get_lang_string(_o.string_pointers_p2, 366, "UNNAMED");
+            _o.GameShell->callSIGN =  _o.GetLocaleString(366, "UNNAMED");
     }
     return true;
 }
@@ -2156,8 +2156,7 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( p1.find("title_") != std::string::npos )
     {
-        std::string title_lang = "title_";
-        title_lang += _o.lang_name;
+        std::string title_lang = std::string("title_") + _o._localeName;
 
         if ( !StriCmp(p1, "title_default") || !StriCmp(p1, title_lang) )
                 _o._levelInfo->MapName = p2;
@@ -2880,7 +2879,7 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 
     if ( p1.find("msg_") != std::string::npos )
     {
-        std::string tmp = fmt::sprintf("msg_%s", _o.lang_name);
+        std::string tmp = fmt::sprintf("msg_%s", _o._localeName);
 
         if ( !StriCmp(p1, "msg_default") || !StriCmp(p1, tmp) )
             _g->MsgDefault = p2;

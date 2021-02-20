@@ -284,7 +284,6 @@ protected:
     float sub_4F4C6C(NC_STACK_ypabact *bctnd, int a4, int a3);
     
     int yparobo_func134__sub1(robo_arg134 *arg);
-    const char * yparobo_func134__sub0(char **strings, int a2);
     
     void sub_4A4538(NC_STACK_ypabact *bact);
     void sub_4A448C(NC_STACK_ypabact *bact);

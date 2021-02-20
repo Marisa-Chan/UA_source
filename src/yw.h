@@ -350,14 +350,8 @@ typedef std::list<video_mode_node> VideoModesList;
 
 struct usr_str
 {
-    int id;
-    const char *pstring;
-
-    usr_str()
-    {
-        id = 0;
-        pstring = NULL;
-    }
+    int id = 0;
+    std::string pstring;
 };
 
 struct audiotrack_adv
@@ -534,7 +528,7 @@ public:
     char win3d_name[300];
 
     const char *field_139A;
-    const char *field_139E;
+    std::string field_139E;
     int16_t fxnumber;
     int16_t field_0x13a4;
     char GFX_flags;
@@ -596,7 +590,7 @@ public:
 
     int16_t netNameCurPos;
     int16_t netLevelID;
-    const char *netLevelName;
+    std::string netLevelName;
 
     std::string callSIGN;
     uint32_t netCRC;
@@ -707,7 +701,7 @@ public:
     void yw_NetOKProvider();
     void yw_JoinNetGame();
     void JoinLobbyLessGame();
-    int ypaworld_func158__sub0__sub8(const char**, const char**);
+    int ypaworld_func158__sub0__sub8(std::string *, std::string *);
     void ypaworld_func151__sub7();
     void yw_FractionInit();
     void yw_netcleanup();
@@ -716,7 +710,7 @@ public:
     void ypaworld_func158__sub0__sub2();
     void GameShellUiOpenNetwork();
     int ypaworld_func158__sub0__sub7();
-    void sub_46D9E0(int a2, const char *txt1, const char *txt2, int a5);
+    void sub_46D9E0(int a2, const std::string &txt1, const std::string &txt2, int a5);
     void ShowMenuMsgBox(int code, const std::string &txt1, const std::string &txt2, bool OkOnly);
     void sub_46D2B4();
     void InputConfCopyToBackup();
@@ -2233,7 +2227,7 @@ struct yw_arg159
 {
     NC_STACK_ypabact *unit;
     int field_4;
-    const char *txt;
+    std::string txt;
     int field_C;
 };
 
@@ -2329,7 +2323,7 @@ public:
     virtual void ypaworld_func163(base_64arg *arg);
     virtual void ypaworld_func164();
     virtual void ypaworld_func165(yw_arg165 *arg);
-    virtual size_t ypaworld_func166(const char **langname);
+    virtual size_t ypaworld_func166(const std::string &langname);
     virtual void ypaworld_func167(UserData *usr);
     virtual size_t ypaworld_func168(NC_STACK_ypabact *pbact);
     virtual size_t LoadGame(const std::string &saveFile);
@@ -2347,7 +2341,7 @@ public:
     virtual void ypaworld_func182(void *arg);
     virtual size_t ypaworld_func183(yw_arg161 *arg);
     virtual void HistoryEventAdd(const World::History::Record &arg);
-    virtual void ypaworld_func185(void *arg);
+    virtual void ypaworld_func185(const void *arg);
 
     NC_STACK_ypaworld();
     virtual ~NC_STACK_ypaworld() {};
@@ -2426,7 +2420,6 @@ public:
     virtual int getYW_lvlFinished();
     virtual int getYW_screenW();
     virtual int getYW_screenH();
-    virtual char **getYW_localeStrings();
     virtual LevelInfo *getYW_levelInfo();
     virtual int getYW_destroyFX();
     virtual NC_STACK_windp *getYW_pNET();
@@ -2564,6 +2557,9 @@ public:
     
     void sub_4C40AC();
     NC_STACK_ypabact *GetLastMsgSender();
+    std::string GetLocaleString(int32_t id, const std::string &def) const;
+    bool LngFileLoad(const std::string &filename);
+
     
     void ypaworld_func64__sub7(InputState *inpt);
     void ypaworld_func64__sub7__sub4(InputState *inpt);
@@ -2614,9 +2610,9 @@ public:
     
     int yw_MouseFindCreationPoint(ClickBoxInf *winp);
     
-    void sb_0x4c87fc(const char *a2, GuiBase *lstvw);
+    void sb_0x4c87fc(const std::string &a2, GuiBase *lstvw);
     void sub_47DB04(char a2);
-    void sub_449DE8(const char *a2);
+    void sub_449DE8(const std::string &a2);
     
     void LoadKeyNames();
     
@@ -2633,6 +2629,7 @@ public:
     bool LoadOwnerMap(const std::string &mapName);
     bool LoadTypeMap(const std::string &mapName);
     
+    void SetLangDefault();
     
     int sb_0x44ca90__sub7(int event_loop_id);
     
@@ -2832,12 +2829,8 @@ public:
     int field_7278;
     int field_727c;
     int field_7280;
-    char lang_name[32];
-    char *lang_strings;
-    char *very_big_array__p_begin;
-    char *lang_strings__end;
-    char **string_pointers;
-    char **string_pointers_p2;
+    std::string _localeName;
+    std::vector<std::string> _localeStrings;
     Common::PlaneBytes *typ_map;
     Common::PlaneBytes *own_map;
     Common::PlaneBytes *blg_map;
@@ -2912,8 +2905,8 @@ public:
     float field_789E; //input sliders
     std::array<std::string, World::MOVIE_MAX_NUMBER> movies;
     int field_81AB;
-    const char *field_81AF;
-    const char *field_81B3;
+    std::string field_81AF;
+    std::string field_81B3;
     int one_game_res;
     int shell_default_res;
     int game_default_res;
