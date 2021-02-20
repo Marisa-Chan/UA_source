@@ -1,4 +1,5 @@
 #include "../fmtlib/printf.h"
+#include <SDL2/SDL_opengl.h>
 #include "gfx.h"
 #include "../utils.h"
 #include "../common.h"
