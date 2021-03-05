@@ -2,15 +2,17 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <queue>
 
 #include "utils.h"
 #include "wrapal.h"
+#include "common.h"
+#include "system/sound.h"
 
 
 #define WRAP_AL_BUFFS   3
 #define WRAP_AL_BUFFSZ  1024
-#define WRAP_AL_MUSSBUFF (4096 * 2 * 2)
-
+#define WRAP_AL_MUSSBUFF (4096 * 2 * 2) // 2 channel 16 bit 4096 samples ~0.09sec on 44100
 #ifdef WRAP_DEBUG
 
 // If in debug mode, perform a test on every call
@@ -151,6 +153,19 @@ walsmpl *waldev::newSample()
 walmus *waldev::createMusicPlayer()
 {
     walmus *tmp = new walmus(this);
+
+    if (SDL_LockMutex(mutex) == 0)
+    {
+        sample_list.push_back(tmp);
+
+        SDL_UnlockMutex(mutex);
+    }
+    return tmp;
+}
+
+WALStream *waldev::CreateStream()
+{
+    WALStream *tmp = new WALStream(this);
 
     if (SDL_LockMutex(mutex) == 0)
     {
@@ -485,7 +500,7 @@ void CTsmpl::update()
             ALint state;
             alCheck(alGetSourcei(_source, AL_SOURCE_STATE, &state));
 
-            if (state == AL_STOPPED)
+            if (state == AL_STOPPED || state == AL_INITIAL)
             {
                 if (_endStreamed) // If data was streamed at all
                 {
@@ -522,7 +537,10 @@ void CTsmpl::update()
                     for (int i = 0; i < WRAP_AL_BUFFS; i++)
                     {
                         if ( _buffers[i] == bufid )
+                        {
                             _used[i] = _fill_n_queue(i);
+                            break;
+                        }
                     }
                 }
             }
@@ -537,7 +555,7 @@ void CTsmpl::_clearQueue()
 {
     ALint queued;
     alCheck(alGetSourcei(_source, AL_BUFFERS_QUEUED, &queued));
-
+    
     for (ALint i = 0; i < queued; ++i)
     {
         ALuint buffer;
@@ -596,6 +614,49 @@ void CTsmpl::loop_count(int loops)
     }
 }
 
+int CTsmpl::GetQueueSize()
+{
+    int tmp = 0;
+    for (bool u : _used)
+    {
+        if (u)
+            tmp++;
+    }
+    return tmp;
+}
+
+bool CTsmpl::IsFreeBuffer()
+{
+    for (bool u : _used)
+    {
+        if (!u)
+            return true;
+    }
+    return false;
+}
+
+size_t CTsmpl::BuffersCapacity() const
+{
+    return _BufSZ * _buffers.size();
+}
+
+uint32_t CTsmpl::GetPlayTime() const
+{
+    switch(_format)
+    {
+        case AL_FORMAT_MONO8:
+            return (_queuedBytes) * 1000 / _freq;
+        case AL_FORMAT_STEREO8:
+        case AL_FORMAT_MONO16:
+            return (_queuedBytes / 2) * 1000 / _freq;
+        case AL_FORMAT_STEREO16:
+            return (_queuedBytes / 4) * 1000 / _freq;
+        default:
+            break;
+    }
+    return 0;
+}
+
 bool CTsmpl::_fill_n_queue(int bufID)
 {
     if (_endStreamed)
@@ -645,6 +706,8 @@ bool CTsmpl::_fill_n_queue(int bufID)
 
         alCheck(alBufferData(bfid, _format, _smplBuffers[bufID].data(), totalRead, _freq));
         _used[bufID] = true;
+        
+        _queuedBytes += totalRead;
 
         alCheck(alSourceQueueBuffers(_source, 1, &bfid));
     }
@@ -661,6 +724,8 @@ void CTsmpl::_stop()
     _clearQueue();
 
     _endStreamed = false;
+    
+    _queuedBytes = 0;
 
     _rewind();
 }
@@ -686,6 +751,8 @@ void CTsmpl::_reset()
 
     _cVolume = 1.0;
     _mVolume = 1.0;
+    
+    _queuedBytes = 0;
 }
 
 void CTsmpl::reset()
@@ -765,4 +832,95 @@ bool CTsmpl::isPlaying()
 bool CTsmpl::isStopped()
 {
     return _status == SMPL_STATUS_STOPPED;
+}
+
+
+
+
+WALStream::WALStream(waldev *dev):
+    CTsmpl(dev, WRAP_AL_MUSSBUFF)
+{
+}
+
+WALStream::~WALStream()
+{
+}
+
+void WALStream::SetFormat(ALenum fmt, uint32_t freq)
+{
+    _freq = freq;
+    _format = fmt;
+}
+
+void WALStream::Feed(void *data, size_t sz)
+{
+    if ( SDL_LockMutex(_mutex) == 0)
+    {
+        _status = SMPL_STATUS_PLAYING;
+        _endStreamed = false;
+        _queue.push( std::vector<uint8_t>( (uint8_t *)data, (uint8_t *)data + sz ) );
+        
+        _dataLeft += sz;
+
+        SDL_UnlockMutex(_mutex);
+    }
+    
+}
+
+size_t WALStream::_read(void *buf, size_t bufsz)
+{
+    if (_queue.empty())
+    {
+        _bufPos = 0;
+        _dataLeft = 0;
+        return 0;
+    }
+    
+    if (_bufPos >= _queue.front().size())
+    {
+        _bufPos = 0;
+        _queue.pop();
+    }
+    
+    size_t readed = 0;
+    while( readed < bufsz && !_queue.empty() )
+    {
+        size_t toRead = Common::MIN(bufsz - readed, _queue.front().size() - _bufPos);
+        std::memcpy((uint8_t *)buf + readed, (uint8_t *)_queue.front().data() + _bufPos, toRead );
+        
+        readed += toRead;
+        _bufPos += toRead;
+        _dataLeft -= toRead;
+        
+        if (_bufPos >= _queue.front().size())
+        {
+            _bufPos = 0;
+            _queue.pop();
+        }
+    }
+    
+    if (_queue.empty())
+        _dataLeft = 0;
+    
+    return readed;
+}
+
+void WALStream::_stop()
+{
+    CTsmpl::_stop();
+    
+    while(!_queue.empty())
+        _queue.pop();
+    _bufPos = 0;
+    _dataLeft = 0;
+}
+
+int WALStream::BuffersCount()
+{
+    return _queue.size();
+}
+
+size_t WALStream::DataLeft()
+{
+    return _dataLeft;
 }

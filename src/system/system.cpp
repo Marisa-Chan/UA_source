@@ -253,7 +253,7 @@ void Deinit()
 }
 
 
-bool Update()
+bool ProcessEvents()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event))
@@ -367,9 +367,17 @@ void SetReleativeMouse(bool mode)
     }
 }
 
-void EventsAddHandler(SDL_EventFilter func)
+void EventsAddHandler(SDL_EventFilter func, bool first)
 {
-    EventHandlers.push_back(func);
+    if (first)
+        EventHandlers.push_front(func);
+    else
+        EventHandlers.push_back(func);
+}
+
+void EventsDeleteHandler(SDL_EventFilter func)
+{
+    EventHandlers.remove(func);
 }
 
 }

@@ -6,14 +6,14 @@ OBJDIR := obj
 
 nix: CXX = g++
 nix: CC = gcc
-nix: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile
+nix: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 win32: MINGW = /usr/i686-w64-mingw32
 win32: CXX = i686-w64-mingw32-g++
 win32: CC = i686-w64-mingw32-gcc
 win32: CDEFS = -DWIN32
 win32: TARGET := $(TARGET).exe
-win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile
+win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample
 win32: LDFLAGS = -L$(MINGW)/lib/
 win32: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
@@ -22,13 +22,13 @@ msys: CXX = i686-w64-mingw32-g++
 msys: CC = i686-w64-mingw32-gcc
 msys: CDEFS = -DWIN32
 msys: TARGET := $(TARGET).exe
-msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile
+msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample
 msys: LDFLAGS = -L$(MINGW)/lib/
 msys: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
 mac: CXX = clang++
 mac: CC = clang
-mac: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile
+mac: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample
 
 OBJS =  \
 	3ds.cpp\
@@ -85,6 +85,7 @@ OBJS =  \
 	system/fsmgr.cpp\
 	system/gfx.cpp\
 	system/inpt.cpp\
+	system/movie.cpp\
 	system/sound.cpp\
 	system/system.cpp\
 	system/tform.cpp\

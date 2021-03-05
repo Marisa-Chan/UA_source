@@ -111,6 +111,8 @@ int SFXEngine::init()
         }
 
         musPlayer = digDriver->createMusicPlayer();
+        
+        AudioStream = digDriver->CreateStream();
     }
     else
     {

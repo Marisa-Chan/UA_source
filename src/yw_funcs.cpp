@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "includes.h"
+#include "system/movie.h"
 #include "yw.h"
 #include "yw_internal.h"
 #include "lstvw.h"
@@ -1423,10 +1424,8 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
 {
     std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix( movie_fname ) );
 
-    const char *v6;
-    v6 = buf.c_str();
-
-    GFX::Engine.windd_func323(&v6);
+    if ( GFX::Engine.win3d_keys[9].Get<bool>() )
+        System::Movie.PlayMovie(buf);
 
     INPe.QueryInput(&input_states);
 

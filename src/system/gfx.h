@@ -380,7 +380,7 @@ public:
     virtual void windd_func320(IDVPair *);
     virtual void windd_func321(IDVPair *);
     virtual void windd_func322(windd_dlgBox *dlgBox);
-    virtual void windd_func323(const char **filename);
+    
     virtual void windd_func324(wdd_func324arg *inout);
     virtual void windd_func325(wdd_func324arg *arg);
 
@@ -429,7 +429,6 @@ public:
 
     static bool compare(polysDat *a, polysDat *b);
     
-    void windd_func323__sub0(const char *filename);
     void win3dInitialisation();
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
@@ -492,7 +491,6 @@ private:
 
 public:
     int _forcesoftcursor;
-    int _movie_player;
     int _field_38;
     int _txt16bit;
     int _use_simple_d3d;

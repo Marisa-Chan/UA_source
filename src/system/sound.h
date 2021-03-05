@@ -260,6 +260,8 @@ public:
     int musMinDelay;
     int musMaxDelay;
     int musTrack;
+    
+    WALStream *AudioStream;
 
 public:
     static SFXEngine SFXe;

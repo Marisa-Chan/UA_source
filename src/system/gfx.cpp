@@ -63,7 +63,6 @@ GFXEngine::GFXEngine()
     }
     
     _forcesoftcursor = 0;
-    _movie_player = 0;
     _field_38 = 0;
     _txt16bit = 0;
     _use_simple_d3d = 0;
@@ -498,7 +497,6 @@ size_t GFXEngine::windd_func0(IDVList &stak)
     SetResolution( Common::Point(stak.Get<int32_t>(ATT_WIDTH, DEFAULT_WIDTH), stak.Get<int32_t>(ATT_HEIGHT, DEFAULT_HEIGHT)) );
 
     _forcesoftcursor = 0;
-    _movie_player = win3d_keys[9].Get<bool>();
     _disable_lowres = win3d_keys[12].Get<bool>();
     _txt16bit = txt16bit_def;
     _use_simple_d3d = drawprim_def;
@@ -1734,28 +1732,6 @@ void GFXEngine::windd_func322(windd_dlgBox *dlgBox)
 }
 
 
-
-
-
-void windd_func323__sub0__sub0(const char *filename)
-{
-    printf("MAKE MOVIE PLAYER %s, file %s\n","windd_func323__sub0__sub0", filename);
-}
-
-
-void GFXEngine::windd_func323__sub0(const char *filename)
-{
-////    unk_514F20 = 1;
-    if ( _movie_player )
-        windd_func323__sub0__sub0(filename);
-////    unk_514F20 = 0;
-}
-
-//Play movie file
-void GFXEngine::windd_func323(const char **filename)
-{
-    windd_func323__sub0(*filename);
-}
 
 void GFXEngine::windd_func324(wdd_func324arg *inout)
 {

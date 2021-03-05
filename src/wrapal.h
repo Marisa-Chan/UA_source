@@ -3,6 +3,7 @@
 
 #include <list>
 #include <vector>
+#include <queue>
 #if defined(__APPLE__) && defined(__MACH__)
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
@@ -49,6 +50,12 @@ public:
         SMPL_STATUS_PLAYING = 1,
         SMPL_STATUS_PAUSED  = 2
     };
+    
+    int GetQueueSize();
+    bool IsFreeBuffer();
+    size_t BuffersCapacity() const;
+    
+    uint32_t GetPlayTime() const;
 
 protected:
     CTsmpl(waldev *dev, size_t bufsz);
@@ -79,7 +86,11 @@ protected:
 
     ALfloat _cVolume;
     ALfloat _mVolume;
-
+    
+    uint64_t _queuedBytes = 0;
+    
+    
+    bool _isStream = false;
     const size_t _BufSZ;
 
     void (*_eosfunc)(void *);
@@ -112,8 +123,6 @@ class walmus: public CTsmpl
     friend waldev;
 
 public:
-    void init();
-
     bool open(const std::string &fname);
     size_t getLen();
 
@@ -131,6 +140,31 @@ protected:
 };
 
 
+class WALStream: public CTsmpl
+{
+    friend waldev;
+
+public:
+    void SetFormat(ALenum fmt, uint32_t freq);
+    void Feed(void *data, size_t sz);
+    
+    int BuffersCount();
+    size_t DataLeft();
+
+protected:
+    WALStream(waldev *dev);
+    ~WALStream();
+
+    virtual size_t _read(void *buf, size_t bufsz);
+    virtual void _rewind() {};
+    virtual void _stop() override;
+    
+    std::queue< std::vector<uint8_t> >_queue;
+    size_t _bufPos = 0;
+    size_t _dataLeft = 0;
+};
+
+
 class waldev
 {
 public:
@@ -144,6 +178,8 @@ public:
     void deleteSample(CTsmpl *smpl);
 
     void master_volume(int vol);
+    
+    WALStream *CreateStream();
 
 private:
     ALCdevice *dev;

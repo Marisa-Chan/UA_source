@@ -865,7 +865,7 @@ int main(int argc, char *argv[])
             if ( !sb_0x411324() )
                 break;
 
-            if ( System::Update() )
+            if ( System::ProcessEvents() )
                 break;
         }
         else
@@ -877,7 +877,7 @@ int main(int argc, char *argv[])
                 if ( !sb_0x411324() )
                     break;
 
-                if ( System::Update() )
+                if ( System::ProcessEvents() )
                     break;
 
                 ticks = curTick;

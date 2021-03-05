@@ -35,7 +35,7 @@ namespace System
     void Deinit();
     
     // Events update cycle
-    bool Update();
+    bool ProcessEvents();
     
     // Draw content of backbuffer
     void Flip();
@@ -49,7 +49,8 @@ namespace System
     
     TTF_Font *LoadFont(const std::string &fontname, int height);
     
-    void EventsAddHandler(SDL_EventFilter);
+    void EventsAddHandler(SDL_EventFilter func, bool first = true);
+    void EventsDeleteHandler(SDL_EventFilter func);
     
     // Return drawable area sizes
     ResRatio GetRResolution();

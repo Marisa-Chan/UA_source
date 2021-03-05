@@ -14,6 +14,7 @@
 
 #include "gui/uamsgbox.h"
 #include "env.h"
+#include "system/movie.h"
 
 extern int word_5A50C2;
 extern int word_5A50AC;
@@ -636,9 +637,9 @@ void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
     if ( !yw->movies[World::MOVIE_INTRO].empty() )
     {
         std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(yw->movies[World::MOVIE_INTRO]) );
-        const char *v5 = buf.c_str();
-
-        GFX::Engine.windd_func323(&v5);
+        
+        if ( GFX::Engine.win3d_keys[9].Get<bool>() )
+            System::Movie.PlayMovie(buf);
 
         INPe.QueryInput(&input_states);
         input_states.KbdLastHit = Input::KC_NONE;

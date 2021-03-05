@@ -34,6 +34,8 @@
         <in>gfx.h</in>
         <in>inpt.cpp</in>
         <in>inpt.h</in>
+        <in>movie.cpp</in>
+        <in>movie.h</in>
         <in>sound.cpp</in>
         <in>sound.h</in>
         <in>system.cpp</in>
@@ -402,6 +404,10 @@
       <item path="system/inpt.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="system/inpt.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="system/movie.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="system/movie.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="system/sound.cpp" ex="false" tool="1" flavor2="0">
       </item>
