@@ -495,6 +495,9 @@ void TMovie::PlayMovie(const std::string &fname)
     
     System::EventsAddHandler(TMovie::EventsWatcher);
     
+    for(size_t i = 0; i < 10; i++)
+        ReadFrames();
+    
     while( _ctx->playing )
     {
         uint32_t curPts = SDL_GetTicks() - stime;
