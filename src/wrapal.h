@@ -55,7 +55,8 @@ public:
     bool IsFreeBuffer();
     size_t BuffersCapacity() const;
     
-    uint32_t GetPlayTime() const;
+    uint32_t BuffersTime() const;
+    uint32_t GetStreamedTime() const;
 
 protected:
     CTsmpl(waldev *dev, size_t bufsz);

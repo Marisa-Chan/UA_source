@@ -41,6 +41,7 @@ struct TMovie::Context
     AVFrame *audFrame = NULL;
     
     bool playing = false;
+    bool fileEOF = false;
     
     struct SwsContext *sws_ctx = NULL;
     GLuint screenTex = 0;
@@ -117,6 +118,8 @@ bool TMovie::OpenFile(const std::string &fname)
     // Trying to open video file
     if (avformat_open_input(&_ctx->FormatCtx, file->getPath().c_str(), NULL, NULL) != 0)
         return false;
+    
+    _ctx->fileEOF = false;
     
     if (avformat_find_stream_info(_ctx->FormatCtx, NULL) < 0)
       return false;
@@ -282,7 +285,12 @@ void TMovie::ReadFrames()
             }
         }
         else
-            _ctx->playing = false;
+        {
+            if (ret == AVERROR_EOF)
+                _ctx->fileEOF = true;
+            else
+                _ctx->playing = false;
+        }
     }
 }
 
@@ -502,7 +510,8 @@ void TMovie::PlayMovie(const std::string &fname)
     {
         uint32_t curPts = SDL_GetTicks() - stime;
         
-        ReadFrames();
+        if (!_ctx->fileEOF)
+            ReadFrames();
         
         if (!_ctx->vidFrames.empty() && nextPV <= curPts )
             nextPV = ProcessFrame();
@@ -520,7 +529,19 @@ void TMovie::PlayMovie(const std::string &fname)
             if (curPts / 1000 >= nextSync)
             {
                 nextSync = (curPts / 1000) + 1;
-                stime = ((SDL_GetTicks() - SFXEngine::SFXe.AudioStream->GetPlayTime()) + stime) / 2;
+                stime = ((SDL_GetTicks() - SFXEngine::SFXe.AudioStream->GetStreamedTime()) + stime) / 2;
+            }
+        }
+        
+        if (_ctx->fileEOF)
+        {
+            if (_ctx->vidFrames.empty() && _ctx->audFrames.empty())
+            {
+                _ctx->playing = false;
+                if (_ctx->audioStream >= 0)
+                    SDL_Delay(SFXEngine::SFXe.AudioStream->BuffersTime()); //Give time for audio to be played
+                else
+                    SDL_Delay(50);
             }
         }
         

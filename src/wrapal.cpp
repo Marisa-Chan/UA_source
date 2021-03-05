@@ -640,7 +640,24 @@ size_t CTsmpl::BuffersCapacity() const
     return _BufSZ * _buffers.size();
 }
 
-uint32_t CTsmpl::GetPlayTime() const
+uint32_t CTsmpl::BuffersTime() const
+{
+    switch(_format)
+    {
+        case AL_FORMAT_MONO8:
+            return (BuffersCapacity()) * 1000 / _freq;
+        case AL_FORMAT_STEREO8:
+        case AL_FORMAT_MONO16:
+            return (BuffersCapacity() / 2) * 1000 / _freq;
+        case AL_FORMAT_STEREO16:
+            return (BuffersCapacity() / 4) * 1000 / _freq;
+        default:
+            break;
+    }
+    return 0;
+}
+
+uint32_t CTsmpl::GetStreamedTime() const
 {
     switch(_format)
     {
