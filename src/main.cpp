@@ -38,6 +38,7 @@
 #include "gui/uawidgets.h"
 #include "gui/uamsgbox.h"
 #include "gui/uaempty.h"
+#include "system/movie.h"
 
 
 int dword_513638 = 0;
@@ -805,6 +806,7 @@ int main(int argc, char *argv[])
     FSMgr::iDir::setBaseDir("");
     System::Init();
     GFX::Engine.Init();
+    System::Movie.Init();
     
     Gui::UA::Init();
 

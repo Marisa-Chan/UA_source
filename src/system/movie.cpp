@@ -17,6 +17,18 @@ extern "C" {
 #include "system.h"
 #include "sound.h"
 
+#if (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(57, 33, 100))
+#define OLDCTX 
+#endif
+
+#if (LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57, 12, 100))
+#define OLDPKT 
+#endif
+
+#if (LIBAVCODEC_VERSION_INT < AV_VERSION_INT(57, 106, 102))
+#define OLDDECODE 
+#endif
+
 namespace System
 {
 
@@ -68,7 +80,9 @@ TMovie::~TMovie()
 
 void TMovie::Init()
 {
-    //av_register_all();
+#if (LIBAVFORMAT_VERSION_INT < AV_VERSION_INT(58, 9, 100))
+    av_register_all();
+#endif
 }
 
 int TMovie::EventsWatcher(void *, SDL_Event *event)
@@ -130,7 +144,11 @@ bool TMovie::OpenFile(const std::string &fname)
         return false;
     
     _ctx->VidCodecCtx = avcodec_alloc_context3(_ctx->VidCodec);
+#ifndef OLDCTX
     avcodec_parameters_to_context(_ctx->VidCodecCtx, _ctx->FormatCtx->streams[_ctx->videoStream]->codecpar);
+#else
+    avcodec_copy_context(_ctx->VidCodecCtx, _ctx->FormatCtx->streams[_ctx->videoStream]->codec);
+#endif
     
     if (avcodec_open2(_ctx->VidCodecCtx, _ctx->VidCodec, NULL) < 0)
     {
@@ -138,8 +156,13 @@ bool TMovie::OpenFile(const std::string &fname)
         avformat_close_input(&_ctx->FormatCtx);
         return false;
     }
-    
+
+#ifndef OLDPKT
     _ctx->packet = av_packet_alloc();
+#else
+    _ctx->packet = (AVPacket *)av_malloc(sizeof(AVPacket));
+    av_init_packet(_ctx->packet);
+#endif
     _ctx->vidFrame = av_frame_alloc();
 
     _ctx->audioStream = av_find_best_stream(_ctx->FormatCtx, AVMEDIA_TYPE_AUDIO, -1, _ctx->videoStream, &_ctx->AudCodec, 0);
@@ -153,7 +176,11 @@ bool TMovie::OpenFile(const std::string &fname)
     if (_ctx->audioStream >= 0)
     {
         _ctx->AudCodecCtx = avcodec_alloc_context3(_ctx->AudCodec);
+#ifndef OLDCTX
         avcodec_parameters_to_context(_ctx->AudCodecCtx, _ctx->FormatCtx->streams[_ctx->audioStream]->codecpar);
+#else 
+        avcodec_copy_context(_ctx->AudCodecCtx, _ctx->FormatCtx->streams[_ctx->audioStream]->codec);
+#endif
         
         int ret = avcodec_open2(_ctx->AudCodecCtx, _ctx->AudCodec, NULL);
         if (ret < 0)
@@ -172,7 +199,12 @@ void TMovie::Close()
 {
     _ctx->playing = false;
     
+#ifndef OLDPKT
     av_packet_free(&_ctx->packet);
+#else
+    av_free_packet(_ctx->packet);
+    av_free(_ctx->packet);
+#endif
     av_frame_free(&_ctx->vidFrame);
     
     if (_ctx->audFrame)
@@ -227,6 +259,7 @@ void TMovie::ReadFrames()
         {
             if (_ctx->packet->stream_index == _ctx->videoStream) 
             {
+#ifndef OLDDECODE
                 ret = avcodec_send_packet(_ctx->VidCodecCtx, _ctx->packet);
                 if (ret < 0)
                 {
@@ -251,9 +284,27 @@ void TMovie::ReadFrames()
                         _ctx->vidFrames.push_back(tmp);
                     }                    
                 }
+#else
+                int gotFrame = 0;
+                ret = avcodec_decode_video2(_ctx->VidCodecCtx, _ctx->vidFrame, &gotFrame, _ctx->packet);
+                if (ret < 0)
+                {
+                    _ctx->playing = false;
+                }
+                else if (gotFrame)
+                {
+                    AVFrame *tmp = av_frame_alloc();
+
+                    av_frame_move_ref(tmp, _ctx->vidFrame);
+                    av_frame_unref(_ctx->vidFrame);
+
+                    _ctx->vidFrames.push_back(tmp);
+                }
+#endif
             }
             else if (_ctx->audioStream >= 0 && _ctx->packet->stream_index == _ctx->audioStream) 
             {
+#ifndef OLDDECODE
                 ret = avcodec_send_packet(_ctx->AudCodecCtx, _ctx->packet);
                 if (ret < 0)
                 {
@@ -278,6 +329,23 @@ void TMovie::ReadFrames()
                         _ctx->audFrames.push_back(tmp);
                     }                    
                 }
+#else
+                int gotFrame = 0;
+                ret = avcodec_decode_audio4(_ctx->AudCodecCtx, _ctx->audFrame, &gotFrame, _ctx->packet);
+                if (ret < 0)
+                {
+                    _ctx->playing = false;
+                }
+                else if (gotFrame)
+                {
+                    AVFrame *tmp = av_frame_alloc();
+
+                    av_frame_move_ref(tmp, _ctx->audFrame);
+                    av_frame_unref(_ctx->audFrame);
+
+                    _ctx->audFrames.push_back(tmp);
+                }
+#endif
             }
             else
             {
