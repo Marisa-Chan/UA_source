@@ -9,12 +9,12 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 </a>
 
 
-**Dependings**: SDL2, SDL2_ttf, OpenGL, OpenAL, vorbisfile(ogg)
+**Dependings**: SDL2, SDL2_ttf, OpenGL, OpenAL, vorbisfile(ogg), ffmpeg
 
 
 **Building**:
 - linux native: **make nix**
-- windows cross-compile: **make win32**
+- windows msys compile: **make msys**
 
 [**Wiki page with instructions**](https://github.com/Marisa-Chan/UA_source/wiki)
 
