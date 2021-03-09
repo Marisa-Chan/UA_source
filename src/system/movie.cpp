@@ -29,6 +29,10 @@ extern "C" {
 #define OLDDECODE 
 #endif
 
+#if (LIBAVUTIL_VERSION_INT < AV_VERSION_INT(56, 0, 100))
+#define OLDPTS 
+#endif
+
 namespace System
 {
 
@@ -276,12 +280,8 @@ void TMovie::ReadFrames()
                         if (ret < 0)
                             break;
 
-                        AVFrame *tmp = av_frame_alloc();
-
-                        av_frame_move_ref(tmp, _ctx->vidFrame);
+                        _ctx->vidFrames.push_back( av_frame_clone(_ctx->vidFrame) );
                         av_frame_unref(_ctx->vidFrame);
-
-                        _ctx->vidFrames.push_back(tmp);
                     }                    
                 }
 #else
@@ -293,12 +293,8 @@ void TMovie::ReadFrames()
                 }
                 else if (gotFrame)
                 {
-                    AVFrame *tmp = av_frame_alloc();
-
-                    av_frame_move_ref(tmp, _ctx->vidFrame);
+                    _ctx->vidFrames.push_back( av_frame_clone(_ctx->vidFrame) );
                     av_frame_unref(_ctx->vidFrame);
-
-                    _ctx->vidFrames.push_back(tmp);
                 }
 #endif
             }
@@ -320,13 +316,9 @@ void TMovie::ReadFrames()
 
                         if (ret < 0)
                             break;
-
-                        AVFrame *tmp = av_frame_alloc();
-
-                        av_frame_move_ref(tmp, _ctx->audFrame);
+                        
+                        _ctx->audFrames.push_back( av_frame_clone(_ctx->audFrame) );
                         av_frame_unref(_ctx->audFrame);
-
-                        _ctx->audFrames.push_back(tmp);
                     }                    
                 }
 #else
@@ -338,19 +330,13 @@ void TMovie::ReadFrames()
                 }
                 else if (gotFrame)
                 {
-                    AVFrame *tmp = av_frame_alloc();
-
-                    av_frame_move_ref(tmp, _ctx->audFrame);
+                    _ctx->audFrames.push_back( av_frame_clone(_ctx->audFrame) );
                     av_frame_unref(_ctx->audFrame);
-
-                    _ctx->audFrames.push_back(tmp);
                 }
 #endif
             }
-            else
-            {
-                av_packet_unref(_ctx->packet);
-            }
+            
+            av_packet_unref(_ctx->packet);
         }
         else
         {
@@ -371,7 +357,12 @@ uint32_t TMovie::ProcessFrame()
     _ctx->vidFrames.pop_front();
 
     AVStream * vids = _ctx->FormatCtx->streams[_ctx->videoStream];
-    uint32_t nextPV = 1000 * (frm->pts + frm->pkt_duration) * vids->time_base.num / vids->time_base.den;
+#ifndef OLDPTS
+    uint32_t nextPV = 1000 * (frm->best_effort_timestamp + frm->pkt_duration) * vids->time_base.num / vids->time_base.den;
+#else
+    int64_t ts = av_frame_get_best_effort_timestamp(frm);
+    uint32_t nextPV = 1000 * (ts + frm->pkt_duration) * vids->time_base.num / vids->time_base.den;
+#endif
 
     if (!_ctx->sws_ctx)
     {
@@ -513,7 +504,12 @@ uint32_t TMovie::ProcessAudio()
     }
 
     AVStream * s = _ctx->FormatCtx->streams[_ctx->audioStream];
-    uint32_t nextPA = 1000 * (frm->pts + frm->pkt_duration / 2) * s->time_base.num / s->time_base.den;
+#ifndef OLDPTS
+    uint32_t nextPA = 1000 * (frm->best_effort_timestamp + frm->pkt_duration / 2) * s->time_base.num / s->time_base.den;
+#else
+    int64_t ts = av_frame_get_best_effort_timestamp(frm);
+    uint32_t nextPA = 1000 * (ts + frm->pkt_duration / 2) * s->time_base.num / s->time_base.den;
+#endif
 
     switch(_ctx->AudCodecCtx->sample_fmt)
     {
