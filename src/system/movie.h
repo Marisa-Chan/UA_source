@@ -26,8 +26,8 @@ private:
     
     void ReadFrames();
     
-    uint32_t ProcessFrame();
-    uint32_t ProcessAudio();
+    void ProcessFrame(uint32_t tm);
+    void ProcessAudio();
     
     static int EventsWatcher(void *, SDL_Event *event);
     

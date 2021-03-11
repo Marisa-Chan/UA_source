@@ -348,21 +348,25 @@ void TMovie::ReadFrames()
     }
 }
 
-uint32_t TMovie::ProcessFrame()
+void TMovie::ProcessFrame(uint32_t tm)
 {
     if (_ctx->vidFrames.empty())
-        return 0;
+        return;
     
     AVFrame *frm = _ctx->vidFrames.front();
-    _ctx->vidFrames.pop_front();
 
     AVStream * vids = _ctx->FormatCtx->streams[_ctx->videoStream];
-#ifndef OLDPTS
-    uint32_t nextPV = 1000 * (frm->best_effort_timestamp + frm->pkt_duration) * vids->time_base.num / vids->time_base.den;
+    
+#ifndef OLDPTS // + frm->pkt_duration
+    uint32_t frmTime = 1000 * (frm->best_effort_timestamp) * vids->time_base.num / vids->time_base.den;
 #else
-    int64_t ts = av_frame_get_best_effort_timestamp(frm);
-    uint32_t nextPV = 1000 * (ts + frm->pkt_duration) * vids->time_base.num / vids->time_base.den;
+    uint32_t frmTime = 1000 * av_frame_get_best_effort_timestamp(frm) * vids->time_base.num / vids->time_base.den;
 #endif
+    
+    if (frmTime > tm)
+        return;
+    
+    _ctx->vidFrames.pop_front();
 
     if (!_ctx->sws_ctx)
     {
@@ -456,101 +460,106 @@ uint32_t TMovie::ProcessFrame()
     System::Flip();
 
     av_frame_free(&frm);
-    
-    return nextPV;
 }
 
-uint32_t TMovie::ProcessAudio()
+void TMovie::ProcessAudio()
 {
-    AVFrame *frm = _ctx->audFrames.front();
-    _ctx->audFrames.pop_front();
-
-    if (!_ctx->AudioSetted)
+    size_t minLeft = SFXEngine::SFXe.AudioStream->BuffersCapacity() * 2;
+    
+    while (!_ctx->audFrames.empty())
     {
-        switch(_ctx->AudCodecCtx->sample_fmt)
-        {
-            case AV_SAMPLE_FMT_U8P:
-                _ctx->swr_ctx = swr_alloc_set_opts(NULL, (frm->channels > 1 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO), AV_SAMPLE_FMT_U8, _ctx->AudCodecCtx->sample_rate, 
-                                                         _ctx->AudCodecCtx->channel_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
-                                                   0, NULL);
-                swr_init(_ctx->swr_ctx);
-                av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
-                _ctx->adst_nb_samples = frm->nb_samples;
-            case AV_SAMPLE_FMT_U8:
-                if (_ctx->AudCodecCtx->channels > 1)
-                    SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_STEREO8, _ctx->AudCodecCtx->sample_rate);
-                else
-                    SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_MONO8, _ctx->AudCodecCtx->sample_rate);
-                break;
-            
-            
-            case AV_SAMPLE_FMT_S16P:
-            default:
-                _ctx->swr_ctx = swr_alloc_set_opts(NULL, (frm->channels > 1 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO), AV_SAMPLE_FMT_S16, _ctx->AudCodecCtx->sample_rate, 
-                                                         _ctx->AudCodecCtx->channel_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
-                                                   0, NULL);
-                swr_init(_ctx->swr_ctx);
-                av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
-                _ctx->adst_nb_samples = frm->nb_samples;
-            case AV_SAMPLE_FMT_S16:
-                if (_ctx->AudCodecCtx->channels > 1)
-                    SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_STEREO16, _ctx->AudCodecCtx->sample_rate);
-                else
-                    SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_MONO16, _ctx->AudCodecCtx->sample_rate);
-                break;
-        }
+        if (SFXEngine::SFXe.AudioStream->DataLeft() >= minLeft)
+            break;
         
-        _ctx->AudioSetted = true;
-    }
+        AVFrame *frm = _ctx->audFrames.front();
+        _ctx->audFrames.pop_front();
 
-    AVStream * s = _ctx->FormatCtx->streams[_ctx->audioStream];
+        AVStream * s = _ctx->FormatCtx->streams[_ctx->audioStream];
 #ifndef OLDPTS
-    uint32_t nextPA = 1000 * (frm->best_effort_timestamp + frm->pkt_duration / 2) * s->time_base.num / s->time_base.den;
+        uint32_t ts = 1000 * (frm->best_effort_timestamp) * s->time_base.num / s->time_base.den;
 #else
-    int64_t ts = av_frame_get_best_effort_timestamp(frm);
-    uint32_t nextPA = 1000 * (ts + frm->pkt_duration / 2) * s->time_base.num / s->time_base.den;
+        uint32_t ts = 1000 * av_frame_get_best_effort_timestamp(frm) * s->time_base.num / s->time_base.den;
 #endif
 
-    switch(_ctx->AudCodecCtx->sample_fmt)
-    {
-        case AV_SAMPLE_FMT_U8:
-            SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * frm->channels);
-            break;
-            
-        case AV_SAMPLE_FMT_S16:
-            SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * frm->channels * 2);
-            break;
-        
-        
-        case AV_SAMPLE_FMT_U8P:
-            if (frm->nb_samples > _ctx->adst_nb_samples)
+        if (!_ctx->AudioSetted)
+        {
+            switch(_ctx->AudCodecCtx->sample_fmt)
             {
-                av_freep(&_ctx->adst_data[0]);
-                av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
-                _ctx->adst_nb_samples = frm->nb_samples;
-            }
-            swr_convert(_ctx->swr_ctx, _ctx->adst_data, frm->nb_samples, (const uint8_t **)frm->data, frm->nb_samples);
-            
-            SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * Common::MIN(2, frm->channels));
-            break;
+                case AV_SAMPLE_FMT_U8P:
+                    _ctx->swr_ctx = swr_alloc_set_opts(NULL, (frm->channels > 1 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO), AV_SAMPLE_FMT_U8, _ctx->AudCodecCtx->sample_rate, 
+                                                             _ctx->AudCodecCtx->channel_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
+                                                       0, NULL);
+                    swr_init(_ctx->swr_ctx);
+                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
+                    _ctx->adst_nb_samples = frm->nb_samples;
+                case AV_SAMPLE_FMT_U8:
+                    if (_ctx->AudCodecCtx->channels > 1)
+                        SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_STEREO8, _ctx->AudCodecCtx->sample_rate);
+                    else
+                        SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_MONO8, _ctx->AudCodecCtx->sample_rate);
+                    break;
 
-        case AV_SAMPLE_FMT_S16P:
-        default:
-            if (frm->nb_samples > _ctx->adst_nb_samples)
-            {
-                av_freep(&_ctx->adst_data[0]);
-                av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
-                _ctx->adst_nb_samples = frm->nb_samples;
+
+                case AV_SAMPLE_FMT_S16P:
+                default:
+                    _ctx->swr_ctx = swr_alloc_set_opts(NULL, (frm->channels > 1 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO), AV_SAMPLE_FMT_S16, _ctx->AudCodecCtx->sample_rate, 
+                                                             _ctx->AudCodecCtx->channel_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
+                                                       0, NULL);
+                    swr_init(_ctx->swr_ctx);
+                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
+                    _ctx->adst_nb_samples = frm->nb_samples;
+                case AV_SAMPLE_FMT_S16:
+                    if (_ctx->AudCodecCtx->channels > 1)
+                        SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_STEREO16, _ctx->AudCodecCtx->sample_rate);
+                    else
+                        SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_MONO16, _ctx->AudCodecCtx->sample_rate);
+                    break;
             }
-            swr_convert(_ctx->swr_ctx, _ctx->adst_data, frm->nb_samples, (const uint8_t **)frm->data, frm->nb_samples);
-            
-            SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * 2 * Common::MIN(2, frm->channels));
-            break;
+
+            _ctx->AudioSetted = true;
+        }
+
+
+
+        switch(_ctx->AudCodecCtx->sample_fmt)
+        {
+            case AV_SAMPLE_FMT_U8:
+                SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * frm->channels, ts);
+                break;
+
+            case AV_SAMPLE_FMT_S16:
+                SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * frm->channels * 2, ts);
+                break;
+
+
+            case AV_SAMPLE_FMT_U8P:
+                if (frm->nb_samples > _ctx->adst_nb_samples)
+                {
+                    av_freep(&_ctx->adst_data[0]);
+                    av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
+                    _ctx->adst_nb_samples = frm->nb_samples;
+                }
+                swr_convert(_ctx->swr_ctx, _ctx->adst_data, frm->nb_samples, (const uint8_t **)frm->data, frm->nb_samples);
+
+                SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * Common::MIN(2, frm->channels), ts);
+                break;
+
+            case AV_SAMPLE_FMT_S16P:
+            default:
+                if (frm->nb_samples > _ctx->adst_nb_samples)
+                {
+                    av_freep(&_ctx->adst_data[0]);
+                    av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
+                    _ctx->adst_nb_samples = frm->nb_samples;
+                }
+                swr_convert(_ctx->swr_ctx, _ctx->adst_data, frm->nb_samples, (const uint8_t **)frm->data, frm->nb_samples);
+
+                SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * 2 * Common::MIN(2, frm->channels), ts);
+                break;
+        }
+
+        av_frame_free(&frm);
     }
-
-    av_frame_free(&frm);
-    
-    return nextPA;
 }
 
 void TMovie::PlayMovie(const std::string &fname)
@@ -558,11 +567,7 @@ void TMovie::PlayMovie(const std::string &fname)
     if (!OpenFile(fname))
         return;    
 
-    uint32_t stime = SDL_GetTicks();
-    uint32_t nextSync = 0;
-    uint32_t nextPA = 0;
-    uint32_t nextPV = 0;
-    
+    SFXEngine::SFXe.AudioStream->stop();
     _ctx->playing = true;
     
     System::EventsAddHandler(TMovie::EventsWatcher);
@@ -570,32 +575,34 @@ void TMovie::PlayMovie(const std::string &fname)
     for(size_t i = 0; i < 10; i++)
         ReadFrames();
     
+    int32_t stime = SDL_GetTicks();
+    int32_t nextSync = 0;
+    
     while( _ctx->playing )
     {
-        uint32_t curPts = SDL_GetTicks() - stime;
+        int32_t curPts = SDL_GetTicks() - stime;
+        if (curPts < 0)
+            curPts = 0;
         
         if (!_ctx->fileEOF)
             ReadFrames();
         
-        if (!_ctx->vidFrames.empty() && nextPV <= curPts )
-            nextPV = ProcessFrame();
-          
         if (_ctx->audioStream >= 0)
         {
-            size_t minLeft = SFXEngine::SFXe.AudioStream->BuffersCapacity() * 10;
-
             //if (!audFrames.empty() && (SFXEngine::SFXe.AudioStream->DataLeft() < minLeft || nextPA <= curPts) )
-            if (!_ctx->audFrames.empty() && (SFXEngine::SFXe.AudioStream->DataLeft() < minLeft || nextPA <= curPts) )
-            {
-                nextPA = ProcessAudio();
-            }
+            if (!_ctx->audFrames.empty())
+                ProcessAudio();
             
             if (curPts / 1000 >= nextSync)
             {
                 nextSync = (curPts / 1000) + 1;
-                stime = ((SDL_GetTicks() - SFXEngine::SFXe.AudioStream->GetStreamedTime()) + stime) / 2;
+                
+                stime = (((int32_t)SDL_GetTicks() - (int32_t)SFXEngine::SFXe.AudioStream->GetTS()) + stime) / 2;
             }
         }
+        
+        if (!_ctx->vidFrames.empty())
+            ProcessFrame(curPts);
         
         if (_ctx->fileEOF)
         {

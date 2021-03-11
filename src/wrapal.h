@@ -25,6 +25,16 @@ class waldev;
 class CTsmpl
 {
     friend class waldev;
+    
+protected:
+    struct AlBuffer
+    {
+        ALuint ID = 0;
+        std::vector<uint8_t> Samples;
+        bool Used = false;
+        size_t Size = 0;
+        int32_t TS = -1; //Timestamp on end of buffer
+    };
 
 public:
     virtual void update();
@@ -57,24 +67,26 @@ public:
     
     uint32_t BuffersTime() const;
     uint32_t GetStreamedTime() const;
+    uint32_t GetPlayedTime() const;
+    int32_t GetTS() const;
 
 protected:
     CTsmpl(waldev *dev, size_t bufsz);
     virtual ~CTsmpl();
-    virtual size_t _read(void *buf, size_t bufsz) = 0;
+    virtual size_t _read(void *buf, size_t bufsz, int32_t *endTs) = 0;
     virtual void _rewind() = 0;
     virtual void _stop(); //Non-blocable stop
     virtual void _reset();
 
     void _clearQueue();
-    bool _fill_n_queue(int bufID);
+    bool _fill_n_queue( AlBuffer *buf );
+    
+    uint32_t BytesToMsec(uint32_t bytes) const;
 
     const waldev *_device;
 
     ALuint _source;
-    std::vector<ALuint> _buffers;
-    std::vector< std::vector<uint8_t> > _smplBuffers;
-    std::vector<bool> _used;
+    std::vector<AlBuffer> _buffers;
 
     ALenum _format;
     int _freq;
@@ -89,9 +101,10 @@ protected:
     ALfloat _mVolume;
     
     uint64_t _queuedBytes = 0;
+    uint64_t _playedBytes = 0;
     
+    int32_t _TS = 0;
     
-    bool _isStream = false;
     const size_t _BufSZ;
 
     void (*_eosfunc)(void *);
@@ -108,7 +121,7 @@ public:
 protected:
     walsmpl(waldev *dev);
 
-    virtual size_t _read(void *buf, size_t bufsz);
+    virtual size_t _read(void *buf, size_t bufsz, int32_t *endTs);
     virtual void _rewind();
     virtual void _reset();
 
@@ -131,7 +144,7 @@ protected:
     walmus(waldev *dev);
     ~walmus();
 
-    virtual size_t _read(void *buf, size_t bufsz);
+    virtual size_t _read(void *buf, size_t bufsz, int32_t *endTs);
     virtual void _rewind();
 
     OggVorbis_File m_vorbis;
@@ -144,10 +157,17 @@ protected:
 class WALStream: public CTsmpl
 {
     friend waldev;
+    
+private:
+    struct TSSamples
+    {
+        int32_t TS = -1;
+        std::vector<uint8_t> Samples;
+    };
 
 public:
     void SetFormat(ALenum fmt, uint32_t freq);
-    void Feed(void *data, size_t sz);
+    void Feed(void *data, size_t sz, int32_t ts = -1);
     
     int BuffersCount();
     size_t DataLeft();
@@ -156,11 +176,11 @@ protected:
     WALStream(waldev *dev);
     ~WALStream();
 
-    virtual size_t _read(void *buf, size_t bufsz);
+    virtual size_t _read(void *buf, size_t bufsz, int32_t *endTs);
     virtual void _rewind() {};
     virtual void _stop() override;
     
-    std::queue< std::vector<uint8_t> >_queue;
+    std::queue< TSSamples >_queue;
     size_t _bufPos = 0;
     size_t _dataLeft = 0;
 };
