@@ -703,7 +703,12 @@ int32_t CTsmpl::GetTS() const
 bool CTsmpl::_fill_n_queue(AlBuffer *buf)
 {
     if (_endStreamed)
+    {
+        buf->Used = false;
+        buf->TS = -1;
+        
         return false;
+    }
 
     size_t totalRead = 0;
     bool zeroread = false;
