@@ -583,6 +583,7 @@ void CTsmpl::_clearQueue()
             if ( bf.ID == buffer)
             {
                 bf.Used = false;
+                bf.TS = -1;
                 break;
             }
         }
