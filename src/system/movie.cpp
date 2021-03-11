@@ -597,7 +597,10 @@ void TMovie::PlayMovie(const std::string &fname)
             {
                 nextSync = (curPts / 1000) + 1;
                 
-                stime = (((int32_t)SDL_GetTicks() - (int32_t)SFXEngine::SFXe.AudioStream->GetTS()) + stime) / 2;
+                int32_t ts = (int32_t)SFXEngine::SFXe.AudioStream->GetTS();
+                
+                if (ts > 0)
+                    stime = (((int32_t)SDL_GetTicks() - ts) + stime) / 2;
             }
         }
         
