@@ -248,8 +248,10 @@ void TMovie::Close()
         swr_free(&_ctx->swr_ctx);
     
     if (_ctx->adst_data)
+    {
         av_freep(&_ctx->adst_data[0]);
-    av_freep(_ctx->adst_data);
+        av_freep(_ctx->adst_data);
+    }
     
     _ctx->screenTex = 0;
 }
