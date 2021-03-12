@@ -64,9 +64,8 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     map_Width_meters = 0.0;
     map_Height_meters = 0.0;
     field_30 = NULL;
-    _powerStations = NULL;
-    _powerStationsCount = 0;
-    _lastUpdatedPowerStationID = 0;
+
+    _nextPSForUpdate = 0;
     set_number = 0;
     additionalSet = NULL;
 //nlist bact_list;
@@ -7643,4 +7642,20 @@ std::string NC_STACK_ypaworld::GetLocaleString(int32_t id, const std::string &de
     if ( tmp.empty() || !StriCmp(tmp, "<>") )
         return def;
     return tmp;
+}
+
+cellArea *NC_STACK_ypaworld::GetSector(int32_t x, int32_t y)
+{
+    if (x >= 0 && x < _mapWidth
+    &&  y >= 0 && y < _mapHeight)
+        return &_cells[x + y * _mapWidth]; 
+    return NULL;
+}
+
+cellArea *NC_STACK_ypaworld::GetSector(const Common::Point &sec)
+{
+    if (sec.x >= 0 && sec.x < _mapWidth
+    &&  sec.y >= 0 && sec.y < _mapHeight)
+        return &_cells[sec.x + sec.y * _mapWidth]; 
+    return NULL;
 }

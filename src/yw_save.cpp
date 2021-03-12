@@ -762,7 +762,7 @@ int yw_write_wunderinfo(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
     size_t i = 0;
     for ( const MapGem &gem : yw->_Gems )
     {
-        if ( yw->_cells[gem.SecX + gem.SecY * yw->_mapWidth].w_type != 4 )
+        if ( yw->GetSector(gem)->w_type != 4 )
             fil->printf("    disablegem %d\n", i);
 
         i++;
@@ -776,11 +776,10 @@ int yw_write_kwfactor(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     fil->printf("\nbegin_kwfactor\n");
 
-    for (int i = 0; i < 256; i++)
+    for (const PowerStationRef &kw : yw->_powerStations)
     {
-        yw_field34 *kw = &yw->_powerStations[i];
-        if ( kw->p_cell )
-            fil->printf("    kw = %d_%d_%d\n", kw->x, kw->y, kw->power_2);
+        if ( kw.pCell )
+            fil->printf("    kw = %d_%d_%d\n", kw.Cell.x, kw.Cell.y, kw.EffectivePower);
     }
     
     fil->printf("end\n\n");

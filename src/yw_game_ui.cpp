@@ -14,6 +14,8 @@
 #include "yparobo.h"
 #include "ypagun.h"
 #include "windp.h"
+#include "world/analyzer.h"
+
 
 extern uint32_t bact_id;
 
@@ -750,35 +752,33 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
         {
             FontUA::select_tileset(&pcur, v4);
 
-            for (size_t i = 0; i < yw->_powerStationsCount; i++)
+            for ( const PowerStationRef &ps : yw->_powerStations )
             {
-                yw_field34 *v7 = &yw->_powerStations[i];
-
-                if ( v7->p_cell )
+                if ( ps.pCell )
                 {
-                    if ( (1 << yw->UserRobo->_owner) & v7->p_cell->view_mask )
+                    if ( (1 << yw->UserRobo->_owner) & ps.pCell->view_mask )
                     {
-                        if ( v7->power_2 > 0 )
+                        if ( ps.EffectivePower > 0 )
                         {
                             int v9 = 0;
-                            float a1 = v7->x * 1200.0 + 600.0;
-                            float a2 = -(v7->y * 1200.0 + 600.0);
+                            float a1 = ps.Cell.x * 1200.0 + 600.0;
+                            float a2 = -(ps.Cell.y * 1200.0 + 600.0);
 
-                            if ( v7->power_2 <= 32)
+                            if ( ps.EffectivePower <= 32)
                                 v9 = 0x80;
-                            else if ( v7->power_2 <= 64)
+                            else if ( ps.EffectivePower <= 64)
                                 v9 = 0x81;
-                            else if ( v7->power_2 <= 96)
+                            else if ( ps.EffectivePower <= 96)
                                 v9 = 0x82;
-                            else if ( v7->power_2 <= 128)
+                            else if ( ps.EffectivePower <= 128)
                                 v9 = 0x83;
-                            else if ( v7->power_2 <= 160)
+                            else if ( ps.EffectivePower <= 160)
                                 v9 = 0x84;
-                            else if ( v7->power_2 <= 192)
+                            else if ( ps.EffectivePower <= 192)
                                 v9 = 0x85;
-                            else if ( v7->power_2 <= 224)
+                            else if ( ps.EffectivePower <= 224)
                                 v9 = 0x86;
-                            else if ( v7->power_2 <= 256)
+                            else if ( ps.EffectivePower <= 256)
                                 v9 = 0x87;
 
                             pcur = sub_4F6980(pcur, a1, a2, 0x89, a4, a4);
@@ -790,8 +790,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
 
             for ( const MapGem &gem : yw->_Gems )
             {
-                cellArea *cell = &yw->_cells[gem.SecY * yw->_mapWidth + gem.SecX];
-                if ( cell->view_mask & (1 << yw->UserRobo->_owner) )
+                cellArea *cell = yw->GetSector(gem);
+                if ( cell->IsCanSee(yw->UserRobo->_owner) )
                 {
                     int v13 = 1;
 
@@ -4277,17 +4277,15 @@ void ypaworld_func64__sub7__sub2__sub9(NC_STACK_ypaworld *yw)
         yw->GuiWinClose( &exit_menu );
 }
 
-void ypaworld_func64__sub7__sub2__sub10(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::SituationAnalyzer()
 {
     yw_arg159 v38;
-    v38.txt = "Make analyzer!";
+    v38.txt = World::GameAnalyzer::Analyze(this);
     v38.unit = 0;
     v38.field_4 = 100;
     v38.field_C = 0;
 
-    yw->ypaworld_func159(&v38);
-
-    dprintf("MAKE ME %s\n", "ypaworld_func64__sub7__sub2__sub10");
+    ypaworld_func159(&v38);
 }
 
 void ypaworld_func64__sub7__sub2__sub0()
@@ -4637,7 +4635,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, InputState *inpt)
                     bzda.field_91C |= 0x100;
 
                 if ( winpt->flag & ClickBoxInf::FLAG_BTN_UP )
-                    ypaworld_func64__sub7__sub2__sub10(yw);
+                    yw->SituationAnalyzer();
 
                 sub_481204(yw, 47, 46);
                 break;

@@ -469,23 +469,21 @@ int NC_STACK_ypaworld::sb_0x44ca90__sub7(int event_loop_id)
 
 void NC_STACK_ypaworld::PowerStationErase(size_t id)
 {
-    yw_field34 *station = &_powerStations[id];
+    PowerStationRef &station = _powerStations.at(id);
 
-    cellArea *cell = station->p_cell;
-
-    if ( cell )
+    if ( station.pCell )
     {
-        station->p_cell = NULL;
+        station.pCell = NULL;
 
-        if ( id == _powerStationsCount - 1 )
-            _powerStationsCount--;
-
-        cell->w_id = 0;
-        cell->w_type = 0;
+        station.pCell->w_id = 0;
+        station.pCell->w_type = 0;
 
         if ( blg_map )
-            (*blg_map)(station->x, station->y) = 0;
+            (*blg_map)(station.Cell.x, station.Cell.y) = 0;
     }
+    
+    if ( id == _powerStations.size() - 1 )
+        _powerStations.pop_back();
 }
 
 int sb_0x44ca90__sub3(NC_STACK_ypaworld *yw)
@@ -494,40 +492,14 @@ int sb_0x44ca90__sub3(NC_STACK_ypaworld *yw)
 
     if ( yw->field_30 )
     {
-        yw->_powerStations = (yw_field34 *)AllocVec(sizeof(yw_field34) * 256, 65537);
+        yw->_powerStations.clear();
+        yw->_powerStations.reserve(256);;
 
-        if ( yw->_powerStations )
-        {
-            for (int i = 0; i < 256; i++)
-                yw->PowerStationErase(i);
-
-            yw->_lastUpdatedPowerStationID = 0;
-            yw->_powerStationsCount = 0;
-        }
-        else
-        {
-            if ( yw->field_30 )
-            {
-                nc_FreeMem(yw->field_30);
-                yw->field_30 = NULL;
-            }
-            return 0;
-        }
+        yw->_nextPSForUpdate = 0;
     }
     else
     {
-        if ( yw->_powerStations )
-        {
-            nc_FreeMem(yw->_powerStations);
-            yw->_powerStations = NULL;
-            yw->_powerStationsCount = 0;
-        }
-
-        if ( yw->field_30 )
-        {
-            nc_FreeMem(yw->field_30);
-            yw->field_30 = NULL;
-        }
+        yw->_powerStations.clear();
         return 0;
     }
     return 1;
@@ -1112,7 +1084,7 @@ void NC_STACK_ypaworld::yw_InitTechUpgradeBuildings()
     for (size_t i = 0; i < _Gems.size(); i++)
     {
         MapGem &gem = _Gems[i];
-        cellArea *cell = &_cells[gem.SecX + gem.SecY * _mapWidth];
+        cellArea *cell = GetSector(gem);
 
         if (gem.BuildingID)
         {
@@ -1221,7 +1193,7 @@ void NC_STACK_ypaworld::UpdatePowerEnergy()
         }
     }
 
-    _lastUpdatedPowerStationID = 0; // Next power station for recompute power is first
+    _nextPSForUpdate = 0; // Next power station for recompute power is first
 }
 
 
@@ -1343,14 +1315,14 @@ void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int 
         {
             if ( helth )
             {
-                int v13 = (helth * _powerStations[ cell->w_id ].power) / 256 ;
+                int effPower = (helth * _powerStations.at( cell->w_id ).Power) / 256 ;
 
-                if ( v13 < 0 )
-                    v13 = 0;
-                else if ( v13 > 255 )
-                    v13 = 255;
+                if ( effPower < 0 )
+                    effPower = 0;
+                else if ( effPower > 255 )
+                    effPower = 255;
 
-                _powerStations[cell->w_id].power_2 = v13;
+                _powerStations.at( cell->w_id ).EffectivePower = effPower;
             }
             else
             {
@@ -2387,43 +2359,40 @@ void NC_STACK_ypaworld::sb_0x456384__sub0__sub0()
         }
     }
 
-    _lastUpdatedPowerStationID = 0;
+    _nextPSForUpdate = 0;
 }
 
-int NC_STACK_ypaworld::sb_0x456384__sub0(int x, int y, int power)
+void NC_STACK_ypaworld::SetupPowerStationRef(const Common::Point &sec, int power)
 {
-    int v13 = 0;
-    cellArea *cell = &_cells[x + y * _mapWidth];
+    PowerStationRef *ps = NULL;
 
-    size_t v7;
-    for (v7 = 0; v7 < _powerStationsCount; v7++)
+    int32_t wIndex = 0;
+    for (PowerStationRef &p : _powerStations)
     {
-        if ( !_powerStations[v7].p_cell )
+        if ( !p.pCell )
         {
-            v13 = 1;
+            ps = &p;
             break;
         }
+        wIndex++;
     }
 
-    if ( v7 >= 256 )
-        return -1;
+    if ( !ps )
+    {
+        wIndex = _powerStations.size();
+        _powerStations.emplace_back();
+        ps = &_powerStations.back();
+    }
 
-    if ( !v13 )
-        _powerStationsCount = v7 + 1;
+    ps->Cell = sec;
+    ps->Power = power;
+    ps->EffectivePower = power;
+    ps->pCell = GetSector(sec);
 
-    yw_field34 *v9 = &_powerStations[v7];
-    v9->x = x;
-    v9->y = y;
-    v9->power = power;
-    v9->power_2 = power;
-    v9->p_cell = cell;
-
-    cell->w_type = 2;
-    cell->w_id = v7;
+    ps->pCell->w_type = 2;
+    ps->pCell->w_id = wIndex;
 
     sb_0x456384__sub0__sub0();
-
-    return v7;
 }
 
 
@@ -2472,7 +2441,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
         }
 
         if ( bld->ModelID == 1 )
-            sb_0x456384__sub0(x, y, bld->Power);
+            SetupPowerStationRef(Common::Point(x, y), bld->Power);
 
         CellSetOwner(cell, x, y, ownerid2);
 
@@ -2860,12 +2829,10 @@ void ypaworld_func64__sub6(NC_STACK_ypaworld *yw)
     for (int i = 0; i < 8; i++)
         v13[i] = 0;
 
-    for (size_t i = 0; i < yw->_powerStationsCount; i++)
+    for (const PowerStationRef &ps : yw->_powerStations)
     {
-        yw_field34 *v4 = &yw->_powerStations[i];
-
-        if (v4->p_cell)
-            v13[ v4->p_cell->owner ] += v4->power_2;
+        if (ps.pCell)
+            v13[ ps.pCell->owner ] += ps.EffectivePower;
     }
 
     yw->ypaworld_func64__sub6__sub0();
@@ -2924,46 +2891,44 @@ void ypaworld_func64__sub6(NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub5__sub0(NC_STACK_ypaworld *yw, int a2)
 {
-    yw_field34 *v3 = &yw->_powerStations[a2];
+    PowerStationRef &ps = yw->_powerStations.at(a2);
 
-    int v7 = v3->power_2;
-    int v10 = 0;
+    int pwrTmp = ps.EffectivePower;
+    int powsCount = 0;
 
-    while (v7 > 0)
+    while (pwrTmp > 0)
     {
-        v7 >>= 1;
-        v10++;
+        pwrTmp >>= 1;
+        powsCount++;
     }
 
-    int v9 = v3->power_2;
+    int sdx = -powsCount;
+    int edx = powsCount + 1;
 
-    int v11 = -v10;
-    int v12 = v10 + 1;
+    int sdy = -powsCount;
+    int edy = powsCount + 1;
 
-    int v13 = -v10;
-    int v21 = v10 + 1;
+    if ( ps.Cell.x + sdx < 1 )
+        sdx = 1 - ps.Cell.x;
 
-    if ( v3->x + v11 < 1 )
-        v11 = 1 - v3->x;
+    if ( ps.Cell.y + sdy < 1 )
+        sdy = 1 - ps.Cell.y;
 
-    if ( v3->y + v13 < 1 )
-        v13 = 1 - v3->y;
+    if ( ps.Cell.x + edx >= yw->_mapWidth )
+        edx = yw->_mapWidth - ps.Cell.x - 1;
 
-    if ( v3->x + v12 >= yw->_mapWidth )
-        v12 = yw->_mapWidth - v3->x - 1;
+    if ( ps.Cell.y + edy >= yw->_mapHeight )
+        edy = yw->_mapHeight - ps.Cell.y - 1;
 
-    if ( v3->y + v21 >= yw->_mapHeight )
-        v21 = yw->_mapHeight - v3->y - 1;
-
-    for (int i = v13; i < v21; i++)
+    for (int dy = sdy; dy < edy; dy++)
     {
-        for (int j = v11; j < v12; j++)
+        for (int dx = sdx; dx < edx; dx++)
         {
-            int v17 = v9  >>  yw->sqrt_table[abs(j)][abs(i)];
+            int v17 = ps.EffectivePower  >>  yw->sqrt_table[abs(dx)][abs(dy)];
 
-            yw_f30 *v14 = &yw->field_30[j + v3->x + ((i + v3->y) * 64) ];
+            yw_f30 *v14 = &yw->field_30[dx + ps.Cell.x + ((dy + ps.Cell.y) * 64) ];
 
-            if ( v14->owner == v3->p_cell->owner )
+            if ( v14->owner == ps.pCell->owner )
             {
                 int v18 = v17 + v14->field_1; // Add power to this cell
 
@@ -2980,19 +2945,24 @@ void ypaworld_func64__sub5__sub0(NC_STACK_ypaworld *yw, int a2)
 void ypaworld_func64__sub5(NC_STACK_ypaworld *yw)
 {
     // Recompute power on sectors
-    if ( yw->_powerStationsCount ) // If we have powerstations
+    if ( !yw->_powerStations.empty() ) // If we have powerstations
     {
-        size_t pID = yw->_lastUpdatedPowerStationID; // current power station
+        size_t pID = yw->_nextPSForUpdate; // current power station
 
-        while ( !yw->_powerStations[pID].p_cell && pID < yw->_powerStationsCount ) //If current power station is null - go to first not null or to end
-            pID++;
-
-        if ( pID < yw->_powerStationsCount ) // if we found any power station
+        //If current power station is null - go to first not null or to end
+        while ( pID < yw->_powerStations.size() )
         {
-            if ( yw->_powerStations[pID].power_2 ) // if this power station has power
+            if ( yw->_powerStations.at(pID).pCell )
+                break;
+            pID++;
+        }
+
+        if ( pID < yw->_powerStations.size() ) // if we found any power station
+        {
+            if ( yw->_powerStations.at(pID).EffectivePower ) // if this power station has power
                 ypaworld_func64__sub5__sub0(yw, pID); // Add power to power matrix
 
-            yw->_lastUpdatedPowerStationID = pID + 1; // go to next station in next update loop
+            yw->_nextPSForUpdate = pID + 1; // go to next station in next update loop
         }
         else // If we reach end of power stations list, apply power to sectors
         {
@@ -4033,12 +4003,7 @@ void ypaworld_func151__sub0(NC_STACK_ypaworld *yw)
 
 void ypaworld_func151__sub1(NC_STACK_ypaworld *yw)
 {
-    if ( yw->_powerStations )
-    {
-        nc_FreeMem(yw->_powerStations);
-        yw->_powerStations = NULL;
-        yw->_powerStationsCount = 0;
-    }
+    yw->_powerStations.clear();
 
     if ( yw->field_30 )
     {
@@ -5979,14 +5944,11 @@ int NC_STACK_ypaworld::sub_4D528C(NC_STACK_ypaworld *yw)
 
 int NC_STACK_ypaworld::sub_4D5300(NC_STACK_ypaworld *yw)
 {
-    if ( !yw->_powerStationsCount )
-        return 0;
-
-    for (size_t i = 0; i < yw->_powerStationsCount; i++)
+    for (const PowerStationRef &ps : yw->_powerStations)
     {
-        if ( yw->_powerStations[i].p_cell )
+        if ( ps.pCell )
         {
-            if ( yw->_powerStations[i].p_cell->owner == yw->UserRobo->_owner )
+            if ( ps.pCell->owner == yw->UserRobo->_owner )
             {
                 return 1;
             }

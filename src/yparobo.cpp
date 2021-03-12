@@ -99,10 +99,6 @@ size_t NC_STACK_yparobo::Init(IDVList &stak)
                 setROBO_battVehicle(val.Get<int32_t>());
                 break;
 
-            case ROBO_ATT_BATT_BUILDING:
-                setROBO_battBuilding(val.Get<int32_t>());
-                break;
-
             case ROBO_ATT_BATT_BEAM:
                 setROBO_battBeam(val.Get<int32_t>());
                 break;
@@ -231,10 +227,6 @@ size_t NC_STACK_yparobo::func2(IDVList &stak)
 
             case ROBO_ATT_BATT_VEHICLE:
                 setROBO_battVehicle(val.Get<int32_t>());
-                break;
-
-            case ROBO_ATT_BATT_BUILDING:
-                setROBO_battBuilding(val.Get<int32_t>());
                 break;
 
             case ROBO_ATT_BATT_BEAM:
@@ -6203,11 +6195,6 @@ void NC_STACK_yparobo::setROBO_battVehicle(int batt)
     _roboEnergyLife = batt;
 }
 
-void NC_STACK_yparobo::setROBO_battBuilding(int batt)
-{
-    _roboEnergyBuilding = batt;
-}
-
 void NC_STACK_yparobo::setROBO_battBeam(int batt)
 {
     _roboEnergyMove = batt;
@@ -6336,11 +6323,6 @@ int NC_STACK_yparobo::getROBO_commCount()
 int NC_STACK_yparobo::getROBO_battVehicle()
 {
     return _roboEnergyLife;
-}
-
-int NC_STACK_yparobo::getROBO_battBuilding()
-{
-    return _roboEnergyBuilding;
 }
 
 int NC_STACK_yparobo::getROBO_battBeam()
@@ -6543,7 +6525,7 @@ NC_STACK_yparobo::NC_STACK_yparobo()
         g.clear();
 
     _roboEnergyLife = 0; //??
-    _roboEnergyBuilding = 0; //??
+
     _roboEnergyMove = 0; //??
 
     _roboFillMode = 0;

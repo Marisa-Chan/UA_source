@@ -810,6 +810,11 @@ struct cellArea
     
     cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) { clear(); };
     
+    bool IsCanSee(int owant) const
+    {
+        return ((1 << owant) & view_mask) != 0;
+    }
+    
     int GetEnergy()
     {
         if ( comp_type == 1 )
@@ -993,22 +998,22 @@ struct MapRobo
 
 struct MapGem
 {
-    int16_t BuildingID;
-    int16_t SecX;
-    int16_t SecY;
-    int MbStatus;
+    int16_t BuildingID = 0;
+    int16_t SecX = 0;
+    int16_t SecY = 0;
+    int MbStatus = 0;
     std::string ScriptFile;
     std::string MsgDefault;
-    int16_t NwVprotoNum1;
-    int16_t NwVprotoNum2;
-    int16_t NwVprotoNum3;
-    int16_t NwVprotoNum4;
-    int16_t NwBprotoNum1;
-    int16_t NwBprotoNum2;
-    int16_t NwBprotoNum3;
-    int16_t NwBprotoNum4;
+    int16_t NwVprotoNum1 = 0;
+    int16_t NwVprotoNum2 = 0;
+    int16_t NwVprotoNum3 = 0;
+    int16_t NwVprotoNum4 = 0;
+    int16_t NwBprotoNum1 = 0;
+    int16_t NwBprotoNum2 = 0;
+    int16_t NwBprotoNum3 = 0;
+    int16_t NwBprotoNum4 = 0;
     Engine::StringList ActionsList;
-    int Type;
+    int Type = 0;
 
     void clear()
     {
@@ -1029,11 +1034,8 @@ struct MapGem
         ActionsList.clear();
         Type = 0;
     }
-
-    MapGem()
-    {
-        clear();
-    };
+    
+    operator Common::Point() const { return Common::Point(SecX, SecY); };
 };
 
 struct dbmapProto
@@ -1638,13 +1640,14 @@ struct yw_f80
     }
 };
 
-struct yw_field34
+struct PowerStationRef
 {
-    int16_t x;
-    int16_t y;
-    cellArea *p_cell;
-    int power;
-    int power_2;
+    Common::Point Cell; 
+    cellArea *pCell = NULL;
+    int32_t Power = 0;
+    int32_t EffectivePower = 0;
+    
+    operator Common::Point() { return Cell; }
 };
 
 struct yw_f30
@@ -2516,7 +2519,7 @@ public:
     
     NC_STACK_ypabact *yw_createUnit(int model_id);
     void sb_0x456384(int x, int y, int ownerid2, int blg_id, int a7);
-    int sb_0x456384__sub0(int x, int y, int power);
+    void SetupPowerStationRef(const Common::Point &sec, int power);
     void sb_0x456384__sub0__sub0();
     
     void CellSetOwner(cellArea *cell, char secX, char secY, uint8_t owner);
@@ -2642,6 +2645,11 @@ public:
     static int sub_4D5348(NC_STACK_ypaworld *);
     static int sub_4D5360(NC_STACK_ypaworld *);
     
+    
+    void SituationAnalyzer();
+    
+    cellArea *GetSector(int32_t x, int32_t y);
+    cellArea *GetSector(const Common::Point &sec);
 
 public:
     //Data
@@ -2660,9 +2668,8 @@ public:
     float map_Width_meters;
     float map_Height_meters;
     yw_f30 *field_30;
-    yw_field34 *_powerStations;
-    size_t _powerStationsCount;
-    int _lastUpdatedPowerStationID;
+    std::vector<PowerStationRef> _powerStations;
+    int _nextPSForUpdate;
     int set_number;
     NC_STACK_base *additionalSet;
     World::RefBactList _unitsList;

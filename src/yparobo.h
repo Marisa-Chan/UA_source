@@ -176,7 +176,6 @@ public:
     virtual void setROBO_epSafety(int);
     virtual void setROBO_commCount(int);
     virtual void setROBO_battVehicle(int);
-    virtual void setROBO_battBuilding(int);
     virtual void setROBO_battBeam(int);
     virtual void setROBO_fillMode(int);
     virtual void setROBO_waitSway(int);
@@ -202,7 +201,6 @@ public:
     virtual int getROBO_epSafety();
     virtual int getROBO_commCount();
     virtual int getROBO_battVehicle();
-    virtual int getROBO_battBuilding();
     virtual int getROBO_battBeam();
     virtual int getROBO_fillMode();
     virtual roboGun *getROBO_guns();
@@ -418,7 +416,7 @@ public:
     std::array<roboGun, 8> _roboGuns;
 
     int _roboEnergyLife; //??
-    int _roboEnergyBuilding; //??
+    
     int _roboEnergyMove; //??
 
     char _roboFillMode;

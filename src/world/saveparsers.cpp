@@ -502,7 +502,7 @@ int SaveGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, c
         int gemId = std::stoi(p2);
 
         if ( gemId >= 0 && gemId < (int)_o._Gems.size() )
-            _o._cells[_o._mapWidth * _o._Gems[gemId].SecY + _o._Gems[gemId].SecX].w_type = 0;
+            _o.GetSector(_o._Gems[gemId])->w_type = 0;
         else
             printf("SaveGemParser::Handle : gemId = %d but _Gems.size() = %d\n", gemId, (int)_o._Gems.size());
     }
@@ -548,13 +548,15 @@ int SaveKwFactorParser::Handle(ScriptParser::Parser &parser, const std::string &
                 {
                     int pwr = std::stoi(tmp);
 
-                    for (int i = 0; i < 256; i++)
+                    for (PowerStationRef &kw : _o._powerStations)
                     {
-                        yw_field34 &kw = _o._powerStations[i];
-                        if ( kw.p_cell )
+                        if ( kw.pCell )
                         {
-                            if ( secX == kw.x && secY == kw.y )
-                                kw.power_2 = pwr;
+                            if ( secX == kw.Cell.x && secY == kw.Cell.y )
+                            {
+                                kw.EffectivePower = pwr;
+                                break;
+                            }
                         }
                     }
                 }

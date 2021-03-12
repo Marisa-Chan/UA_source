@@ -2292,7 +2292,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         MapGem *gemProt = &yw->_Gems[upMsg->upgradeID];
-        cellArea *cl = &yw->_cells[yw->_mapWidth * gemProt->SecY + gemProt->SecX];
+        cellArea *cl = yw->GetSector(*gemProt);
 
         int vhcl, bld;
         sub_47C1EC(yw, gemProt, &vhcl, &bld);
