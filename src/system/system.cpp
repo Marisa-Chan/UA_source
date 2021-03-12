@@ -281,6 +281,12 @@ bool ProcessEvents()
 
         }
         break;
+        
+        case SDL_QUIT:
+            return true;
+
+        default:
+            break;
         }
         
         for(SDL_EventFilter &e : EventHandlers)
@@ -378,6 +384,13 @@ void EventsAddHandler(SDL_EventFilter func, bool first)
 void EventsDeleteHandler(SDL_EventFilter func)
 {
     EventHandlers.remove(func);
+}
+
+void PostQuitMessage()
+{
+    SDL_Event event;
+    event.type = SDL_QUIT;
+    SDL_PushEvent(&event);
 }
 
 }

@@ -619,7 +619,12 @@ void TMovie::PlayMovie(const std::string &fname)
             }
         }
         
-        System::ProcessEvents();
+        if ( System::ProcessEvents() )
+        {
+            _ctx->playing = false;
+            PostQuitMessage();
+        }
+        
         SDL_Delay(1);
     }
     

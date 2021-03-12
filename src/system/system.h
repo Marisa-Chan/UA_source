@@ -49,6 +49,8 @@ namespace System
     
     TTF_Font *LoadFont(const std::string &fontname, int height);
     
+    void PostQuitMessage();
+    
     void EventsAddHandler(SDL_EventFilter func, bool first = true);
     void EventsDeleteHandler(SDL_EventFilter func);
     
