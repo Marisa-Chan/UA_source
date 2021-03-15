@@ -473,13 +473,13 @@ void NC_STACK_ypaworld::PowerStationErase(size_t id)
 
     if ( station.pCell )
     {
-        station.pCell = NULL;
-
         station.pCell->w_id = 0;
         station.pCell->w_type = 0;
 
         if ( blg_map )
             (*blg_map)(station.Cell.x, station.Cell.y) = 0;
+        
+        station.pCell = NULL;
     }
     
     if ( id == _powerStations.size() - 1 )
