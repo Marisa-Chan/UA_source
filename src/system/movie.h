@@ -16,7 +16,7 @@ public:
     ~TMovie();
     
     void Init();
-    void PlayMovie(const std::string &fname);
+    void PlayMovie(const std::string &fname, int volume = 127);
 
 private:
     TMovie();

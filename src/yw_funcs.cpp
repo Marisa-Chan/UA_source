@@ -1425,7 +1425,7 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
     std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix( movie_fname ) );
 
     if ( GFX::Engine.win3d_keys[9].Get<bool>() )
-        System::Movie.PlayMovie(buf);
+        System::Movie.PlayMovie(buf, GameShell->snd__volume);
 
     INPe.QueryInput(&input_states);
 

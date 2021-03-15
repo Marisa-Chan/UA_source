@@ -49,7 +49,7 @@ void listLocaleDir(UserData *usr, const char *dirname);
 
 
 
-void ypaworld_func154__sub0(NC_STACK_ypaworld *yw);
+void PlayIntroMovie(NC_STACK_ypaworld *yw);
 
 void ypaworld_func156__sub1(UserData *usr);
 

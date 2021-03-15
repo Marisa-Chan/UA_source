@@ -2691,9 +2691,6 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     usr->WaitForDemo = 200000;
 
-    if ( !usr->remoteMode )
-        ypaworld_func154__sub0(this);
-
     return 1;
 }
 
@@ -6844,7 +6841,7 @@ int NC_STACK_ypaworld::ypaworld_func172__sub0(const std::string &fname, int pars
 }
 
 // Load user save
-size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
+size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg, bool playIntro)
 {
     UserData *usr = arg->usr;
 
@@ -6879,6 +6876,9 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg)
         ypa_log_out("Error while loading information from %s\n", arg->usertxt);
         return 0;
     }
+    
+    if (playIntro && !GameShell->remoteMode)
+        PlayIntroMovie();
 
     if ( (arg->field_10 & 1) && !usr->field_0x0 && !ypaworld_func156(usr) ) // Init menus
     {

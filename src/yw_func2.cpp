@@ -632,14 +632,14 @@ void UserData::sub_46A7F8()
 
 
 
-void ypaworld_func154__sub0(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::PlayIntroMovie()
 {
-    if ( !yw->movies[World::MOVIE_INTRO].empty() )
+    if ( !movies[World::MOVIE_INTRO].empty() )
     {
-        std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(yw->movies[World::MOVIE_INTRO]) );
+        std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(movies[World::MOVIE_INTRO]) );
         
         if ( GFX::Engine.win3d_keys[9].Get<bool>() )
-            System::Movie.PlayMovie(buf);
+            System::Movie.PlayMovie(buf, GameShell->snd__volume);
 
         INPe.QueryInput(&input_states);
         input_states.KbdLastHit = Input::KC_NONE;

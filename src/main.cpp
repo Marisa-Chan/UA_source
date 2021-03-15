@@ -686,7 +686,7 @@ int yw_initGameWithSettings()
     v13.field_8 = 255;
     v13.field_10 = 1;
 
-    return ypaworld->ypaworld_func172(&v13) != 0;
+    return ypaworld->ypaworld_func172(&v13, true) != 0;
 }
 
 void ReadSnapsDir()

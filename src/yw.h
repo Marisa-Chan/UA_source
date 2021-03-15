@@ -2332,7 +2332,7 @@ public:
     virtual size_t LoadGame(const std::string &saveFile);
     virtual size_t SaveGame(const std::string &saveFile);
     virtual size_t ypaworld_func171(yw_arg172 *arg);
-    virtual size_t ypaworld_func172(yw_arg172 *arg);
+    virtual size_t ypaworld_func172(yw_arg172 *arg, bool playIntro = false);
     virtual size_t ypaworld_func173(UserData *usr);
     virtual size_t ypaworld_func174(yw_174arg *arg);
     virtual size_t ypaworld_func175(UserData *usr);
@@ -2645,6 +2645,7 @@ public:
     static int sub_4D5348(NC_STACK_ypaworld *);
     static int sub_4D5360(NC_STACK_ypaworld *);
     
+    void PlayIntroMovie();    
     
     void SituationAnalyzer();
     

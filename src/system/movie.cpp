@@ -564,12 +564,13 @@ void TMovie::ProcessAudio()
     }
 }
 
-void TMovie::PlayMovie(const std::string &fname)
+void TMovie::PlayMovie(const std::string &fname, int volume)
 {
     if (!OpenFile(fname))
         return;    
 
     SFXEngine::SFXe.AudioStream->stop();
+    SFXEngine::SFXe.AudioStream->setMasterVolume(volume);
     _ctx->playing = true;
     
     System::EventsAddHandler(TMovie::EventsWatcher);
