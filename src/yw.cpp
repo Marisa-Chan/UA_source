@@ -63,7 +63,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 
     map_Width_meters = 0.0;
     map_Height_meters = 0.0;
-    field_30 = NULL;
+
 
     _nextPSForUpdate = 0;
     set_number = 0;
@@ -2455,7 +2455,8 @@ void NC_STACK_ypaworld::DeleteLevel()
 
     sb_0x44ac24(this);
 
-    ypaworld_func151__sub1(this);
+    _powerStations.clear();
+    _energyAccumMap.Clear();
 
     if ( typ_map )
     {
@@ -7668,4 +7669,7 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
 
     map_Width_meters = _mapWidth * 1200.0;
     map_Height_meters = _mapHeight * 1200.0;
+    
+    _energyAccumMap.Clear();
+    _energyAccumMap.Resize(sz);
 }

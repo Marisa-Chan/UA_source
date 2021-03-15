@@ -486,25 +486,6 @@ void NC_STACK_ypaworld::PowerStationErase(size_t id)
         _powerStations.pop_back();
 }
 
-int sb_0x44ca90__sub3(NC_STACK_ypaworld *yw)
-{
-    yw->field_30 = (yw_f30 *)AllocVec(sizeof(yw_f30) * 64 * 64, 65537);
-
-    if ( yw->field_30 )
-    {
-        yw->_powerStations.clear();
-        yw->_powerStations.reserve(256);;
-
-        yw->_nextPSForUpdate = 0;
-    }
-    else
-    {
-        yw->_powerStations.clear();
-        return 0;
-    }
-    return 1;
-}
-
 void sb_0x44ca90__sub5(NC_STACK_ypaworld *yw)
 {
     memset(yw->field_80, 0, sizeof(yw_f80) * 8);
@@ -683,8 +664,9 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     {
         sb_0x44ca90__sub7(mapp->EventLoopID);
 
-        if ( !sb_0x44ca90__sub3(this) )
-            return 0;
+        _energyAccumMap.Clear();
+        _powerStations.reserve(256);
+        _nextPSForUpdate = 0;
 
         sb_0x44ca90__sub5(this);
 
@@ -1181,11 +1163,11 @@ void NC_STACK_ypaworld::UpdatePowerEnergy()
         for (int x = 0; x < _mapWidth; x++)
         {
             cellArea *cell = _cells + x + y * _mapWidth;
-            yw_f30 *tt = &field_30[ x + y * 64 ];
+            EnergyAccum &accum = _energyAccumMap(x, y);
 
-            tt->owner = cell->owner;
-            cell->energy_power = tt->field_1; // Apply power to cell
-            tt->field_1 = 0; // Clean matrix's power
+            accum.Owner = cell->owner;
+            cell->energy_power = accum.Energy; // Apply power to cell
+            accum.Energy = 0; // Clean matrix's power
         }
     }
 
@@ -2346,12 +2328,11 @@ void NC_STACK_ypaworld::sb_0x456384__sub0__sub0()
     {
         for( int x = 0; x < _mapWidth; x++ )
         {
-            yw_f30 *f30 = &field_30[y * 64 + x];
+            EnergyAccum &accum = _energyAccumMap(x, y);
             cellArea *cell = &_cells[x + y * _mapWidth];
 
-            f30->field_1 = 0;
-            f30->owner = cell->owner;
-
+            accum.Energy = 0;
+            accum.Owner = cell->owner;
         }
     }
 
@@ -2922,16 +2903,14 @@ void ypaworld_func64__sub5__sub0(NC_STACK_ypaworld *yw, int a2)
         {
             int v17 = ps.EffectivePower  >>  yw->sqrt_table[abs(dx)][abs(dy)];
 
-            yw_f30 *v14 = &yw->field_30[dx + ps.Cell.x + ((dy + ps.Cell.y) * 64) ];
+            EnergyAccum &accum = yw->_energyAccumMap(dx + ps.Cell.x, dy + ps.Cell.y);
 
-            if ( v14->owner == ps.pCell->owner )
+            if ( accum.Owner == ps.pCell->owner )
             {
-                int v18 = v17 + v14->field_1; // Add power to this cell
+                accum.Energy += v17; // Add power to this cell
 
-                if ( v18 > 255 )
-                    v18 = 255;
-
-                v14->field_1 = v18;
+                if ( accum.Energy > 255 )
+                    accum.Energy = 255;
             }
 
         }
@@ -3994,17 +3973,6 @@ void ypaworld_func151__sub0(NC_STACK_ypaworld *yw)
     for (int i = 0; i < 128; i++)
     {
         sub_44C144(&yw->BuildProtos[i].SndFX);
-    }
-}
-
-void ypaworld_func151__sub1(NC_STACK_ypaworld *yw)
-{
-    yw->_powerStations.clear();
-
-    if ( yw->field_30 )
-    {
-        nc_FreeMem(yw->field_30);
-        yw->field_30 = NULL;
     }
 }
 

@@ -1650,10 +1650,10 @@ struct PowerStationRef
     operator Common::Point() { return Cell; }
 };
 
-struct yw_f30
+struct EnergyAccum
 {
-    uint8_t owner;
-    uint8_t field_1;
+    uint8_t Owner = 0;
+    int32_t Energy = 0;
 };
 
 struct lego_xyz
@@ -2670,7 +2670,7 @@ public:
 
     float map_Width_meters;
     float map_Height_meters;
-    yw_f30 *field_30;
+    Common::PlaneVector<EnergyAccum> _energyAccumMap;
     std::vector<PowerStationRef> _powerStations;
     int _nextPSForUpdate;
     int set_number;
