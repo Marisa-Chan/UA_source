@@ -1939,11 +1939,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
 
                     if ( typ_map )
                     {
-                        _mapWidth = typ_map->Width();
-                        _mapHeight = typ_map->Height();
-
-                        map_Width_meters = _mapWidth * 1200.0;
-                        map_Height_meters = _mapHeight * 1200.0;
+                        SetMapSize(typ_map->Size());
 
                         //Set transitions
                         brief.ViewingObjectRect = Common::FRect(-0.98750001, 0.34999999, -0.003125, 0.85416669);
@@ -2060,10 +2056,7 @@ bool NC_STACK_ypaworld::InitDebrief()
         return false;
     }
 
-    _mapWidth = typ_map->Width();
-    _mapHeight = typ_map->Height();
-    map_Width_meters = _mapWidth * 1200.0;
-    map_Height_meters = _mapHeight * 1200.0;
+    SetMapSize(typ_map->Size());
 
     brief.Stage = 4;
 

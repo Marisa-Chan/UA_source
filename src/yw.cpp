@@ -7659,3 +7659,13 @@ cellArea *NC_STACK_ypaworld::GetSector(const Common::Point &sec)
         return &_cells[sec.x + sec.y * _mapWidth]; 
     return NULL;
 }
+
+
+void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
+{
+    _mapWidth = sz.x;
+    _mapHeight = sz.y;
+
+    map_Width_meters = _mapWidth * 1200.0;
+    map_Height_meters = _mapHeight * 1200.0;
+}

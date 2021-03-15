@@ -2651,6 +2651,8 @@ public:
     
     cellArea *GetSector(int32_t x, int32_t y);
     cellArea *GetSector(const Common::Point &sec);
+    
+    void SetMapSize(const Common::Point &sz);
 
 public:
     //Data

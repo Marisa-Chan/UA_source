@@ -711,11 +711,7 @@ bool NC_STACK_ypaworld::LoadTypeMap(const std::string &mapName)
 
     uint8_t *typMap = typ_map->data();
 
-    _mapWidth = typ_map->Width();
-    _mapHeight = typ_map->Height();
-
-    map_Width_meters = _mapWidth * 1200.0;
-    map_Height_meters = _mapHeight * 1200.0;
+    SetMapSize(typ_map->Size());
 
     int sectors_count = _mapHeight * _mapWidth;
 
