@@ -546,9 +546,21 @@ public:
         operator=(b);
     }
     
+    PlaneVector(PlaneVector &&b)
+    : std::vector<T>(std::move(b))
+    {
+        _w = b._w;
+        _h = b._h;
+    }
+    
     PlaneVector(uint32_t w, uint32_t h)
     {
         Resize(w, h);
+    }
+    
+    PlaneVector(const Point &sz)
+    {
+        Resize(sz);
     }
     
     PlaneVector<T>* Copy()
@@ -556,6 +568,13 @@ public:
         PlaneVector<T> *tmp = new PlaneVector<T>;
         *tmp = *this;
         return tmp;
+    }
+    
+    void Resize(const Point &sz)
+    {
+        _w = sz.x;
+        _h = sz.y;
+        this->resize(_w * _h);
     }
     
     void Resize(uint32_t w, uint32_t h)
