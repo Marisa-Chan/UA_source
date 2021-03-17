@@ -537,6 +537,10 @@ public:
     using std::vector<T>::data;
     using std::vector<T>::operator[];
     using std::vector<T>::size;
+    using std::vector<T>::begin;
+    using std::vector<T>::end;
+    using std::vector<T>::rbegin;
+    using std::vector<T>::rend;
     
     PlaneVector()
     {}
@@ -589,6 +593,16 @@ public:
         return this->at(x + y * _w);
     }
     
+    T& At(const Point &p)
+    {
+        return this->at(p.x + p.y * _w);
+    }
+    
+    T& At(size_t n)
+    {
+        return this->at(n);
+    }
+    
     T& operator()(uint32_t x, uint32_t y)
     {
         return this->at(x + y * _w);
@@ -602,6 +616,21 @@ public:
     Point Size() const
     {
         return Point(_w, _h);
+    }
+    
+    size_t GetID(uint32_t x, uint32_t y) const
+    {
+        size_t n = x + y * _w;
+        if (n < size())
+            return n;
+        return -1;
+    }
+    
+    Point GetPos(size_t id) const
+    {
+        if (id >= 0 && id < size())
+            return Point(id % _w, id / _w);
+        return Point(-1, -1);
     }
     
     uint32_t Width() const
