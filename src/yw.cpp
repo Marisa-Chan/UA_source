@@ -59,7 +59,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     _mapAbsMaxY = 0;
     _mapWidth = 0;
     _mapHeight = 0;
-    _cells = NULL;
 
     map_Width_meters = 0.0;
     map_Height_meters = 0.0;
@@ -603,14 +602,8 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
         }
     }
 
-    _cells = new cellArea[_mapAbsMaxX * _mapAbsMaxY];
-
-    if ( !_cells )
-    {
-        ypa_log_out("yw_main.c/OM_NEW: alloc of cell area failed!\n");
-        Deinit();
-        return 0;
-    }
+    _cells.Clear();
+    
     if ( !yw_InitSceneRecorder(this) )
     {
         ypa_log_out("yw_main.c/OM_NEW: init scene recorder failed!\n");
@@ -786,12 +779,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
             uint32_t v23 = profiler_begin();
 
-            for (int i = 0; i < _mapHeight * _mapWidth; i++)
-            {
-                cellArea *tmp = _cells + i;
-
-                tmp->view_mask = 1 << tmp->owner;
-            }
+            for (cellArea &cell : _cells)
+                cell.view_mask = 1 << cell.owner;
 
             for (NC_STACK_ypabact* &unit : _unitsList)
                 unit->MarkSectorsForView();
@@ -1192,7 +1181,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     cell->w_type = 7;
 }
 
-void sub_44FD6C(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a5, int a6, int a7)
+void sub_44FD6C(NC_STACK_ypaworld *yw, const cellArea &cell, int secX, int secY, int a5, int a6, int a7)
 {
     NC_STACK_ypabact *cbact = yw->current_bact;
 
@@ -1201,12 +1190,12 @@ void sub_44FD6C(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a
 
     if ( v8 + v9 <= (yw->field_1368 - 1) / 2 )
     {
-        const cityBases &v10 = yw->legos[  yw->secTypes[cell->type_id].buildings[a5][a6]->health_models[a7]  ];
+        const cityBases &v10 = yw->legos[  yw->secTypes[cell.type_id].buildings[a5][a6]->health_models[a7]  ];
 
         float v32 = secX * 1200.0 + 600.0;
         float v27 = -(secY * 1200.0 + 600.0);
 
-        if ( cell->comp_type != 1 )
+        if ( cell.comp_type != 1 )
         {
             v32 += (a5 - 1) * 300.0;
             v27 += (a6 - 1) * 300.0;
@@ -1220,7 +1209,7 @@ void sub_44FD6C(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a
             ypaworld_arg146 arg146;
             arg146.vehicle_id = v10.field_14[i];
             arg146.pos.x = v32 + v10.field_24[i].pos_x;
-            arg146.pos.y = cell->height + v10.field_24[i].pos_y;
+            arg146.pos.y = cell.height + v10.field_24[i].pos_y;
             arg146.pos.z = v27 + v10.field_24[i].pos_z;
 
             NC_STACK_ypabact *boom = yw->ypaworld_func146(&arg146);
@@ -1258,11 +1247,11 @@ void sub_44FD6C(NC_STACK_ypaworld *yw, cellArea *cell, int secX, int secY, int a
     }
 }
 
-void ypaworld_func129__sub0(NC_STACK_ypaworld *yw, cellArea *cell, yw_arg129 *arg)
+void ypaworld_func129__sub0(NC_STACK_ypaworld *yw, const cellArea &cell, yw_arg129 *arg)
 {
-    if ( cell->w_type == 2 )
+    if ( cell.w_type == 2 )
     {
-        if ( cell->owner == yw->UserRobo->_owner )
+        if ( cell.owner == yw->UserRobo->_owner )
         {
             if ( arg->unit )
             {
@@ -1291,7 +1280,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
     if ( secX > 0 && _mapWidth - 1 > secX && secY > 0 && _mapHeight - 1 > secY )
     {
-        cellArea *cell = &_cells[secX + _mapWidth * secY];
+        cellArea &cell = _cells(secX, secY);
 
         int v8 = (int)(arg->pos.x / 150.0) % 8;
 
@@ -1315,12 +1304,12 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
         else
             v14 = 3;
 
-        if ( v10 && v14 && cell->w_type != 1 )
+        if ( v10 && v14 && cell.w_type != 1 )
         {
             int v38;
             int a5;
 
-            if ( cell->comp_type == 1 )
+            if ( cell.comp_type == 1 )
             {
                 v38 = 0;
                 a5 = 0;
@@ -1331,9 +1320,9 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                 v38 = 2 - (v14 - 1);
             }
 
-            int v16 = cell->buildings_health[a5][v38];
+            int v16 = cell.buildings_health[a5][v38];
 
-            int v34 = v16 - arg->field_10 * (100 - legos[  secTypes[cell->type_id].buildings[a5][v38]->health_models[  build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
+            int v34 = v16 - arg->field_10 * (100 - legos[  secTypes[cell.type_id].buildings[a5][v38]->health_models[  build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
 
             if ( v34 < 0 )
                 v34 = 0;
@@ -1362,25 +1351,25 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                 }
             }
 
-            cell->buildings_health[a5][v38] = v34;
+            cell.buildings_health[a5][v38] = v34;
 
             ypaworld_func129__sub0(this, cell, arg);
 
-            CellCheckHealth(cell, secX, secY, arg->field_14, arg);
+            CellCheckHealth(&cell, secX, secY, arg->field_14, arg);
 
-            if ( cell->w_type == 4 )
+            if ( cell.w_type == 4 )
             {
-                if ( UserRobo && UserRobo->_owner == cell->owner )
+                if ( UserRobo && UserRobo->_owner == cell.owner )
                 {
                     if ( isNetGame )
-                        sub_47C29C(this, cell, cell->w_id);
+                        sub_47C29C(this, &cell, cell.w_id);
                     else
-                        yw_ActivateWunderstein(cell, cell->w_id);                  
+                        yw_ActivateWunderstein(&cell, cell.w_id);                  
 
-                    HistoryEventAdd( World::History::Upgrade(secX, secY, cell->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
+                    HistoryEventAdd( World::History::Upgrade(secX, secY, cell.owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
                 }
             }
-            else if ( cell->w_type == 7 )
+            else if ( cell.w_type == 7 )
             {
                 if ( isNetGame )
                 {
@@ -1390,12 +1379,12 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     {
                         for (int j = 0; j < 3; j++)
                         {
-                            v27 += cell->buildings_health[i][j];
+                            v27 += cell.buildings_health[i][j];
                         }
                     }
 
                     if ( !v27 )
-                        ypaworld_func129__sub1(this, cell, cell->w_id);
+                        ypaworld_func129__sub1(this, &cell, cell.w_id);
                 }
             }
         }
@@ -1403,7 +1392,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
+size_t NC_STACK_ypaworld::GetSectorInfo(yw_130arg *arg)
 {
     arg->sec_x = arg->pos_x / 1200;
     arg->sec_z = -arg->pos_z / 1200;
@@ -1421,7 +1410,7 @@ size_t NC_STACK_ypaworld::ypaworld_func130(yw_130arg *arg)
         return 0;
     }
 
-    arg->pcell = &_cells[_mapWidth * arg->sec_z + arg->sec_x];
+    arg->pcell = &_cells(arg->sec_x, arg->sec_z);
     return 1;
 }
 
@@ -2056,11 +2045,11 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     int y = arg->y;
     int x = arg->x;
 
-    cellArea *cell = &_cells[x + y * _mapWidth];
+    cellArea &cell = _cells(x, y);
 
     bool UserInSec = false;
 
-    for ( NC_STACK_ypabact* &node : cell->unitsList )
+    for ( NC_STACK_ypabact* &node : cell.unitsList )
     {
         
         if ( UserUnit == node || node->_bact_type == BACT_TYPES_ROBO)
@@ -2070,18 +2059,18 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
         }
     }
 
-    if ( UserUnit  &&  cell == UserUnit->_pSector )
+    if ( UserUnit  &&  &cell == UserUnit->_pSector )
         UserInSec = true;
 
-    if ( cell->w_type == 1 )
+    if ( cell.w_type == 1 )
         return 0;
     else if ( UserInSec  && !arg->field_C )
         return 0;
-    else if ( cell->w_type == 2 )
-        PowerStationErase(cell->w_id);
-    else if ( (cell->w_type == 4 || cell->w_type == 5 || cell->w_type == 6) && !arg->field_C )
+    else if ( cell.w_type == 2 )
+        PowerStationErase(cell.w_id);
+    else if ( (cell.w_type == 4 || cell.w_type == 5 || cell.w_type == 6) && !arg->field_C )
         return 0;
-    else if ( cell->w_type == 7 && isNetGame )
+    else if ( cell.w_type == 7 && isNetGame )
         return 0;
 
     if ( arg->field_C )
@@ -2277,7 +2266,7 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 
         if ( v29 >= 0 && v29 < _mapWidth && v12 >= 0 && v12 < _mapHeight )
         {
-            for ( NC_STACK_ypabact* &sect_bacts : _cells[v29 + v12 * _mapWidth].unitsList )
+            for ( NC_STACK_ypabact* &sect_bacts : _cells(v29, v12).unitsList )
             {
                 if ( sect_bacts != arg->unit && sect_bacts->_status != BACT_STATUS_DEAD )
                 {
@@ -5932,8 +5921,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
                                 {
                                     for (int xx = 0; xx < _mapWidth; xx++)
                                     {
-                                        cellArea *cell = &_cells[xx + yy * _mapWidth];
-                                        CellCheckHealth(cell, xx, yy, 255, NULL);
+                                        CellCheckHealth(&_cells(xx, yy), xx, yy, 255, NULL);
                                     }
                                 }
 
@@ -6438,14 +6426,12 @@ size_t NC_STACK_ypaworld::ypaworld_func168(NC_STACK_ypabact *bact)
 
     if ( bact->_owner == UserRobo->_owner )
     {
-        cellArea *cell = bact->_pSector;
-
-        if ( cell->w_type == 6 )
+        if ( bact->_pSector->w_type == 6 )
         {
             if ( UserRobo == bact )
             {
                 _levelInfo->State = 1;
-                _levelInfo->GateCompleteID = cell->w_id;
+                _levelInfo->GateCompleteID = bact->_pSector->w_id;
             }
             else
             {
@@ -6608,8 +6594,7 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
     {
         for(int x = 0; x < _mapWidth; x++)
         {
-            cellArea *cell = &_cells[x + y * _mapWidth];
-            CellCheckHealth(cell, x, y, 255, NULL);
+            CellCheckHealth(&_cells(x, y), x, y, 255, NULL);
         }
     }
 
@@ -7094,10 +7079,10 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
     {
         for (int j = 0; j < _mapWidth; j++)
         {
-            cellArea *v9 = _cells + _mapWidth * i + j;
+            cellArea &v9 = _cells(j, i);
 
-            if ( v9->owner == arg->bact->_owner )
-                CellSetOwner(v9, j, i, arg->field_4);
+            if ( v9.owner == arg->bact->_owner )
+                CellSetOwner(&v9, j, i, arg->field_4);
         }
     }
 
@@ -7111,17 +7096,17 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
     {
         for (int j = 0; j < _mapWidth; j++)
         {
-            cellArea *v15 = _cells + _mapWidth * i + j;
+            cellArea &v15 = _cells(j, i);
 
-            if ( v15->w_type == 4 && v15->owner == UserRobo->_owner )
+            if ( v15.w_type == 4 && v15.owner == UserRobo->_owner )
             {
 
                 if ( isNetGame )
-                    sub_47C29C(this, v15, v15->w_id);
+                    sub_47C29C(this, &v15, v15.w_id);
                 else
-                    yw_ActivateWunderstein(v15, v15->w_id);
+                    yw_ActivateWunderstein(&v15, v15.w_id);
                 
-                HistoryEventAdd( World::History::Upgrade(j, i, v15->owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
+                HistoryEventAdd( World::History::Upgrade(j, i, v15.owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
             }
 
         }
@@ -7649,7 +7634,7 @@ cellArea *NC_STACK_ypaworld::GetSector(int32_t x, int32_t y)
 {
     if (x >= 0 && x < _mapWidth
     &&  y >= 0 && y < _mapHeight)
-        return &_cells[x + y * _mapWidth]; 
+        return &_cells(x, y); 
     return NULL;
 }
 
@@ -7657,8 +7642,30 @@ cellArea *NC_STACK_ypaworld::GetSector(const Common::Point &sec)
 {
     if (sec.x >= 0 && sec.x < _mapWidth
     &&  sec.y >= 0 && sec.y < _mapHeight)
-        return &_cells[sec.x + sec.y * _mapWidth]; 
+        return &_cells(sec.x, sec.y); 
     return NULL;
+}
+
+cellArea *NC_STACK_ypaworld::GetSector(size_t id)
+{
+    if (id >= 0 && id < _cells.size())
+        return &_cells.At(id);
+    return NULL;
+}
+
+cellArea &NC_STACK_ypaworld::SectorAt(int32_t x, int32_t y)
+{
+    return _cells(x, y);
+}
+
+cellArea &NC_STACK_ypaworld::SectorAt(const Common::Point &sec)
+{
+    return _cells.At(sec);
+}
+
+cellArea &NC_STACK_ypaworld::SectorAt(size_t id)
+{
+    return _cells.At(id);
 }
 
 
@@ -7670,6 +7677,30 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
     map_Width_meters = _mapWidth * 1200.0;
     map_Height_meters = _mapHeight * 1200.0;
     
+    _cells.Clear();
+    _cells.Resize(sz);
+    
+    int32_t id = 0;
+    for (int y = 0; y < sz.y; y++)
+    {
+        for (int x = 0; x < sz.x; x++)
+        {
+            _cells(x, y).Id = id;
+            _cells(x, y).Pos = Common::Point(x, y);
+            id++;
+        }
+    }
+    
     _energyAccumMap.Clear();
     _energyAccumMap.Resize(sz);
+}
+
+bool NC_STACK_ypaworld::IsGamePlaySector(const Common::Point &sz) const
+{
+    return sz.x > 0 && sz.x < (_mapWidth - 1) && sz.y > 0 && sz.y < (_mapHeight - 1);
+}
+
+Common::PlaneVector<cellArea> &NC_STACK_ypaworld::Sectors()
+{
+    return _cells;
 }

@@ -612,14 +612,14 @@ void NC_STACK_ypabact::Update(update_msg *arg)
     sect_info.pos_x = _position.x;
     sect_info.pos_z = _position.z;
 
-    if ( !_world->ypaworld_func130(&sect_info) )
+    if ( !_world->GetSectorInfo(&sect_info) )
     {
         FixBeyondTheWorld();
 
         sect_info.pos_x = _position.x;
         sect_info.pos_z = _position.z;
 
-        _world->ypaworld_func130(&sect_info);
+        _world->GetSectorInfo(&sect_info);
     }
 
     cellArea *oldcell = _pSector;
@@ -800,7 +800,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
             if ( arg130.pos_z < _wrldY + 1210.0 )
                 arg130.pos_z = _wrldY + 1210.0;
 
-            if ( _world->ypaworld_func130(&arg130) )
+            if ( _world->GetSectorInfo(&arg130) )
             {
                 _secndT.pcell = arg130.pcell;
                 _sencdTpos.x = arg130.pos_x;
@@ -881,7 +881,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
             if ( arg130.pos_z < _wrldY + 1210.0 )
                 arg130.pos_z = _wrldY + 1210.0;
 
-            if ( _world->ypaworld_func130(&arg130) )
+            if ( _world->GetSectorInfo(&arg130) )
             {
                 _primT.pcell = arg130.pcell;
                 _primTpos.x = arg130.pos_x;
@@ -3498,7 +3498,7 @@ size_t NC_STACK_ypabact::SetPosition(bact_arg80 *arg)
 
     sect_info.pos_x = arg->pos.x;
     sect_info.pos_z = arg->pos.z;
-    if (!_world->ypaworld_func130(&sect_info))
+    if (!_world->GetSectorInfo(&sect_info))
         return 0;
 
     if ( _pSector )
@@ -3558,8 +3558,6 @@ void NC_STACK_ypabact::GetSummary(bact_arg81 *arg)
 // Update bact energy
 void NC_STACK_ypabact::EnergyInteract(update_msg *arg)
 {
-    cellArea *cell = _pSector;
-
     if ( _status != BACT_STATUS_DEAD )
     {
         int v16 = _clock - _energy_time;
@@ -3569,15 +3567,15 @@ void NC_STACK_ypabact::EnergyInteract(update_msg *arg)
             _energy_time = _clock;
 
             yw_arg176 arg176;
-            arg176.owner = cell->owner;
+            arg176.owner = _pSector->owner;
 
             _world->ypaworld_func176(&arg176);
 
             float v14 = v16 / 1000.0;
 
-            float denerg = _energy_max * v14 * cell->energy_power * arg176.field_4 / 7000.0;
+            float denerg = _energy_max * v14 * _pSector->energy_power * arg176.field_4 / 7000.0;
 
-            if ( _owner == cell->owner )
+            if ( _owner == _pSector->owner )
                 _energy += denerg;
             else
                 _energy -= denerg;
@@ -4181,15 +4179,13 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
     if ( _fly_dir_length == 0.0 )
         return 0;
 
-    cellArea *cell = _pSector;
-
     vec3d stru_5150E8(0.0, 0.0, 0.0);
 
     int v45 = 0;
 
     rbcolls *v55;
 
-    for ( NC_STACK_ypabact* &bnode : cell->unitsList )
+    for ( NC_STACK_ypabact* &bnode : _pSector->unitsList )
     {
         int v53 = bnode->_status == BACT_STATUS_DEAD && (bnode->_vp_extra[0].flags & 1) && (_oflags & BACT_OFLAG_USERINPT) && bnode->_scale_time > 0 ;
 
@@ -4532,7 +4528,7 @@ void NC_STACK_ypabact::GetSectorTarget(bact_arg90 *arg)
         arg130.pos_z = arg->pos_z;
     }
 
-    if ( _world->ypaworld_func130(&arg130) )
+    if ( _world->GetSectorInfo(&arg130) )
     {
         float rad = 1800.0;
         char job = 0;
@@ -4543,7 +4539,8 @@ void NC_STACK_ypabact::GetSectorTarget(bact_arg90 *arg)
         {
             for (int y = -1; y < 2; y++)
             {
-                NC_STACK_ypabact *v7 = GetSectorTarget__sub0( &arg130.pcell[x + y * _secMaxX], arg->unit, &rad, &job);
+                Common::Point pt = arg130.pcell->Pos + Common::Point(x, y);
+                NC_STACK_ypabact *v7 = GetSectorTarget__sub0( _world->GetSector(pt), arg->unit, &rad, &job);
 
                 if ( v7 )
                     arg->ret_unit = v7;
@@ -4558,7 +4555,7 @@ void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
     arg130.pos_x = arg->x;
     arg130.pos_z = arg->z;
 
-    _world->ypaworld_func130(&arg130);
+    _world->GetSectorInfo(&arg130);
 
     float v15 = arg130.sec_x * 1200.0 + 600.0;
     float v13 = -(arg130.sec_z * 1200.0 + 600.0);
@@ -4607,14 +4604,15 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         arg130.pos_z = arg->pos.z;
     }
 
-    if ( _world->ypaworld_func130(&arg130) )
+    if ( _world->GetSectorInfo(&arg130) )
     {
         cellArea *cell = arg130.pcell;
+        Common::Point pt = cell->Pos;
 
         if ( arg130.sec_x != 0 &&  arg130.sec_z != 0 )
         {
             // left-up
-            cellArea *tcell = &cell[-v4 - 1];
+            cellArea *tcell = _world->GetSector(pt.x - 1, pt.y - 1);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4639,7 +4637,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_z )
         {
             // up
-            cellArea *tcell = &cell[-v4];
+            cellArea *tcell = _world->GetSector(pt.x, pt.y - 1);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4664,7 +4662,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x < v4 - 1 && arg130.sec_z )
         {
             // right-up
-            cellArea *tcell = &cell[-v4 + 1];
+            cellArea *tcell = _world->GetSector(pt.x + 1, pt.y - 1);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4689,7 +4687,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x )
         {
             // left
-            cellArea *tcell = &cell[-1];
+            cellArea *tcell = _world->GetSector(pt.x - 1, pt.y);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4734,7 +4732,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x < v4 - 1 )
         {
             // right
-            cellArea *tcell = &cell[1];
+            cellArea *tcell = _world->GetSector(pt.x + 1, pt.y);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4759,7 +4757,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x != 0 && arg130.sec_z < v5 - 1 )
         {
             // left-down
-            cellArea *tcell = &cell[ v4 - 1 ];
+            cellArea *tcell = _world->GetSector(pt.x - 1, pt.y + 1);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4784,7 +4782,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_z < v5 - 1  )
         {
             // down
-            cellArea *tcell = &cell[ v4 ];
+            cellArea *tcell = _world->GetSector(pt.x, pt.y + 1);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -4809,7 +4807,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x < v4 - 1 && arg130.sec_z < v5 - 1 )
         {
             // down-right
-            cellArea *tcell = &cell[ v4 + 1 ];
+            cellArea *tcell = _world->GetSector(pt.x + 1, pt.y + 1);
 
             if ( (1 << _owner) & tcell->view_mask )
             {
@@ -5236,25 +5234,21 @@ void NC_STACK_ypabact::MarkSectorsForView()
             {
                 if ( _owner < 8 )
                 {
-                    cellArea *v19 = _pSector;
-
                     for (int i = -_radar; i <= _radar; i++)
                     {
                         int yy = _sectY + i;
-
-                        int v20 = _secMaxX * i;
 
                         if ( _radar == 1 )
                         {
                             if ( yy > 0 && yy < _secMaxY - 1 )
                             {
                                 if ( _sectX - 1 > 0 )
-                                    v19[v20 - 1].view_mask |= 1 << _owner;
+                                    _world->SectorAt(_sectX - 1, yy).view_mask |= 1 << _owner;
 
-                                v19[v20].view_mask |= 1 << _owner;
+                                _world->SectorAt(_sectX, yy).view_mask |= 1 << _owner;
 
                                 if ( _sectX + 1 < _secMaxX - 1 )
-                                    v19[v20 + 1].view_mask |= 1 << _owner;
+                                    _world->SectorAt(_sectX + 1, yy).view_mask |= 1 << _owner;
                             }
                         }
                         else
@@ -5268,10 +5262,10 @@ void NC_STACK_ypabact::MarkSectorsForView()
 
                             for (int j = -tmp; j <= tmp; j++)
                             {
-                                int xx = _sectX + j;
+                                Common::Point d(_sectX + j, yy);
 
-                                if ( xx > 0 && xx < _secMaxX - 1 && yy > 0 && yy < _secMaxY - 1 )
-                                    v19[v20 + j].view_mask |= 1 << _owner;
+                                if ( _world->IsGamePlaySector(d) )
+                                    _world->SectorAt(d).view_mask |= 1 << _owner;
                             }
                         }
                     }
@@ -5373,14 +5367,14 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
 
     vec2d tmp = _position.XZ() + arg->field_0.XZ() * 1000.0;
 
-    _world->ypaworld_func130(&arg130);
+    _world->GetSectorInfo(&arg130);
 
     cellArea *pCells[3];
     pCells[0] = arg130.pcell;
 
     arg130.pos_x = tmp.x;
     arg130.pos_z = tmp.y;
-    _world->ypaworld_func130(&arg130);
+    _world->GetSectorInfo(&arg130);
 
     pCells[2] = arg130.pcell;
 
@@ -5394,7 +5388,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
         arg130.pos_x = tmp2.x;
         arg130.pos_z = tmp2.y;
 
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
 
         pCells[1] = arg130.pcell;
     }
@@ -5741,7 +5735,7 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
         arg130.pos_x = _position.x;
         arg130.pos_z = _position.z;
 
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
 
         vec2d tmp = _rotation.AxisZ().XZ() * 1200.0 + _position.XZ();
 
@@ -5752,7 +5746,7 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
         arg130.pos_x = tmp.x;
         arg130.pos_z = tmp.y;
 
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
 
         pCells[2] = arg130.pcell;
 
@@ -5766,7 +5760,7 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
             arg130.pos_x = tmp2.x;
             arg130.pos_z = tmp2.y;
 
-            _world->ypaworld_func130(&arg130);
+            _world->GetSectorInfo(&arg130);
 
             pCells[1] = arg130.pcell;
         }
@@ -6857,13 +6851,13 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
     yw_130arg arg130;
     arg130.pos_x = _position.x;
     arg130.pos_z = _position.z;
-    if ( !_world->ypaworld_func130(&arg130) )
+    if ( !_world->GetSectorInfo(&arg130) )
     {
         FixBeyondTheWorld();
 
         arg130.pos_x = _position.x;
         arg130.pos_z = _position.z;
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
     }
 
     cellArea *oldSect = _pSector;
@@ -7287,7 +7281,7 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
 
     int v5;
 
-    if ( _world->ypaworld_func130(&arg130) )
+    if ( _world->GetSectorInfo(&arg130) )
         v5 = arg130.pcell->owner;
     else
         v5 = 0;
@@ -7543,34 +7537,18 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     //path find for ground units (tank & car)
     int maxsteps = arg->steps_cnt;
 
-    for (int xx = 0; xx < _world->_mapWidth; xx++)
+    for (cellArea &cll : _world->_cells)
     {
-        for (int yy = 0; yy < _world->_mapHeight; yy++)
-        {
-            cellArea &cll = _world->_cells[xx + yy * _world->_mapWidth];
-
-            cll.pf_flags = 0;
-            cll.cost_to_this = 0;
-            cll.cost_to_target = 0;
-            cll.pf_treeup= NULL;
-        }
+        cll.pf_flags = 0;
+        cll.cost_to_this = 0;
+        cll.cost_to_target = 0;
+        cll.pf_treeup= NULL;
     }
 
-    int from_sec_x = arg->from.x / 1200.0;
-    int from_sec_z = -arg->from.y / 1200.0;
-    int to_sec_x = arg->to.x / 1200.0;
-    int to_sec_z = -arg->to.y / 1200.0;
+    cellArea *target_pcell = _world->GetSector(arg->to.x / 1200.0 , -arg->to.y / 1200.0);
+    cellArea *start_pcell = _world->GetSector(arg->from.x / 1200.0 , -arg->from.y / 1200.0);
 
-    cellArea *target_pcell = NULL;
-
-    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < _world->_mapWidth && to_sec_z < _world->_mapHeight )
-    {
-        target_pcell = &_world->_cells[to_sec_x + to_sec_z * _world->_mapWidth];
-        target_pcell->pos_x = to_sec_x;
-        target_pcell->pos_y = to_sec_z;
-    }
-
-    if ( to_sec_x == from_sec_x && from_sec_z == to_sec_z )
+    if ( target_pcell == start_pcell )
     {
         arg->steps_cnt = 1;
         arg->waypoints[0].x = arg->to.x;
@@ -7580,31 +7558,17 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     std::list<cellArea *> openList;
 
-    cellArea *start_pcell = NULL;
-
-    if ( from_sec_x >= 0 && from_sec_z >= 0 && from_sec_x < _world->_mapWidth && from_sec_z < _world->_mapHeight )
-    {
-        start_pcell = &_world->_cells[from_sec_x + from_sec_z * _world->_mapWidth];
-        start_pcell->pos_x = from_sec_x;
-        start_pcell->pos_y = from_sec_z;
-    }
-
     start_pcell->pf_flags |= CELL_PFLAGS_IN_CLST;
-
-    int current_sec_x = from_sec_x;
-    int current_sec_z = from_sec_z;
 
     cellArea *current_pcell = start_pcell;
 
-    start_pcell->cost_to_this = 0;
-
-    int v23 = abs(to_sec_x - from_sec_x);
-    int v24 = abs(to_sec_z - from_sec_z);
+    int v23 = Common::ABS(target_pcell->Pos.x - current_pcell->Pos.x);
+    int v24 = Common::ABS(target_pcell->Pos.y - current_pcell->Pos.y);
 
     float sq2 = sqrt(2.0);
 
-    start_pcell->cost_to_target = MMIN(v23, v24) * sq2 + abs(v23 - v24);
-
+    current_pcell->cost_to_target = Common::MIN(v23, v24) * sq2 + Common::ABS(v23 - v24);
+    current_pcell->cost_to_this = 0;
     while ( 1 )
     {
 
@@ -7615,18 +7579,12 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 if ( dx == 0.0 && dz == 0.0 )
                     continue;
 
-                int t_x = current_sec_x + dx;
-                int t_z = current_sec_z + dz;
+                Common::Point currentSec = current_pcell->Pos;
+                Common::Point t = currentSec + Common::Point(dx, dz);
 
-                if ( t_x > 0 && t_x < _secMaxX - 1 && t_z > 0 && t_z < _secMaxY - 1 )
+                if ( _world->IsGamePlaySector(t) )
                 {
-                    cellArea *cell_tzx = NULL;
-                    if ( t_x >= 0 && t_z >= 0 && t_x < _world->_mapWidth && t_z < _world->_mapHeight )
-                    {
-                        cell_tzx = &_world->_cells[_world->_mapWidth * t_z + t_x];
-                        cell_tzx->pos_x = t_x;
-                        cell_tzx->pos_y = t_z;
-                    }
+                    cellArea *cell_tzx = _world->GetSector(t);
 
                     if ( cell_tzx->pf_flags & CELL_PFLAGS_IN_CLST )
                         continue;
@@ -7648,23 +7606,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
                     if ( dx != 0 && dz != 0)
                     {
-                        cellArea *cell_tz = NULL;
-
-                        if (current_sec_x >= 0 && t_z >= 0 && current_sec_x < _world->_mapWidth && t_z < _world->_mapHeight)
-                        {
-                            cell_tz = &_world->_cells[current_sec_x + _world->_mapWidth * t_z];
-                            cell_tz->pos_x = current_sec_x;
-                            cell_tz->pos_y = t_z;
-                        }
-
-                        cellArea *cell_tx = NULL;
-
-                        if (t_x >= 0 && current_sec_z >= 0 && t_x < _world->_mapWidth && current_sec_z < _world->_mapHeight)
-                        {
-                            cell_tx = &_world->_cells[current_sec_z * _world->_mapWidth + t_x];
-                            cell_tx->pos_x = t_x;
-                            cell_tx->pos_y = current_sec_z;
-                        }
+                        cellArea *cell_tz = _world->GetSector(currentSec.x, t.y);
+                        cellArea *cell_tx = _world->GetSector(t.x, currentSec.y);
 
                         if ( fabs(current_pcell->height - cell_tzx->height) > 300.0
                                 || fabs(current_pcell->height - cell_tz->height) > 300.0
@@ -7677,10 +7620,10 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
                     float new_cost_to_this = sqrt(POW2(dx) + POW2(dz)) + cell_tzx->addit_cost + current_pcell->cost_to_this;
 
-                    int v40 = abs(to_sec_x - t_x);
-                    int v41 = abs(to_sec_z - t_z);
+                    int v40 = Common::ABS(target_pcell->Pos.x - t.x);
+                    int v41 = Common::ABS(target_pcell->Pos.y - t.y);
 
-                    float new_cost_to_target = MMIN(v40, v41) * sq2 + abs(v40 - v41);
+                    float new_cost_to_target = Common::MIN(v40, v41) * sq2 + Common::ABS(v40 - v41);
 
                     if ( (cell_tzx->pf_flags & CELL_PFLAGS_IN_OLST)
                             && new_cost_to_this + new_cost_to_target > cell_tzx->cost_to_this + cell_tzx->cost_to_target )
@@ -7723,28 +7666,19 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         }
         
         current_pcell = *selected;
-        current_sec_x = current_pcell->pos_x;
-        current_sec_z = current_pcell->pos_y;
 
         openList.erase(selected); // Remove OLIST
 
         current_pcell->pf_flags &= ~CELL_PFLAGS_IN_OLST;
         current_pcell->pf_flags |= CELL_PFLAGS_IN_CLST;
 
-        if ( current_sec_x == to_sec_x && current_sec_z == to_sec_z )
+        if ( current_pcell == target_pcell )
             break;
     }
 
     std::stack<cellArea *> pathCells;
 
-    cellArea *iter_cell = NULL;
-
-    if ( to_sec_x >= 0 && to_sec_z >= 0 && to_sec_x < _world->_mapWidth && to_sec_z < _world->_mapHeight )
-    {
-        iter_cell = &_world->_cells[to_sec_x + _world->_mapWidth * to_sec_z];
-        iter_cell->pos_x = to_sec_x;
-        iter_cell->pos_y = to_sec_z;
-    }
+    cellArea *iter_cell = target_pcell;
 
     while(iter_cell)
     {
@@ -7757,8 +7691,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     
     cellArea *nextcell = pathCells.top();
 
-    int v61 = nextcell->pos_x - curcell->pos_x;
-    int v62 = nextcell->pos_y - curcell->pos_y;
+    int v61 = nextcell->Pos.x - curcell->Pos.x;
+    int v62 = nextcell->Pos.y - curcell->Pos.y;
 
     int step_id = 0;
 
@@ -7776,11 +7710,11 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         pathCells.pop();
         nextcell = pathCells.top();
 
-        if ( nextcell->pos_x - curcell->pos_x != v61 || nextcell->pos_y - curcell->pos_y != v62 )
+        if ( nextcell->Pos.x - curcell->Pos.x != v61 || nextcell->Pos.y - curcell->Pos.y != v62 )
         {
             float tx, tz;
 
-            if ( abs(v61) < abs(v62) )
+            if ( Common::ABS(v61) < Common::ABS(v62) )
             {
                 if ( v61 > 0 )
                 {
@@ -7807,11 +7741,11 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 }
             }
 
-            v61 = nextcell->pos_x - curcell->pos_x;
-            v62 = nextcell->pos_y - curcell->pos_y;
+            v61 = nextcell->Pos.x - curcell->Pos.x;
+            v62 = nextcell->Pos.y - curcell->Pos.y;
 
-            arg->waypoints[ step_id ].x = (curcell->pos_x + 0.5) * 1200.0 + tx;
-            arg->waypoints[ step_id ].z = -(curcell->pos_y + 0.5) * 1200.0 + tz;
+            arg->waypoints[ step_id ].x = (curcell->Pos.x + 0.5) * 1200.0 + tx;
+            arg->waypoints[ step_id ].z = -(curcell->Pos.y + 0.5) * 1200.0 + tz;
             maxsteps--;
             step_id++;
         }

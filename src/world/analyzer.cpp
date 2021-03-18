@@ -294,9 +294,9 @@ bool GameAnalyzer::IsSpottedEnemyHSwithPS(NC_STACK_ypaworld *world)
 bool GameAnalyzer::IsFewSeeSectors(NC_STACK_ypaworld *world)
 {
     int32_t see = 0;
-    for( int i = 0; i < world->_mapWidth * world->_mapHeight; i++)
+    for( const cellArea &cell : world->_cells )
     {
-        if (world->_cells[i].IsCanSee(world->UserRobo->_owner))
+        if (cell.IsCanSee(world->UserRobo->_owner))
             see++;
     }
     
@@ -312,9 +312,9 @@ bool GameAnalyzer::IsFewOwnSectors(NC_STACK_ypaworld *world)
         return true;
     
     int32_t see = 0;
-    for( int i = 0; i < world->_mapWidth * world->_mapHeight; i++)
+    for( const cellArea &cell : world->_cells )
     {
-        if (world->_cells[i].IsCanSee(world->UserRobo->_owner))
+        if (cell.IsCanSee(world->UserRobo->_owner))
             see++;
     }
 

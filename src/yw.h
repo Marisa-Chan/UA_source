@@ -787,8 +787,8 @@ enum CELL_PFLAGS
 
 struct cellArea
 {
-    int pos_x;
-    int pos_y;
+    int32_t Id = 0;
+    Common::Point Pos;
 
     char addit_cost; // Additional cost for ground units
     char pf_flags; // Pathfind flags
@@ -831,9 +831,6 @@ struct cellArea
     
     void clear()
     {
-        pos_x = 0;
-        pos_y = 0;
-
         addit_cost = 0;
         pf_flags = 0;
         cost_to_this = 0.0;
@@ -2293,7 +2290,7 @@ public:
     virtual size_t Deinit();
     virtual size_t base_func64(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
-    virtual size_t ypaworld_func130(yw_130arg *arg);
+    virtual size_t GetSectorInfo(yw_130arg *arg);
     virtual void ypaworld_func131(NC_STACK_ypabact *bact);
     virtual void ypaworld_func132(void *arg);
     virtual void ypaworld_func133(void *arg);
@@ -2651,8 +2648,15 @@ public:
     
     cellArea *GetSector(int32_t x, int32_t y);
     cellArea *GetSector(const Common::Point &sec);
+    cellArea *GetSector(size_t id);
+    cellArea &SectorAt(int32_t x, int32_t y);
+    cellArea &SectorAt(const Common::Point &sec);
+    cellArea &SectorAt(size_t id);
+    
+    Common::PlaneVector<cellArea> &Sectors();
     
     void SetMapSize(const Common::Point &sz);
+    bool IsGamePlaySector(const Common::Point &sz) const;
 
 public:
     //Data
@@ -2666,7 +2670,7 @@ public:
     int _mapAbsMaxY;
     int _mapWidth;
     int _mapHeight;
-    cellArea *_cells;
+    Common::PlaneVector<cellArea> _cells;
 
     float map_Width_meters;
     float map_Height_meters;

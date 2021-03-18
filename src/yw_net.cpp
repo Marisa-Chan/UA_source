@@ -2533,7 +2533,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         secInfo.pos_x = impMsg->pos.x;
         secInfo.pos_z = impMsg->pos.z;
 
-        if ( !yw->ypaworld_func130(&secInfo) )
+        if ( !yw->GetSectorInfo(&secInfo) )
             break;
 
         bact_arg83 impls;
@@ -3859,8 +3859,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
                             {
                                 for (int x = 0; x < _mapWidth; x++)
                                 {
-                                    cellArea *cell = &_cells[x + y * _mapWidth];
-                                    CellCheckHealth(cell, x, y, 255, NULL);
+                                    CellCheckHealth(&_cells(x, y), x, y, 255, NULL);
                                 }
                             }
 

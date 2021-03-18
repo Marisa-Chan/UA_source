@@ -1582,11 +1582,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
         {
             if ( v41 < 2048 )
             {
-                cellArea *v17 = &yw->_cells[j + yw->_mapWidth * v42];
+                cellArea &cell = yw->_cells(j, v42);
 
-                if ( robo_map.field_1EF & v17->view_mask )
+                if ( robo_map.field_1EF & cell.view_mask )
                 {
-                    for ( NC_STACK_ypabact* &bct : v17->unitsList )
+                    for ( NC_STACK_ypabact* &bct : cell.unitsList )
                     {
                         if ( bct->_bact_type == BACT_TYPES_ROBO )
                         {
@@ -1628,11 +1628,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
             {
                 if ( v41 < 2048 )
                 {
-                    cellArea *v25 = &yw->_cells[m + l * yw->_mapWidth];
+                    cellArea &cell = yw->_cells(m, l);
 
-                    if ( robo_map.field_1EF & v25->view_mask )
+                    if ( robo_map.field_1EF & cell.view_mask )
                     {
-                        for ( NC_STACK_ypabact* &bct : v25->unitsList )
+                        for ( NC_STACK_ypabact* &bct : cell.unitsList )
                         {
                             if ( bct->_owner == yw->UserRobo->_owner
                                     && bct->_position.x > flt_516524
@@ -2107,9 +2107,7 @@ int sub_4F60A4(NC_STACK_ypaworld *yw, int x, int y)
 {
     if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        cellArea *v5 = &yw->_cells[yw->_mapWidth * y + x];
-
-        if ( (robo_map.field_1EC & 3) && (robo_map.field_1EF & v5->view_mask) )
+        if ( (robo_map.field_1EC & 3) && (robo_map.field_1EF & yw->_cells(x, y).view_mask) )
             return 0;
         else
             return 9;
@@ -2122,14 +2120,14 @@ int sub_4F6048(NC_STACK_ypaworld *yw, int x, int y)
 {
     if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        cellArea *v4 = &yw->_cells[yw->_mapWidth * y + x];
+        cellArea &v4 = yw->_cells(x, y);
 
-        if ( robo_map.field_1EF & v4->view_mask )
+        if ( robo_map.field_1EF & v4.view_mask )
         {
-            if ( !v4->owner )
+            if ( !v4.owner )
                 return 8;
             else
-                return v4->owner;
+                return v4.owner;
         }
     }
 
@@ -2140,10 +2138,10 @@ int sub_4F5FE0(NC_STACK_ypaworld *yw, int x, int y)
 {
     if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        cellArea *v6 = &yw->_cells[yw->_mapWidth * y + x];
+        cellArea &v6 = yw->_cells(x, y);
 
-        if ( robo_map.field_1EF & v6->view_mask )
-            return yw->secTypes[v6->type_id].field_3;
+        if ( robo_map.field_1EF & v6.view_mask )
+            return yw->secTypes[v6.type_id].field_3;
     }
 
     return 0;
@@ -2159,22 +2157,22 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
     if ( v9 < 0 || v9 >= yw->_mapWidth || v7 < 0 || v7 >= yw->_mapHeight )
         return 0;
 
-    cellArea *v12 = &yw->_cells[v9 + v7 * yw->_mapWidth];
+    cellArea &v12 = yw->_cells(v9, v7);
 
-    if ( !(robo_map.field_1EF & v12->view_mask) )
+    if ( !(robo_map.field_1EF & v12.view_mask) )
         return 0;
 
     if ( v8 && v27 )
     {
-        if ( v12->comp_type == 1 )
+        if ( v12.comp_type == 1 )
         {
-            cityBases *v26 = yw->legos + yw->secTypes[ v12->type_id ].buildings[0][0]->health_models[  yw->build_hp_ref[  v12->buildings_health[0][0]  ]  ];
+            cityBases *v26 = yw->legos + yw->secTypes[ v12.type_id ].buildings[0][0]->health_models[  yw->build_hp_ref[  v12.buildings_health[0][0]  ]  ];
             int v25 = (16 * (v27 - 1) + v8 - 1 + v26->field_12) & 0xFF;
             return (v26->field_11 << 8) | v25;
         }
         else
         {
-            cityBases *v26 = yw->legos + yw->secTypes[ v12->type_id ].buildings[v8 - 1][2 - (v27 - 1)]->health_models[  yw->build_hp_ref[  v12->buildings_health[v8 - 1][2 - (v27 - 1)]  ]  ];
+            cityBases *v26 = yw->legos + yw->secTypes[ v12.type_id ].buildings[v8 - 1][2 - (v27 - 1)]->health_models[  yw->build_hp_ref[  v12.buildings_health[v8 - 1][2 - (v27 - 1)]  ]  ];
             return (v26->field_11 << 8) | v26->field_12;
         }
     }
@@ -2191,34 +2189,34 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
 
         if ( v8 )
         {
-            v15 = v12;
-            v16 = v12 - yw->_mapWidth;
-            v17 = v12 - yw->_mapWidth;
+            v15 = &v12;
+            v16 = &yw->_cells(v9, v7 - 1);
+            v17 = &yw->_cells(v9, v7 - 1);
         }
         else if ( v27 )
         {
-            v17 = v12 - 1;
-            v15 = v12 - 1;
-            v16 = v12;
+            v17 = &yw->_cells(v9 - 1, v7);
+            v15 = &yw->_cells(v9 - 1, v7);
+            v16 = &v12;
         }
         else
         {
-            v15 = v12 - 1;
-            v16 = v12 - yw->_mapWidth;
-            v17 = v16 - 1;
+            v15 = &yw->_cells(v9 - 1, v7);
+            v16 = &yw->_cells(v9, v7 - 1);
+            v17 = &yw->_cells(v9 - 1, v7 - 1);
         }
 
 
         if ( fabs(v17->height - v16->height) >= 500.0 )
             v13 = 1;
 
-        if ( fabs(v15->height - v12->height) >= 500.0 )
+        if ( fabs(v15->height - v12.height) >= 500.0 )
             v13 |= 2;
 
         if ( fabs(v17->height - v15->height) >= 500.0 )
             v13 |= 4;
 
-        if ( fabs(v16->height - v12->height) >= 500.0 )
+        if ( fabs(v16->height - v12.height) >= 500.0 )
             v13 |= 8;
 
         if ( v13 == 12 )
@@ -6005,11 +6003,11 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
     {
         for (int j = v22; j <= v24; j++)
         {
-            cellArea *cll = &yw->_cells[j + yw->_mapWidth * i];
+            cellArea &cll = yw->_cells(j, i);
 
-            if ( robo_map.field_1EF & cll->view_mask )
+            if ( robo_map.field_1EF & cll.view_mask )
             {
-                for ( NC_STACK_ypabact* &bct : cll->unitsList )
+                for ( NC_STACK_ypabact* &bct : cll.unitsList )
                 {
                     if ( bct->_owner == yw->UserRobo->_owner )
                     {
@@ -10017,11 +10015,11 @@ char * yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, char *cur)
         {
             for (int  j = v5; j <= v16; j++ )
             {
-                cellArea *v8 = &yw->_cells[j + yw->_mapWidth * i];
+                cellArea &v8 = yw->_cells(j, i);
 
-                if ( robo_map.field_1EF & v8->view_mask )
+                if ( robo_map.field_1EF & v8.view_mask )
                 {
-                    for ( NC_STACK_ypabact* &bct : v8->unitsList )
+                    for ( NC_STACK_ypabact* &bct : v8.unitsList )
                     {
 
                         if ( bct->_bact_type != BACT_TYPES_MISSLE && bct->_bact_type != BACT_TYPES_ROBO )
@@ -10205,11 +10203,11 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
         {
             if ( v38 < 512 ) // Units maximum?
             {
-                cellArea *v17 = &yw->_cells[j + yw->_mapWidth * i];
+                cellArea &v17 = yw->_cells(j, i);
 
-                if ( robo_map.field_1EF & v17->view_mask )
+                if ( robo_map.field_1EF & v17.view_mask )
                 {
-                    for( NC_STACK_ypabact* &bact : v17->unitsList )
+                    for( NC_STACK_ypabact* &bact : v17.unitsList )
                     {
                         int v19 = 0;
                         if ( robo_map.IsOpen() )
@@ -10994,31 +10992,31 @@ void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
 
     if ( v10 >= 1  &&  v11 >= 1  &&  _mapWidth - 1 > v10  &&  _mapHeight - 1 > v11 )
     {
-        cellArea *v12 = &_cells[_mapWidth * v11 + v10];
+        cellArea &cell = _cells(v10, v11);
 
         if ( field_1a58 & 1 )
         {
-            field_1a60 = v12;
+            field_1a60 = &cell;
             field_1a58 |= 0x10;
             field_1a64 = v10;
             field_1A66 = v11;
             field_1a6c.x = (float)v23 * robo_map.field_1E0 + 0.5;
-            field_1a6c.y = v12->height;
+            field_1a6c.y = cell.height;
             field_1a6c.z = -((float)v24 * robo_map.field_1E4 + 0.75);
 
             field_1a7c.x = (float)v10 * 1200.0 + 600.0;
-            field_1a7c.y = v12->height;
+            field_1a7c.y = cell.height;
             field_1a7c.z = -((float)v11 * 1200.0 + 600.0);
         }
 
-        if ( field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << UserRobo->_owner) & v12->view_mask ) )
+        if ( field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << UserRobo->_owner) & cell.view_mask ) )
         {
 
             int v16 = 0;
 
             while ( v16 < 2 )
             {
-                for( NC_STACK_ypabact* &v17 : v12->unitsList )
+                for( NC_STACK_ypabact* &v17 : cell.unitsList )
                 {
                     if ( (v16 != 1 || v17->_owner != UserRobo->_owner) && (v16 || v17->_owner == UserRobo->_owner) )
                     {
@@ -11159,7 +11157,7 @@ void NC_STACK_ypaworld::yw_3D_MouseSelect(ClickBoxInf *winp)
         int v12 = -arg149.isectPos.z / 1200.0;
         int v25 = arg149.isectPos.x / 1200.0;
 
-        field_1a60 = &_cells[v12 * _mapWidth + v25];
+        field_1a60 = &_cells(v25, v12);
         field_1a64 = v25;
         field_1A66 = v12;
         field_1a6c = arg149.isectPos;

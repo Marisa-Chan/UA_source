@@ -595,16 +595,14 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
 
     if ( _o.own_map )
     {
-        uint8_t *pbuf = _o.own_map->data();
-        cellArea *v6 = _o._cells;
-
-        for (int i = 0; i < (int)_o.own_map->size(); i++)
+        for (int y = 0; y < _o._mapHeight; y++)
         {
-            int v8 = pbuf[i];
-            v6->owner = v8;
-            _o.sectors_count_by_owner[v8]++;
-            
-            v6++;
+            for (int x = 0; x < _o._mapWidth; x++)
+            {
+                int own = _o.own_map->At(x, y);
+                _o._cells(x, y).owner = own;
+                _o.sectors_count_by_owner[own]++;
+            }
         }
     }
     return true;
@@ -629,29 +627,27 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
     _o.blg_map = ReadMapAsPlaneBytes(parser);
     if ( _o.blg_map )
     {
-        uint8_t *pbuf = _o.blg_map->data();
-        cellArea *v6 = _o._cells;
-
-        for (int i = 0; i < (int)_o.blg_map->size(); i++)
+        for (int y = 0; y < _o._mapHeight; y++)
         {
-            int v8 = *pbuf;
-
-            if ( v8 && v6->owner )
+            for (int x = 0; x < _o._mapWidth; x++)
             {
-                ypaworld_arg148 arg148;
-                arg148.field_18 = 1;
-                arg148.ownerID = v6->owner;
-                arg148.ownerID2 = v6->owner;
-                arg148.blg_ID = v8;
-                arg148.field_C = 1;
-                arg148.x = i % _o._mapWidth;
-                arg148.y = i / _o._mapWidth;
+                cellArea &cell = _o._cells(x, y);
+                int blg = _o.blg_map->At(x, y);
+                
+                if (blg > 0 && cell.owner != 0)
+                {
+                    ypaworld_arg148 arg148;
+                    arg148.field_18 = 1;
+                    arg148.ownerID = cell.owner;
+                    arg148.ownerID2 = cell.owner;
+                    arg148.blg_ID = blg;
+                    arg148.field_C = 1;
+                    arg148.x = x;
+                    arg148.y = y;
 
-                _o.ypaworld_func148(&arg148);
+                    _o.ypaworld_func148(&arg148);
+                }
             }
-
-            v6++;
-            pbuf++;
         }
     }
     return true;
@@ -673,23 +669,15 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
 
     if ( nrgmap )
     {
-        int smax = _o._mapHeight * _o._mapWidth;
-        cellArea *v6 = _o._cells;
-        int n = 0;
-
-        for (int i = 0; i < smax; i++)
+        for (int y = 0; y < _o._mapHeight * 3; y++)
         {
-            for (int j = 0; j < 3; j++)
+            for (int x = 0; x < _o._mapWidth; x++)
             {
-                for (int k = 0; k < 3; k++)
-                {
-                    v6->buildings_health[j][k] = (*nrgmap)[n];
-                    n++;
-                }
+                cellArea &cell = _o._cells(x, y / 3);
+                
+                for(int i = 0; i < 3; i++)
+                    cell.buildings_health[y % 3][i] = nrgmap->At(x * 3 + i, y);
             }
-
-            v6++;
-
         }
 
         delete nrgmap;

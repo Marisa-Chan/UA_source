@@ -157,12 +157,11 @@ void NC_STACK_ypacar::DoKamikaze()
 
         for (int j = 0; j <= v59; j++ )
         {
-            int v16 = i + _sectX;
-            int v18 = j + _sectY;
+            Common::Point pt(_sectX + i, _sectY + j);
 
-            if ( v16 > 0 && v16 < _secMaxX - 1  &&  v18 > 0 && v18 < _secMaxY - 1 )
+            if ( _world->IsGamePlaySector(pt) )
             {
-                for ( NC_STACK_ypabact* &v19 : _pSector[i + j * _secMaxX].unitsList )
+                for ( NC_STACK_ypabact* &v19 : _world->SectorAt(pt).unitsList )
                 {
                     int v63 = 0;
 

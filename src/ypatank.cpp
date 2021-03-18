@@ -1275,7 +1275,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
         float v99 = 300.0;
         float v124 = arg * 0.001;
 
-        if ( !_world->ypaworld_func130(&arg130) )
+        if ( !_world->GetSectorInfo(&arg130) )
             return 0;
 
         float v109 = 1200.0;
@@ -1673,9 +1673,9 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
             arg130_1.pos_x = arg149.isectPos.x;
             arg130_1.pos_z = arg149.isectPos.z;
 
-            if ( _world->ypaworld_func130(&arg130) )
+            if ( _world->GetSectorInfo(&arg130) )
             {
-                if ( _world->ypaworld_func130(&arg130_1) )
+                if ( _world->GetSectorInfo(&arg130_1) )
                 {
                     if ( arg130.pcell != arg130_1.pcell )
                     {
@@ -1798,13 +1798,13 @@ size_t NC_STACK_ypatank::TestTargetSector(NC_STACK_ypabact *cel_unit)
         arg130.pos_x = _position.x;
         arg130.pos_z = cel_unit->_position.z;
 
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
 
         cellArea *arg130_Pcell =arg130.pcell;
         arg130.pos_x = cel_unit->_position.x;
         arg130.pos_z = _position.z;
 
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
 
         if ( fabs(bactPcell->height    - arg130_Pcell->height) >= 500.0 && fabs(arg130.pcell->height -   cunitPcell->height) >= 500.0 )
             return 0;

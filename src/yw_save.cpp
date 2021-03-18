@@ -428,8 +428,11 @@ void yw_write_ownermap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
     if ( ownermap )
     {
-        for (uint32_t i = 0; i < ownermap->size(); i++)
-            (*ownermap)[i] = yw->_cells[i].owner;
+        for (int y = 0; y < yw->_mapHeight; y++)
+        {
+            for (int x = 0; x < yw->_mapWidth; x++)
+                ownermap->At(x, y) = yw->_cells(x, y).owner;
+        }
 
         fil->printf("\nbegin_ownermap\n");
         yw_write_map(yw, ownermap, "        ", fil);
@@ -452,20 +455,14 @@ void yw_write_energymap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
     if ( energymap )
     {
-        int sz = yw->_mapHeight * yw->_mapWidth;
-        uint8_t *outbf = energymap->data();
-
-        for (int i = 0; i < sz; i++)
+        for (int y = 0; y < yw->_mapHeight * 3; y++)
         {
-            cellArea &cell = yw->_cells[i];
-
-            for (int j = 0; j < 3; j++)
+            for (int x = 0; x < yw->_mapWidth; x++)
             {
-                for (int k = 0; k < 3; k++)
-                {
-                    *outbf = cell.buildings_health[j][k];
-                    outbf++;
-                }
+                cellArea &cell = yw->_cells(x, y / 3);
+                
+                for(int i = 0; i < 3; i++)
+                    energymap->At(x * 3 + i, y) = cell.buildings_health[y % 3][i];
             }
         }
 

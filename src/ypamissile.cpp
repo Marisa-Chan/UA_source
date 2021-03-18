@@ -196,7 +196,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
     yw_130arg arg130;
     arg130.pos_x = _old_pos.x;
     arg130.pos_z = _old_pos.z;
-    _world->ypaworld_func130(&arg130);
+    _world->GetSectorInfo(&arg130);
 
     cellArea *pCells[3];
 
@@ -204,7 +204,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
 
     arg130.pos_x = _position.x;
     arg130.pos_z = _position.z;
-    _world->ypaworld_func130(&arg130);
+    _world->GetSectorInfo(&arg130);
 
     pCells[2] = arg130.pcell;
 
@@ -216,7 +216,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
     {
         arg130.pos_x = (_position.x - _old_pos.x) * 0.5 + _old_pos.x;
         arg130.pos_z = (_position.z - _old_pos.z) * 0.5 + _old_pos.z;
-        _world->ypaworld_func130(&arg130);
+        _world->GetSectorInfo(&arg130);
 
         pCells[1] = arg130.pcell;
     }

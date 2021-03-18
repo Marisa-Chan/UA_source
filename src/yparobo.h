@@ -264,16 +264,16 @@ protected:
     
     bool yparobo_func70__sub2__sub1();
     void yparobo_func70__sub2__sub0();
-    int yparobo_func70__sub6__sub0(cellArea *cell);
-    int yparobo_func70__sub6__sub2(cellArea *cell);
-    int yparobo_func70__sub6__sub1(cellArea *cell);
+    int yparobo_func70__sub6__sub0(const Common::Point &sc);
+    int yparobo_func70__sub6__sub2(const Common::Point &sc);
+    int yparobo_func70__sub6__sub1(const Common::Point &sc);
     int yparobo_func70__sub6__sub7();
     int yparobo_func70__sub6__sub6(int *a2, int *px, int *py);
     int yparobo_func70__sub6__sub5(int *a2, int *px, int *py);
     int yparobo_func70__sub6__sub13();
     int yparobo_func70__sub6__sub12();
-    int yparobo_func70__sub6__sub3(cellArea *cell);
-    int yparobo_func70__sub6__sub4(cellArea *cell);
+    int yparobo_func70__sub6__sub3(const Common::Point &sc);
+    int yparobo_func70__sub6__sub4(const Common::Point &sc);
     int yparobo_func70__sub6__sub8();
     int yparobo_func70__sub6__sub9();
     int yparobo_func70__sub6__sub10();
@@ -409,8 +409,6 @@ public:
     cellArea *_roboBuildingCell;  //For AI
     int _roboBuildingDuty;  //For AI
     
-    cellArea *_roboPCells; //Is it needed??? May be use first cell from _world?
-
     int _roboTestEnemyTime;
     
     std::array<roboGun, 8> _roboGuns;
