@@ -53,6 +53,10 @@ struct uamessage_vhclData;
 struct uamessage_vhclDataE;
 struct uamessage_vhclDataI;
 
+
+struct TSectorCollision;
+
+
 namespace World
 {
    
@@ -909,6 +913,11 @@ struct MapGate
         KeySectors.clear();
 
         MbStatus = 0;
+    }
+    
+    operator Common::Point() const
+    {
+        return Common::Point(SecX, SecY);
     }
 };
 
@@ -2657,6 +2666,11 @@ public:
     
     void SetMapSize(const Common::Point &sz);
     bool IsGamePlaySector(const Common::Point &sz) const;
+    int sb_0x4f8f64__sub3__sub0(const Common::Point &sector);
+    TSectorCollision sub_44DBF8(int _dx, int _dz, int _dxx, int _dzz, int flags);
+    void sub_44E07C(TSectorCollision &arg);
+    void sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision &loc);
+    void ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2);
 
 public:
     //Data

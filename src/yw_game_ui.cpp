@@ -790,12 +790,12 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
 
             for ( const MapGem &gem : yw->_Gems )
             {
-                cellArea *cell = yw->GetSector(gem);
-                if ( cell->IsCanSee(yw->UserRobo->_owner) )
+                cellArea &cell = yw->SectorAt(gem);
+                if ( cell.IsCanSee(yw->UserRobo->_owner) )
                 {
                     int v13 = 1;
 
-                    if ( cell->w_type == 4 )
+                    if ( cell.w_type == 4 )
                     {
                         if ( yw->timeStamp / 300 & 1 )
                             v13 = 0;
@@ -1165,11 +1165,11 @@ char * sub_4F7BE8(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact, int 
     return pcur;
 }
 
-int sb_0x4f8f64__sub3__sub0(NC_STACK_ypaworld *yw, cellArea *cell)
+int NC_STACK_ypaworld::sb_0x4f8f64__sub3__sub0(const Common::Point &sector)
 {
     int enrg = 0;
 
-    for( NC_STACK_ypabact* &v2 : cell->unitsList )
+    for( NC_STACK_ypabact* &v2 : _cells(sector).unitsList )
     {
         if ( v2->_status != BACT_STATUS_DEAD && v2->_status != BACT_STATUS_BEAM )
         {
@@ -1443,7 +1443,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
     {
         if ( gate.PCell->w_type == 6 )
         {
-            int v81 = sb_0x4f8f64__sub3__sub0(yw, gate.PCell);
+            int v81 = yw->sb_0x4f8f64__sub3__sub0(gate);
 
             int v85 = 1;
 
@@ -10747,8 +10747,6 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub2()
     if ( !(field_1a58 & 0x10) || bzda.field_8F4 == -1 )
         return 1;
 
-    cellArea *v2 = field_1a60;
-
     NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
     int a4 = robo->getROBO_battVehicle();
@@ -10756,7 +10754,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub2()
     if ( field_1b24.energy > a4 )
         return 6;
 
-    if ( v2->owner && v2->owner != UserRobo->_owner )
+    if ( field_1a60->owner && field_1a60->owner != UserRobo->_owner )
         return 2;
 
     int v6 = abs(field_1a64 - UserRobo->_sectX);
@@ -10768,10 +10766,10 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub2()
     if ( v6 > 1 || v10 > 1 )
         return 4;
 
-    if ( v2->w_type == 1 )
+    if ( field_1a60->w_type == 1 )
         return 5;
 
-    if ( v2->w_type == 4 || v2->w_type == 5 || v2->w_type == 6 || v2->w_type == 8 || (v2->w_type == 7 && isNetGame) )
+    if ( field_1a60->w_type == 4 || field_1a60->w_type == 5 || field_1a60->w_type == 6 || field_1a60->w_type == 8 || (field_1a60->w_type == 7 && isNetGame) )
         return 1;
 
     return 0;
@@ -10798,11 +10796,9 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub3()
     if ( v15 < 100.0 )
         return 4;
 
-    int v9 = field_1a60->w_type;
-
     int v18 = 0;
 
-    if ( v9 != 6 && (v9 != 2 || field_1a60->owner != UserRobo->_owner) )
+    if ( field_1a60->w_type != 6 && (field_1a60->w_type != 2 || field_1a60->owner != UserRobo->_owner) )
     {
         v18 = (POW2(v15) / 230.4);
     }

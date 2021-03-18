@@ -4366,7 +4366,7 @@ bool GetSectorTarget__sub0__sub0(NC_STACK_ypabact *unit)
     return false;
 }
 
-NC_STACK_ypabact * GetSectorTarget__sub0(cellArea *cell, NC_STACK_ypabact *unit, float *radius, char *job)
+NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact *unit, float *radius, char *job)
 {
     NC_STACK_ypaworld *wrld = unit->getBACT_pWorld();
 
@@ -4376,7 +4376,7 @@ NC_STACK_ypabact * GetSectorTarget__sub0(cellArea *cell, NC_STACK_ypabact *unit,
 
     VhclProto *proto = &vhcl_protos[unit->_vehicleID];
 
-    for( NC_STACK_ypabact* &cel_unit : cell->unitsList )
+    for( NC_STACK_ypabact* cel_unit : cell.unitsList )
     {
         if ( cel_unit->_bact_type != BACT_TYPES_MISSLE && cel_unit->_status != BACT_STATUS_DEAD )
         {
@@ -4540,7 +4540,7 @@ void NC_STACK_ypabact::GetSectorTarget(bact_arg90 *arg)
             for (int y = -1; y < 2; y++)
             {
                 Common::Point pt = arg130.pcell->Pos + Common::Point(x, y);
-                NC_STACK_ypabact *v7 = GetSectorTarget__sub0( _world->GetSector(pt), arg->unit, &rad, &job);
+                NC_STACK_ypabact *v7 = GetSectorTarget__sub0( _world->SectorAt(pt), arg->unit, &rad, &job);
 
                 if ( v7 )
                     arg->ret_unit = v7;
@@ -4612,11 +4612,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x != 0 &&  arg130.sec_z != 0 )
         {
             // left-up
-            cellArea *tcell = _world->GetSector(pt.x - 1, pt.y - 1);
+            cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y - 1);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4637,11 +4637,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_z )
         {
             // up
-            cellArea *tcell = _world->GetSector(pt.x, pt.y - 1);
+            cellArea &tcell = _world->SectorAt(pt.x, pt.y - 1);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4662,11 +4662,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x < v4 - 1 && arg130.sec_z )
         {
             // right-up
-            cellArea *tcell = _world->GetSector(pt.x + 1, pt.y - 1);
+            cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y - 1);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4687,11 +4687,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x )
         {
             // left
-            cellArea *tcell = _world->GetSector(pt.x - 1, pt.y);
+            cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4732,11 +4732,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x < v4 - 1 )
         {
             // right
-            cellArea *tcell = _world->GetSector(pt.x + 1, pt.y);
+            cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-               for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+               for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4757,11 +4757,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x != 0 && arg130.sec_z < v5 - 1 )
         {
             // left-down
-            cellArea *tcell = _world->GetSector(pt.x - 1, pt.y + 1);
+            cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y + 1);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4782,11 +4782,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_z < v5 - 1  )
         {
             // down
-            cellArea *tcell = _world->GetSector(pt.x, pt.y + 1);
+            cellArea &tcell = _world->SectorAt(pt.x, pt.y + 1);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {
@@ -4807,11 +4807,11 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         if ( arg130.sec_x < v4 - 1 && arg130.sec_z < v5 - 1 )
         {
             // down-right
-            cellArea *tcell = _world->GetSector(pt.x + 1, pt.y + 1);
+            cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y + 1);
 
-            if ( (1 << _owner) & tcell->view_mask )
+            if ( (1 << _owner) & tcell.view_mask )
             {
-                for (NC_STACK_ypabact* &cl_unit : tcell->unitsList)
+                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
                     if ( cl_unit->_owner )
                     {

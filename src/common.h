@@ -608,6 +608,16 @@ public:
         return this->at(x + y * _w);
     }
     
+    T& operator()(const Point &p)
+    {
+        return this->at(p.x + p.y * _w);
+    }
+    
+    T& operator()(size_t n)
+    {
+        return this->at(n);
+    }
+    
     T* Line(uint32_t y)
     {
         return &(this->at(y * _w));

@@ -1063,15 +1063,15 @@ void NC_STACK_ypaworld::yw_InitTechUpgradeBuildings()
     for (size_t i = 0; i < _Gems.size(); i++)
     {
         MapGem &gem = _Gems[i];
-        cellArea *cell = GetSector(gem);
+        cellArea &cell = _cells(gem);
 
         if (gem.BuildingID)
         {
-            if ( cell->w_type != 3 || gem.BuildingID != cell->w_id )
+            if ( cell.w_type != 3 || gem.BuildingID != cell.w_id )
             {
                 ypaworld_arg148 arg148;
-                arg148.ownerID = cell->owner;
-                arg148.ownerID2 = cell->owner;
+                arg148.ownerID = cell.owner;
+                arg148.ownerID2 = cell.owner;
                 arg148.blg_ID = gem.BuildingID;
                 arg148.x = gem.SecX;
                 arg148.y = gem.SecY;
@@ -1082,8 +1082,8 @@ void NC_STACK_ypaworld::yw_InitTechUpgradeBuildings()
             }
         }
 
-        cell->w_type = 4;
-        cell->w_id = i;
+        cell.w_type = 4;
+        cell.w_id = i;
     }
 }
 
@@ -1327,38 +1327,40 @@ void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int 
 
 
 
-void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags)
+TSectorCollision NC_STACK_ypaworld::sub_44DBF8(int _dx, int _dz, int _dxx, int _dzz, int flags)
 {
     int v8 = flags;
+    
+    TSectorCollision tmp;
+    tmp.sklt = NULL;
+    tmp.Flags = 0;
+    tmp.CollisionType = 0;
+    
+    Common::Point pt = Common::Point(_dxx / 4, _dzz / 4);
 
-    a6.sklt = NULL;
-    a6.field_1E = 0;
-    a6.field_1C = 0;
-
-    if ( _dxx >= 1  &&  _dxx < 4 * yw->_mapWidth - 1  &&  _dzz >= 1  &&  _dzz < 4 * yw->_mapHeight - 1 )
+    if ( IsGamePlaySector(pt) )
     {
-        a6.sec_x = _dxx / 4;
-        a6.sec_y = _dzz / 4;
-
-        a6.p_cell = &yw->_cells(a6.sec_x, a6.sec_y);
+        tmp.Cell = pt;
+        
+        cellArea &cell = _cells(pt);
 
         if ( _dxx % 4 && _dzz % 4 )
         {
-            a6.field_1C = 1;
+            tmp.CollisionType = 1;
 
             int v14, v16;
 
-            if ( a6.p_cell->comp_type == 1 )
+            if ( cell.comp_type == 1 )
             {
                 v14 = 0;
                 v16 = 0;
 
                 if ( (_dxx / 4) == (_dx / 4)  &&  (_dz / 4) == (_dzz / 4) )
-                    v8 = flags & 0xFFFE;
+                    v8 = flags & ~1;
 
-                a6.pos.x =   1200.0 * a6.sec_x + 600.0;
-                a6.pos.y = a6.p_cell->height;
-                a6.pos.z = -(1200.0 * a6.sec_y + 600.0);
+                tmp.pos.x =   1200.0 * tmp.Cell.x + 600.0;
+                tmp.pos.y = cell.height;
+                tmp.pos.z = -(1200.0 * tmp.Cell.y + 600.0);
             }
             else
             {
@@ -1366,57 +1368,57 @@ void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, str
                 v14 = 2 - ((_dzz % 4) - 1);
 
                 if ( _dxx == _dx && _dzz == _dz )
-                    v8 = flags & 0xFFFE;
+                    v8 = flags & ~1;
 
-                a6.pos.z = -(_dzz * 300.0);
-                a6.pos.x = _dxx * 300.0;
-                a6.pos.y = a6.p_cell->height;
+                tmp.pos.z = -(_dzz * 300.0);
+                tmp.pos.x = _dxx * 300.0;
+                tmp.pos.y = cell.height;
             }
 
-            a6.field_1E = v8;
+            tmp.Flags = v8;
 
-            int model_id = yw->secTypes[a6.p_cell->type_id].buildings[v16][v14]->health_models [   yw->build_hp_ref[    a6.p_cell->buildings_health[v16][v14]    ]    ];
+            int model_id = secTypes[cell.type_id].buildings[v16][v14]->health_models [   build_hp_ref[    cell.buildings_health[v16][v14]    ]    ];
 
             if ( v8 & 1 )
-                a6.sklt = yw->legos[model_id].selected_sklt_intern;
+                tmp.sklt = legos[model_id].selected_sklt_intern;
             else
-                a6.sklt = yw->legos[model_id].sklt_obj_intern;
+                tmp.sklt = legos[model_id].sklt_obj_intern;
         }
         else
         {
-            a6.pos.y = 0;
-            a6.pos.x = _dxx * 300.0;
-            a6.pos.z = -(_dzz * 300.0);
+            tmp.pos.y = 0;
+            tmp.pos.x = _dxx * 300.0;
+            tmp.pos.z = -(_dzz * 300.0);
 
             if ( _dxx == _dx && _dzz == _dz )
-                v8 = flags & 0xFE;
+                v8 = flags & ~1;
 
-            a6.field_1E = v8;
+            tmp.Flags = v8;
 
             if ( _dxx % 4 == 0 && _dzz % 4 == 0)
             {
-                a6.sklt = yw->ColCross.skeleton_internal;
-                a6.field_1C = 4;
+                tmp.sklt = ColCross.skeleton_internal;
+                tmp.CollisionType = 4;
             }
             else if ( _dxx % 4 == 0 && _dzz % 4 != 0 )
             {
-                a6.sklt = yw->ColSide.skeleton_internal;
-                a6.field_1C = 2;
+                tmp.sklt = ColSide.skeleton_internal;
+                tmp.CollisionType = 2;
             }
             else if ( _dxx % 4 != 0 && _dzz % 4 == 0 )
             {
-                a6.sklt = yw->ColSide.skeleton_internal;
-                a6.field_1C = 3;
+                tmp.sklt = ColSide.skeleton_internal;
+                tmp.CollisionType = 3;
             }
         }
 
-        if ( a6.field_1C && !a6.sklt )
+        if ( tmp.CollisionType && !tmp.sklt )
         {
             ypa_log_out("yw_GetSklt: WARNING, not CZT_INVALID, but Sklt NULL!\n");
 
             const char *v17 = "UNKNOWN";
 
-            switch ( a6.field_1C )
+            switch ( tmp.CollisionType )
             {
             case 4:
                 v17 = "czt_cross_slurp";
@@ -1433,11 +1435,13 @@ void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, str
             default:
                 break;
             }
-            ypa_log_out("    Type=%s, sec_x=%d, sec_y=%d.\n", v17, a6.sec_x, a6.sec_y);
+            ypa_log_out("    Type=%s, sec_x=%d, sec_y=%d.\n", v17, tmp.Cell.x, tmp.Cell.y);
 
-            a6.field_1C = 0;
+            tmp.CollisionType = 0;
         }
     }
+    
+    return tmp;
 }
 
 void sub_44DF60(UAskeleton::Data *arg, int id)
@@ -1461,73 +1465,73 @@ void sub_44DF60(UAskeleton::Data *arg, int id)
     tr.D = -tmp3.dot( arg->POO[vtx1] );
 }
 
-void sub_44E07C(NC_STACK_ypaworld *yw, struct_44dbf8 &arg)
+void NC_STACK_ypaworld::sub_44E07C(TSectorCollision &arg)
 {
-    if ( arg.field_1C == 2 )
+    if ( arg.CollisionType == 2 )
     {
-        cellArea *cur = arg.p_cell;
-        cellArea *left = arg.p_cell - 1;
+        cellArea &cur = _cells(arg.Cell);
+        cellArea &left = _cells(arg.Cell + Common::Point(-1, 0));
 
-        if ( !(arg.field_1E & 1) || fabs( (int)(cur->height - left->height)) < 500.0 )
+        if ( !(arg.Flags & 1) || fabs( (int)(cur.height - left.height)) < 500.0 )
         {
 
-            arg.sklt->POO[0].y = left->height;
-            arg.sklt->POO[1].y = cur->height;
-            arg.sklt->POO[2].y = cur->height;
-            arg.sklt->POO[3].y = left->height;
+            arg.sklt->POO[0].y = left.height;
+            arg.sklt->POO[1].y = cur.height;
+            arg.sklt->POO[2].y = cur.height;
+            arg.sklt->POO[3].y = left.height;
 
             sub_44DF60(arg.sklt, 0);
         }
         else
         {
-            arg.sklt = yw->colsub_sklt_intrn;
+            arg.sklt = colsub_sklt_intrn;
 
-            if ( cur->height > left->height )
-                arg.pos.y = cur->height;
+            if ( cur.height > left.height )
+                arg.pos.y = cur.height;
             else
-                arg.pos.y = left->height;
+                arg.pos.y = left.height;
         }
     }
-    else if ( arg.field_1C == 3 )
+    else if ( arg.CollisionType == 3 )
     {
-        cellArea *cur = arg.p_cell;
-        cellArea *up = arg.p_cell - yw->_mapWidth;
+        cellArea &cur = _cells(arg.Cell);
+        cellArea &up = _cells(arg.Cell + Common::Point(0, -1));
 
-        if ( !(arg.field_1E & 1) || fabs( (int)(cur->height - up->height)) < 500.0 )
+        if ( !(arg.Flags & 1) || fabs( (int)(cur.height - up.height)) < 500.0 )
         {
-            arg.sklt->POO[0].y = up->height;
-            arg.sklt->POO[1].y = up->height;
-            arg.sklt->POO[2].y = cur->height;
-            arg.sklt->POO[3].y = cur->height;
+            arg.sklt->POO[0].y = up.height;
+            arg.sklt->POO[1].y = up.height;
+            arg.sklt->POO[2].y = cur.height;
+            arg.sklt->POO[3].y = cur.height;
 
             sub_44DF60(arg.sklt, 0);
         }
         else
         {
-            arg.sklt = yw->colsub_sklt_intrn;
+            arg.sklt = colsub_sklt_intrn;
 
-            if ( cur->height > up->height )
-                arg.pos.y = cur->height;
+            if ( cur.height > up.height )
+                arg.pos.y = cur.height;
             else
-                arg.pos.y = up->height;
+                arg.pos.y = up.height;
         }
     }
-    else if ( arg.field_1C == 4 )
+    else if ( arg.CollisionType == 4 )
     {
 
         int kk = 0;
 
-        cellArea *cur = arg.p_cell;
-        cellArea *left = arg.p_cell - 1;
-        cellArea *up = arg.p_cell - yw->_mapWidth;
-        cellArea *leftup = arg.p_cell - yw->_mapWidth - 1;
+        cellArea &cur = _cells(arg.Cell);
+        cellArea &left = _cells(arg.Cell + Common::Point(-1, 0));
+        cellArea &up = _cells(arg.Cell + Common::Point(0, -1));
+        cellArea &leftup = _cells(arg.Cell + Common::Point(-1, -1));
 
-        if ( arg.field_1E & 1 )
+        if ( arg.Flags & 1 )
         {
-            float cs = cur->height;
-            float ls = left->height;
-            float us = up->height;
-            float lus = leftup->height;
+            float cs = cur.height;
+            float ls = left.height;
+            float us = up.height;
+            float lus = leftup.height;
 
             float v15, v16, v17, v18;
 
@@ -1559,18 +1563,18 @@ void sub_44E07C(NC_STACK_ypaworld *yw, struct_44dbf8 &arg)
 
             if ( fabs( (int)(v18 - v16) ) > 300.0 )
             {
-                arg.sklt = yw->colsub_sklt_intrn;
+                arg.sklt = colsub_sklt_intrn;
                 arg.pos.y = v18;
                 kk = 1;
             }
         }
         if ( !kk )
         {
-            arg.sklt->POO[0].y = leftup->height;
-            arg.sklt->POO[1].y = up->height;
-            arg.sklt->POO[2].y = cur->height;
-            arg.sklt->POO[3].y = left->height;
-            arg.sklt->POO[4].y = cur->averg_height;
+            arg.sklt->POO[0].y = leftup.height;
+            arg.sklt->POO[1].y = up.height;
+            arg.sklt->POO[2].y = cur.height;
+            arg.sklt->POO[3].y = left.height;
+            arg.sklt->POO[4].y = cur.averg_height;
 
             sub_44DF60(arg.sklt, 0);
             sub_44DF60(arg.sklt, 1);
@@ -1652,7 +1656,7 @@ int sub_44D36C(const vec3d &v, int id, const UAskeleton::Data *sklt)
     return v7;
 }
 
-void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc)
+void NC_STACK_ypaworld::sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision &loc)
 {
     for ( int i = 0; i < loc.sklt->polygonsCount; i++)
     {
@@ -2637,7 +2641,7 @@ int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, const vec3d &v, 
     return 1;
 }
 
-void ypaworld_func137__sub0(ypaworld_arg137 *arg, const struct_44dbf8 &a2)
+void NC_STACK_ypaworld::ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2)
 {
     for (int i = 0; i < a2.sklt->polygonsCount; i++)
     {

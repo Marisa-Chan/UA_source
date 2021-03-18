@@ -1,15 +1,13 @@
 #ifndef  YWINT_H_INCLUDED
 #define YWINT_H_INCLUDED
 
-struct struct_44dbf8
+struct TSectorCollision
 {
-    UAskeleton::Data *sklt;
+    UAskeleton::Data *sklt = NULL;
     vec3d pos;
-    int sec_x;
-    int sec_y;
-    cellArea *p_cell;
-    int16_t field_1C;
-    int16_t field_1E;
+    Common::Point Cell;
+    int16_t CollisionType = 0;
+    int16_t Flags = 0;
 };
 
 // For rendering
@@ -100,9 +98,7 @@ void sub_4EAC80(NC_STACK_ypaworld *yw);
 
 int sb_0x451034(NC_STACK_ypaworld *yw);
 void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, int y);
-void sub_44DBF8(NC_STACK_ypaworld *yw, int _dx, int _dz, int _dxx, int _dzz, struct_44dbf8 &a6, int flags);
-void sub_44E07C(NC_STACK_ypaworld *yw, struct_44dbf8 &arg);
-void sub_44D8B8(ypaworld_arg136 *arg, const struct_44dbf8 &loc);
+
 
 void ypaworld_func2__sub0__sub0(NC_STACK_ypaworld *yw);
 void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabact *bact2);
@@ -117,8 +113,6 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2);
 
 void ypaworld_func148__sub0(NC_STACK_ypaworld *yw, int x, int y);
 int ypaworld_func148__sub1(NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID);
-
-void ypaworld_func137__sub0(ypaworld_arg137 *arg, const struct_44dbf8 &a2);
 
 
 void create_squad_man(NC_STACK_ypaworld *yw);

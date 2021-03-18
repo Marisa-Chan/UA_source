@@ -2291,11 +2291,11 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         if ( yw->GameShell->players[owner].isKilled )
             break;
 
-        MapGem *gemProt = &yw->_Gems[upMsg->upgradeID];
-        cellArea *cl = yw->GetSector(*gemProt);
+        MapGem &gemProt = yw->_Gems[upMsg->upgradeID];
+        cellArea &cl = yw->SectorAt(gemProt);
 
         int vhcl, bld;
-        sub_47C1EC(yw, gemProt, &vhcl, &bld);
+        sub_47C1EC(yw, &gemProt, &vhcl, &bld);
 
         if ( vhcl )
             yw->VhclProtos[vhcl].disable_enable_bitmask = 0;
@@ -2309,20 +2309,20 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         switch ( yw->GameShell->netPlayerOwner )
         {
         case 1:
-            lastVhcl = gemProt->NwVprotoNum1;
-            lastBuild = gemProt->NwBprotoNum1;
+            lastVhcl = gemProt.NwVprotoNum1;
+            lastBuild = gemProt.NwBprotoNum1;
             break;
         case 6:
-            lastVhcl = gemProt->NwVprotoNum2;
-            lastBuild = gemProt->NwBprotoNum2;
+            lastVhcl = gemProt.NwVprotoNum2;
+            lastBuild = gemProt.NwBprotoNum2;
             break;
         case 3:
-            lastVhcl = gemProt->NwVprotoNum3;
-            lastBuild = gemProt->NwBprotoNum3;
+            lastVhcl = gemProt.NwVprotoNum3;
+            lastBuild = gemProt.NwBprotoNum3;
             break;
         case 4:
-            lastVhcl = gemProt->NwVprotoNum4;
-            lastBuild = gemProt->NwBprotoNum4;
+            lastVhcl = gemProt.NwVprotoNum4;
+            lastBuild = gemProt.NwBprotoNum4;
             break;
         case 2:
         case 5:
@@ -2331,12 +2331,12 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
         }
 
-        yw->HistoryEventAdd( World::History::Upgrade(gemProt->SecX, gemProt->SecY, owner, gemProt->Type, lastVhcl, 0, lastBuild) );
+        yw->HistoryEventAdd( World::History::Upgrade(gemProt.SecX, gemProt.SecY, owner, gemProt.Type, lastVhcl, 0, lastBuild) );
 
-        if ( cl->w_type != 4 )
+        if ( cl.w_type != 4 )
         {
             std::string bff = yw->GetLocaleString(229, "TECH-UPGRADE LOST! ");
-            bff += gemProt->MsgDefault;
+            bff += gemProt.MsgDefault;
 
             yw_arg159 arg159;
             arg159.field_4 = 80;
@@ -2350,13 +2350,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( upMsg->enable )
         {
-            cl->w_type = 4;
-            cl->w_id = upMsg->upgradeID;
+            cl.w_type = 4;
+            cl.w_id = upMsg->upgradeID;
         }
         else
         {
-            cl->w_id = 0;
-            cl->w_type = 0;
+            cl.w_id = 0;
+            cl.w_type = 0;
         }
     }
     break;

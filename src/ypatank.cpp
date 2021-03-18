@@ -1782,37 +1782,34 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     return 0;
 }
 
-size_t NC_STACK_ypatank::TestTargetSector(NC_STACK_ypabact *cel_unit)
+size_t NC_STACK_ypatank::TestTargetSector(NC_STACK_ypabact *tgt)
 {
-    cellArea *bactPcell = _pSector;
-    cellArea *cunitPcell = cel_unit->_pSector;
-
-    if ( cel_unit->_sectX == _sectX || cel_unit->_sectY == _sectY )
+    if ( tgt->_sectX == _sectX || tgt->_sectY == _sectY )
     {
-        if ( fabs(bactPcell->height - cunitPcell->height) >= 500.0 )
+        if ( fabs(_pSector->height - tgt->_pSector->height) >= 500.0 )
             return 0;
     }
     else
     {
         yw_130arg arg130;
         arg130.pos_x = _position.x;
-        arg130.pos_z = cel_unit->_position.z;
+        arg130.pos_z = tgt->_position.z;
 
         _world->GetSectorInfo(&arg130);
 
-        cellArea *arg130_Pcell =arg130.pcell;
-        arg130.pos_x = cel_unit->_position.x;
+        cellArea *arg130_Pcell = arg130.pcell;
+        arg130.pos_x = tgt->_position.x;
         arg130.pos_z = _position.z;
 
         _world->GetSectorInfo(&arg130);
 
-        if ( fabs(bactPcell->height    - arg130_Pcell->height) >= 500.0 && fabs(arg130.pcell->height -   cunitPcell->height) >= 500.0 )
+        if ( fabs(_pSector->height    - arg130_Pcell->height) >= 500.0 && fabs(arg130.pcell->height -   tgt->_pSector->height) >= 500.0 )
             return 0;
-        if ( fabs(bactPcell->height    - arg130.pcell->height) >= 500.0 && fabs(arg130_Pcell->height -   cunitPcell->height) >= 500.0 )
+        if ( fabs(_pSector->height    - arg130.pcell->height) >= 500.0 && fabs(arg130_Pcell->height -   tgt->_pSector->height) >= 500.0 )
             return 0;
-        if ( fabs(bactPcell->height    - arg130_Pcell->height) >= 500.0 && fabs(bactPcell->height    - arg130.pcell->height) >= 500.0 )
+        if ( fabs(_pSector->height    - arg130_Pcell->height) >= 500.0 && fabs(_pSector->height    - arg130.pcell->height) >= 500.0 )
             return 0;
-        if ( fabs(arg130_Pcell->height -   cunitPcell->height) >= 500.0 && fabs(arg130.pcell->height -   cunitPcell->height) >= 500.0 )
+        if ( fabs(arg130_Pcell->height -   tgt->_pSector->height) >= 500.0 && fabs(arg130.pcell->height -   tgt->_pSector->height) >= 500.0 )
             return 0;
     }
     return 1;

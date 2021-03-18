@@ -694,9 +694,7 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1(NC_STACK_ypabact *unit, robo_t1 *rbt)
         }
         else if ( unit->_primTtype == BACT_TGT_TYPE_CELL )
         {
-            cellArea *cell = unit->_primT.pcell;
-
-            if (cell->owner == unit->_owner || foundBact->_pSector == cell)
+            if (unit->_primT.pcell->owner == unit->_owner || foundBact->_pSector == unit->_primT.pcell)
                 sb_0x4a7010__sub1__sub0(foundBact, unit);
         }
     }
@@ -1401,8 +1399,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
             if ( v8->_primTtype == BACT_TGT_TYPE_CELL )
             {
-                cellArea *cell = v8->_primT.pcell;
-                if ( cell->owner == _owner )
+                if ( v8->_primT.pcell->owner == _owner )
                 {
                     arg134.field_4 = 15;
                 }
@@ -4244,10 +4241,10 @@ int NC_STACK_yparobo::sub_4F4E48(int x, int y)
     {
         for (int j = -1; j <= 1; j++)
         {
-            cellArea *cll = _world->GetSector(x + i, y + j);
+            cellArea &cll = _world->SectorAt(x + i, y + j);
 
             yw_arg176 arg176;
-            arg176.owner = cll->owner;
+            arg176.owner = cll.owner;
 
             _world->ypaworld_func176(&arg176);
 
@@ -4258,12 +4255,12 @@ int NC_STACK_yparobo::sub_4F4E48(int x, int y)
             else
                 v15 = 3.0;
 
-            if ( _owner == cll->owner )
-                v14 += cll->energy_power * arg176.field_4 + v15;
+            if ( _owner == cll.owner )
+                v14 += cll.energy_power * arg176.field_4 + v15;
             else
-                v14 -= cll->energy_power * arg176.field_4 + v15;
+                v14 -= cll.energy_power * arg176.field_4 + v15;
 
-            for ( NC_STACK_ypabact* &bct : cll->unitsList )
+            for ( NC_STACK_ypabact* &bct : cll.unitsList )
             {
                 float v16 = 0;
 

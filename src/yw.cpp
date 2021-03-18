@@ -1470,42 +1470,34 @@ void NC_STACK_ypaworld::ypaworld_func136(ypaworld_arg136 *arg)
     int dzz = (-pos_zz + 150) / 300;
 
     int elems = 0;
-    struct_44dbf8 a6[4];
-
+    TSectorCollision a6[4];
 
     if ( dx == dxx && dz == dzz )
     {
         elems = 1;
-        a6[0].field_1C = 0;
-        sub_44DBF8(this, dx, dz, dx, dz, a6[0], arg->flags);
+        a6[0] = sub_44DBF8(dx, dz, dx, dz, arg->flags);
     }
     else if ( dx == dxx || dz == dzz )
     {
         elems = 2;
-        a6[0].field_1C = 0;
-        a6[1].field_1C = 0;
-        sub_44DBF8(this, dx, dz, dx,  dz,  a6[0], arg->flags);
-        sub_44DBF8(this, dx, dz, dxx, dzz, a6[1], arg->flags);
+        a6[0] = sub_44DBF8(dx, dz, dx,  dz,  arg->flags);
+        a6[1] = sub_44DBF8(dx, dz, dxx, dzz, arg->flags);
     }
     else
     {
         elems = 4;
-        a6[0].field_1C = 0;
-        a6[1].field_1C = 0;
-        a6[2].field_1C = 0;
-        a6[3].field_1C = 0;
-        sub_44DBF8(this, dx, dz, dx,  dz,  a6[0], arg->flags);
-        sub_44DBF8(this, dx, dz, dx,  dzz, a6[1], arg->flags);
-        sub_44DBF8(this, dx, dz, dxx, dz,  a6[2], arg->flags);
-        sub_44DBF8(this, dx, dz, dxx, dzz, a6[3], arg->flags);
+        a6[0] = sub_44DBF8(dx, dz, dx,  dz,  arg->flags);
+        a6[1] = sub_44DBF8(dx, dz, dx,  dzz, arg->flags);
+        a6[2] = sub_44DBF8(dx, dz, dxx, dz,  arg->flags);
+        a6[3] = sub_44DBF8(dx, dz, dxx, dzz, arg->flags);
     }
 
     for (int i = 0; i < elems; i++)
     {
-        if ( a6[i].field_1C )
+        if ( a6[i].CollisionType )
         {
-            if ( a6[i].field_1C != 1)
-                sub_44E07C(this, a6[i]);
+            if ( a6[i].CollisionType != 1)
+                sub_44E07C(a6[i]);
 
             arg->stPos = stpos - a6[i].pos;
 
@@ -1531,63 +1523,63 @@ void NC_STACK_ypaworld::ypaworld_func137(ypaworld_arg137 *arg)
     int xxpr = (pos.x + arg->radius + 150) / 300;
     int zzpr = (-(pos.z + arg->radius) + 150) / 300;
 
-    struct_44dbf8 a6;
+    TSectorCollision a6;
 
     for (int i = 0; i < 9; i++)
     {
-        a6.field_1C = 0;
+        a6.CollisionType = 0;
 
         switch ( i )
         {
         case 0:
-            sub_44DBF8(this, dxx, dzz, dxx, dzz, a6, arg->field_30);
+            a6 = sub_44DBF8(dxx, dzz, dxx, dzz, arg->field_30);
             break;
 
         case 1:
             if ( dxx != xxmr )
-                sub_44DBF8(this, dxx, dzz, xxmr, dzz, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, xxmr, dzz, arg->field_30);
             break;
 
         case 2:
             if ( dxx != xxpr )
-                sub_44DBF8(this, dxx, dzz, xxpr, dzz, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, xxpr, dzz, arg->field_30);
             break;
 
         case 3:
             if ( dzz != zzmr )
-                sub_44DBF8(this, dxx, dzz, dxx, zzmr, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, dxx, zzmr, arg->field_30);
             break;
 
         case 4:
             if ( dzz != zzpr )
-                sub_44DBF8(this, dxx, dzz, dxx, zzpr, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, dxx, zzpr, arg->field_30);
             break;
 
         case 5:
             if ( dxx != xxmr && dzz != zzmr )
-                sub_44DBF8(this, dxx, dzz, xxmr, zzmr, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, xxmr, zzmr, arg->field_30);
             break;
 
         case 6:
             if ( dxx != xxpr && dzz != zzmr )
-                sub_44DBF8(this, dxx, dzz, xxpr, zzmr, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, xxpr, zzmr, arg->field_30);
             break;
 
         case 7:
             if ( dxx != xxpr && dzz != zzpr )
-                sub_44DBF8(this, dxx, dzz, xxpr, zzpr, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, xxpr, zzpr, arg->field_30);
             break;
 
         case 8:
             if ( dxx != xxmr && dzz != zzpr )
-                sub_44DBF8(this, dxx, dzz, xxmr, zzpr, a6, arg->field_30);
+                a6 = sub_44DBF8(dxx, dzz, xxmr, zzpr, arg->field_30);
             break;
         }
 
-        if ( a6.field_1C )
+        if ( a6.CollisionType )
         {
-            if ( a6.field_1C != 1 )
-                sub_44E07C(this, a6);
+            if ( a6.CollisionType != 1 )
+                sub_44E07C(a6);
 
             arg->pos = pos - a6.pos;
 
@@ -2147,22 +2139,20 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
     int a2a = v33 >> 16;
     int a3a = -v34 >> 16;
 
-    struct_44dbf8 a6;
+    TSectorCollision a6;
     int v10, v11;
 
     do // Don't like this :E
     {
-        a6.field_1C = 0;
-
         v10 = v33 >> 16;
         v11 = -v34 >> 16;
 
-        sub_44DBF8(this, a2a, a3a, v10, v11, a6, arg->flags);
+        a6 = sub_44DBF8(a2a, a3a, v10, v11, arg->flags);
 
-        if ( a6.field_1C )
+        if ( a6.CollisionType )
         {
-            if ( a6.field_1C != 1 )
-                sub_44E07C(this, a6);
+            if ( a6.CollisionType != 1 )
+                sub_44E07C(a6);
 
             arg->stPos = stpos - a6.pos;
 
@@ -2188,14 +2178,12 @@ void NC_STACK_ypaworld::ypaworld_func149(ypaworld_arg136 *arg)
 
     if ( v24 != v10 || -v27 != v11 )
     {
-        a6.field_1C = 0;
+        a6 = sub_44DBF8(a2a, a3a, v24, -v27, arg->flags);
 
-        sub_44DBF8(this, a2a, a3a, v24, -v27, a6, arg->flags);
-
-        if ( a6.field_1C )
+        if ( a6.CollisionType )
         {
-            if ( a6.field_1C != 1 )
-                sub_44E07C(this, a6);
+            if ( a6.CollisionType != 1 )
+                sub_44E07C(a6);
 
             arg->stPos = stpos - a6.pos;
 
