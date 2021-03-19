@@ -1104,7 +1104,7 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
         if ( _primTtype == BACT_TGT_TYPE_UNIT && 
              _primT.pbact )
         {
-            if ( !((1 << _owner) & _primT.pbact->_pSector->view_mask) )
+            if ( !_primT.pbact->_pSector->IsCanSee(_owner) )
             {
                 v36.tgt_type = BACT_TGT_TYPE_NONE;
                 v36.priority = 0;
@@ -1283,7 +1283,7 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
     {
         if ( _secndTtype == BACT_TGT_TYPE_UNIT && _secndT.pbact )
         {
-            if ( !((1 << _owner) & _secndT.pbact->_pSector->view_mask) || 
+            if ( !_secndT.pbact->_pSector->IsCanSee(_owner) || 
                   (_position.XZ() - _secndT.pbact->_position.XZ()).length() > 2160.0 )
             {
                 setTarget_msg arg67;
@@ -4614,7 +4614,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // left-up
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y - 1);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4639,7 +4639,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // up
             cellArea &tcell = _world->SectorAt(pt.x, pt.y - 1);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4664,7 +4664,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // right-up
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y - 1);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4689,7 +4689,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // left
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4710,7 +4710,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         }
 
         // center
-        if ( (1 << _owner) & cell->view_mask )
+        if ( cell->IsCanSee(_owner) )
         {
             for (NC_STACK_ypabact* &cl_unit : cell->unitsList)
                 {
@@ -4734,7 +4734,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // right
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4759,7 +4759,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // left-down
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y + 1);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4784,7 +4784,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // down
             cellArea &tcell = _world->SectorAt(pt.x, pt.y + 1);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -4809,7 +4809,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             // down-right
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y + 1);
 
-            if ( (1 << _owner) & tcell.view_mask )
+            if ( tcell.IsCanSee(_owner) )
             {
                 for (NC_STACK_ypabact* &cl_unit : tcell.unitsList)
                 {
@@ -5243,12 +5243,12 @@ void NC_STACK_ypabact::MarkSectorsForView()
                             if ( yy > 0 && yy < _secMaxY - 1 )
                             {
                                 if ( _sectX - 1 > 0 )
-                                    _world->SectorAt(_sectX - 1, yy).view_mask |= 1 << _owner;
+                                    _world->SectorAt(_sectX - 1, yy).AddToViewMask(_owner);
 
-                                _world->SectorAt(_sectX, yy).view_mask |= 1 << _owner;
+                                _world->SectorAt(_sectX, yy).AddToViewMask(_owner);
 
                                 if ( _sectX + 1 < _secMaxX - 1 )
-                                    _world->SectorAt(_sectX + 1, yy).view_mask |= 1 << _owner;
+                                    _world->SectorAt(_sectX + 1, yy).AddToViewMask(_owner);
                             }
                         }
                         else
@@ -5265,7 +5265,7 @@ void NC_STACK_ypabact::MarkSectorsForView()
                                 Common::Point d(_sectX + j, yy);
 
                                 if ( _world->IsGamePlaySector(d) )
-                                    _world->SectorAt(d).view_mask |= 1 << _owner;
+                                    _world->SectorAt(d).AddToViewMask(_owner);
                             }
                         }
                     }
@@ -6242,7 +6242,7 @@ void NC_STACK_ypabact::DoTargetWaypoint()
 
                 if ( v9 )
                 {
-                    if ( (1 << _owner) & v9->_pSector->view_mask )
+                    if ( v9->_pSector->IsCanSee(_owner) )
                     {
                         arg67.tgt.pbact = v9;
                         arg67.tgt_type = BACT_TGT_TYPE_UNIT;
@@ -6335,7 +6335,7 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
         {
             float enemyDistance = (enemy->_position.XZ() - _position.XZ()).length();
 
-            if ( !( (1 << _owner) & enemy->_pSector->view_mask) )
+            if ( !enemy->_pSector->IsCanSee(_owner) )
                 return TA_CANCEL;
 
             if ( _aggr >= 100 )

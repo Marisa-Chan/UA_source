@@ -337,7 +337,7 @@ void NC_STACK_yparobo::sub_4A9F24(NC_STACK_ypabact *unit)
 
             if ( yparobo_func132(&arg67) )
             {
-                if ( !((1 << _owner) & arg67.tgt.pbact->_pSector->view_mask) )
+                if ( !arg67.tgt.pbact->_pSector->IsCanSee(_owner) )
                 {
                     arg67.tgt_type = BACT_TGT_TYPE_CELL;
                     arg67.tgt_pos.x = _roboDockTargetPos.x;
@@ -627,7 +627,7 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK
                     return;
                 }
 
-                if ( (1 << unit2->_owner) & pcell.view_mask )
+                if ( pcell.IsCanSee(unit2->_owner) )
                 {
                     for( NC_STACK_ypabact* &v10 : pcell.unitsList )
                     {
@@ -652,7 +652,7 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK
         }
     }
 
-    if ( (1 << unit2->_owner) & unit1->_pSector->view_mask )
+    if ( unit1->_pSector->IsCanSee(unit2->_owner) )
     {
         sub_4A58C0(unit2, unit1);
 
@@ -3403,7 +3403,7 @@ void NC_STACK_yparobo::searchEnemyRobo()
         if ( unit->_status != BACT_STATUS_DEAD &&
              unit != this && unit->_bact_type == BACT_TYPES_ROBO )
         {
-            if ( (1 << _owner) & unit->_pSector->view_mask )
+            if ( unit->_pSector->IsCanSee(_owner) )
             {
                 NC_STACK_ypabact *sel = NULL;
                 float selfl = 0.0;
@@ -3743,7 +3743,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub0(const Common::Point &sc)
 {
     cellArea &cell = _world->SectorAt(sc);
 
-    if ( !(cell.view_mask & (1 << _owner)) )
+    if ( !cell.IsCanSee(_owner) )
         return -1;
 
 //  if ( cell->field_2E != 1 )
@@ -3771,7 +3771,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub0(const Common::Point &sc)
 
     for (Common::Point ds : NearDxy)
     {
-        if ( !((1 << _owner) & _world->SectorAt(sc + ds).view_mask ) )
+        if ( !_world->SectorAt(sc + ds).IsCanSee(_owner) )
         {
             v9 = 1;
             v14 += 10.0;
@@ -3788,7 +3788,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub1(const Common::Point &sc)
 {
     cellArea &cell = _world->SectorAt(sc);
 
-    if ( cell.view_mask & (1 << _owner) )
+    if ( cell.IsCanSee(_owner) )
         return -1;
 
     float v13 = sqrt(POW2(_sectY - sc.y) + POW2(_sectX - sc.x));
@@ -3798,7 +3798,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub1(const Common::Point &sc)
 
     for (Common::Point ds : NearDxy)
     {
-        if ( !((1 << _owner) & _world->SectorAt(sc + ds).view_mask ) )
+        if ( !_world->SectorAt(sc + ds).IsCanSee(_owner) )
         {
             v13 += 5.0;
         }
@@ -3811,7 +3811,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub2(const Common::Point &sc)
 {
     cellArea &cell = _world->SectorAt(sc);
 
-    if ( !(cell.view_mask & (1 << _owner)) )
+    if ( !cell.IsCanSee(_owner) )
         return -1;
 
 //  if ( cell->field_2E != 1 )
@@ -3853,7 +3853,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub3(const Common::Point &sc)
 {
     cellArea &cell = _world->SectorAt(sc);
 
-    if ( !(cell.view_mask & (1 << _owner)) )
+    if ( !cell.IsCanSee(_owner) )
         return -1;
 
     if ( cell.energy_power >= 255 )
@@ -3933,7 +3933,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub4(const Common::Point &sc)
     else
         v25 = 1000.0 / v7;
 
-    if ( (1 << _owner) & cell.view_mask )
+    if ( cell.IsCanSee(_owner) )
     {
         if ( cell.w_type )
             v25 = v25 + 20.0;
@@ -3954,7 +3954,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub4(const Common::Point &sc)
         }
     }
 
-    if ( (1 << _owner) & cell.view_mask )
+    if ( cell.IsCanSee(_owner) )
     {
         for ( NC_STACK_ypabact* &bct : cell.unitsList )
         {
@@ -4049,7 +4049,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub11()
 
     for (cellArea &cll : _world->Sectors())
     {
-        if ( !((1 << _owner) & cll.view_mask) )
+        if ( !cll.IsCanSee(_owner) )
             v4++;
     }
 
@@ -4161,7 +4161,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub5(int *a2, int *px, int *py)
                             v26 = gun->IsRoboGun();
                         }
 
-                        if ( (1 << _owner) & ndbct->_pSector->view_mask )
+                        if ( ndbct->_pSector->IsCanSee(_owner) )
                         {
                             if ( ndbct->_status != BACT_STATUS_DEAD && !v26 )
                             {
@@ -4207,7 +4207,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub6(int *a2, int *px, int *py)
         {
             if ( node->_owner != _owner && node->_owner && node->_status != BACT_STATUS_DEAD )
             {
-                if ( (1 << _owner) & node->_pSector->view_mask )
+                if ( node->_pSector->IsCanSee(_owner) )
                 {
                     float v13 = sub_4F4C6C(node, _sectX, _sectY);
                     if ( v13 > v32 )

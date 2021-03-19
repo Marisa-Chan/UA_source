@@ -780,7 +780,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             uint32_t v23 = profiler_begin();
 
             for (cellArea &cell : _cells)
-                cell.view_mask = 1 << cell.owner;
+                cell.view_mask = cellArea::ViewMask(cell.owner);
 
             for (NC_STACK_ypabact* &unit : _unitsList)
                 unit->MarkSectorsForView();

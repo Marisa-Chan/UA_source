@@ -801,13 +801,13 @@ struct cellArea
     cellArea *pf_treeup;
 
     uint8_t owner;
-    uint8_t type_id; // Index in array
+    int32_t type_id; // Index in array
     char comp_type; // Complex (3x3) or simple
-    int energy_power; // Cell electric power
+    int32_t energy_power; // Cell electric power
     uint8_t buildings_health[3][3];
     uint8_t view_mask; // Who can view this sector (mask)
     char w_type;
-    uint8_t w_id;
+    int32_t w_id;
     World::RefBactList unitsList; // Units in this sector
     float height;
     float averg_height;
@@ -816,7 +816,22 @@ struct cellArea
     
     bool IsCanSee(int owant) const
     {
-        return ((1 << owant) & view_mask) != 0;
+        return (ViewMask(owant) & view_mask) != 0;
+    }
+    
+    void AddToViewMask(int ownr)
+    {
+        view_mask |= ViewMask(ownr);
+    }
+    
+    void DelFromViewMask(int ownr)
+    {
+        view_mask &= ~ViewMask(ownr);
+    }
+    
+    inline static int32_t ViewMask(int ownr)
+    {
+        return (1 << ownr);
     }
     
     int GetEnergy()

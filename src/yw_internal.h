@@ -236,7 +236,7 @@ public:
     char field_1EC;
     char field_1ED;
     char field_1EE;
-    char field_1EF;
+    int32_t MapViewMask;
     int field_1F0;
     int field_1F4;
     int field_1F8;

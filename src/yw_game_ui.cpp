@@ -756,7 +756,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
             {
                 if ( ps.pCell )
                 {
-                    if ( (1 << yw->UserRobo->_owner) & ps.pCell->view_mask )
+                    if ( ps.pCell->IsCanSee(yw->UserRobo->_owner) )
                     {
                         if ( ps.EffectivePower > 0 )
                         {
@@ -814,7 +814,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
             {
                 if ( gate.PCell->w_type == 5 )
                 {
-                    if ( (1 << yw->UserRobo->_owner) & gate.PCell->view_mask )
+                    if ( gate.PCell->IsCanSee(yw->UserRobo->_owner) )
                     {
                         float v19 = gate.SecX * 1200.0 + 600.0;
                         float v20 = -(gate.SecY * 1200.0 + 600.0);
@@ -825,7 +825,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                     {
                         if ( ks.PCell )
                         {
-                            if ( (1 << yw->UserRobo->_owner) & ks.PCell->view_mask )
+                            if ( ks.PCell->IsCanSee(yw->UserRobo->_owner) )
                             {
                                 if ( ks.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
                                 {
@@ -839,7 +839,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 }
                 else if ( gate.PCell->w_type == 6 )
                 {
-                    if ( (1 << yw->UserRobo->_owner) & gate.PCell->view_mask )
+                    if ( gate.PCell->IsCanSee(yw->UserRobo->_owner) )
                     {
                         if ( yw->timeStamp / 300 & 1 )
                         {
@@ -883,7 +883,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 {
                     int v34 = 0;
 
-                    if ( sitem.PCell->view_mask & (1 << yw->UserRobo->_owner) )
+                    if ( sitem.PCell->IsCanSee(yw->UserRobo->_owner) )
                     {
                         if ( sitem.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
                             v34 = 1;
@@ -902,7 +902,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                         {
                             if ( ks.PCell )
                             {
-                                if ( (1 << yw->UserRobo->_owner) & ks.PCell->view_mask )
+                                if ( ks.PCell->IsCanSee(yw->UserRobo->_owner) )
                                 {
                                     if ( ks.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 500 & 1 )
                                     {
@@ -1284,7 +1284,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
             }
             else if ( yw->field_1a58 & 0x10 && yw->_mouseGrabbed == 0)
             {
-                if ( yw->field_1a60->owner == yw->UserRobo->_owner && ( (1 << yw->UserRobo->_owner) & yw->field_1a60->view_mask ) )
+                if ( yw->field_1a60->owner == yw->UserRobo->_owner && yw->field_1a60->IsCanSee(yw->UserRobo->_owner) )
                 {
                     FontUA::select_tileset(&pcur, v114);
 
@@ -1584,7 +1584,7 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
             {
                 cellArea &cell = yw->_cells(j, v42);
 
-                if ( robo_map.field_1EF & cell.view_mask )
+                if ( robo_map.MapViewMask & cell.view_mask )
                 {
                     for ( NC_STACK_ypabact* &bct : cell.unitsList )
                     {
@@ -1630,7 +1630,7 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
                 {
                     cellArea &cell = yw->_cells(m, l);
 
-                    if ( robo_map.field_1EF & cell.view_mask )
+                    if ( robo_map.MapViewMask & cell.view_mask )
                     {
                         for ( NC_STACK_ypabact* &bct : cell.unitsList )
                         {
@@ -2107,7 +2107,7 @@ int sub_4F60A4(NC_STACK_ypaworld *yw, int x, int y)
 {
     if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
     {
-        if ( (robo_map.field_1EC & 3) && (robo_map.field_1EF & yw->_cells(x, y).view_mask) )
+        if ( (robo_map.field_1EC & 3) && (robo_map.MapViewMask & yw->_cells(x, y).view_mask) )
             return 0;
         else
             return 9;
@@ -2122,7 +2122,7 @@ int sub_4F6048(NC_STACK_ypaworld *yw, int x, int y)
     {
         cellArea &v4 = yw->_cells(x, y);
 
-        if ( robo_map.field_1EF & v4.view_mask )
+        if ( robo_map.MapViewMask & v4.view_mask )
         {
             if ( !v4.owner )
                 return 8;
@@ -2140,7 +2140,7 @@ int sub_4F5FE0(NC_STACK_ypaworld *yw, int x, int y)
     {
         cellArea &v6 = yw->_cells(x, y);
 
-        if ( robo_map.field_1EF & v6.view_mask )
+        if ( robo_map.MapViewMask & v6.view_mask )
             return yw->secTypes[v6.type_id].field_3;
     }
 
@@ -2159,7 +2159,7 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
 
     cellArea &v12 = yw->_cells(v9, v7);
 
-    if ( !(robo_map.field_1EF & v12.view_mask) )
+    if ( !(robo_map.MapViewMask & v12.view_mask) )
         return 0;
 
     if ( v8 && v27 )
@@ -2424,7 +2424,7 @@ void  sb_0x451034__sub2(NC_STACK_ypaworld *yw)
 
     robo_map.field_1ED = 0;
     robo_map.field_1E8 = 0;
-    robo_map.field_1EF = 2;
+    robo_map.MapViewMask = cellArea::ViewMask(1);
 
     robo_map.field_254 = 0.45;
     robo_map.field_258 = 0;
@@ -6005,7 +6005,7 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
         {
             cellArea &cll = yw->_cells(j, i);
 
-            if ( robo_map.field_1EF & cll.view_mask )
+            if ( robo_map.MapViewMask & cll.view_mask )
             {
                 for ( NC_STACK_ypabact* &bct : cll.unitsList )
                 {
@@ -6080,12 +6080,12 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
     }
     else
     {
-        robo_map.field_1EF = 1 << yw->UserRobo->_owner;
+        robo_map.MapViewMask = cellArea::ViewMask( yw->UserRobo->_owner );
 
         ClickBoxInf *winpt = &inpt->ClickInf;
 
         if ( yw->field_1b68 )
-            robo_map.field_1EF = -1;
+            robo_map.MapViewMask = -1;
 
         switch ( inpt->HotKeyID )
         {
@@ -10017,7 +10017,7 @@ char * yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, char *cur)
             {
                 cellArea &v8 = yw->_cells(j, i);
 
-                if ( robo_map.field_1EF & v8.view_mask )
+                if ( robo_map.MapViewMask & v8.view_mask )
                 {
                     for ( NC_STACK_ypabact* &bct : v8.unitsList )
                     {
@@ -10205,7 +10205,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
             {
                 cellArea &v17 = yw->_cells(j, i);
 
-                if ( robo_map.field_1EF & v17.view_mask )
+                if ( robo_map.MapViewMask & v17.view_mask )
                 {
                     for( NC_STACK_ypabact* &bact : v17.unitsList )
                     {
@@ -10268,12 +10268,12 @@ void yw_RenderHUDRadare(NC_STACK_ypaworld *yw)
     float v15 = robo_map.field_1DC;
     float v14 = robo_map.field_1E0;
     float v13 = robo_map.field_1E4;
-    float v7 = robo_map.field_1EC;
-    float v8 = robo_map.field_1EF;
-    float v9 = robo_map.field_1EE;
+    int v7 = robo_map.field_1EC;
+    int32_t v8 = robo_map.MapViewMask;
+    int v9 = robo_map.field_1EE;
 
     robo_map.field_1EC = 1;
-    robo_map.field_1EF = -1;
+    robo_map.MapViewMask = -1;
     robo_map.field_1E8 |= 0x100;
     robo_map.field_1EE = 3;
     robo_map.field_1D8 = yw->current_bact->_position.x;
@@ -10308,7 +10308,7 @@ void yw_RenderHUDRadare(NC_STACK_ypaworld *yw)
     robo_map.field_1EC = v7;
     robo_map.field_1EE = v9;
     robo_map.field_1D8 = v12;
-    robo_map.field_1EF = v8;
+    robo_map.MapViewMask = v8;
     robo_map.field_1DC = v15;
     robo_map.field_1E0 = v14;
     robo_map.field_1E8 &= 0xFFFFFEFF;
@@ -10781,7 +10781,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub3()
     if ( !(field_1a58 & 0x10) )
         return 6;
 
-    if ( !((1 << UserRobo->_owner) & field_1a60->view_mask) )
+    if ( !field_1a60->IsCanSee(UserRobo->_owner) )
         return 3;
 
     if ( field_1a60->w_type == 1 )
@@ -11005,7 +11005,7 @@ void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
             field_1a7c.z = -((float)v11 * 1200.0 + 600.0);
         }
 
-        if ( field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && ((1 << UserRobo->_owner) & cell.view_mask ) )
+        if ( field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && cell.IsCanSee(UserRobo->_owner) )
         {
 
             int v16 = 0;
@@ -11424,7 +11424,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                 }
                 else if ( _activeCmdrRemapIndex != -1 )
                 {
-                    if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
+                    if ( UserRobo->_owner == field_1a60->owner && field_1a60->IsCanSee(UserRobo->_owner) )
                     {
                         v8 = World::DOACTION_2;
                         v6 = 4;
@@ -11495,7 +11495,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                             }
                         }
                     }
-                    else if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
+                    else if ( UserRobo->_owner == field_1a60->owner && field_1a60->IsCanSee(UserRobo->_owner) )
                     {
                         v8 = World::DOACTION_2;
                         v6 = 4;
@@ -11567,7 +11567,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
                             }
                         }
                     }
-                    else if ( UserRobo->_owner == field_1a60->owner && (1 << UserRobo->_owner) & field_1a60->view_mask )
+                    else if ( UserRobo->_owner == field_1a60->owner && field_1a60->IsCanSee(UserRobo->_owner) )
                     {
                         v8 = World::DOACTION_2;
                         v6 = 4;
