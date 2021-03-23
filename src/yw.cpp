@@ -7688,6 +7688,11 @@ bool NC_STACK_ypaworld::IsGamePlaySector(const Common::Point &sz) const
     return sz.x > 0 && sz.x < (_mapWidth - 1) && sz.y > 0 && sz.y < (_mapHeight - 1);
 }
 
+bool NC_STACK_ypaworld::IsSector(const Common::Point &sz) const
+{
+    return sz.x >= 0 && sz.x < _mapWidth  && sz.y >= 0 && sz.y < _mapHeight;
+}
+
 Common::PlaneVector<cellArea> &NC_STACK_ypaworld::Sectors()
 {
     return _cells;

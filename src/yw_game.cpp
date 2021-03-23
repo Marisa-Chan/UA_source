@@ -1336,13 +1336,13 @@ TSectorCollision NC_STACK_ypaworld::sub_44DBF8(int _dx, int _dz, int _dxx, int _
     tmp.Flags = 0;
     tmp.CollisionType = 0;
     
-    Common::Point pt = Common::Point(_dxx / 4, _dzz / 4);
+    
 
-    if ( IsGamePlaySector(pt) )
+    if ( _dxx > 0 && _dxx < 4 * _mapWidth - 1 && _dzz > 0  &&  _dzz < 4 * _mapHeight - 1)
     {
-        tmp.Cell = pt;
+        tmp.Cell = Common::Point(_dxx / 4, _dzz / 4);
         
-        cellArea &cell = _cells(pt);
+        cellArea &cell = _cells(tmp.Cell);
 
         if ( _dxx % 4 && _dzz % 4 )
         {

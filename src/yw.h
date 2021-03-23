@@ -2681,6 +2681,7 @@ public:
     
     void SetMapSize(const Common::Point &sz);
     bool IsGamePlaySector(const Common::Point &sz) const;
+    bool IsSector(const Common::Point &sz) const;
     int sb_0x4f8f64__sub3__sub0(const Common::Point &sector);
     TSectorCollision sub_44DBF8(int _dx, int _dz, int _dxx, int _dzz, int flags);
     void sub_44E07C(TSectorCollision &arg);
