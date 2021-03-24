@@ -10883,12 +10883,12 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(InputState *arg, int a3)
             if ( sqrt( POW2(v8) + POW2(v9) ) < 100.0 )
             {
                 field_1ab4++;
-                return World::DOACTION_13;
+                return World::DOACTION_WP_CYCLE;
             }
 
             field_1ab4++;
 
-            return World::DOACTION_12;
+            return World::DOACTION_WP_ADD;
         }
         else
         {
@@ -10896,7 +10896,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub4(InputState *arg, int a3)
 
             field_1ab4++;
 
-            return World::DOACTION_11;
+            return World::DOACTION_WP_BEGIN;
         }
     }
 
@@ -11283,9 +11283,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         }
         break;
 
-    case World::DOACTION_11:
-    case World::DOACTION_12:
-    case World::DOACTION_13:
+    case World::DOACTION_WP_BEGIN:
+    case World::DOACTION_WP_ADD:
+    case World::DOACTION_WP_CYCLE:
         if (_activeCmdrRemapIndex >= 0)
         {
             field_1b24.user_action = arg;

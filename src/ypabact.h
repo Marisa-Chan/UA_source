@@ -562,6 +562,8 @@ public:
     void CopyTargetOf(NC_STACK_ypabact *commander);
     
     bool IsParentMyRobo() const;
+    
+    void CopyWaypointsStuff(NC_STACK_ypabact *bact);
         
     static World::RefBactList::Node& GetCellRefNode(NC_STACK_ypabact *&bact)
     {
@@ -572,6 +574,9 @@ public:
     {
         return bact->_kidRef;
     }
+ 
+protected:
+    void SetKidsPath(int beginWp);
 
     //Data
 public:

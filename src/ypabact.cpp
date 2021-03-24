@@ -2927,22 +2927,22 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
     }
 }
 
-void ypabact_func77__sub0(NC_STACK_ypabact *bact1, NC_STACK_ypabact *bact2)
+void NC_STACK_ypabact::CopyWaypointsStuff( NC_STACK_ypabact *bact)
 {
-    if ( bact1->_status_flg & BACT_STFLAG_WAYPOINT )
+    if ( bact->_status_flg & BACT_STFLAG_WAYPOINT )
     {
         for (int i = 0; i < 32; i++)
-            bact2->_waypoints[i] = bact1->_waypoints[i];
+            _waypoints[i] = bact->_waypoints[i];
 
-        bact2->_status_flg |= BACT_STFLAG_WAYPOINT;
+        _status_flg |= BACT_STFLAG_WAYPOINT;
 
-        if ( bact1->_status_flg & BACT_STFLAG_WAYPOINTCCL )
-            bact2->_status_flg |= BACT_STFLAG_WAYPOINTCCL;
+        if ( bact->_status_flg & BACT_STFLAG_WAYPOINTCCL )
+            _status_flg |= BACT_STFLAG_WAYPOINTCCL;
         else
-            bact2->_status_flg &= ~BACT_STFLAG_WAYPOINTCCL;
+            _status_flg &= ~BACT_STFLAG_WAYPOINTCCL;
 
-        bact2->_waypoints_count = bact1->_waypoints_count;
-        bact2->_current_waypoint = bact1->_current_waypoint;
+        _waypoints_count = bact->_waypoints_count;
+        _current_waypoint = bact->_current_waypoint;
     }
 }
 
@@ -3026,7 +3026,7 @@ void NC_STACK_ypabact::Die()
 
             deputy->SetTarget(&arg67);
 
-            ypabact_func77__sub0(this, deputy);
+            deputy->CopyWaypointsStuff(this);
 
             deputy->_commandID = _commandID;
             deputy->_aggr = _aggr;
@@ -7755,23 +7755,23 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     return 1;
 }
 
-void SetPath__sub0(NC_STACK_ypabact *bact, int a2)
+void NC_STACK_ypabact::SetKidsPath(int beginWp)
 {
-    for (NC_STACK_ypabact* &kidunit : bact->_kidList)
+    for (NC_STACK_ypabact* &kidunit : _kidList)
     {
-        kidunit->_waypoints_count = bact->_waypoints_count;
-        kidunit->_current_waypoint = a2;
+        kidunit->_waypoints_count = _waypoints_count;
+        kidunit->_current_waypoint = beginWp;
 
         kidunit->_status_flg |= BACT_STFLAG_WAYPOINT;
 
-        if ( bact->_status_flg & BACT_STFLAG_WAYPOINTCCL )
+        if ( _status_flg & BACT_STFLAG_WAYPOINTCCL )
             kidunit->_status_flg |= BACT_STFLAG_WAYPOINTCCL;
         else
             kidunit->_status_flg &= ~BACT_STFLAG_WAYPOINTCCL;
 
         for (int i = 0; i < 32; i++)
         {
-            kidunit->_waypoints[i] = bact->_waypoints[i];
+            kidunit->_waypoints[i] = _waypoints[i];
         }
     }
 }
@@ -7805,7 +7805,7 @@ size_t NC_STACK_ypabact::SetPath(bact_arg124 *arg)
         _current_waypoint = 0;
         _waypoints_count = arg->steps_cnt;
 
-        SetPath__sub0(this, 0);
+        SetKidsPath(0);
 
         arg67.tgt_pos.x = arg->waypoints[0].x;
         arg67.tgt_pos.z = arg->waypoints[0].z;

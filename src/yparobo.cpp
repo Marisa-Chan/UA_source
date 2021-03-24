@@ -1618,7 +1618,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case World::DOACTION_11:
+    case World::DOACTION_WP_BEGIN:
     {
         arg->selectBact->_status_flg |= BACT_STFLAG_WAYPOINT;
         arg->selectBact->_m_cmdID = 0;
@@ -1688,7 +1688,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     }
     break;
 
-    case World::DOACTION_12:
+    case World::DOACTION_WP_ADD:
         if ( arg->selectBact->_waypoints_count < 32 && (arg->selectBact->_status_flg & BACT_STFLAG_WAYPOINT) )
         {
             int v72 = arg->selectBact->_waypoints_count;
@@ -1755,7 +1755,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         }
         break;
 
-    case World::DOACTION_13:
+    case World::DOACTION_WP_CYCLE:
         arg->selectBact->_status_flg |= BACT_STFLAG_WAYPOINTCCL;
         sub_4A448C(arg->selectBact);
         break;
