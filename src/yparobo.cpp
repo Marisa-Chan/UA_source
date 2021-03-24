@@ -5880,39 +5880,51 @@ int NC_STACK_yparobo::placeMessage(robo_arg134 *arg)
     {
     case 2:
         v8.txt = _world->GetLocaleString(202, "SECTOR CONQUERED");
+        break;
 
     case 6:
         v8.txt =  _world->GetLocaleString(206, "FOUND ENEMY STATION");
+        break;
 
     case 11:
         v8.txt = _world->GetLocaleString(211, "STATION IS DEAD ");
+        break;
 
     case 12:
         v8.txt = _world->GetLocaleString(212, "YOUR STATION IS DEAD!");
+        break;
 
     case 13:
         v8.txt = _world->GetLocaleString(213, "ENEMY NEAR STATION!");
+        break;
 
     case 18:
         v8.txt = _world->GetLocaleString(218, "REQUEST SUPPORT");
+        break;
 
     case 31:
         v8.txt = _world->GetLocaleString(231, "FLAK DESTROYED");
+        break;
 
     case 32:
         v8.txt = _world->GetLocaleString(232, "RADAR STATION DESTROYED");
+        break;
 
     case 33:
         v8.txt = _world->GetLocaleString(233, "ATTACK POWERSTATION");
+        break;
 
     case 34:
         v8.txt = _world->GetLocaleString(234, "ATTACK FLAK");
+        break;
 
     case 35:
         v8.txt = _world->GetLocaleString(235, "ATTACK RADAR STATION");
+        break;
 
     case 40:
         v8.txt = _world->GetLocaleString(240, "HOST ENERGY CRITICAL");
+        break;
 
     default:
         break;
