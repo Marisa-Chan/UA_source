@@ -4965,6 +4965,8 @@ void NC_STACK_ypabact::Renew()
     _extDestroyFX.clear();
 
     memset(&_vp_extra, 0, sizeof(extra_vproto) * 3);
+    
+    _current_waypoint = 0;
 
     _attackersList.clear();
     _kidList.clear();
