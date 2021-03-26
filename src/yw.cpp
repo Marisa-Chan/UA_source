@@ -15,17 +15,11 @@
 #include "gui/uacommon.h"
 #include "gui/uamsgbox.h"
 #include "env.h"
+#include "system/inivals.h"
 
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
 
-Common::Ini::KeyList ypaworld_keys
-{
-    Common::Ini::Key("netgame.exclusivegem", Common::Ini::KT_BOOL, true),
-    Common::Ini::Key("net.waitstart",        Common::Ini::KT_DIGIT, (int32_t)150000),
-    Common::Ini::Key("net.kickoff",          Common::Ini::KT_DIGIT, (int32_t)20000),
-    Common::Ini::Key("game.debug",           Common::Ini::KT_BOOL)
-};
 
 int word_5A50C2;
 int word_5A50AC;
@@ -2512,9 +2506,9 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     _levelInfo->State = 8;
     usr->envMode = ENVMODE_TITLE;
 
-    Common::Ini::ParseIniFile(DefaultIniFile, &ypaworld_keys);
+    System::IniConf::ReadFromNucleusIni();
 
-    netgame_exclusivegem = ypaworld_keys[0].Get<bool>();
+    netgame_exclusivegem = System::IniConf::NetGameExclusiveGem.Get<bool>();
 
     usr->profiles.clear();
     usr->video_mode_list.clear();

@@ -23,30 +23,6 @@ int GFXEngine::can_destblend;
 int GFXEngine::can_stippling;
 uint32_t GFXEngine::FpsMaxTicks = 1000/60;
     
-Common::Ini::KeyList GFXEngine::win3d_keys
-{
-    Common::Ini::Key("gfx.dither",       Common::Ini::KT_BOOL),               //0
-    Common::Ini::Key("gfx.filter",       Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.antialias",    Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.alpha",        Common::Ini::KT_DIGIT, (int32_t)192),
-    Common::Ini::Key("gfx.zbuf_when_tracy", Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.colorkey",     Common::Ini::KT_BOOL),             //5
-    Common::Ini::Key("gfx.force_emul",   Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.force_soft_cursor", Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.all_modes",    Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.movie_player", Common::Ini::KT_BOOL, true),
-    Common::Ini::Key("gfx.force_alpha_textures", Common::Ini::KT_BOOL), //10
-    Common::Ini::Key("gfx.use_draw_primitive", Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.disable_lowres", Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.export_window_mode", Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.blending",     Common::Ini::KT_DIGIT),
-    Common::Ini::Key("gfx.solidfont",    Common::Ini::KT_BOOL),          //15
-    Common::Ini::Key("gfx.vsync",        Common::Ini::KT_DIGIT, (int32_t)1),
-    Common::Ini::Key("gfx.maxfps",       Common::Ini::KT_DIGIT, (int32_t)60),
-    Common::Ini::Key("gfx.newsky",       Common::Ini::KT_BOOL),
-    Common::Ini::Key("gfx.skydistance",  Common::Ini::KT_DIGIT, (int32_t)3000),
-    Common::Ini::Key("gfx.skylength",    Common::Ini::KT_DIGIT, (int32_t)500)               //20
-};
 
 GFXEngine::GFXEngine()
 {
@@ -464,9 +440,9 @@ size_t GFXEngine::windd_func0(IDVList &stak)
 {
     int txt16bit_def = read_yes_no_status("env/txt16bit.def", 1);
     int drawprim_def = read_yes_no_status("env/drawprim.def", 0);
-    _export_window_mode = win3d_keys[13].Get<bool>();     // gfx.export_window_mode
+    _export_window_mode = System::IniConf::GfxExportWindowMode.Get<bool>();     // gfx.export_window_mode
 
-    switch(win3d_keys[14].Get<int>())
+    switch(System::IniConf::GfxBlending.Get<int>())
     {
         case 0:
         {
@@ -497,13 +473,13 @@ size_t GFXEngine::windd_func0(IDVList &stak)
     SetResolution( Common::Point(stak.Get<int32_t>(ATT_WIDTH, DEFAULT_WIDTH), stak.Get<int32_t>(ATT_HEIGHT, DEFAULT_HEIGHT)) );
 
     _forcesoftcursor = 0;
-    _disable_lowres = win3d_keys[12].Get<bool>();
+    _disable_lowres = System::IniConf::GfxDisableLowres.Get<bool>();
     _txt16bit = txt16bit_def;
     _use_simple_d3d = drawprim_def;
 
-    _solidFont = win3d_keys[15].Get<bool>();
+    _solidFont = System::IniConf::GfxSolidFont.Get<bool>();
 
-    switch( win3d_keys[16].Get<int>() )
+    switch( System::IniConf::GfxVsync.Get<int>() )
     {
         case 0:
             SDL_GL_SetSwapInterval(0);
@@ -522,7 +498,7 @@ size_t GFXEngine::windd_func0(IDVList &stak)
             break;
     }
 
-    fpsLimitter(win3d_keys[17].Get<int>());
+    fpsLimitter(System::IniConf::GfxMaxFps.Get<int>());
 
     LoadFontByDescr("MS Sans Serif,12,400,0");
 
@@ -549,16 +525,16 @@ bool GFXEngine::SetResolution(Common::Point res)
 
 size_t GFXEngine::func0(IDVList &stak)
 {
-    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &win3d_keys);
+    System::IniConf::ReadFromNucleusIni();
 
     if ( !windd_func0(stak) )
         return 0;
 
-    _dither = win3d_keys[0].Get<bool>();
-    _filter = win3d_keys[1].Get<bool>();
-    _antialias = win3d_keys[2].Get<bool>();
-    _zbuf_when_tracy = win3d_keys[4].Get<bool>();
-    _colorkey = win3d_keys[5].Get<bool>();
+    _dither = System::IniConf::GfxDither.Get<bool>();
+    _filter = System::IniConf::GfxFilter.Get<bool>();
+    _antialias = System::IniConf::GfxAntialias.Get<bool>();
+    _zbuf_when_tracy = System::IniConf::GfxZbufWhenTracy.Get<bool>();
+    _colorkey = System::IniConf::GfxColorkey.Get<bool>();
 
     if ( can_srcblend )
         _alpha = 192;
@@ -1040,7 +1016,7 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
         _rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
     }
 
-    if (win3d_keys[18].Get<bool>())
+    if (System::IniConf::GfxNewSky.Get<bool>())
     {
         if (polysDat->renderFlags & RFLAGS_SKY)
         {
@@ -1056,8 +1032,8 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
             _rendStates2[SHADEMODE] = 1;//D3DSHADE_FLAT;
             _rendStates2[STIPPLEENABLE] = 0;
 
-            float transDist = win3d_keys[19].Get<int>();
-            float transLen = win3d_keys[20].Get<int>();
+            float transDist = System::IniConf::GfxSkyDistance.Get<int>();
+            float transLen = System::IniConf::GfxSkyLength.Get<int>();
 
             for (int i = 0; i < polysDat->vertexCount; i++)
             {
@@ -2026,18 +2002,6 @@ void GFXEngine::fpsLimitter(int value)
 
 }
 
-Common::Ini::KeyList gfx_keys
-{
-    Common::Ini::Key("gfx.mode",     Common::Ini::KT_DIGIT),
-    Common::Ini::Key("gfx.xres",     Common::Ini::KT_DIGIT),
-    Common::Ini::Key("gfx.yres",     Common::Ini::KT_DIGIT),
-    Common::Ini::Key("gfx.palette",  Common::Ini::KT_WORD),
-    Common::Ini::Key("gfx.display",  Common::Ini::KT_WORD),
-    Common::Ini::Key("gfx.display2", Common::Ini::KT_WORD)
-};
-
-
-
 
 TileMap::TileMap()
 {
@@ -2351,8 +2315,7 @@ void GFXEngine::Init()
     RecreateScreenSurface();
     System::EventsAddHandler(EventsWatcher);
     
-    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &gfx_keys);
-
+    System::IniConf::ReadFromNucleusIni();
     
     SDL_DisplayMode deskMode;
     SDL_GetDesktopDisplayMode(0, &deskMode);
@@ -2430,7 +2393,7 @@ void GFXEngine::Init()
     scrCompat = new Gui::OldCompat(Common::Point(640, 480));
     Gui::Instance.AddWidgetPortal(portalID, scrCompat);
     
-    LoadPalette(gfx_keys[3].Get<std::string>());
+    LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
 }
 
 void GFXEngine::Deinit()

@@ -9,6 +9,7 @@
 #include "base.h"
 
 #include "system/gfx.h"
+#include "system/inivals.h"
 
 
 const Nucleus::ClassDescr NC_STACK_amesh::description("amesh.class", &newinstance);
@@ -436,7 +437,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                 if (datSub->vertexes[j].z > maxz)
                     maxz = datSub->vertexes[j].z;
 
-            if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && GFX::Engine.win3d_keys[18].Get<bool>() )
+            if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && System::IniConf::GfxNewSky.Get<bool>() )
             {
                 float maxln = 0.0;
 
@@ -447,7 +448,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
                         maxln = datSub->distance[j];
                 }
 
-                if (maxln > GFX::Engine.win3d_keys[19].Get<int>())
+                if (maxln > System::IniConf::GfxSkyDistance.Get<int>())
                     datSub->renderFlags |= GFX::RFLAGS_FALLOFF;
             }
 

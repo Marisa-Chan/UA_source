@@ -17,7 +17,7 @@ struct TKVPair
 class TEnv
 {
 friend bool Ini::ParseIniFile(std::string iniFile, Ini::KeyList *lst);
-
+friend bool Ini::ParseIniFile(std::string iniFile, Ini::PKeyList *lst);
 
 public:
     void AddGlobalIniKey(const std::string &str);

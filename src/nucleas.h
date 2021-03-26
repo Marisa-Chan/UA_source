@@ -29,8 +29,6 @@ struct ClassDescr
 class NC_STACK_nucleus
 {
 public:
-    static constexpr const char * DefaultIniFile {"nucleus.ini"};
-public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     virtual size_t LoadingFromIFF(IFFile **file);

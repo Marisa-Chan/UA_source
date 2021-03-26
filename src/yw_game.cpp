@@ -12,6 +12,7 @@
 #include "yparobo.h"
 #include "font.h"
 #include "gui/uacommon.h"
+#include "system/inivals.h"
 
 extern uint32_t bact_id;
 
@@ -2013,7 +2014,7 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         yw->sky_loaded_base->SetPosition( yw->current_bact->_position + vec3d::OY(yw->field_15f4) );
 
         rndr_params->maxZ = 32000.0;
-        if (GFX::Engine.win3d_keys[18].Get<bool>())
+        if (System::IniConf::GfxNewSky.Get<bool>())
             rndr_params->flags = GFX::RFLAGS_SKY;
 
         yw->sky_loaded_base->Render(rndr_params);
@@ -2312,7 +2313,7 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 
         GFX::Engine.BeginScene();
 
-        if (GFX::Engine.win3d_keys[18].Get<bool>())
+        if (System::IniConf::GfxNewSky.Get<bool>())
             rndrs.rndrStack->render(true, RenderStack::comparePrio);
         else
             rndrs.rndrStack->render(false);

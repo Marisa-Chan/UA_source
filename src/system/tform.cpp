@@ -1,22 +1,15 @@
 #include "tform.h"
 #include "../nucleas.h"
+#include "inivals.h"
 
 
 namespace TF
 {
 TFEngine TFEngine::Instance;
 
-Common::Ini::KeyList tform_keys
-{
-    Common::Ini::Key("tform.backplane",  Common::Ini::KT_DIGIT, (int32_t)4096),
-    Common::Ini::Key("tform.frontplane", Common::Ini::KT_DIGIT, (int32_t)16),
-    Common::Ini::Key("tform.zoomx",      Common::Ini::KT_DIGIT, (int32_t)320),
-    Common::Ini::Key("tform.zoomy",      Common::Ini::KT_DIGIT, (int32_t)200)
-};
-
 int TFEngine::Init()
 {
-    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &tform_keys);
+    System::IniConf::ReadFromNucleusIni();
 
     for (size_t i = 0; i < SinCos_table.size(); i++)
     {

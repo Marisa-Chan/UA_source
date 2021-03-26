@@ -10,6 +10,7 @@
 #include "button.h"
 #include "windp.h"
 #include "env.h"
+#include "system/inivals.h"
 
 extern GuiList stru_5C91D0;
 
@@ -1424,7 +1425,7 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
 {
     std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix( movie_fname ) );
 
-    if ( GFX::Engine.win3d_keys[9].Get<bool>() )
+    if ( System::IniConf::GfxMoviePlayer.Get<bool>() )
         System::Movie.PlayMovie(buf, GameShell->snd__volume);
 
     INPe.QueryInput(&input_states);

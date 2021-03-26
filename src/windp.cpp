@@ -7,18 +7,12 @@
 #include "windp.h"
 #include "button.h"
 #include "yw_net.h"
+#include "system/inivals.h"
 
 
 const Nucleus::ClassDescr NC_STACK_windp::description("windp.class", &newinstance);
 
 const char *SERV_STR = "UA:SOURCE TEST NETWORK";
-
-Common::Ini::KeyList windp_keys
-{
-    Common::Ini::Key("net.gmode",  Common::Ini::KT_DIGIT),               //0
-    Common::Ini::Key("net.versioncheck", Common::Ini::KT_BOOL, true),
-    Common::Ini::Key("game.debug", Common::Ini::KT_BOOL)
-};
 
 size_t NC_STACK_windp::Init(IDVList &stak)
 {
@@ -31,10 +25,10 @@ size_t NC_STACK_windp::Init(IDVList &stak)
         return 0;
     }
 
-    Common::Ini::ParseIniFile(DefaultIniFile, &windp_keys);
-    guaranteed_md = windp_keys[0].Get<int>();
-    version_check = windp_keys[1].Get<bool>();
-    debug = windp_keys[2].Get<bool>();
+    System::IniConf::ReadFromNucleusIni();
+    guaranteed_md = System::IniConf::NetGmode.Get<int>();
+    version_check = System::IniConf::NetVersionCheck.Get<bool>();
+    debug = System::IniConf::GameDebug.Get<bool>();
     return 1;
 }
 

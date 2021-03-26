@@ -470,8 +470,6 @@ protected:
 public:
     //Data
     static const Nucleus::ClassDescr description;
-
-    static Common::Ini::KeyList win3d_keys;
     
     
 public:

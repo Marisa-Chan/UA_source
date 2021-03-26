@@ -3,135 +3,15 @@
 #include "../log.h"
 #include "inpt.h"
 #include "../input.h"
+#include "inivals.h"
 
 INPEngine INPe;
-
-Common::Ini::KeyList input_keyconfig
-{
-    Common::Ini::Key("input.debug", Common::Ini::KT_BOOL), 		                        //0
-    Common::Ini::Key("input.timer", Common::Ini::KT_WORD), 		        //1
-    Common::Ini::Key("input.wimp", Common::Ini::KT_WORD), 		            //2
-    Common::Ini::Key("input.keyboard", Common::Ini::KT_WORD), 		    //3
-    Common::Ini::Key("input.button[0]", Common::Ini::KT_STRING), 		 //4
-    Common::Ini::Key("input.button[1]", Common::Ini::KT_STRING), 		 //5
-    Common::Ini::Key("input.button[2]", Common::Ini::KT_STRING), 		 //6
-    Common::Ini::Key("input.button[3]", Common::Ini::KT_STRING), 		 //7
-    Common::Ini::Key("input.button[4]", Common::Ini::KT_STRING), 		 //8
-    Common::Ini::Key("input.button[5]", Common::Ini::KT_STRING), 		 //9
-    Common::Ini::Key("input.button[6]", Common::Ini::KT_STRING), 		 //10
-    Common::Ini::Key("input.button[7]", Common::Ini::KT_STRING), 		 //11
-    Common::Ini::Key("input.button[8]", Common::Ini::KT_STRING), 		 //12
-    Common::Ini::Key("input.button[9]", Common::Ini::KT_STRING), 		 //13
-    Common::Ini::Key("input.button[10]", Common::Ini::KT_STRING), 		 //14
-    Common::Ini::Key("input.button[11]", Common::Ini::KT_STRING), 		 //15
-    Common::Ini::Key("input.button[12]", Common::Ini::KT_STRING), 		 //16
-    Common::Ini::Key("input.button[13]", Common::Ini::KT_STRING), 		 //17
-    Common::Ini::Key("input.button[14]", Common::Ini::KT_STRING), 		 //18
-    Common::Ini::Key("input.button[15]", Common::Ini::KT_STRING), 		 //19
-    Common::Ini::Key("input.button[16]", Common::Ini::KT_STRING), 		 //20
-    Common::Ini::Key("input.button[17]", Common::Ini::KT_STRING), 		 //21
-    Common::Ini::Key("input.button[18]", Common::Ini::KT_STRING), 		 //22
-    Common::Ini::Key("input.button[19]", Common::Ini::KT_STRING), 		 //23
-    Common::Ini::Key("input.button[20]", Common::Ini::KT_STRING), 		 //24
-    Common::Ini::Key("input.button[21]", Common::Ini::KT_STRING), 		 //25
-    Common::Ini::Key("input.button[22]", Common::Ini::KT_STRING), 		 //26
-    Common::Ini::Key("input.button[23]", Common::Ini::KT_STRING), 		 //27
-    Common::Ini::Key("input.button[24]", Common::Ini::KT_STRING), 		 //28
-    Common::Ini::Key("input.button[25]", Common::Ini::KT_STRING), 		 //29
-    Common::Ini::Key("input.button[26]", Common::Ini::KT_STRING), 		 //30
-    Common::Ini::Key("input.button[27]", Common::Ini::KT_STRING), 		 //31
-    Common::Ini::Key("input.button[28]", Common::Ini::KT_STRING), 		 //32
-    Common::Ini::Key("input.button[29]", Common::Ini::KT_STRING), 		 //33
-    Common::Ini::Key("input.button[30]", Common::Ini::KT_STRING), 		 //34
-    Common::Ini::Key("input.button[31]", Common::Ini::KT_STRING), 		 //35
-    Common::Ini::Key("input.slider[0]", Common::Ini::KT_STRING), 		 //36
-    Common::Ini::Key("input.slider[1]", Common::Ini::KT_STRING), 		 //37
-    Common::Ini::Key("input.slider[2]", Common::Ini::KT_STRING), 		 //38
-    Common::Ini::Key("input.slider[3]", Common::Ini::KT_STRING), 		 //39
-    Common::Ini::Key("input.slider[4]", Common::Ini::KT_STRING), 		 //40
-    Common::Ini::Key("input.slider[5]", Common::Ini::KT_STRING), 		 //41
-    Common::Ini::Key("input.slider[6]", Common::Ini::KT_STRING), 		 //42
-    Common::Ini::Key("input.slider[7]", Common::Ini::KT_STRING), 		 //43
-    Common::Ini::Key("input.slider[8]", Common::Ini::KT_STRING), 		 //44
-    Common::Ini::Key("input.slider[9]", Common::Ini::KT_STRING), 		 //45
-    Common::Ini::Key("input.slider[10]", Common::Ini::KT_STRING), 		 //46
-    Common::Ini::Key("input.slider[11]", Common::Ini::KT_STRING), 		 //47
-    Common::Ini::Key("input.slider[12]", Common::Ini::KT_STRING), 		 //48
-    Common::Ini::Key("input.slider[13]", Common::Ini::KT_STRING), 		 //49
-    Common::Ini::Key("input.slider[14]", Common::Ini::KT_STRING), 		 //50
-    Common::Ini::Key("input.slider[15]", Common::Ini::KT_STRING), 		 //51
-    Common::Ini::Key("input.slider[16]", Common::Ini::KT_STRING), 		 //52
-    Common::Ini::Key("input.slider[17]", Common::Ini::KT_STRING), 		 //53
-    Common::Ini::Key("input.slider[18]", Common::Ini::KT_STRING), 		 //54
-    Common::Ini::Key("input.slider[19]", Common::Ini::KT_STRING), 		 //55
-    Common::Ini::Key("input.slider[20]", Common::Ini::KT_STRING), 		 //56
-    Common::Ini::Key("input.slider[21]", Common::Ini::KT_STRING), 		 //57
-    Common::Ini::Key("input.slider[22]", Common::Ini::KT_STRING), 		 //58
-    Common::Ini::Key("input.slider[23]", Common::Ini::KT_STRING), 		 //59
-    Common::Ini::Key("input.slider[24]", Common::Ini::KT_STRING), 		 //60
-    Common::Ini::Key("input.slider[25]", Common::Ini::KT_STRING), 		 //61
-    Common::Ini::Key("input.slider[26]", Common::Ini::KT_STRING), 		 //62
-    Common::Ini::Key("input.slider[27]", Common::Ini::KT_STRING), 		 //63
-    Common::Ini::Key("input.slider[28]", Common::Ini::KT_STRING), 		 //64
-    Common::Ini::Key("input.slider[29]", Common::Ini::KT_STRING), 		 //65
-    Common::Ini::Key("input.slider[30]", Common::Ini::KT_STRING), 		 //66
-    Common::Ini::Key("input.slider[31]", Common::Ini::KT_STRING), 		 //67
-    Common::Ini::Key("input.hotkey[0]", Common::Ini::KT_WORD), 		 //68
-    Common::Ini::Key("input.hotkey[1]", Common::Ini::KT_WORD), 		 //69
-    Common::Ini::Key("input.hotkey[2]", Common::Ini::KT_WORD), 		 //70
-    Common::Ini::Key("input.hotkey[3]", Common::Ini::KT_WORD), 		 //71
-    Common::Ini::Key("input.hotkey[4]", Common::Ini::KT_WORD), 		 //72
-    Common::Ini::Key("input.hotkey[5]", Common::Ini::KT_WORD), 		 //73
-    Common::Ini::Key("input.hotkey[6]", Common::Ini::KT_WORD), 		 //74
-    Common::Ini::Key("input.hotkey[7]", Common::Ini::KT_WORD), 		 //75
-    Common::Ini::Key("input.hotkey[8]", Common::Ini::KT_WORD), 		 //76
-    Common::Ini::Key("input.hotkey[9]", Common::Ini::KT_WORD), 		 //77
-    Common::Ini::Key("input.hotkey[10]", Common::Ini::KT_WORD), 		 //78
-    Common::Ini::Key("input.hotkey[11]", Common::Ini::KT_WORD), 		 //79
-    Common::Ini::Key("input.hotkey[12]", Common::Ini::KT_WORD), 		 //80
-    Common::Ini::Key("input.hotkey[13]", Common::Ini::KT_WORD), 		 //81
-    Common::Ini::Key("input.hotkey[14]", Common::Ini::KT_WORD), 		 //82
-    Common::Ini::Key("input.hotkey[15]", Common::Ini::KT_WORD), 		 //83
-    Common::Ini::Key("input.hotkey[16]", Common::Ini::KT_WORD), 		 //84
-    Common::Ini::Key("input.hotkey[17]", Common::Ini::KT_WORD), 		 //85
-    Common::Ini::Key("input.hotkey[18]", Common::Ini::KT_WORD), 		 //86
-    Common::Ini::Key("input.hotkey[19]", Common::Ini::KT_WORD), 		 //87
-    Common::Ini::Key("input.hotkey[20]", Common::Ini::KT_WORD), 		 //88
-    Common::Ini::Key("input.hotkey[21]", Common::Ini::KT_WORD), 		 //89
-    Common::Ini::Key("input.hotkey[22]", Common::Ini::KT_WORD), 		 //90
-    Common::Ini::Key("input.hotkey[23]", Common::Ini::KT_WORD), 		 //91
-    Common::Ini::Key("input.hotkey[24]", Common::Ini::KT_WORD), 		 //92
-    Common::Ini::Key("input.hotkey[25]", Common::Ini::KT_WORD), 		 //93
-    Common::Ini::Key("input.hotkey[26]", Common::Ini::KT_WORD), 		 //94
-    Common::Ini::Key("input.hotkey[27]", Common::Ini::KT_WORD), 		 //95
-    Common::Ini::Key("input.hotkey[28]", Common::Ini::KT_WORD), 		 //96
-    Common::Ini::Key("input.hotkey[29]", Common::Ini::KT_WORD), 		 //97
-    Common::Ini::Key("input.hotkey[30]", Common::Ini::KT_WORD), 		 //98
-    Common::Ini::Key("input.hotkey[31]", Common::Ini::KT_WORD), 		 //99
-    Common::Ini::Key("input.hotkey[32]", Common::Ini::KT_WORD), 		 //100
-    Common::Ini::Key("input.hotkey[33]", Common::Ini::KT_WORD), 		 //101
-    Common::Ini::Key("input.hotkey[34]", Common::Ini::KT_WORD), 		 //102
-    Common::Ini::Key("input.hotkey[35]", Common::Ini::KT_WORD), 		 //103
-    Common::Ini::Key("input.hotkey[36]", Common::Ini::KT_WORD), 		 //104
-    Common::Ini::Key("input.hotkey[37]", Common::Ini::KT_WORD), 		 //105
-    Common::Ini::Key("input.hotkey[38]", Common::Ini::KT_WORD), 		 //106
-    Common::Ini::Key("input.hotkey[39]", Common::Ini::KT_WORD), 		 //107
-    Common::Ini::Key("input.hotkey[40]", Common::Ini::KT_WORD), 		 //108
-    Common::Ini::Key("input.hotkey[41]", Common::Ini::KT_WORD), 		 //109
-    Common::Ini::Key("input.hotkey[42]", Common::Ini::KT_WORD), 		 //110
-    Common::Ini::Key("input.hotkey[43]", Common::Ini::KT_WORD), 		 //111
-    Common::Ini::Key("input.hotkey[44]", Common::Ini::KT_WORD), 		 //112
-    Common::Ini::Key("input.hotkey[45]", Common::Ini::KT_WORD), 		 //113
-    Common::Ini::Key("input.hotkey[46]", Common::Ini::KT_WORD), 		 //114
-    Common::Ini::Key("input.hotkey[47]", Common::Ini::KT_WORD) 		     //115
-};
-
 
 int INPEngine::init()
 {
     NC_STACK_winp::initfirst();
 
-    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &input_keyconfig);
+    System::IniConf::ReadFromNucleusIni();
 
     input_class = Nucleus::CInit<NC_STACK_input>();
 
@@ -141,7 +21,7 @@ int INPEngine::init()
         return 0;
     }
 
-    std::string val = input_keyconfig[1].Get<std::string>(); // input.timer
+    std::string val = System::IniConf::InputTimer.Get<std::string>(); // input.timer
 
     if ( !val.empty() )
     {
@@ -153,7 +33,7 @@ int INPEngine::init()
         ypa_log_out("input.engine: WARNING: no Timer driver defined in prefs file.\n");
     }
 
-    val = input_keyconfig[2].Get<std::string>(); // input.wimp
+    val = System::IniConf::InputWimp.Get<std::string>(); // input.wimp
 
     if ( !val.empty() )
     {
@@ -165,7 +45,7 @@ int INPEngine::init()
         ypa_log_out("input.engine: WARNING: no Wimp driver defined in prefs file.\n");
     }
 
-    val = input_keyconfig[3].Get<std::string>(); // input.keyboard
+    val = System::IniConf::InputKeyboard.Get<std::string>(); // input.keyboard
 
     if ( !val.empty() )
     {
@@ -176,38 +56,164 @@ int INPEngine::init()
     {
         ypa_log_out("input.engine: WARNING: no Keyboard driver defined in prefs file.\n");
     }
+    
+    Common::Ini::Key *Buttons[] = {
+        &System::IniConf::InputButton0
+    ,   &System::IniConf::InputButton1
+    ,   &System::IniConf::InputButton2
+    ,   &System::IniConf::InputButton3
+    ,   &System::IniConf::InputButton4
+    ,   &System::IniConf::InputButton5
+    ,   &System::IniConf::InputButton6
+    ,   &System::IniConf::InputButton7
+    ,   &System::IniConf::InputButton8
+    ,   &System::IniConf::InputButton9
+    ,   &System::IniConf::InputButton10
+    ,   &System::IniConf::InputButton11
+    ,   &System::IniConf::InputButton12
+    ,   &System::IniConf::InputButton13
+    ,   &System::IniConf::InputButton14
+    ,   &System::IniConf::InputButton15
+    ,   &System::IniConf::InputButton16
+    ,   &System::IniConf::InputButton17
+    ,   &System::IniConf::InputButton18
+    ,   &System::IniConf::InputButton19
+    ,   &System::IniConf::InputButton20
+    ,   &System::IniConf::InputButton21
+    ,   &System::IniConf::InputButton22
+    ,   &System::IniConf::InputButton23
+    ,   &System::IniConf::InputButton24
+    ,   &System::IniConf::InputButton25
+    ,   &System::IniConf::InputButton26
+    ,   &System::IniConf::InputButton27
+    ,   &System::IniConf::InputButton28
+    ,   &System::IniConf::InputButton29
+    ,   &System::IniConf::InputButton30
+    ,   &System::IniConf::InputButton31 };
 
-    for (int i = 0; i < 32; i++)
+    int i = 0;
+    for (Common::Ini::Key *k : Buttons)
     {
-        val = input_keyconfig[4 + i].Get<std::string>(); // input_buttons
+        val = k->Get<std::string>(); // input_buttons
 
         if ( !val.empty() )
         {
             if ( ! input_class->SetInputExpression(false, i, val) )
                 ypa_log_out("input.engine: WARNING: Button[%d] object creation failed.\n", i);
         }
+        i++;
     }
+    
+    Common::Ini::Key *Sliders[] = {
+        &System::IniConf::InputSlider0
+    ,   &System::IniConf::InputSlider1
+    ,   &System::IniConf::InputSlider2
+    ,   &System::IniConf::InputSlider3
+    ,   &System::IniConf::InputSlider4
+    ,   &System::IniConf::InputSlider5
+    ,   &System::IniConf::InputSlider6
+    ,   &System::IniConf::InputSlider7
+    ,   &System::IniConf::InputSlider8
+    ,   &System::IniConf::InputSlider9
+    ,   &System::IniConf::InputSlider10
+    ,   &System::IniConf::InputSlider11
+    ,   &System::IniConf::InputSlider12
+    ,   &System::IniConf::InputSlider13
+    ,   &System::IniConf::InputSlider14
+    ,   &System::IniConf::InputSlider15
+    ,   &System::IniConf::InputSlider16
+    ,   &System::IniConf::InputSlider17
+    ,   &System::IniConf::InputSlider18
+    ,   &System::IniConf::InputSlider19
+    ,   &System::IniConf::InputSlider20
+    ,   &System::IniConf::InputSlider21
+    ,   &System::IniConf::InputSlider22
+    ,   &System::IniConf::InputSlider23
+    ,   &System::IniConf::InputSlider24
+    ,   &System::IniConf::InputSlider25
+    ,   &System::IniConf::InputSlider26
+    ,   &System::IniConf::InputSlider27
+    ,   &System::IniConf::InputSlider28
+    ,   &System::IniConf::InputSlider29
+    ,   &System::IniConf::InputSlider30
+    ,   &System::IniConf::InputSlider31
+    };
 
-    for (int i = 0; i < 32; i++)
+    i = 0;
+    for (Common::Ini::Key *k : Sliders)
     {
-        val = input_keyconfig[36 + i].Get<std::string>(); // input_sliders
+        val = k->Get<std::string>(); // input_sliders
 
         if ( !val.empty() )
         {
             if ( ! input_class->SetInputExpression(true, i, val) )
                 ypa_log_out("input.engine: WARNING: Slider[%d] object creation failed.\n", i);
         }
+        i++;
     }
+    
+    Common::Ini::Key *Hotkeys[] = {   
+        &System::IniConf::InputHotkey0
+    ,   &System::IniConf::InputHotkey1
+    ,   &System::IniConf::InputHotkey2
+    ,   &System::IniConf::InputHotkey3
+    ,   &System::IniConf::InputHotkey4
+    ,   &System::IniConf::InputHotkey5
+    ,   &System::IniConf::InputHotkey6
+    ,   &System::IniConf::InputHotkey7
+    ,   &System::IniConf::InputHotkey8
+    ,   &System::IniConf::InputHotkey9
+    ,   &System::IniConf::InputHotkey10
+    ,   &System::IniConf::InputHotkey11
+    ,   &System::IniConf::InputHotkey12
+    ,   &System::IniConf::InputHotkey13
+    ,   &System::IniConf::InputHotkey14
+    ,   &System::IniConf::InputHotkey15
+    ,   &System::IniConf::InputHotkey16
+    ,   &System::IniConf::InputHotkey17
+    ,   &System::IniConf::InputHotkey18
+    ,   &System::IniConf::InputHotkey19
+    ,   &System::IniConf::InputHotkey20
+    ,   &System::IniConf::InputHotkey21
+    ,   &System::IniConf::InputHotkey22
+    ,   &System::IniConf::InputHotkey23
+    ,   &System::IniConf::InputHotkey24
+    ,   &System::IniConf::InputHotkey25
+    ,   &System::IniConf::InputHotkey26
+    ,   &System::IniConf::InputHotkey27
+    ,   &System::IniConf::InputHotkey28
+    ,   &System::IniConf::InputHotkey29
+    ,   &System::IniConf::InputHotkey30
+    ,   &System::IniConf::InputHotkey31
+    ,   &System::IniConf::InputHotkey32
+    ,   &System::IniConf::InputHotkey33
+    ,   &System::IniConf::InputHotkey34
+    ,   &System::IniConf::InputHotkey35
+    ,   &System::IniConf::InputHotkey36
+    ,   &System::IniConf::InputHotkey37
+    ,   &System::IniConf::InputHotkey38
+    ,   &System::IniConf::InputHotkey39
+    ,   &System::IniConf::InputHotkey40
+    ,   &System::IniConf::InputHotkey41
+    ,   &System::IniConf::InputHotkey42
+    ,   &System::IniConf::InputHotkey43
+    ,   &System::IniConf::InputHotkey44
+    ,   &System::IniConf::InputHotkey45
+    ,   &System::IniConf::InputHotkey46
+    ,   &System::IniConf::InputHotkey47
+    };
 
-    for (int i = 0; i < 48; i++)
+    i = 0;
+    for (Common::Ini::Key *k : Hotkeys)
     {
-        val = input_keyconfig[68 + i].Get<std::string>(); // input_hotkeys
+        val = k->Get<std::string>(); // input_hotkeys
 
         if ( !val.empty() )
         {
             if ( ! input_class->SetHotKey(i, val) )
                 ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", i, val.c_str());
         }
+        i++;
     }
 
     return 1;

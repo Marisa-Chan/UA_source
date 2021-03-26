@@ -12,12 +12,12 @@
 #include "font.h"
 #include "windp.h"
 #include "fmtlib/printf.h"
+#include "system/inivals.h"
 
 #define C_2PI_127       0.04947390005653217698   // (2PI / 127)
 #define C_127_2PI       20.21267777267070764265  // (127 / 2PI)
 
 extern uint32_t bact_id;
-extern Common::Ini::KeyList ypaworld_keys;
 extern char **ypaworld__string_pointers;
 
 
@@ -3937,8 +3937,8 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     GameShell->players[ GameShell->netPlayerOwner ].rdyStart = 1;
     netGameStarted = 0;
 
-    netStartTime = ypaworld_keys[1].Get<int>();
-    GameShell->kickTime = ypaworld_keys[2].Get<int>();
+    netStartTime = System::IniConf::NetWaitStart.Get<int>();
+    GameShell->kickTime = System::IniConf::NetKickoff.Get<int>();
 
     log_netlog("netstarttime was initialized with %d sec\n", netStartTime / 1000);
     log_netlog("kickoff was initialized with      %d sec\n", GameShell->kickTime / 1000);

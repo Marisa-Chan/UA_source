@@ -15,6 +15,7 @@
 #include "gui/uamsgbox.h"
 #include "env.h"
 #include "system/movie.h"
+#include "system/inivals.h"
 
 extern int word_5A50C2;
 extern int word_5A50AC;
@@ -638,7 +639,7 @@ void NC_STACK_ypaworld::PlayIntroMovie()
     {
         std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(movies[World::MOVIE_INTRO]) );
         
-        if ( GFX::Engine.win3d_keys[9].Get<bool>() )
+        if ( System::IniConf::GfxMoviePlayer.Get<bool>() )
             System::Movie.PlayMovie(buf, GameShell->snd__volume);
 
         INPe.QueryInput(&input_states);

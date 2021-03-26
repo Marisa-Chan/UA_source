@@ -84,6 +84,7 @@ OBJS =  \
 	sklt.cpp\
 	system/fsmgr.cpp\
 	system/gfx.cpp\
+	system/inivals.cpp\
 	system/inpt.cpp\
 	system/movie.cpp\
 	system/sound.cpp\

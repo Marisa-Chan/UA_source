@@ -8,6 +8,7 @@
 
 #include "yw_net.h"
 #include "fmtlib/printf.h"
+#include "system/inivals.h"
 
 #include <math.h>
 
@@ -15,12 +16,6 @@ const Nucleus::ClassDescr NC_STACK_yparobo::description("yparobo.class", &newins
 
 
 int dword_5B1128 = 1;
-
-Common::Ini::KeyList yparobo_keys
-{
-    Common::Ini::Key("game.newai",    Common::Ini::KT_BOOL, true),
-    Common::Ini::Key("game.timeline", Common::Ini::KT_DIGIT, (int32_t)600000)
-};
 
 robo_t2 stru_5B0628[100];
 int dword_515138[8];
@@ -5387,10 +5382,10 @@ void NC_STACK_yparobo::Renew()
 
     setBACT_yourLastSeconds(3000);
 
-    Common::Ini::ParseIniFile(DefaultIniFile, &yparobo_keys);
+    System::IniConf::ReadFromNucleusIni();
 
-    _roboNewAI = yparobo_keys[0].Get<bool>();
-    _roboTimeScale = yparobo_keys[1].Get<int>();
+    _roboNewAI = System::IniConf::GameNewAI.Get<bool>();
+    _roboTimeScale = System::IniConf::GameTimeLine.Get<int>();
 }
 
 void NC_STACK_yparobo::HandBrake(update_msg *)

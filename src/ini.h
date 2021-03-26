@@ -42,8 +42,10 @@ struct Key
 };
 
 typedef std::vector<Key> KeyList;
+typedef std::vector<Key *> PKeyList;
 
 bool ParseIniFile(std::string iniFile, KeyList *lst);
+bool ParseIniFile(std::string iniFile, PKeyList *lst);
 
 
 }

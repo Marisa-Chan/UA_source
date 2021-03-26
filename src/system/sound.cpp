@@ -5,17 +5,10 @@
 #include <math.h>
 #include "sound.h"
 #include "../common.h"
+#include "inivals.h"
 
 
 SFXEngine SFXEngine::SFXe;
-
-Common::Ini::KeyList audio_keys
-{
-    Common::Ini::Key("audio.channels", Common::Ini::KT_DIGIT, (int32_t)4),
-    Common::Ini::Key("audio.volume",   Common::Ini::KT_DIGIT, (int32_t)127),
-    Common::Ini::Key("audio.num_palfx", Common::Ini::KT_DIGIT, (int32_t)4),
-    Common::Ini::Key("audio.rev_stereo", Common::Ini::KT_BOOL)
-};
 
 void wrapper_setSampleVRP(void *, walsmpl *hSample, int rate, int volume, int pan)
 {
@@ -69,12 +62,12 @@ int SFXEngine::init()
     musMaxDelay = 0;
     musTrack = 0;
 
-    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &audio_keys);
+    System::IniConf::ReadFromNucleusIni();
 
-    audio_channels  = audio_keys[0].Get<int>();
-    audio_volume    = audio_keys[1].Get<int>();
-    audio_num_palfx = audio_keys[2].Get<int>();
-    audio_rev_stereo = audio_keys[3].Get<bool>();
+    audio_channels  = System::IniConf::AudioChannels.Get<int>();
+    audio_volume    = System::IniConf::AudioVolume.Get<int>();
+    audio_num_palfx = System::IniConf::AudioNumPalfx.Get<int>();
+    audio_rev_stereo = System::IniConf::AudioRevStereo.Get<bool>();
 
     if ( audio_volume > 127 )
         audio_volume = 127;

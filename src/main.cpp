@@ -39,6 +39,7 @@
 #include "gui/uamsgbox.h"
 #include "gui/uaempty.h"
 #include "system/movie.h"
+#include "system/inivals.h"
 
 
 int dword_513638 = 0;
@@ -49,11 +50,6 @@ std::string buildDate;
 int tform_inited = 0;
 int audio_inited = 0;
 int input_inited = 0;
-
-Common::Ini::KeyList tuneKeys
-{
-    Common::Ini::Key("tune.weapon_radius", Common::Ini::KT_BOOL)               //0
-};
 
 static bool fixWeaponRadius = false;
 
@@ -803,6 +799,8 @@ int main(int argc, char *argv[])
 //		return 0;
 //	}
     
+    System::IniConf::Init();
+    
     FSMgr::iDir::setBaseDir("");
     System::Init();
     GFX::Engine.Init();
@@ -813,9 +811,9 @@ int main(int argc, char *argv[])
     if ( !WinMain__sub0(argc, argv) )
         return 0;
 
-    Common::Ini::ParseIniFile(NC_STACK_nucleus::DefaultIniFile, &tuneKeys);
+    System::IniConf::ReadFromNucleusIni();
 
-    fixWeaponRadius = tuneKeys[0].Get<bool>();
+    fixWeaponRadius = System::IniConf::TuneWeaponRadius.Get<bool>();
 
     uint32_t ticks = 0;
     

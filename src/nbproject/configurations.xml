@@ -31,6 +31,8 @@
         <in>fsmgr.cpp</in>
         <in>fsmgr.h</in>
         <in>gfx.cpp</in>
+        <in>inivals.cpp</in>
+        <in>inivals.h</in>
         <in>gfx.h</in>
         <in>inpt.cpp</in>
         <in>inpt.h</in>
