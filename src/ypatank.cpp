@@ -589,11 +589,11 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                     }
                     else if ( collHillLeft )
                     {
-                        _tankCollisionFlag |= COLL_WALL_L;
+                        _tankCollisionFlag |= COLL_HILL_L;
                     }
                     else
                     {
-                        _tankCollisionFlag |= COLL_WALL_R;
+                        _tankCollisionFlag |= COLL_HILL_R;
                     }
 
                     _tankCollisionWay = 100.0;
