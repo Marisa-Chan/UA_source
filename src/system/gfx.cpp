@@ -10,6 +10,7 @@
 #include "../log.h"
 #include "../gui/oldcompat.h"
 #include "../font.h"
+#include "inivals.h"
 
 
 namespace GFX
