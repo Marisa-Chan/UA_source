@@ -185,6 +185,7 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, 
 
 void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc)
 {
+    GFX::Engine.SetFBOBlending(1);
     GFX::Engine.BeginScene();
 
     brf->ObjRenderParams.frameTime = 1;
@@ -206,6 +207,7 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, I
     brf->ObjRenderParams.rndrStack->render();
 
     GFX::Engine.EndScene();
+    GFX::Engine.SetFBOBlending(0);
 }
 
 
@@ -640,7 +642,11 @@ void NC_STACK_ypaworld::PlayIntroMovie()
         std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(movies[World::MOVIE_INTRO]) );
         
         if ( System::IniConf::GfxMoviePlayer.Get<bool>() )
+        {
+            GFX::Engine.EndFrame();
             System::Movie.PlayMovie(buf, GameShell->snd__volume);
+            GFX::Engine.BeginFrame();
+        }
 
         INPe.QueryInput(&input_states);
         input_states.KbdLastHit = Input::KC_NONE;

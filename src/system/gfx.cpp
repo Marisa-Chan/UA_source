@@ -1,5 +1,12 @@
 #include "../fmtlib/printf.h"
 #include <SDL2/SDL_opengl.h>
+
+#if defined(__APPLE__) && defined(__MACH__)
+#include <OpenGL/glext.h>
+#else
+#include <GL/glext.h>
+#endif
+
 #include "gfx.h"
 #include "../utils.h"
 #include "../common.h"
@@ -14,15 +21,44 @@
 
 
 namespace GFX
-{
-    GFXEngine GFXEngine::Instance;
+{   
+GFXEngine GFXEngine::Instance;
 
-uint32_t GFXEngine::_fbo = 0;
-uint32_t GFXEngine::_fboTex = 0;
 int GFXEngine::can_srcblend;
 int GFXEngine::can_destblend;
 int GFXEngine::can_stippling;
 uint32_t GFXEngine::FpsMaxTicks = 1000/60;
+
+const std::array<vec3d, 8> GFXEngine::_clrEff 
+{   vec3d(1.0,  1.0,  1.0)
+,   vec3d(1.21, 0.0,  0.29)
+,   vec3d(0.13, 0.43, 2.17)
+,   vec3d(0.0,  1.60, 1.60)
+,   vec3d(1.0,  1.0,  1.0)
+,   vec3d(0.57, 0.59, 0.59)
+,   vec3d(1.4,  1.08,  1.12)
+,   vec3d(0.3,  0.60, 0.7)};
+
+PFNGLGENFRAMEBUFFERSPROC GLGenFramebuffers = NULL;
+PFNGLBINDFRAMEBUFFERPROC GLBindFramebuffer = NULL;
+PFNGLGENRENDERBUFFERSPROC GLGenRenderbuffers = NULL;
+PFNGLBINDRENDERBUFFERPROC GLBindRenderbuffer = NULL;
+PFNGLFRAMEBUFFERTEXTUREPROC GLFrameBufferTexture = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DPROC GLFrameBufferTexture2D = NULL;
+PFNGLRENDERBUFFERSTORAGEPROC GLRenderbufferStorage = NULL;
+PFNGLFRAMEBUFFERRENDERBUFFERPROC GLFramebufferRenderbuffer = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC GLCheckFramebufferStatus = NULL;
+PFNGLGENERATEMIPMAPPROC GLGenerateMipmap = NULL;
+PFNGLCREATESHADERPROC GLCreateShader = NULL;
+PFNGLSHADERSOURCEPROC GLShaderSource = NULL;
+PFNGLDELETESHADERPROC GLDeleteShader = NULL;
+PFNGLCOMPILESHADERPROC GLCompileShader = NULL;
+PFNGLCREATEPROGRAMPROC GLCreateProgram = NULL;
+PFNGLATTACHSHADERPROC GLAttachShader = NULL;
+PFNGLLINKPROGRAMPROC GLLinkProgram = NULL;
+PFNGLUSEPROGRAMPROC GLUseProgram = NULL;
+PFNGLGETUNIFORMLOCATIONPROC GLGetUniformLocation = NULL;
+PFNGLUNIFORM3FPROC GLUniform3f = NULL;
     
 
 GFXEngine::GFXEngine()
@@ -75,6 +111,9 @@ GFXEngine::GFXEngine()
     _solidFont = true;
     
     _setFrustumClip(1.0, 8192.0);
+    
+    _normClr = vec3d(1.0, 1.0, 1.0);
+    _invClr = vec3d(0.0, 0.0, 0.0);
 }
 
 
@@ -1456,9 +1495,19 @@ void GFXEngine::BeginFrame()
     
     Common::Point scrSz = System::GetResolution();
     glViewport(0, 0, scrSz.x, scrSz.y);
-    
+
     glPushAttrib(GL_DEPTH_WRITEMASK);
     glDepthMask(GL_TRUE);
+    
+    if (_colorEffects)
+    {
+        GLBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+        GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+    }
 
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1467,10 +1516,22 @@ void GFXEngine::BeginFrame()
 }
 
 void GFXEngine::EndFrame()
-{
+{   
+    if (_colorEffects > 1)
+    {
+        GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
+        DrawFBO();
+    }    
+    
     Gui::Root::Instance.Draw(RealScreen());
     DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
+    
+    if (_colorEffects == 1)
+    {
+        GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
+        DrawFBO();
+    }
     
     System::Flip();
 }
@@ -1557,6 +1618,24 @@ void GFXEngine::display_func262(rstr_262_arg *arg)
         _palette[i].r = tmpr;
         _palette[i].g = tmpg;
         _palette[i].b = tmpb;
+    }
+    
+    _normClr = vec3d(0.0, 0.0, 0.0);
+    _invClr = vec3d(0.0, 0.0, 0.0);
+    
+    for (int j = 0; j < arg->cnt; j++)
+    {
+        switch(arg->slot[j])
+        {
+            case 4:
+            case 5:
+            case 7:
+                _invClr += _clrEff.at( arg->slot[j] ) * ((float)arg->weight[j] / 255.0);
+                break;
+            default:
+                _normClr += _clrEff.at( arg->slot[j] ) * ((float)arg->weight[j] / 255.0);
+                break;
+        }
     }
 }
 
@@ -1822,11 +1901,17 @@ int16_t GFXEngine::GetHeight()
 
 void GFXEngine::draw2DandFlush()
 {
+    if (_colorEffects)
+        GLBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
     Gui::Root::Instance.Draw(RealScreen());
     DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
 
     SDL_FillRect(Screen(), NULL, SDL_MapRGBA(Screen()->format, 0, 0, 0, 0) );
+    
+    if (_colorEffects)
+        GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 }
 
 void GFXEngine::matrixAspectCorrection(mat3x3 &inout, bool invert)
@@ -2395,6 +2480,71 @@ void GFXEngine::Init()
     Gui::Instance.AddWidgetPortal(portalID, scrCompat);
     
     LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
+    
+    _colorEffects = System::IniConf::GfxColorEffects.Get<int32_t>();
+    
+    if (_colorEffects > 0)
+    {
+        GLGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)SDL_GL_GetProcAddress("glGenFramebuffers");
+        GLBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)SDL_GL_GetProcAddress("glBindFramebuffer");
+        GLGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)SDL_GL_GetProcAddress("glGenRenderbuffers");
+        GLBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)SDL_GL_GetProcAddress("glBindRenderbuffer");
+        GLFrameBufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)SDL_GL_GetProcAddress("glFramebufferTexture");
+        GLFrameBufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)SDL_GL_GetProcAddress("glFramebufferTexture2D");
+        GLRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)SDL_GL_GetProcAddress("glRenderbufferStorage");
+        GLFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)SDL_GL_GetProcAddress("glFramebufferRenderbuffer");
+        GLCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatus");
+        GLGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)SDL_GL_GetProcAddress("glGenerateMipmap");
+        GLCreateShader = (PFNGLCREATESHADERPROC)SDL_GL_GetProcAddress("glCreateShader");
+        GLShaderSource = (PFNGLSHADERSOURCEPROC)SDL_GL_GetProcAddress("glShaderSource");
+        GLCompileShader = (PFNGLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
+        GLDeleteShader = (PFNGLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
+        GLCreateProgram = (PFNGLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
+        GLAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
+        GLLinkProgram = (PFNGLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
+        GLUseProgram = (PFNGLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
+        GLGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)SDL_GL_GetProcAddress("glGetUniformLocation");
+        GLUniform3f = (PFNGLUNIFORM3FPROC)SDL_GL_GetProcAddress("glUniform3f");
+        
+        
+        GLGenFramebuffers(1, &_fbo);
+        GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+
+        glGenTextures(1, &_fboTex);
+        glBindTexture(GL_TEXTURE_2D, _fboTex);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+
+        GLGenRenderbuffers(1, &_fbod);
+        GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
+        GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 640, 480);
+
+        
+        GLFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _fbod);
+
+        GLFrameBufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _fboTex, 0);
+
+        GLBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        GLBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+        _psShader = LoadShader(GL_FRAGMENT_SHADER, "res/clreff.ps");
+        _vsShader = LoadShader(GL_VERTEX_SHADER, "res/clreff.vs");
+
+        _shaderProg = GLCreateProgram();
+        GLAttachShader(_shaderProg, _psShader);
+        GLAttachShader(_shaderProg, _vsShader);
+        GLLinkProgram(_shaderProg);
+        
+        _shdrIDNorm = GLGetUniformLocation(_shaderProg, "normclr");
+        _shdrIDInv = GLGetUniformLocation(_shaderProg, "invclr");
+    }
+    
 }
 
 void GFXEngine::Deinit()
@@ -2431,6 +2581,7 @@ int GFXEngine::EventsWatcher(void *, SDL_Event *event)
         case SDL_WINDOWEVENT_RESIZED:
         case SDL_WINDOWEVENT_SIZE_CHANGED:
             Instance.RecreateScreenSurface();
+            Instance.UpdateFBOSizes();
             Gui::Instance.SetScreenSize(System::GetResolution());
             Gui::Instance.SetPortal(Instance.portalID, Common::Rect(System::GetResolution()));
             break;
@@ -2595,6 +2746,8 @@ void GFXEngine::SetResolution(int res)
     Gui::Instance.ResizePortal(portalID, Common::Point(picked.w, picked.h));
     Gui::Instance.SetScreenSize(System::GetResolution());
     Gui::Instance.SetPortal(portalID, Common::Rect(Common::Point(picked.w, picked.h)));
+    
+    UpdateFBOSizes();
 }
 
 
@@ -3175,6 +3328,116 @@ void GFXEngine::DrawScreenSurface()
     glEnd();
 
     glPopAttrib();
+}
+
+uint32_t GFXEngine::LoadShader(int32_t type, const std::string &fl)
+{
+    GLuint sh = GLCreateShader(type);
+    if (!sh)
+        return 0;
+    
+    FSMgr::FileHandle *f = FSMgr::iDir::openFile(fl, "rb");
+    if (!f)
+    {
+        GLDeleteShader(sh);
+        return 0;
+    }
+
+    f->seek(0, SEEK_END);
+    size_t sz = f->tell();
+    f->seek(0, SEEK_SET);
+
+    char *tmp = new char[sz];
+    f->read(tmp, sz);
+
+    std::string b;
+    b.assign(tmp, sz);
+
+    delete[] tmp;
+
+    delete f;
+    
+    const GLchar *source = (const GLchar *)b.c_str();
+    
+    GLShaderSource(sh, 1, &source, 0);
+    GLCompileShader(sh);
+    
+    return sh;
+}
+
+void GFXEngine::DrawFBO()
+{
+    GLUseProgram(_shaderProg);
+    GLUniform3f(_shdrIDNorm, _normClr.x, _normClr.y, _normClr.z);
+    GLUniform3f(_shdrIDInv, _invClr.x, _invClr.y, _invClr.z);
+    
+    Common::Point scrSz = System::GetResolution();
+    glViewport(0, 0, scrSz.x, scrSz.y);
+    
+    glPushAttrib(GL_LIGHTING | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TRANSFORM_BIT | GL_TEXTURE_BIT | GL_TEXTURE_2D);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glDisable(GL_LIGHTING);
+
+    glDepthMask(GL_FALSE);
+    glDisable(GL_DEPTH_TEST);
+
+    glDisable(GL_LIGHTING);
+
+    glEnable(GL_BLEND);
+    if (_fboBlend == 0)
+        glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    else if (_fboBlend == 1)
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, _fboTex);
+    
+    glColor4f(1,1,1, 1);
+    
+    glBegin(GL_QUADS);
+    {
+        glTexCoord2f(0, 1);
+        glVertex3f(-1.0, 1.0, 0);
+        glTexCoord2f(0, 0);
+        glVertex3f(-1.0, -1.0, 0);
+        glTexCoord2f(1, 0);
+        glVertex3f(1.0, -1.0, 0);
+        glTexCoord2f(1, 1);
+        glVertex3f(1.0, 1.0, 0);
+    }
+    glEnd();
+    
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glPopAttrib();
+    GLUseProgram(0);
+}
+
+void GFXEngine::SetFBOBlending(int mode)
+{
+    _fboBlend = mode;
+}
+
+void GFXEngine::UpdateFBOSizes()
+{
+    if (_colorEffects)
+    {
+        Common::Point scrSz = System::GetResolution();
+
+        glBindTexture(GL_TEXTURE_2D, _fboTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scrSz.x, scrSz.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
+        GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, scrSz.x, scrSz.y);
+        GLBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
 }
 
 SDL_Color GFXEngine::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)

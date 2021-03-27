@@ -35,6 +35,8 @@ Common::Ini::Key IniConf::GfxPalette("gfx.palette", Common::Ini::KT_WORD);
 Common::Ini::Key IniConf::GfxDisplay("gfx.display", Common::Ini::KT_WORD);
 Common::Ini::Key IniConf::GfxDisplay2("gfx.display2", Common::Ini::KT_WORD);
 
+Common::Ini::Key IniConf::GfxColorEffects("gfx.color_effects", Common::Ini::KT_DIGIT, (int32_t)0);
+
 // Input Engine
 Common::Ini::Key IniConf::InputDebug("input.debug", Common::Ini::KT_BOOL);
 Common::Ini::Key IniConf::InputTimer("input.timer", Common::Ini::KT_WORD);
@@ -356,6 +358,7 @@ void IniConf::Init()
         , &NetKickoff
 
         , &TuneWeaponRadius
+        , &GfxColorEffects
     };
 }
     

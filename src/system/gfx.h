@@ -277,8 +277,8 @@ protected:
     };
     
 public:
-    static uint32_t _fbo;
-    static uint32_t _fboTex;
+    static const std::array<vec3d, 8> _clrEff;
+    
     static int can_srcblend;
     static int can_destblend;
     static int can_stippling;
@@ -290,6 +290,13 @@ public:
     
     void RecreateScreenSurface();
     void DrawScreenSurface();
+    
+    uint32_t LoadShader(int32_t type, const std::string &fl);
+    
+    void SetFBOBlending(int mode);
+    void DrawFBO();
+    void UpdateFBOSizes();
+    
     
     SDL_Surface *Screen();
     SDL_Surface *RealScreen();
@@ -545,6 +552,23 @@ protected:
     GLdouble _frustum[16];
     float _frustumNear;
     float _frustumFar;
+    
+    vec3d _normClr;
+    vec3d _invClr;
+    
+    int32_t _colorEffects = 0;
+    
+    uint32_t _fbo = 0;
+    uint32_t _fbod = 0;
+    uint32_t _fboTex = 0;
+    int32_t _fboBlend = 0;
+    
+    uint32_t _psShader = 0;
+    uint32_t _vsShader = 0;
+    uint32_t _shaderProg = 0;
+    
+    int32_t _shdrIDNorm = 0;
+    int32_t _shdrIDInv = 0;
 };
     
 static constexpr GFXEngine &Engine = GFXEngine::Instance;

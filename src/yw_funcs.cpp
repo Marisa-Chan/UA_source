@@ -1426,8 +1426,12 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
     std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix( movie_fname ) );
 
     if ( System::IniConf::GfxMoviePlayer.Get<bool>() )
+    {
+        GFX::Engine.EndFrame();
         System::Movie.PlayMovie(buf, GameShell->snd__volume);
-
+        GFX::Engine.BeginFrame();
+    }
+    
     INPe.QueryInput(&input_states);
 
     input_states.KbdLastHit = Input::KC_NONE;

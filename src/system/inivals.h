@@ -44,6 +44,8 @@ public:
     static Common::Ini::Key GfxDisplay;
     static Common::Ini::Key GfxDisplay2;
     
+    static Common::Ini::Key GfxColorEffects;
+    
     static Common::Ini::Key InputDebug;
     static Common::Ini::Key InputTimer;
     static Common::Ini::Key InputWimp;
