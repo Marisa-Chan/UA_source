@@ -29,6 +29,7 @@
 
 #include "world/parsers.h"
 #include "world/saveparsers.h"
+#include "world/nparticle.h"
 
 #include "gui/uamsgbox.h"
 
@@ -805,6 +806,7 @@ struct cellArea
     char comp_type; // Complex (3x3) or simple
     int32_t energy_power; // Cell electric power
     uint8_t buildings_health[3][3];
+    Common::PlaneVector<NC_STACK_base::Instance *> BldVPOpts;
     uint8_t view_mask; // Who can view this sector (mask)
     char w_type;
     int32_t w_id;
@@ -812,7 +814,25 @@ struct cellArea
     float height;
     float averg_height;
     
-    cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) { clear(); };
+    cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) 
+    { 
+        BldVPOpts.Resize(3, 3);
+        
+        for (auto &opts : BldVPOpts)
+        {
+            opts = NULL;
+        }
+        
+        clear();
+    };
+    ~cellArea()
+    {
+        for (NC_STACK_base::Instance* opts : BldVPOpts)
+        {
+            if (opts)
+                delete opts;
+        }
+    }
     
     bool IsCanSee(int owant) const
     {
@@ -868,7 +888,7 @@ struct cellArea
             for (int j = 0; j < 3; j++)
                 buildings_health[i][j] = 0;
         }
-        
+                
         view_mask = 0;
         w_type = 0;
         w_id = 0;
@@ -1297,25 +1317,19 @@ struct BriefObject
         TYPE_VEHICLE = 2
     };
     
-    float X;
-    float Y;
-    int16_t ObjType;
-    int16_t ID;
-    int TileSet;
-    int TileID;
-    int Color;
+    float X = 0.0;
+    float Y = 0.0;
+    int16_t ObjType = TYPE_NONE;
+    int16_t ID = 0;
+    int TileSet = 0;
+    int TileID = 0;
+    int Color = 0;
     std::string Title;
+    
+    NC_STACK_base::Instance *VP = NULL;
 
     BriefObject()
-    {
-    	X = 0.;
-        Y = 0.;
-        ObjType = TYPE_NONE;
-        ID = 0;
-        TileSet = 0;
-        TileID = 0;
-        Color = 0;
-    }
+    {}
     
     BriefObject(int16_t tp, int16_t oid, float sx, float sy, int tset, int tid, int clr, const std::string &ttl)
     {
@@ -1327,6 +1341,12 @@ struct BriefObject
         TileID = tid;
         Color = clr;
         Title = ttl;
+        VP = NULL;
+    }
+    
+    ~BriefObject()
+    {
+        Common::DeleteAndNull(&VP);
     }
 
     bool operator==(const BriefObject &b) const
@@ -2687,6 +2707,8 @@ public:
     void sub_44E07C(TSectorCollision &arg);
     void sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision &loc);
     void ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2);
+    
+    World::ParticleSystem &ParticleSystem() { return _particles; };
 
 public:
     //Data
@@ -2980,6 +3002,8 @@ protected:
     /** On saved game load variables **/
     bool _extraViewEnable; // If you seat in robo gun
     int _extraViewNumber; // robo gun index
+    
+    World::ParticleSystem _particles;
 
 };
 

@@ -306,7 +306,7 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 }
 
 // Add amesh to list
-size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg)
+size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
 {
     __NC_STACK_amesh *amesh = &stack__amesh;
 

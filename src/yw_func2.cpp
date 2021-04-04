@@ -36,7 +36,7 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
 
     NC_STACK_base *model_base = yw->vhcls_models.at( yw->VhclProtos[ yw->brief.ViewingObject.ID ].vp_normal );
-
+    
     model_base->SetVizLimit(16000);
     model_base->SetFadeLength(100);
 
@@ -57,7 +57,10 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos
 
     model_base->SetEulerRotation( a3 + 10, yw->brief.ViewingObjectAngle, 0);
     //printf("Try DRAW %d\n", (int)model_base);
-    model_base->Render(arg); //Draw vehicle
+    
+    NC_STACK_base::CheckOpts(&yw->brief.ViewingObject.VP, model_base);
+    
+    model_base->Render(arg, yw->brief.ViewingObject.VP); //Draw vehicle
 }
 
 void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *pos, baseRender_msg *arg)
@@ -110,7 +113,10 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
 
             lego->SetEulerRotation(rot + 10, yw->brief.ViewingObjectAngle, 0);
             lego->SetPosition( *pos + v7->TForm().SclRot.Transform( inSectorPos ) );
-            lego->Render(arg);
+            
+            NC_STACK_base::CheckOpts(&yw->brief.ViewingObject.VP, lego);
+            
+            lego->Render(arg, yw->brief.ViewingObject.VP);
             
             v30++;
         }

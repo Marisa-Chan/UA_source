@@ -2896,7 +2896,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         bbact->_vp_extra[0].rotate = plasmaMsg->dir;
         bbact->_vp_extra[0].pos = plasmaMsg->pos;
 
-        bbact->_vp_extra[0].vp = bbact->_vp_genesis;
+        bbact->_vp_extra[0].SetVP(bbact->_vp_genesis);
         bbact->_vp_extra[0].flags |= EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE;
 
         bbact->_vp_extra_mode = 1;
@@ -3839,6 +3839,8 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 {
     bact_id = 0x10000;
+    
+    _particles.Clear();
 
     LevelDesc proto;
     bool loadOK = false;

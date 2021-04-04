@@ -33,7 +33,7 @@ public:
     virtual size_t Deinit();
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SaveIntoIFF(IFFile **file);
-    virtual size_t ade_func65(area_arg_65 *arg);
+    virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
 
     NC_STACK_amesh() {
         memset(&stack__amesh, 0, sizeof(stack__amesh));

@@ -89,20 +89,20 @@ public:
         viewPoint = pnt;
     };
 
-    inline static bool Vec3dReadIFF(vec3d &v, IFFile *iff, bool BigEndian)
+    inline static bool Vec3dReadIFF(vec3d *v, IFFile *iff, bool BigEndian)
     {
         bool res = true;
         if (BigEndian)
         {
-            res &= iff->readFloatB(v.x);
-            res &= iff->readFloatB(v.y);
-            res &= iff->readFloatB(v.z);
+            res &= iff->readFloatB(v->x);
+            res &= iff->readFloatB(v->y);
+            res &= iff->readFloatB(v->z);
         }
         else
         {
-            res &= iff->readFloatL(v.x);
-            res &= iff->readFloatL(v.y);
-            res &= iff->readFloatL(v.z);
+            res &= iff->readFloatL(v->x);
+            res &= iff->readFloatL(v->y);
+            res &= iff->readFloatL(v->z);
         }
         return res;
     }

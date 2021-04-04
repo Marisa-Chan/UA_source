@@ -587,7 +587,7 @@ void NC_STACK_base::ChangeScale(const vec3d &v, int flag)
     }
 }
 
-size_t NC_STACK_base::Render(baseRender_msg *arg)
+size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst)
 {
     int v12 = 0;
 
@@ -624,17 +624,39 @@ size_t NC_STACK_base::Render(baseRender_msg *arg)
             _renderMsg.OBJ_SKELETON = _skeleton;
             _renderMsg.adeCount = 0;
 
-            for (NC_STACK_ade *ade : _ADES)
-                ade->ade_func65(&_renderMsg);
+            if (!inst || inst->Bas != this)
+            {
+                for (NC_STACK_ade *ade : _ADES)
+                    ade->ade_func65(&_renderMsg);
+            }
+            else
+            {
+                for (NC_STACK_ade::InstanceOpts *ade : inst->AdeOpts)
+                {
+                    if (ade)
+                        ade->Ade->ade_func65(&_renderMsg, ade);
+                }
+            }
 
             arg->adeCount += _renderMsg.adeCount;
         }
     }
 
-    for (BaseList::iterator it = _KIDS.begin(); it != _KIDS.end(); it++)
+    if (!inst || inst->Bas != this)
     {
-        if ( (*it)->Render(arg) )
-            v12 = 1;
+        for (NC_STACK_base *kd : _KIDS)
+        {
+            if ( kd->Render(arg) )
+                v12 = 1;
+        }
+    }
+    else
+    {
+        for (NC_STACK_base::Instance *kd : inst->KidsOpts)
+        {
+            if ( kd->Bas->Render(arg, kd) )
+                v12 = 1;
+        }
     }
 
     return v12;
@@ -804,4 +826,49 @@ NC_STACK_base *NC_STACK_base::LoadBaseFromFile(const std::string &fname)
     delete mfile;
 
     return result;
+}
+
+
+NC_STACK_base::Instance *NC_STACK_base::GenRenderInstance()
+{
+    Instance *tmp = new Instance(this);
+    
+    tmp->AdeOpts.reserve(_ADES.size());
+    tmp->KidsOpts.reserve(_KIDS.size());
+    
+    for(NC_STACK_base *bs : _KIDS)
+        tmp->KidsOpts.emplace_back(bs->GenRenderInstance());
+    
+    for(NC_STACK_ade *ade : _ADES)
+        tmp->AdeOpts.emplace_back(ade->GenRenderInstance());
+        
+    return tmp;
+}
+
+void NC_STACK_base::CheckOpts(Instance **vpOpts, NC_STACK_base *bas)
+{
+    if (vpOpts && bas)
+    {
+        if (!(*vpOpts))
+        {
+            *vpOpts = bas->GenRenderInstance();
+            return;
+        }
+        
+        if ((*vpOpts)->Bas != bas)
+        {
+            Common::DeleteAndNull(vpOpts);
+            *vpOpts = bas->GenRenderInstance();
+        }
+    }
+}
+
+
+NC_STACK_base::Instance::~Instance()
+{
+    for(Instance *kd : KidsOpts)
+        delete kd;
+    
+    for(NC_STACK_ade::InstanceOpts *opt : AdeOpts)
+        delete opt;
 }

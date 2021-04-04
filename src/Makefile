@@ -97,6 +97,7 @@ OBJS =  \
 	wintimer.cpp\
 	world/analyzer.cpp\
 	world/parsers.cpp\
+	world/nparticle.cpp\
 	world/saveparsers.cpp\
 	wrapal.cpp\
 	yw.cpp\

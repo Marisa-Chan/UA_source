@@ -513,7 +513,7 @@ d3dsMaterial * NC_STACK_3ds::findMaterial(const char *name)
     return NULL;
 }
 
-size_t NC_STACK_3ds::Render(baseRender_msg *arg)
+size_t NC_STACK_3ds::Render(baseRender_msg *arg, Instance * inst)
 {
     int v12 = 0;
 

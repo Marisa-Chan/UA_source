@@ -88,7 +88,7 @@ class NC_STACK_3ds: public NC_STACK_base
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t Render(baseRender_msg *arg);
+    virtual size_t Render(baseRender_msg *arg, Instance * inst);
 
     NC_STACK_3ds();
     virtual ~NC_STACK_3ds();

@@ -56,11 +56,33 @@ enum EVPROTO_FLAG
 
 struct extra_vproto
 {
-    float scale;
+    float scale = 0.0;
     vec3d pos;
     mat3x3 rotate;
-    int flags;
-    NC_STACK_base *vp;
+    int flags = 0;
+    NC_STACK_base::Instance *vp = NULL;
+    
+    ~extra_vproto()
+    {
+        if (vp)
+            delete vp;
+    }
+    
+    void SetVP(NC_STACK_base::Instance *newVP)
+    {
+        Common::DeleteAndNull(&vp);
+        vp = newVP;
+    }
+    
+    void SetVP(NC_STACK_base *bas)
+    {
+        Common::DeleteAndNull(&vp);
+        
+        if (bas)
+            vp = bas->GenRenderInstance();
+        else
+            vp = NULL;
+    }
 };
 
 enum BACT_TGT_TYPE
@@ -486,7 +508,7 @@ public:
     virtual size_t SetPath(bact_arg124 *arg);
 
     NC_STACK_ypabact();
-    virtual ~NC_STACK_ypabact() {};
+    virtual ~NC_STACK_ypabact();
     
     virtual const std::string &ClassName() const {
         return description._classname;
@@ -526,7 +548,7 @@ public:
     virtual void setBACT_airconst(int);
     virtual void setBACT_landingOnWait(int);
     virtual void setBACT_yourLastSeconds(int);
-    virtual void setBACT_visProto(NC_STACK_base *);
+    virtual void SetVP(NC_STACK_base *vp);
     virtual void setBACT_aggression(int);
     virtual void setBACT_extraViewer(int);
     virtual void setBACT_alwaysRender(int);
@@ -741,7 +763,7 @@ public:
 
     int _oflags;
     NC_STACK_ypaworld *_yw;
-    NC_STACK_base *_current_vp;
+    NC_STACK_base::Instance *_current_vp = NULL;
     World::BactList _attackersList;
     int _yls_time;  
     

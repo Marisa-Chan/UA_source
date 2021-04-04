@@ -123,6 +123,19 @@ public:
         UF_XZ  = (UF_X | UF_Z),
         UF_YZ  = (UF_Y | UF_Z)
     };
+    
+    class Instance
+    {
+    public:
+        Instance(NC_STACK_base *bas) : Bas(bas) {};
+        virtual ~Instance();        
+        
+    public:
+        NC_STACK_base *Bas = NULL;
+        std::vector<Instance *> KidsOpts;
+        std::vector<NC_STACK_ade::InstanceOpts *> AdeOpts;
+    };
+    
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
@@ -140,7 +153,7 @@ public:
     virtual void SetScale(const vec3d &v, int flag = UF_XYZ);
     virtual void ChangeScale(const vec3d &v, int flag = UF_XYZ);
     
-    virtual size_t Render(baseRender_msg *arg);
+    virtual size_t Render(baseRender_msg *arg, Instance * inst = NULL);
 
     virtual ~NC_STACK_base() {};
     
@@ -191,6 +204,9 @@ public:
     vec3d GetScale();
     vec3d GetEulerAngles();
     vec3i GetIntEulerAngles();
+    
+    virtual Instance *GenRenderInstance();
+    static void CheckOpts(Instance **vpOpts, NC_STACK_base *bas);
 
 protected:
     int ReadIFFTagSTRC(IFFile *mfile);

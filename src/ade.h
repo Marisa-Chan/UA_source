@@ -21,12 +21,23 @@ struct ADE_STRC
 class NC_STACK_ade: public NC_STACK_nucleus
 {
 public:
+    class InstanceOpts
+    {
+    public:
+        InstanceOpts(NC_STACK_ade *ade) : Ade(ade) {};
+        virtual ~InstanceOpts() {};
+        
+    public:
+        NC_STACK_ade *Ade = NULL;
+    };
+    
+public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SavingIntoIFF(IFFile **file);
     virtual size_t ade_func64(AdeList &lst);
-    virtual size_t ade_func65(area_arg_65 *arg);
+    virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
 
     NC_STACK_ade() {
         flags = 0;
@@ -70,6 +81,8 @@ public:
     virtual void setADE_depthFade(int);
     virtual void setADE_point(int);
     virtual void setADE_poly(int);
+    
+    virtual InstanceOpts *GenRenderInstance();
 
     //Data
     static const Nucleus::ClassDescr description;

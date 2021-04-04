@@ -5881,6 +5881,8 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 {
     int ok = 0;
     LevelDesc mapp;
+    
+    _particles.Clear();
 
     if ( LevelCommonLoader(&mapp, arg->lvlID, arg->field_4) )
     {
@@ -6510,6 +6512,8 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
     _extraViewEnable = false;
 
     LevelDesc mapp;
+    
+    _particles.Clear();
 
     if ( LevelCommonLoader(&mapp, lvlnum, 0) )
     {

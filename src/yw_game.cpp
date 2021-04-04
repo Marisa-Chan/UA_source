@@ -1925,7 +1925,7 @@ void sub_4D7F60(NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_ms
 
         yw->additionalBeeBox->SetPosition(pos);
 
-        if ( yw->additionalBeeBox->Render(bs77) )
+        if ( yw->additionalBeeBox->Render(bs77, NULL) )
         {
             sct->dword8 = 1;
         }
@@ -1982,7 +1982,10 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
 
                     bld->SetScale(scel, NC_STACK_base::UF_Y); //Scale only Y
                     bld->SetPosition(pos);
-                    bld->Render(bs77);
+                    
+                    NC_STACK_base::CheckOpts( &pcell->BldVPOpts.At(xx, zz), bld );
+                    
+                    bld->Render(bs77, pcell->BldVPOpts.At(xx, zz));
 
                     bld->SetStatic(true);
                 }
@@ -1991,7 +1994,10 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
                     NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[ yw->build_hp_ref[ pcell->buildings_health[xx][zz] ] ] ].base;
 
                     bld->SetPosition(pos);
-                    bld->Render(bs77);
+                    
+                    NC_STACK_base::CheckOpts( &pcell->BldVPOpts.At(xx, zz), bld );
+                    
+                    bld->Render(bs77, pcell->BldVPOpts.At(xx, zz));
                 }
             }
         }
@@ -2017,7 +2023,7 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
         if (System::IniConf::GfxNewSky.Get<bool>())
             rndr_params->flags = GFX::RFLAGS_SKY;
 
-        yw->sky_loaded_base->Render(rndr_params);
+        yw->sky_loaded_base->Render(rndr_params, NULL);
 
         rndr_params->maxZ = v6;
         rndr_params->flags = flags;
@@ -2099,7 +2105,7 @@ void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float po
                                                           0, 1.0,    0,
                                                         v29, 0.0,  v30);
 
-                    wall_base->Render(arg);
+                    wall_base->Render(arg, NULL);
                 }
             }
         }
@@ -2212,7 +2218,7 @@ void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
             NC_STACK_base *bs = sb_0x4d7c08__sub3__sub0(yw, sct, sct2, h, h2);
             if ( bs )
-                bs->Render(arg);
+                bs->Render(arg, NULL);
         }
     }
 
@@ -2228,7 +2234,7 @@ void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
             NC_STACK_base *bs = sb_0x4d7c08__sub3__sub1(yw, sct, sct2, h, h2);
             if ( bs )
-                bs->Render(arg);
+                bs->Render(arg, NULL);
 
         }
     }
@@ -2310,6 +2316,25 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 
         yw->field_1B6A = rndrs.adeCount;
         yw->field_1b6c = rndrs.rndrStack->getSize();
+        
+        
+        area_arg_65 rrg;
+        rrg.ownerID = 0;
+        rrg.timeStamp = bs64->TimeStamp;
+        rrg.frameTime = bs64->DTime;
+        rrg.minZ = 1.0;
+        rrg.maxZ = rndrs.maxZ;
+        rrg.rndrStack = &NC_STACK_base::renderStack;
+        rrg.view = TF::Engine.GetViewPoint();
+        rrg.owner = NULL;
+        rrg.flags = 0;
+
+        rrg.OBJ_SKELETON = NULL;
+        rrg.adeCount = 0;
+        
+        yw->ParticleSystem().UpdateRender(&rrg, bs64->DTime);
+        
+        
 
         GFX::Engine.BeginScene();
 
@@ -4778,7 +4803,7 @@ void recorder_read_framedata(recorder *rcrd)
                 trec_bct *oinf = &rcrd->oinf[i];
 
                 rcrd->mfile->readU32L(oinf->bact_id);
-                TF::Engine.Vec3dReadIFF(oinf->pos, rcrd->mfile, false);
+                TF::Engine.Vec3dReadIFF(&oinf->pos, rcrd->mfile, false);
                 rcrd->mfile->readS8(oinf->rot_x);
                 rcrd->mfile->readS8(oinf->rot_y);
                 rcrd->mfile->readS8(oinf->rot_z);
@@ -4946,27 +4971,27 @@ void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *
     switch ( oinf->vp_id )
     {
     case 1:
-        bact->_current_vp = bact->_vp_normal;
+        bact->SetVP(bact->_vp_normal);
         break;
 
     case 2:
-        bact->_current_vp = bact->_vp_fire;
+        bact->SetVP(bact->_vp_fire);
         break;
 
     case 3:
-        bact->_current_vp = bact->_vp_wait;
+        bact->SetVP(bact->_vp_wait);
         break;
 
     case 4:
-        bact->_current_vp = bact->_vp_dead;
+        bact->SetVP(bact->_vp_dead);
         break;
 
     case 5:
-        bact->_current_vp = bact->_vp_megadeth;
+        bact->SetVP(bact->_vp_megadeth);
         break;
 
     case 6:
-        bact->_current_vp = bact->_vp_genesis;
+        bact->SetVP(bact->_vp_genesis);
         break;
 
     default:

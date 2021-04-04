@@ -739,7 +739,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
     if ( arg->newStatus == BACT_STATUS_DEAD )
     {
-        _current_vp = _vp_dead;
+        SetVP(_vp_dead);
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
@@ -750,14 +750,14 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
     if ( arg->newStatus == BACT_STATUS_NORMAL )
     {
-        _current_vp = _vp_normal;
+        SetVP(_vp_normal);
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 0);
     }
 
     if ( arg->unsetFlags == BACT_STFLAG_DEATH2 )
     {
-        _current_vp = _vp_normal;
+        SetVP(_vp_normal);
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 0);
     }
@@ -766,7 +766,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
     {
         _status = BACT_STATUS_DEAD;
 
-        _current_vp = _vp_megadeth;
+        SetVP(_vp_megadeth);
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 

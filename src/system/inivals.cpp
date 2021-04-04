@@ -185,6 +185,9 @@ Common::Ini::Key IniConf::NetKickoff("net.kickoff", Common::Ini::KT_DIGIT, (int3
 // Tune
 Common::Ini::Key IniConf::TuneWeaponRadius("tune.weapon_radius", Common::Ini::KT_BOOL);
 
+// Particles
+Common::Ini::Key IniConf::ParticlesLimit("particles.limit", Common::Ini::KT_DIGIT, (int32_t)5000);
+
 
 void IniConf::Init()
 {
@@ -359,6 +362,8 @@ void IniConf::Init()
 
         , &TuneWeaponRadius
         , &GfxColorEffects
+        
+        , &ParticlesLimit
     };
 }
     

@@ -255,7 +255,7 @@ size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
 }
 
 // Add area to list
-size_t NC_STACK_area::ade_func65(area_arg_65 *arg)
+size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
 {
     __NC_STACK_area *area = &stack__area;
 //    polysDatSub *datSub = &arg->argSTK_cur->datSub;

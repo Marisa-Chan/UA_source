@@ -1841,6 +1841,8 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
     brief.clear();
 
     brief.SelectedObjID = -1;
+    
+    _particles.Clear();
 
     SFXEngine::SFXe.StopMusicTrack();
 
@@ -1992,6 +1994,8 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5__sub0(LevelDesc *mappr
 bool NC_STACK_ypaworld::InitDebrief()
 {
     brief.clear();
+    
+    _particles.Clear();
 
     if ( !copyof_ownermap || !copyof_typemap )
     {

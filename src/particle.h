@@ -10,11 +10,16 @@ class NC_STACK_particle;
 class NC_STACK_particle: public NC_STACK_ade
 {
 public:
-
-    struct Particle
+    
+    class SpawnOpts : public InstanceOpts
     {
-        vec3d pos;
-        vec3d vec;
+    public:
+        SpawnOpts(NC_STACK_ade *ade) : InstanceOpts(ade) {};
+        virtual ~SpawnOpts() {};
+        
+        int32_t Time = 0;
+        int32_t TimeStamp = -1;
+        int32_t Age = 0;
     };
 
     struct StartEnd
@@ -22,73 +27,20 @@ public:
         vec3d start;
         vec3d end;
     };
-
-    struct Context
-    {
-        Particle *tp2;
-        Particle *tp2_end;
-        Particle *field_8;
-        Particle *field_C;
-        int OldestAge;
-        int time;
-        int field_18;
-        int timeStamp;
-        int age;
-    };
-
-    struct __NC_STACK_particle
-    {
-        NC_STACK_skeleton *particle_sklt;
-        UAskeleton::Data *particle_sklt_intern;
-        int field_8;
-        int field_c;
-        int ADEs_count;
-        int field_14;
-        NC_STACK_ade *ADEs[12];
-        StartEnd accel;
-        vec3d accelDelta;
-        StartEnd magnify;
-        vec3d magnifyDelta;
-        int field_84;
-        int field_88;
-        int field_8c;
-        float field_90;
-        float field_94;
-        float field_98;
-        float field_9c;
-        float field_a0;
-        int tp1_cnt;
-        int ctxLifeTime;
-        int ctxGenStart;
-        int ctxGenEnd;
-        Context *tp1;
-        Context *tp1_end;
-        Context *tp1_next;
-    };
-
-
-
-
+    
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SavingIntoIFF(IFFile **file);
-    virtual size_t ade_func65(area_arg_65 *arg);
-    virtual void SetAccel(StartEnd *arg);
-    virtual void SetMagnify(StartEnd *arg);
-    virtual void particle_func130(StartEnd *out);
-    virtual void particle_func131(StartEnd *out);
-    virtual size_t particle_func132(NC_STACK_area **ade);
-    virtual NC_STACK_ade * particle_func133(int *id);
-    virtual size_t particle_func134(int *iid);
-    virtual size_t particle_func135(int *iid);
+    virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
+    virtual void SetAccel(const vec3d &start, const vec3d &end);
+    virtual void SetMagnify(const vec3d &start, const vec3d &end);
+    virtual void AddLifeStage(NC_STACK_area *ade);
+    virtual NC_STACK_ade * ExtractLifeStage(uint32_t id);
 
     NC_STACK_particle()
-    {
-        memset(&stack__particle, 0, sizeof(stack__particle));
-        updateflags = 0;
-        msetter = false;
-    };
+    {};
+    
     virtual ~NC_STACK_particle() {};
     
     virtual const std::string &ClassName() const {
@@ -98,11 +50,6 @@ public:
     static NC_STACK_nucleus * newinstance()
     {
         return new NC_STACK_particle();
-    };
-
-    enum PRTCL_FLAG
-    {
-        PRTCL_FLAG_DPTHFADE = 1
     };
 
     enum PRTCL_ATT
@@ -124,50 +71,78 @@ public:
     virtual void setADE_depthFade(int);
     virtual void setADE_point(int);
 
-    virtual void setPRTCL_startSpeed(int);
-    virtual void setPRTCL_numContexts(int);
-    virtual void setPRTCL_contextLifetime(int);
-    virtual void setPRTCL_birthRate(int);
-    virtual void setPRTCL_lifeTime(int);
-    virtual void setPRTCL_pADE(NC_STACK_ade *);
-    virtual void setPRTCL_startSize(int);
-    virtual void setPRTCL_endSize(int);
-    virtual void setPRTCL_startGen(int);
-    virtual void setPRTCL_endGen(int);
-    virtual void setPRTCL_noise(int);
-    virtual void setPRTCL_ppADE(NC_STACK_ade **);
+    virtual void SetStartSpeed(int);
+    virtual void SetNumContexts(int);
+    virtual void SetContextLifeTime(int);
+    virtual void SetGenRate(int);
+    virtual void SetParticleLifeTime(int);
+    virtual void SetParticlesOneStage(NC_STACK_ade *);
+    virtual void SetSizeStart(int);
+    virtual void SetSizeEnd(int);
+    virtual void SetGenStartTime(int);
+    virtual void SetGenEndTime(int);
+    virtual void SetNoisePower(int);
+    virtual void SetParticlesStages(const std::vector<NC_STACK_ade *> &);
 
-    void startSetter();
-    bool endSetter(bool recalc = true);
+    virtual int GetStartSpeed();
+    virtual int GetNumContexts();
+    virtual int GetContextLifeTime();
+    virtual int GetGenRate();
+    virtual int GetParticleLifeTime();
+    virtual NC_STACK_ade *GetParticleOneStage();
+    virtual int GetSizeStart();
+    virtual int GetSizeEnd();
+    virtual int GetGenStartTime();
+    virtual int GetGenEndTime();
+    virtual int GetNoisePower();
+    virtual std::vector<NC_STACK_ade *> &GetParticlesStages();
 
-    virtual int getPRTCL_startSpeed();
-    virtual int getPRTCL_numContexts();
-    virtual int getPRTCL_contextLifetime();
-    virtual int getPRTCL_birthRate();
-    virtual int getPRTCL_lifeTime();
-    virtual NC_STACK_ade *getPRTCL_pADE();
-    virtual int getPRTCL_startSize();
-    virtual int getPRTCL_endSize();
-    virtual int getPRTCL_startGen();
-    virtual int getPRTCL_endGen();
-    virtual int getPRTCL_noise();
-    virtual NC_STACK_ade **getPRTCL_ppADE();
-
-    int particle_func5__sub0(IFFile *mfile);
+    int ReadIFFAtts(IFFile *mfile);
+    
+    virtual InstanceOpts *GenRenderInstance() override;
 
 private:
-    void refreshParticle();
+    void UpdateScaleDelta();
+    void UpdateLifeStages();
+    void UpdateAccelMagnify();
+    void _SetLifeStages(const std::vector<NC_STACK_ade *> &);
 
-
+public:
+    static float Rand();
+    static vec3d RandVec();
+    
+private:
+    static std::array<float, 1024> _randomTable;
+    static uint32_t _randomIndex;
+    
     //Data
 public:
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_particle stack__particle;
-
-private:
-    int updateflags;
-    bool msetter; // Mass setter
+public:
+    bool _depthFade = false;
+    size_t _onVerticeID = 0;
+    int _lifePerAde = 1;
+    std::vector<NC_STACK_ade *> _lifeStagesAdes;
+    vec3d _accelStart;
+    vec3d _accelEnd;
+    vec3d _accelDelta;
+    vec3d _magnifyStart;
+    vec3d _magnifyEnd;
+    vec3d _magnifyDelta;
+    int32_t _lifeTime = 3000; // Particle
+    int32_t _genRate = 10;
+    int32_t _genPause = 0;
+    float _scaleStart = 30.0;
+    float _scaleEnd = 30.0;
+    float _scaleDelta = 0;
+    float _startSpeed = 50.0;
+    float _noisePower = 0.0;
+    int32_t _numContexts = 1; // Only for store
+    int32_t _genLifeTime = 1000; // Generator cycle time until next
+    int32_t _genStart = 0;
+    int32_t _genEnd = 1000;
+    
 };
 
 #endif // PARTICLE_H_INCLUDED

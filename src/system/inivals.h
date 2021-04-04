@@ -187,6 +187,8 @@ public:
     
     static Common::Ini::Key TuneWeaponRadius;
     
+    static Common::Ini::Key ParticlesLimit;
+    
 private:
     static Common::Ini::PKeyList _varList;    
 };
