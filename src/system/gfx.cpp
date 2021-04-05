@@ -1074,7 +1074,7 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
             else
                 _rendStates2[DESTBLEND] = 3;
             
-            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _rendStates2[SHADEMODE] = 1;
             _rendStates2[STIPPLEENABLE] = 0;
 
             float transDist = System::IniConf::GfxSkyDistance.Get<int>();
