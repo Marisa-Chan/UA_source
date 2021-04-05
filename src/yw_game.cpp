@@ -2334,8 +2334,6 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
         
         yw->ParticleSystem().UpdateRender(&rrg, bs64->DTime);
         
-        
-
         GFX::Engine.BeginScene();
 
         if (System::IniConf::GfxNewSky.Get<bool>())

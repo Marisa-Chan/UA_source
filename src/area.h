@@ -15,7 +15,7 @@ struct __NC_STACK_area
     int flags;
     char colorVal;
     char tracyVal;
-    char shadeVal;
+    int32_t shadeVal;
 //    char field_F;
 //    int field_10;
     int16_t polnum;

@@ -423,7 +423,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
                 {
                     datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
                 }
-                else if ( v8 == datSub->vertexCount )
+                else if ( v8 == datSub->vertexCount && !System::IniConf::GfxNewSky.Get<bool>() )
                 {
                     datSub->renderFlags = 0;
                 }

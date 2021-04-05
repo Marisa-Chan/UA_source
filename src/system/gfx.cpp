@@ -95,7 +95,7 @@ GFXEngine::GFXEngine()
     _dither = 0;
     _filter = 0;
     _antialias = 0;
-    _alpha = 0;
+    _alpha = 255;
     _zbuf_when_tracy = 0;
     _colorkey = 0;
 
@@ -1037,7 +1037,7 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
         }
 
         for (int i = 0; i < polysDat->vertexCount; i++)
-            vtx[i].a = _alpha;
+            vtx[i].a = (float)_alpha / 255.0;
     }
     else if ( polysDat->renderFlags & RFLAGS_ZEROTRACY )
     {
@@ -1066,10 +1066,15 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
         {
             _rendStates2[ZWRITEENABLE] = 1;
             _rendStates2[ALPHABLENDENABLE] = 1;
-            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _rendStates2[SHADEMODE] = 1;//D3DSHADE_FLAT;
+            _rendStates2[TEXTUREMAPBLEND] = 2;
+            _rendStates2[SRCBLEND] = 2;
+            
+            if (polysDat->renderFlags & RFLAGS_LUMTRACY)
+                _rendStates2[DESTBLEND] = 1;
+            else
+                _rendStates2[DESTBLEND] = 3;
+            
+            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
             _rendStates2[STIPPLEENABLE] = 0;
 
             float transDist = System::IniConf::GfxSkyDistance.Get<int>();
@@ -1082,6 +1087,7 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
                     float prc = (polysDat->distance[i] - transDist) / transLen;
                     if (prc > 1.0)
                         prc = 1.0;
+
                     vtx[i].a = (1.0 - prc);
                 }
             }

@@ -637,7 +637,7 @@ size_t NC_STACK_3ds::Render(baseRender_msg *arg, Instance * inst)
                         {
                             datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
                         }
-                        else if ( v8 == datSub->vertexCount )
+                        else if ( v8 == datSub->vertexCount && !System::IniConf::GfxNewSky.Get<bool>())
                         {
                             datSub->renderFlags = 0;
                         }
