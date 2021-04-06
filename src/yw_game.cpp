@@ -494,26 +494,22 @@ void sb_0x44ca90__sub5(NC_STACK_ypaworld *yw)
 
 void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
 {
-    for (size_t i = 0; i < mapp->Palettes.size(); i++)
+    if (!mapp->Palettes.empty())
     {
-        if (!mapp->Palettes[i].empty())
+        if (!mapp->Palettes[0].empty())
         {
             NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>({
-                {NC_STACK_rsrc::RSRC_ATT_NAME, mapp->Palettes[i]},
+                {NC_STACK_rsrc::RSRC_ATT_NAME, mapp->Palettes[0]},
                 {NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, (int32_t)1}});
 
             if (ilbm)
             {
-                if ( i )
-                    GFX::Engine.display_func261(i, *ilbm->getBMD_palette());
-                else
-                    GFX::Engine.SetPalette(*ilbm->getBMD_palette());
-
-                delete_class_obj(ilbm);
+                GFX::Engine.SetPalette(*ilbm->getBMD_palette());
+                Nucleus::Delete(ilbm);
             }
             else
             {
-                ypa_log_out("WARNING: slot #%d [%s] init failed!\n", i, mapp->Palettes[i].c_str());
+                ypa_log_out("WARNING: slot #%d [%s] init failed!\n", 0, mapp->Palettes[0].c_str());
             }
         }
     }

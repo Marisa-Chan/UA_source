@@ -45,6 +45,13 @@ public:
     static Common::Ini::Key GfxDisplay2;
     
     static Common::Ini::Key GfxColorEffects;
+    static Common::Ini::Key GfxColorEffPower1;
+    static Common::Ini::Key GfxColorEffPower2;
+    static Common::Ini::Key GfxColorEffPower3;
+    static Common::Ini::Key GfxColorEffPower4;
+    static Common::Ini::Key GfxColorEffPower5;
+    static Common::Ini::Key GfxColorEffPower6;
+    static Common::Ini::Key GfxColorEffPower7;
     
     static Common::Ini::Key InputDebug;
     static Common::Ini::Key InputTimer;

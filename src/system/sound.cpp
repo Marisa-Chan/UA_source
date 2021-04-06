@@ -860,26 +860,22 @@ void SFXEngine::sb_0x424c74__sub2()
 
 void SFXEngine::sb_0x424c74__sub3()
 {
+    float pwr = 1.0;
+    std::vector<GFX::ColorFx> fxes;
+
     int i = 0;
-    int v16 = 256;
-
-    int v10[9];
-    int v12[9];
-
     for (i = 0; i < audio_num_palfx; i++)
     {
         userdata_sample_info *v3 = palFXs[i];
 
         if ( !v3 )
             break;
+        
+        float magpwr = v3->palMag * GFX::Engine.GetColorEffectPower(v3->paletteFX->slot);
 
-        v16 -= v3->palMag;
-
-        v10[i] = v3->paletteFX->slot;
-
-        v12[i] = v3->palMag * 256.0;
-
-        v16 -= v12[i];
+        pwr -= magpwr;
+        
+        fxes.emplace_back(v3->paletteFX->slot, magpwr);
     }
 
     if ( i )
@@ -894,20 +890,10 @@ void SFXEngine::sb_0x424c74__sub3()
         dword_546F0C = 1;
     }
 
-    if ( v16 > 0 )
-    {
-        v10[i] = 0;
-        v12[i] = v16;
+    if ( pwr > 0.0 )
+        fxes.emplace_back(0, pwr);
 
-        i++;
-    }
-
-    GFX::rstr_262_arg arg262;
-    arg262.slot = v10;
-    arg262.cnt = i;
-    arg262.weight = v12;
-
-    GFX::Engine.display_func262(&arg262);
+    GFX::Engine.SetColorEffectsPowers(fxes);
 }
 
 void SFXEngine::sb_0x424c74__sub4()

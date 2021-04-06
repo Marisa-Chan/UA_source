@@ -156,11 +156,13 @@ struct rstr_218_arg
     Common::FRect rect2;
 };
 
-struct rstr_262_arg
+struct ColorFx
 {
-    int cnt;
-    int *slot;
-    int *weight;
+    int Id = 0;
+    float Pwr = 1.0;
+    
+    ColorFx() {};
+    ColorFx(int id, float pwr) : Id(id), Pwr(pwr) {};
 };
 
 struct displ_arg263
@@ -374,15 +376,12 @@ public:
     virtual void raster_func221(const Common::Rect &arg);
     virtual void BeginFrame();
     virtual void EndFrame();
-    virtual void display_func261(int ID, UA_PALETTE &pal, int from, int num);
-    virtual void display_func261(int ID, UA_PALETTE &pal);
-    virtual void display_func262(rstr_262_arg *arg);
+    virtual void SetColorEffectsPowers(const std::vector<ColorFx> &arg);
 
     virtual bool AllocTexture(ResBitmap *arg);
     virtual void FreeTexture(ResBitmap *arg);
     virtual void display_func271(IDVPair *stak);
     virtual void display_func272(IDVPair *);
-    virtual UA_PALETTE * display_func273(int paletteId);
     virtual void SaveScreenshot(const std::string & screenName);
     virtual void windd_func320(IDVPair *);
     virtual void windd_func321(IDVPair *);
@@ -435,8 +434,6 @@ public:
     void setFrustumClip(float near, float far);
 
     static bool compare(polysDat *a, polysDat *b);
-    
-    void win3dInitialisation();
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
     virtual SDL_PixelFormat *GetScreenFormat();
@@ -448,19 +445,20 @@ public:
     virtual bool ChangeResolution(Common::Point res, bool windowed = false);
     
     void fpsLimitter(int value);
+    
+    float GetColorEffectPower(int id);
 
 protected:
     void initPolyEngine();
     void initPixelFormats();
     void SetRenderStates(int arg);
-    void sb_0x43b518(polysDat *polysDat, int a5, int a6);
+    void Rendering3DStuff(polysDat *polysDat, bool renderTransparent);
     void RenderTransparent();
     void DrawScreenText();
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
     void DrawTextEntry(const ScreenText *txt);
 
     void win3d_func209__sub0(char *cmdline, char **arr);
-    void win3d_func262__sub0(int a2, int *a3, int *a4);
     void win3d_func274__sub0(FSMgr::FileHandle *fil);
 
     static SDL_Cursor *wrapLoadCursor(const char *name);
@@ -473,6 +471,7 @@ protected:
     void ApplyResolution();
 
     bool SetResolution(Common::Point res);
+    
 
 public:
     //Data
@@ -505,7 +504,6 @@ public:
 
     // From bigdata
     std::deque<polysDat *> _pending;
-    float _greyColors[9][3];
     // \From bigdata
 
     int _dither;
@@ -541,7 +539,6 @@ public:
     float _field_558 = 0;
     
     UA_PALETTE _palette;
-    std::array<UA_PALETTE, 8> _field_300;
     
 protected:
     // Display class

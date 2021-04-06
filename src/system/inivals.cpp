@@ -36,6 +36,14 @@ Common::Ini::Key IniConf::GfxDisplay("gfx.display", Common::Ini::KT_WORD);
 Common::Ini::Key IniConf::GfxDisplay2("gfx.display2", Common::Ini::KT_WORD);
 
 Common::Ini::Key IniConf::GfxColorEffects("gfx.color_effects", Common::Ini::KT_DIGIT, (int32_t)0);
+Common::Ini::Key IniConf::GfxColorEffPower1("gfx.color_eff_pwr[1]", Common::Ini::KT_DIGIT, (int32_t)100);
+Common::Ini::Key IniConf::GfxColorEffPower2("gfx.color_eff_pwr[2]", Common::Ini::KT_DIGIT, (int32_t)100);
+Common::Ini::Key IniConf::GfxColorEffPower3("gfx.color_eff_pwr[3]", Common::Ini::KT_DIGIT, (int32_t)100);
+Common::Ini::Key IniConf::GfxColorEffPower4("gfx.color_eff_pwr[4]", Common::Ini::KT_DIGIT, (int32_t)100);
+Common::Ini::Key IniConf::GfxColorEffPower5("gfx.color_eff_pwr[5]", Common::Ini::KT_DIGIT, (int32_t)100);
+Common::Ini::Key IniConf::GfxColorEffPower6("gfx.color_eff_pwr[6]", Common::Ini::KT_DIGIT, (int32_t)100);
+Common::Ini::Key IniConf::GfxColorEffPower7("gfx.color_eff_pwr[7]", Common::Ini::KT_DIGIT, (int32_t)100);
+
 
 // Input Engine
 Common::Ini::Key IniConf::InputDebug("input.debug", Common::Ini::KT_BOOL);
@@ -362,6 +370,13 @@ void IniConf::Init()
 
         , &TuneWeaponRadius
         , &GfxColorEffects
+        , &GfxColorEffPower1
+        , &GfxColorEffPower2
+        , &GfxColorEffPower3
+        , &GfxColorEffPower4
+        , &GfxColorEffPower5
+        , &GfxColorEffPower6
+        , &GfxColorEffPower7
         
         , &ParticlesLimit
     };

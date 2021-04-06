@@ -69,12 +69,6 @@ GFXEngine::GFXEngine()
     for(SDL_Color &c : _palette)
         c = {0, 0, 0, 0};
     
-    for(UA_PALETTE &p : _field_300)
-    {
-        for(SDL_Color &c : p)
-            c = {0, 0, 0, 0};
-    }
-    
     _forcesoftcursor = 0;
     _field_38 = 0;
     _txt16bit = 0;
@@ -84,13 +78,6 @@ GFXEngine::GFXEngine()
     _flags = 0;
 
     _pending.clear();
-
-    for(int i = 0; i < 9; i++)
-    {
-        _greyColors[i][0] = 0.0;
-        _greyColors[i][1] = 0.0;
-        _greyColors[i][2] = 0.0;
-    }
 
     _dither = 0;
     _filter = 0;
@@ -302,47 +289,6 @@ void GFXEngine::DrawScreenText()
     }
 
     _font.entries.clear();
-}
-
-void GFXEngine::win3dInitialisation()
-{
-    _pending.clear();
-
-    for (int i = 0; i < 8; i++)
-    {
-        uint32_t color = 0;
-        switch(i)
-        {
-        case 0:
-        case 4:
-        case 5:
-        case 6:
-            color = 0xFFFFFF;
-            break;
-        case 1:
-            color = 0xFF0000;
-            break;
-        case 2:
-            color = 0x0000FF;
-            break;
-        case 3:
-            color = 0x00FF80;
-            break;
-        case 7:
-            color = 0x00FFC0;
-            break;
-        default:
-            break;
-        }
-
-        _greyColors[i][0] = ((color >> 16) & 0xFF) / 255.0;
-        _greyColors[i][1] = ((color >> 8) & 0xFF) / 255.0;
-        _greyColors[i][2] = (color & 0xFF) / 255.0;
-    }
-
-    _greyColors[8][0] = 1.0;
-    _greyColors[8][1] = 1.0;
-    _greyColors[8][2] = 1.0;
 }
 
 void GFXEngine::initPixelFormats()
@@ -581,7 +527,7 @@ size_t GFXEngine::func0(IDVList &stak)
     else
         _alpha = 128;
 
-    win3dInitialisation();
+    _pending.clear();
 
     ApplyResolution();
 
@@ -915,7 +861,7 @@ void GFXEngine::SetRenderStates(int setAll)
 }
 
 
-void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
+void GFXEngine::Rendering3DStuff(polysDat *in, bool renderTransparent)
 {
     polysDatSub *polysDat = &in->datSub;
 
@@ -934,7 +880,7 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
 
     //Store for rendering later ( from 214 method )
     if ( !(polysDat->renderFlags & RFLAGS_FALLOFF) )
-        if ( polysDat->renderFlags & 0x30 && !a6 )
+        if ( (polysDat->renderFlags & (RFLAGS_ZEROTRACY | RFLAGS_LUMTRACY)) && !renderTransparent )
         {
             _pending.push_back( in );
             return;
@@ -1110,7 +1056,7 @@ void GFXEngine::sb_0x43b518(polysDat *in, int a5, int a6)
 
 size_t GFXEngine::raster_func206(polysDat *arg)
 {
-    sb_0x43b518(arg, 0, 0);
+    Rendering3DStuff(arg, false);
 
     return 1;
 }
@@ -1448,7 +1394,7 @@ void GFXEngine::RenderTransparent()
 
             for (std::deque<polysDat *>::iterator it = _pending.begin(); it != _pending.end(); it++)
             {
-                sb_0x43b518((*it), 1, 1);
+                Rendering3DStuff((*it), true);
             }
 
             _pending.clear();
@@ -1542,105 +1488,31 @@ void GFXEngine::EndFrame()
     System::Flip();
 }
 
-
-void GFXEngine::display_func261(int ID, UA_PALETTE &pal, int from, int num)
-{
-    for (int i = 0; i < num; i++)
-        _field_300[ID][from + i] = pal[i];
-}
-
-void GFXEngine::display_func261(int ID, UA_PALETTE &pal)
-{
-    _field_300[ID] = pal;
-}
-
-void GFXEngine::win3d_func262__sub0(int a2, int *a3, int *a4)
-{
-    float cl1 = 0.0;
-    float cl2 = 0.0;
-    float cl3 = 0.0;
-
-    if ( a2 )
+void GFXEngine::SetColorEffectsPowers(const std::vector<ColorFx> &arg)
+{    
+    if (arg.empty())
     {
-        float tclr1 = 0.0;
-        float tclr2 = 0.0;
-        float tclr3 = 0.0;
-
-        for(int i = 0; i < a2; i++)
-        {
-            float v15 = a4[i] / 255.0;
-            int v14 = a3[i];
-
-            tclr1 += _greyColors[v14][0] * v15;
-            tclr2 += _greyColors[v14][1] * v15;
-            tclr3 += _greyColors[v14][2] * v15;
-        }
-
-        cl1 = tclr1;
-        cl2 = tclr2;
-        cl3 = tclr3;
+        _normClr = vec3d(1.0, 1.0, 1.0);
+        _invClr = vec3d(0.0, 0.0, 0.0);
     }
-    if ( cl1 > 1.0 )
-        cl1 = 1.0;
-    if ( cl2 > 1.0 )
-        cl2 = 1.0;
-    if ( cl3 > 1.0 )
-        cl3 = 1.0;
-
-    _greyColors[8][0] = cl1;
-    _greyColors[8][1] = cl2;
-    _greyColors[8][2] = cl3;
-}
-
-void GFXEngine::display_func262(rstr_262_arg *arg)
-{
-    win3d_func262__sub0(arg->cnt, arg->slot, arg->weight);
-    
-    for (int i = 0; i < 256; i++)
+    else
     {
-        int tmpr = 0;
-        int tmpg = 0;
-        int tmpb = 0;
+        _normClr = vec3d(0.0, 0.0, 0.0);
+        _invClr = vec3d(0.0, 0.0, 0.0);
 
-        for (int j = 0; j < arg->cnt; j++)
+        for (ColorFx fx : arg)
         {
-            UA_PALETTE &pal = _field_300[ arg->slot[j] ];
-            tmpr += arg->weight[j] * pal[i].r;
-            tmpg += arg->weight[j] * pal[i].g;
-            tmpb += arg->weight[j] * pal[i].b;
-        }
-
-        tmpr >>= 8;
-        tmpg >>= 8;
-        tmpb >>= 8;
-
-        if (tmpr > 255)
-            tmpr = 255;
-        if (tmpg > 255)
-            tmpg = 255;
-        if (tmpb > 255)
-            tmpb = 255;
-
-        _palette[i].r = tmpr;
-        _palette[i].g = tmpg;
-        _palette[i].b = tmpb;
-    }
-    
-    _normClr = vec3d(0.0, 0.0, 0.0);
-    _invClr = vec3d(0.0, 0.0, 0.0);
-    
-    for (int j = 0; j < arg->cnt; j++)
-    {
-        switch(arg->slot[j])
-        {
-            case 4:
-            case 5:
-            case 7:
-                _invClr += _clrEff.at( arg->slot[j] ) * ((float)arg->weight[j] / 255.0);
-                break;
-            default:
-                _normClr += _clrEff.at( arg->slot[j] ) * ((float)arg->weight[j] / 255.0);
-                break;
+            switch(fx.Id)
+            {
+                case 4:
+                case 5:
+                case 7:
+                    _invClr += _clrEff.at( fx.Id ) * fx.Pwr;
+                    break;
+                default:
+                    _normClr += _clrEff.at( fx.Id ) * fx.Pwr;
+                    break;
+            }
         }
     }
 }
@@ -1704,11 +1576,6 @@ void GFXEngine::display_func271(IDVPair *stak)
 
 void GFXEngine::display_func272(IDVPair *)
 {
-}
-
-UA_PALETTE * GFXEngine::display_func273(int paletteId)
-{
-    return &_field_300[paletteId];
 }
 
 void GFXEngine::win3d_func274__sub0(FSMgr::FileHandle *fil)
@@ -1872,16 +1739,10 @@ void GFXEngine::setW3D_texFilt(int arg)
 
 void GFXEngine::SetPalette(UA_PALETTE &newPal)
 {
-    display_func261(0, newPal);
-
-    GFX::rstr_262_arg arg_262;
-    int v11 = 0;
-    int v12 = 256;
-    arg_262.slot = &v11;
-    arg_262.cnt = 1;
-    arg_262.weight = &v12;
-
-    display_func262(&arg_262);
+    _palette = newPal;
+    
+    _normClr = vec3d(1.0, 1.0, 1.0);
+    _invClr = vec3d(0.0, 0.0, 0.0);
 }
 
 void GFXEngine::SetPen(SDL_Color pen)
@@ -3462,5 +3323,53 @@ bool GFXEngine::ColorCmp(const SDL_Color &a, const SDL_Color &b)
         return false;
     return true;
 }
+
+float GFXEngine::GetColorEffectPower(int id)
+{
+    int32_t pwr = 0;
+    switch(id)
+    {
+        default:
+        case 0:
+            return 1.0;
+        
+        case 1:
+            pwr = System::IniConf::GfxColorEffPower1.Get<int32_t>();
+            break;
+        
+        case 2:
+            pwr = System::IniConf::GfxColorEffPower2.Get<int32_t>();
+            break;
+        
+        case 3:
+            pwr = System::IniConf::GfxColorEffPower3.Get<int32_t>();
+            break;
+        
+        case 4:
+            pwr = System::IniConf::GfxColorEffPower4.Get<int32_t>();
+            break;
+            
+        case 5:
+            pwr = System::IniConf::GfxColorEffPower5.Get<int32_t>();
+            break;
+            
+        case 6:
+            pwr = System::IniConf::GfxColorEffPower6.Get<int32_t>();
+            break;
+            
+        case 7:
+            pwr = System::IniConf::GfxColorEffPower7.Get<int32_t>();
+            break;
+    }
+    
+    if (pwr < 0)
+        pwr = 0;
+    
+    if (pwr > 100)
+        pwr = 100;
+    
+    return (float)pwr / 100.0;
+}
+
 
 }
