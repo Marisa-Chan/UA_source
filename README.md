@@ -43,4 +43,11 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 - gfx.skydistance 3000(default) - start distance of sky fade effect (do not rise it too strong, because of limits of sky sphere)
 - gfx.skylength 500(default) - length of sky fade effect
 - gfx.color_effects 0(default)/1/2 - emulate color effects like in original game in software rendering. 0 - disable, 1 - affects all, 2 - do not affect GUI
-
+- gfx.color_eff_pwr[1] 0-100(default) - power of red color effect
+- gfx.color_eff_pwr[2] 0-100(default) - power of blue color effect
+- gfx.color_eff_pwr[3] 0-100(default) - power of green color effect
+- gfx.color_eff_pwr[4] 0-100(default) - power of inverse color effect
+- gfx.color_eff_pwr[5] 0-100(default) - power of invdark color effect
+- gfx.color_eff_pwr[6] 0-100(default) - power of sw color effect
+- gfx.color_eff_pwr[7] 0-100(default) - power of invtuerk color effect
+- particles.limit 5000(default) - limit amount of particles 
