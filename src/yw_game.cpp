@@ -4630,9 +4630,11 @@ int ypaworld_func64__sub22__sub0(NC_STACK_ypaworld *yw, int event_id)
             return 3;
 
         ev->field_C = 1;
+        
+        int res = 1;
 
-        if ( ev->field_4 )
-            ev->field_4(yw);
+        if ( ev->field_4 && ev->field_4(yw) )
+            res = 3;
 
         if ( sub_4C885C() != 3 )
         {
@@ -4642,7 +4644,7 @@ int ypaworld_func64__sub22__sub0(NC_STACK_ypaworld *yw, int event_id)
             dword_5C8B78 = 8;
             yw->sb_0x4c87fc( yw->GetLocaleString(2470, "2470 == EXIT TUTORIAL MISSION ?") , &exit_menu);
         }
-        return 6;
+        return res;
     }
 
     return 1;
