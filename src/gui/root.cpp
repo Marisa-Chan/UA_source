@@ -879,7 +879,7 @@ void Root::HwCompose()
             HwRenderWidget(*it);
         
         
-        for(auto it = _normal.rbegin(); it != _normal.rend(); it++)
+        for(auto it = _foreground.rbegin(); it != _foreground.rend(); it++)
             HwRenderWidget(*it);
 
 
