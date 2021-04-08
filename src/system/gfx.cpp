@@ -2582,16 +2582,10 @@ void GFXEngine::SetResolution(int res)
     }
     
     if (!picked.windowed)
-        System::SetFullScreen(SDL_WINDOW_FULLSCREEN_DESKTOP, &picked.mode);
+        System::SetVideoMode(Common::Point(picked.w, picked.h), SDL_WINDOW_FULLSCREEN_DESKTOP, &picked.mode);
     else
-        System::SetFullScreen(0, NULL);
+        System::SetVideoMode(Common::Point(picked.w, picked.h), 0, NULL);
     
-    if (picked.windowed)
-    {
-        SDL_Delay(250);
-    
-        System::ResizeWindow(picked.w, picked.h);
-    }
     RecreateScreenSurface();
     
     GfxSelectedMode = picked.sortid;

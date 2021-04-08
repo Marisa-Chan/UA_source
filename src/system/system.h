@@ -40,8 +40,7 @@ namespace System
     // Draw content of backbuffer
     void Flip();
     
-    void SetFullScreen(uint32_t full, SDL_DisplayMode *mode);
-    void ResizeWindow(int w, int h);
+    void SetVideoMode(const Common::Point &sz, uint32_t full, SDL_DisplayMode *mode);
     void RestoreWindow();
     
     

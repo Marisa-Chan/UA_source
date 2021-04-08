@@ -314,26 +314,7 @@ void Flip()
     SDL_GL_SwapWindow(window);
 }
 
-void ResizeWindow(int w, int h)
-{
-    if (winRes != ResRatio(w, h))
-    {
-        winRes = ResRatio(w, h);
-
-        if (window)
-        {
-            if (SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED)
-            {
-                SDL_RestoreWindow(window);
-                SDL_Delay(250);
-            }
-            
-            SDL_SetWindowSize(window, w, h);
-        }
-    }
-}
-
-void SetFullScreen(uint32_t full, SDL_DisplayMode *mode)
+void SetVideoMode(const Common::Point &sz, uint32_t full, SDL_DisplayMode *mode)
 {
     if (window)
     {
@@ -344,7 +325,21 @@ void SetFullScreen(uint32_t full, SDL_DisplayMode *mode)
             SDL_Delay(250);
             SDL_SetWindowDisplayMode(window, mode);
         }
+        else
+        {
+            if (winRes != ResRatio(sz))
+            {
+                if (SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED)
+                {
+                    SDL_RestoreWindow(window);
+                    SDL_Delay(250);
+                }
 
+                SDL_SetWindowSize(window, sz.x, sz.y);
+            }
+        }
+        
+        winRes = ResRatio(sz);
     }
 }
 
