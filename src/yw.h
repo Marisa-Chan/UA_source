@@ -806,7 +806,7 @@ struct cellArea
     char comp_type; // Complex (3x3) or simple
     int32_t energy_power; // Cell electric power
     uint8_t buildings_health[3][3];
-    Common::PlaneVector<NC_STACK_base::Instance *> BldVPOpts;
+    Common::PlaneArray<NC_STACK_base::Instance *, 3, 3> BldVPOpts = {NULL};
     uint8_t view_mask; // Who can view this sector (mask)
     char w_type;
     int32_t w_id;
@@ -816,12 +816,7 @@ struct cellArea
     
     cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) 
     { 
-        BldVPOpts.Resize(3, 3);
-        
-        for (auto &opts : BldVPOpts)
-        {
-            opts = NULL;
-        }
+        BldVPOpts.Clear(NULL);
         
         clear();
     };
