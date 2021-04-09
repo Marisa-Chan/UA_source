@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 #include <vector>
+#include <array>
 #include <SDL2/SDL.h>
 
 #ifdef ABS
@@ -674,7 +675,136 @@ protected:
 };
 
 typedef PlaneVector<uint8_t> PlaneBytes;
-     
+
+template <class T, std::size_t XW, std::size_t XH>
+class PlaneArray : protected std::array<T, (XW * XH)>
+{
+protected:
+    typedef std::array<T, (XW * XH)> _BaseType;
+public:
+    using _BaseType::data;
+    using _BaseType::operator[];
+    using _BaseType::size;
+    using _BaseType::begin;
+    using _BaseType::end;
+    using _BaseType::rbegin;
+    using _BaseType::rend;
+    
+    PlaneArray()
+    {}
+    
+    PlaneArray(T val)
+    {
+        Clear(val);
+    }
+    
+    PlaneArray(const PlaneArray &b)
+    {
+        operator=(b);
+    }
+    
+    PlaneArray(PlaneArray &&b)
+    : _BaseType(std::move(b))
+    {}
+    
+    PlaneArray<T, XW, XH>* Copy()
+    {
+        PlaneArray<T, XW, XH> *tmp = new PlaneArray<T, XW, XH>;
+        *tmp = *this;
+        return tmp;
+    }
+    
+    T& At(uint32_t x, uint32_t y)
+    {
+        return this->at(x + y * XW);
+    }
+    
+    T& At(const Point &p)
+    {
+        return this->at(p.x + p.y * XW);
+    }
+    
+    T& At(size_t n)
+    {
+        return this->at(n);
+    }
+    
+    T& operator()(uint32_t x, uint32_t y)
+    {
+        return this->at(x + y * XW);
+    }
+    
+    T& operator()(const Point &p)
+    {
+        return this->at(p.x + p.y * XW);
+    }
+    
+    T& operator()(size_t n)
+    {
+        return this->at(n);
+    }
+    
+    T* Line(uint32_t y)
+    {
+        return &(this->at(y * XW));
+    }
+    
+    T Get(uint32_t x, uint32_t y) const
+    {
+        return this->at(x + y * XW);
+    }
+    
+    T At(const Point &p) const
+    {
+        return this->at(p.x + p.y * XW);
+    }
+    
+    T At(size_t n) const
+    {
+        return this->at(n);
+    }
+    
+    Point Size() const
+    {
+        return Point(XW, XH);
+    }
+    
+    size_t GetID(uint32_t x, uint32_t y) const
+    {
+        size_t n = x + y * XW;
+        if (n < size())
+            return n;
+        return -1;
+    }
+    
+    Point GetPos(size_t id) const
+    {
+        if (id >= 0 && id < size())
+            return Point(id % XW, id / XW);
+        return Point(-1, -1);
+    }
+    
+    uint32_t Width() const
+    {
+        return XW;
+    }
+    
+    uint32_t Height() const
+    {
+        return XH;
+    }
+    
+    void operator=(const PlaneArray<T, XW, XH> &b)
+    {
+        _BaseType::operator=(b);
+    }
+    
+    void Clear(T val)
+    {
+        for (T &a : *this)
+            a = val;
+    }
+};
 
 class BitMan : protected std::vector<uint32_t>
 {
