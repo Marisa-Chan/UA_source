@@ -676,7 +676,7 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
                 cellArea &cell = _o._cells(x, y / 3);
                 
                 for(int i = 0; i < 3; i++)
-                    cell.buildings_health[y % 3][i] = nrgmap->At(x * 3 + i, y);
+                    cell.buildings_health.At(i, y % 3) = nrgmap->At(x * 3 + i, y);
             }
         }
 

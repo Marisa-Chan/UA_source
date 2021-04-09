@@ -99,14 +99,14 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
     }
 
     int v22 = first;
-    for (int i = 0; i < demens; i++)
+    for (int y = 0; y < demens; y++)
     {
         int v30 = first;
-        for (int j = 0; j < demens; j++)
+        for (int x = 0; x < demens; x++)
         {
             vec3d inSectorPos = vec3d(v30, 0.0, v22) * 300.0;
 
-            NC_STACK_base *lego = yw->legos[ scType->buildings[j][i]->health_models[0] ].base;
+            NC_STACK_base *lego = yw->legos[ scType->buildings.At(x, y)->health_models[0] ].base;
             lego->SetStatic(false);
             lego->SetVizLimit(16000);
             lego->SetFadeLength(100);

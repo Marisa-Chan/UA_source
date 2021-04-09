@@ -1076,7 +1076,7 @@ int yw_parse_sektor(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
             sektp->field_3 = std::stol(token, NULL, 0);
 
-            memset(sektp->buildings, 0, sizeof(sektp->buildings));
+            sektp->buildings.fill(NULL);
 
             if ( sektp->field_0 == 1 )
             {
@@ -1085,13 +1085,13 @@ int yw_parse_sektor(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                     ypa_log_out("Error reading '%s', line '%s'.\n", "set.sdf", line.c_str());
                     return 0;
                 }
-                sektp->buildings[0][0] = &yw->subSectors[ std::stol(token, NULL, 0) ];
+                sektp->buildings.At(0, 0) = &yw->subSectors[ std::stol(token, NULL, 0) ];
             }
             else
             {
-                for (int j = 0; j < 3; j++)
+                for (int yy = 0; yy < 3; yy++)
                 {
-                    for (int i = 0; i < 3; i++)
+                    for (int xx = 0; xx < 3; xx++)
                     {
                         if ( !parse.GetNext(&token) )
                         {
@@ -1099,7 +1099,7 @@ int yw_parse_sektor(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                             return 0;
                         }
 
-                        sektp->buildings[i][2 - j] = &yw->subSectors[ std::stol(token, NULL, 0) ];
+                        sektp->buildings.At(xx, 2 - yy) = &yw->subSectors[ std::stol(token, NULL, 0) ];
                     }
                 }
             }
@@ -1457,24 +1457,28 @@ void sub_44A908(NC_STACK_ypaworld *yw)
     }
 }
 
-void sb_0x4ea37c__sub1(NC_STACK_ypaworld *yw)
+void LegosClear(NC_STACK_ypaworld *yw)
 {
-    for (int i = 0 ; i < 256; i++)
+    for (cityBases &lego : yw->legos)
     {
-        if (yw->legos[i].sklt_obj)
-            delete_class_obj(yw->legos[i].sklt_obj);
+        if (lego.sklt_obj)
+            Nucleus::Delete(lego.sklt_obj);
+        
+        lego = cityBases();
     }
-
-    memset(yw->legos, 0, sizeof(cityBases) * 256);
 }
 
 void sb_0x4ea37c(NC_STACK_ypaworld *yw)
 {
     yw->vhcls_models.clear();
-    sb_0x4ea37c__sub1(yw);
+    LegosClear(yw);
     sub_44A908(yw);
-    memset(yw->subSectors, 0, sizeof(subSec) * 256);
-    memset(yw->secTypes, 0, sizeof(secType) * 256);
+    
+    for (subSec &ssec : yw->subSectors)
+        ssec = subSec();
+    
+    for (secType &styp : yw->secTypes)
+        styp = secType();
 
     if ( yw->additionalSet )
     {
@@ -3105,17 +3109,15 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
 {
     yw->vhcls_models.clear();
 
-    for (int i = 0; i < 256; i++)
-    {
-        if (yw->legos[i].sklt_obj)
-            delete_class_obj(yw->legos[i].sklt_obj);
-    }
-    memset(yw->legos, 0, sizeof(cityBases) * 256);
+    LegosClear(yw);
 
     sub_44A908(yw);
 
-    memset(yw->subSectors, 0, sizeof(subSec) * 256);
-    memset(yw->secTypes, 0, sizeof(secType) * 256);
+    for (subSec &ssec : yw->subSectors)
+        ssec = subSec();
+    
+    for (secType &styp : yw->secTypes)
+        styp = secType();
 
     if ( yw->additionalBeeBox )
     {

@@ -4572,16 +4572,16 @@ void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
     {
         int v7 = 0;
 
-        for (int i = 0; i < 3; i++)
+        for (int y = 0; y < 3; y++)
         {
-            for (int j = 0; j < 3; j++)
+            for (int x = 0; x < 3; x++)
             {
-                if ( arg130.pcell->buildings_health[j][i] > v7 )
+                if ( arg130.pcell->buildings_health.At(x, y) > v7 )
                 {
-                    arg->z = 300.0 * (-1 + i) + v13;
-                    arg->x = 300.0 * (-1 + j) + v15;
+                    arg->z = 300.0 * (-1 + y) + v13;
+                    arg->x = 300.0 * (-1 + x) + v15;
 
-                    v7 = arg130.pcell->buildings_health[j][i];
+                    v7 = arg130.pcell->buildings_health.At(x, y);
                 }
             }
         }
@@ -4840,20 +4840,14 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
 
             if ( cell->comp_type == 1 )
             {
-                v33 = cell->buildings_health[0][0];
+                v33 = cell->buildings_health.At(0, 0);
             }
             else
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        if ( cell->buildings_health[i][j] ) //LOL
-                            v33 += cell->buildings_health[i][j];
-                    }
-                }
+                for (auto helth : cell->buildings_health)
+                    v33 += helth;
 
-                v33 /= 9;
+                v33 /= cell->buildings_health.size();
             }
 
             if ( cell->owner == _owner )
@@ -7607,8 +7601,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
                     if (cell_tzx->comp_type == 1 && cell_tzx != target_pcell)
                     {
-                        subSec *v33 = _world->secTypes[ cell_tzx->type_id ].buildings[0][0];
-                        int hlth = v33->health_models[ _world->build_hp_ref[ cell_tzx->buildings_health[0][0] ] ];
+                        int32_t hlth = _world->GetLegoBld(cell_tzx, 0, 0);
 
                         if (_world->legos[hlth].selected_sklt_intern != _world->legos[hlth].sklt_obj_intern)
                             continue;

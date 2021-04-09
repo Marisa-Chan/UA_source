@@ -710,13 +710,13 @@ bool NC_STACK_ypaworld::LoadTypeMap(const std::string &mapName)
 
             if ( sectp->field_0 == 1)
             {
-                cell.buildings_health[0][0] = sectp->buildings[0][0]->build_health;
+                cell.buildings_health.At(0, 0) = sectp->buildings.At(0, 0)->build_health;
             }
             else
             {
-                for (int j = 0; j < 3; j++)
-                    for (int k = 0; k < 3; k++)
-                        cell.buildings_health[j][k] = sectp->buildings[j][k]->build_health;
+                for (int bldY = 0; bldY < 3; bldY++)
+                    for (int bldX = 0; bldX < 3; bldX++)
+                        cell.buildings_health.At(bldX, bldY) = sectp->buildings.At(bldX, bldY)->build_health;
             }
             
             id++;
@@ -1279,13 +1279,8 @@ void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int 
     {
         int helth = 0;
 
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                helth += cell->buildings_health[i][j];
-            }
-        }
+        for (auto h : cell->buildings_health)
+            helth += h;
 
         if ( cell->w_type == 2 )
         {
@@ -1374,7 +1369,7 @@ TSectorCollision NC_STACK_ypaworld::sub_44DBF8(int _dx, int _dz, int _dxx, int _
 
             tmp.Flags = v8;
 
-            int model_id = secTypes[cell.type_id].buildings[v16][v14]->health_models [   build_hp_ref[    cell.buildings_health[v16][v14]    ]    ];
+            int model_id = GetLegoBld(&cell, v16, v14);
 
             if ( v8 & 1 )
                 tmp.sklt = legos[model_id].selected_sklt_intern;
@@ -1972,7 +1967,7 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
 
                 if ( v22 )
                 {
-                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[0] ].base;
+                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings.At(xx, zz)->health_models[0] ].base;
 
                     bld->SetStatic(false);
 
@@ -1987,7 +1982,7 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
                 }
                 else
                 {
-                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings[xx][zz]->health_models[ yw->build_hp_ref[ pcell->buildings_health[xx][zz] ] ] ].base;
+                    NC_STACK_base *bld = yw->legos[ yw->GetLegoBld(pcell, xx, zz) ].base;
 
                     bld->SetPosition(pos);
                     
@@ -2424,13 +2419,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
 
         if ( sectp->field_0 == 1 )
         {
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    cell.buildings_health[i][j] = 0;
-                }
-            }
+            cell.buildings_health.fill(0);
             
             v49 = 1;
         }
@@ -2439,12 +2428,10 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
             v49 = 3;
         }
 
-        for (int i = 0; i < v49; i++)
+        for (int yy = 0; yy < v49; yy++)
         {
-            for (int j = 0; j < v49; j++)
-            {
-                cell.buildings_health[i][j] = sectp->buildings[i][j]->build_health;
-            }
+            for (int xx = 0; xx < v49; xx++)
+                cell.buildings_health.At(xx, yy) = sectp->buildings.At(xx, yy)->build_health;
         }
 
         if ( bld->ModelID == 1 )

@@ -805,7 +805,7 @@ struct cellArea
     int32_t type_id; // Index in array
     char comp_type; // Complex (3x3) or simple
     int32_t energy_power; // Cell electric power
-    uint8_t buildings_health[3][3];
+    Common::PlaneArray<int16_t, 3, 3> buildings_health = {0};
     Common::PlaneArray<NC_STACK_base::Instance *, 3, 3> BldVPOpts = {NULL};
     uint8_t view_mask; // Who can view this sector (mask)
     char w_type;
@@ -816,7 +816,7 @@ struct cellArea
     
     cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) 
     { 
-        BldVPOpts.Clear(NULL);
+        BldVPOpts.fill(NULL);
         
         clear();
     };
@@ -852,14 +852,12 @@ struct cellArea
     int GetEnergy()
     {
         if ( comp_type == 1 )
-            return buildings_health[0][0];
+            return buildings_health.At(0, 0);
 
         int e = 0;
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-                e += buildings_health[i][j];
-        }
+        for (auto hlth : buildings_health)
+            e += hlth;
+        
         return e;
     }
     
@@ -878,11 +876,7 @@ struct cellArea
         comp_type = 0;
         energy_power = 0;
         
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-                buildings_health[i][j] = 0;
-        }
+        buildings_health.fill(0);
                 
         view_mask = 0;
         w_type = 0;
@@ -1694,40 +1688,40 @@ struct EnergyAccum
 
 struct lego_xyz
 {
-    int field_0;
-    float pos_x;
-    float pos_y;
-    float pos_z;
+    int field_0 = 0;
+    float pos_x = 0.0;
+    float pos_y = 0.0;
+    float pos_z = 0.0;
 };
 
 struct cityBases
 {
-    NC_STACK_base *base;
-    NC_STACK_sklt *sklt_obj;
-    UAskeleton::Data *sklt_obj_intern;
-    UAskeleton::Data *selected_sklt_intern;
-    char field_10;
-    char field_11;
-    char field_12;
-    char field_13;
-    uint8_t field_14[16];
-    lego_xyz field_24[16];
+    NC_STACK_base *base = NULL;
+    NC_STACK_sklt *sklt_obj = NULL;
+    UAskeleton::Data *sklt_obj_intern = NULL;
+    UAskeleton::Data *selected_sklt_intern = NULL;
+    char field_10 = 0;
+    char field_11 = 0;
+    char field_12 = 0;
+    char field_13 = 0;
+    std::array<uint8_t, 16> field_14 = {0};
+    std::array<lego_xyz, 16> field_24;
 };
 
 struct subSec
 {
-    int build_health;
-    uint8_t health_models[4]; //Building health models 0 - 100%hp, 3 - 0%hp
-    int field_8;
+    int build_health = 0;
+    std::array<uint8_t, 4> health_models = {0}; //Building health models 0 - 100%hp, 3 - 0%hp
+    int field_8 = 0;
 };
 
 struct secType
 {
-    char field_0;
-    uint8_t field_1;
-    char field_2;
-    char field_3;
-    subSec *buildings[3][3];
+    char field_0 = 0;
+    uint8_t field_1 = 0;
+    char field_2 = 0;
+    char field_3 = 0;
+    Common::PlaneArray<subSec *, 3, 3> buildings = {0};
 };
 
 
@@ -2704,6 +2698,9 @@ public:
     void ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2);
     
     World::ParticleSystem &ParticleSystem() { return _particles; };
+    
+    int32_t GetLegoBld(const cellArea *cell, int bldX, int bldY);
+    int32_t GetLegoBld(const Common::Point &cell, int bldX, int bldY);
 
 public:
     //Data
@@ -2729,9 +2726,9 @@ public:
     World::RefBactList _unitsList;
     World::RefBactList _deadCacheList;
     std::vector<NC_STACK_base *> vhcls_models;
-    cityBases *legos;
-    subSec *subSectors;
-    secType *secTypes;
+    std::array<cityBases, 256> legos;
+    std::array<subSec, 256> subSectors;
+    std::array<secType, 256> secTypes;
     VhclProto *VhclProtos;
     WeapProto *WeaponProtos;
     std::vector<TBuildingProto> BuildProtos;

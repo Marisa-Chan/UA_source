@@ -3885,22 +3885,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub3(const Common::Point &sc)
 
         if ( cll.owner == _owner )
         {
-            int v11 = 0;
-
-            if ( cll.comp_type == 1 )
-            {
-                v11 = cll.buildings_health[0][0];
-            }
-            else
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    for (int k = 0; k < 3; k++)
-                    {
-                        v11 += cll.buildings_health[j][k];
-                    }
-                }
-            }
+            int v11 = cll.GetEnergy();
             v27 += (255 - v11) * 0.05 + 10.0;
         }
 

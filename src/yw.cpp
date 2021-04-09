@@ -63,9 +63,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     additionalSet = NULL;
 //nlist bact_list;
 //nlist dead_cache;
-    legos = NULL;
-    subSectors = NULL;
-    secTypes = NULL;
     VhclProtos = NULL;
     WeaponProtos = NULL;
     BuildProtos.clear();
@@ -530,15 +527,6 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
 //		}
 
     vhcls_models.clear();
-    legos = (cityBases *)AllocVec(sizeof(cityBases) * 256, 65537);
-    subSectors = (subSec *)AllocVec(sizeof(subSec) * 256, 65537);
-    secTypes = (secType *)AllocVec(sizeof(secType) * 256, 65537);
-
-    if ( !legos || !subSectors || !secTypes )
-    {
-        Deinit();
-        return 0;
-    }
 
     if ( !init_prototypes(this) )
     {
@@ -1175,7 +1163,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     cell->w_type = 7;
 }
 
-void sub_44FD6C(NC_STACK_ypaworld *yw, const cellArea &cell, int secX, int secY, int a5, int a6, int a7)
+void sub_44FD6C(NC_STACK_ypaworld *yw, const cellArea &cell, int secX, int secY, int bldX, int bldY)
 {
     NC_STACK_ypabact *cbact = yw->current_bact;
 
@@ -1184,15 +1172,15 @@ void sub_44FD6C(NC_STACK_ypaworld *yw, const cellArea &cell, int secX, int secY,
 
     if ( v8 + v9 <= (yw->field_1368 - 1) / 2 )
     {
-        const cityBases &v10 = yw->legos[  yw->secTypes[cell.type_id].buildings[a5][a6]->health_models[a7]  ];
+        const cityBases &v10 = yw->legos[  yw->GetLegoBld(&cell, bldX, bldY) ];
 
         float v32 = secX * 1200.0 + 600.0;
         float v27 = -(secY * 1200.0 + 600.0);
 
         if ( cell.comp_type != 1 )
         {
-            v32 += (a5 - 1) * 300.0;
-            v27 += (a6 - 1) * 300.0;
+            v32 += (bldX - 1) * 300.0;
+            v27 += (bldY - 1) * 300.0;
         }
 
         for (int i = 0; i < yw->fxnumber; i++)
@@ -1300,23 +1288,23 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
         if ( v10 && v14 && cell.w_type != 1 )
         {
-            int v38;
-            int a5;
+            int bldY;
+            int bldX;
 
             if ( cell.comp_type == 1 )
             {
-                v38 = 0;
-                a5 = 0;
+                bldY = 0;
+                bldX = 0;
             }
             else
             {
-                a5 = v10 - 1;
-                v38 = 2 - (v14 - 1);
+                bldX = v10 - 1;
+                bldY = 2 - (v14 - 1);
             }
 
-            int v16 = cell.buildings_health[a5][v38];
+            int v16 = cell.buildings_health.At(bldX, bldY);
 
-            int v34 = v16 - arg->field_10 * (100 - legos[  secTypes[cell.type_id].buildings[a5][v38]->health_models[  build_hp_ref[v16]  ]  ].field_10 ) / 100 / 400;
+            int v34 = v16 - arg->field_10 * (100 - legos[  GetLegoBld(&cell, bldX, bldY)  ].field_10 ) / 100 / 400;
 
             if ( v34 < 0 )
                 v34 = 0;
@@ -1330,7 +1318,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             {
                 while ( v18 > v36 )
                 {
-                    sub_44FD6C(this, cell, secX, secY, a5, v38, v18);
+                    sub_44FD6C(this, cell, secX, secY, bldX, bldY);
 
                     v18--;
                 }
@@ -1339,13 +1327,13 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             {
                 while ( v18 < v36 )
                 {
-                    sub_44FD6C(this, cell, secX, secY, a5, v38, v18);
+                    sub_44FD6C(this, cell, secX, secY, bldX, bldY);
 
                     v18++;
                 }
             }
 
-            cell.buildings_health[a5][v38] = v34;
+            cell.buildings_health.At(bldX, bldY) = v34;
 
             ypaworld_func129__sub0(this, cell, arg);
 
@@ -1369,13 +1357,8 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                 {
                     int v27 = 0;
 
-                    for (int i = 0; i < 3; i++)
-                    {
-                        for (int j = 0; j < 3; j++)
-                        {
-                            v27 += cell.buildings_health[i][j];
-                        }
-                    }
+                    for (auto hlth : cell.buildings_health)
+                        v27 += hlth;
 
                     if ( !v27 )
                         ypaworld_func129__sub1(this, &cell, cell.w_id);
@@ -7694,4 +7677,16 @@ bool NC_STACK_ypaworld::IsSector(const Common::Point &sz) const
 Common::PlaneVector<cellArea> &NC_STACK_ypaworld::Sectors()
 {
     return _cells;
+}
+
+int32_t NC_STACK_ypaworld::GetLegoBld(const cellArea *cell, int bldX, int bldY)
+{
+    subSec *ssec = secTypes[ cell->type_id ].buildings.At(bldX, bldY);
+    int32_t hlth = cell->buildings_health.Get(bldX, bldY);
+    return ssec->health_models[ build_hp_ref[ hlth ] ];
+}
+
+int32_t NC_STACK_ypaworld::GetLegoBld(const Common::Point &cell, int bldX, int bldY)
+{
+    return GetLegoBld(&SectorAt(cell), bldX, bldY);
 }

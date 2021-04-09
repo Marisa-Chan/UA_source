@@ -2166,13 +2166,13 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
     {
         if ( v12.comp_type == 1 )
         {
-            cityBases *v26 = yw->legos + yw->secTypes[ v12.type_id ].buildings[0][0]->health_models[  yw->build_hp_ref[  v12.buildings_health[0][0]  ]  ];
+            cityBases *v26 = &yw->legos[ yw->GetLegoBld(&v12, 0, 0) ];
             int v25 = (16 * (v27 - 1) + v8 - 1 + v26->field_12) & 0xFF;
             return (v26->field_11 << 8) | v25;
         }
         else
         {
-            cityBases *v26 = yw->legos + yw->secTypes[ v12.type_id ].buildings[v8 - 1][2 - (v27 - 1)]->health_models[  yw->build_hp_ref[  v12.buildings_health[v8 - 1][2 - (v27 - 1)]  ]  ];
+            cityBases *v26 = &yw->legos[ yw->GetLegoBld(&v12, v8 - 1, 2 - (v27 - 1))  ];
             return (v26->field_11 << 8) | v26->field_12;
         }
     }

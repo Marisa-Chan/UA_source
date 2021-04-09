@@ -462,7 +462,7 @@ void yw_write_energymap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
                 cellArea &cell = yw->_cells(x, y / 3);
                 
                 for(int i = 0; i < 3; i++)
-                    energymap->At(x * 3 + i, y) = cell.buildings_health[y % 3][i];
+                    energymap->At(x * 3 + i, y) = cell.buildings_health.At(i, y % 3);
             }
         }
 

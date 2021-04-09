@@ -689,13 +689,14 @@ public:
     using _BaseType::end;
     using _BaseType::rbegin;
     using _BaseType::rend;
+    using _BaseType::fill;
     
     PlaneArray()
     {}
     
     PlaneArray(T val)
     {
-        Clear(val);
+        fill(val);
     }
     
     PlaneArray(const PlaneArray &b)
@@ -797,12 +798,6 @@ public:
     void operator=(const PlaneArray<T, XW, XH> &b)
     {
         _BaseType::operator=(b);
-    }
-    
-    void Clear(T val)
-    {
-        for (T &a : *this)
-            a = val;
     }
 };
 
