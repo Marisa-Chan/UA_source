@@ -1704,14 +1704,14 @@ struct cityBases
     char field_11 = 0;
     char field_12 = 0;
     char field_13 = 0;
-    std::array<uint8_t, 16> field_14 = {0};
+    std::array<uint8_t, 16> field_14 = {{0}};
     std::array<lego_xyz, 16> field_24;
 };
 
 struct subSec
 {
     int build_health = 0;
-    std::array<uint8_t, 4> health_models = {0}; //Building health models 0 - 100%hp, 3 - 0%hp
+    std::array<uint8_t, 4> health_models = {{0}}; //Building health models 0 - 100%hp, 3 - 0%hp
     int field_8 = 0;
 };
 
