@@ -2035,7 +2035,7 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
         arg176.owner = _owner;
         _world->ypaworld_func176(&arg176);
 
-        if ( _world->SectorAt( _roboBuildingCellID ).energy_power != -1 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
+        if ( _world->SectorAt( _roboBuildingCellID ).energy_power != 255 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
         {
             TBuildingProto *buildprotos = _world->getYW_buildProtos();
 
