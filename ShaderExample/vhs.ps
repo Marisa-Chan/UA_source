@@ -1,0 +1,78 @@
+#version 120
+uniform sampler2D texture;
+uniform vec3 normclr;
+uniform vec3 invclr;
+uniform ivec2 screenSize;
+uniform int randval;
+uniform int millisecs;
+
+
+//Based on https://www.shadertoy.com/view/Ms3XWH
+
+
+const float range = 0.02;
+const float noiseQuality = 250.0;
+const float noiseIntensity = 0.0008;
+const float offsetIntensity = 0.01;
+const float colorOffsetIntensity = 1.3;
+const float PI = 3.1415926;
+
+const float whiteNoise = 0.13;
+
+float rand(vec2 co){
+  return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float verticalBar(float pos, float uvY, float offset)
+{
+    float edge0 = (pos - range);
+    float edge1 = (pos + range);
+
+    float x = smoothstep(edge0, pos, uvY) * offset;
+    x -= smoothstep(pos, edge1, uvY) * offset;
+    return x;
+}
+
+
+void main()
+{
+	vec2 uv = gl_TexCoord[0].xy;
+	float iTime = millisecs / 1000.0;
+    
+    for (float i = 0.0; i < 0.71; i += 0.1313)
+    {
+        float d = mod(iTime * i, 1.7);
+        float o = sin(1.0 - tan(iTime * 0.24 * i));
+    	o *= offsetIntensity;
+        uv.x += verticalBar(d, uv.y, o);
+    }
+    
+    float uvY = uv.y;
+    uvY *= noiseQuality;
+    uvY = float(int(uvY)) * (1.0 / noiseQuality);
+    float noise = rand(vec2(iTime * 0.00001, uvY));
+    uv.x += noise * noiseIntensity;
+
+    vec2 offsetR = vec2(0.006 * sin(iTime), 0.0) * colorOffsetIntensity;
+    vec2 offsetG = vec2(0.0073 * (cos(iTime * 0.97)), 0.0) * colorOffsetIntensity;
+    
+    float r = texture2D(texture, uv + offsetR).r;
+    float g = texture2D(texture, uv + offsetG).g;
+    float b = texture2D(texture, uv).b;
+	float a = texture2D(texture, uv).a;
+	
+	
+	
+	float inrnd = fract(randval / 43758.5453);
+	float scrSeed = screenSize.x / 4.0;
+	vec2 rndxy = vec2( floor(uv.x * scrSeed) / scrSeed, floor(uv.y * scrSeed) / scrSeed );
+	float whiternd = rand(vec2(inrnd, inrnd) + rndxy) * whiteNoise;
+	vec3 whiteclr = vec3(whiternd, whiternd, whiternd);
+	
+	vec2 cntr = vec2(abs(uv.x - 0.5) * 2.0, abs(uv.y - 0.5) * 2.0);
+	vec2 invcntr = vec2(1.0 - cntr.x, 1.0 - cntr.y);
+	float intens = clamp(invcntr.x * 2.0 + invcntr.y * 0.4, 0.1, 1.0); 
+	
+    gl_FragColor = vec4( (vec3(r, g, b) + whiteclr) * vec3(intens, intens, intens), a);
+}
+
