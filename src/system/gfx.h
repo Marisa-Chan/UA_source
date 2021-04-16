@@ -568,6 +568,7 @@ protected:
     int32_t _shdrIDInv = -1;
     int32_t _shdrIDrand = -1;
     int32_t _shdrIDscrsize = -1;
+    int32_t _shdrIDmillisecs = -1;
 };
     
 static constexpr GFXEngine &Engine = GFXEngine::Instance;

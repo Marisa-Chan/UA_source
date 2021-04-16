@@ -2433,6 +2433,7 @@ void GFXEngine::Init()
         _shdrIDInv = GLGetUniformLocation(_shaderProg, "invclr");
         _shdrIDrand = GLGetUniformLocation(_shaderProg, "randval");
         _shdrIDscrsize = GLGetUniformLocation(_shaderProg, "screenSize");
+        _shdrIDmillisecs = GLGetUniformLocation(_shaderProg, "millisecs");
     }
     
 }
@@ -3283,6 +3284,9 @@ void GFXEngine::DrawFBO()
     
     if (_shdrIDscrsize >= 0)
         GLUniform2i(_shdrIDscrsize, scrSz.x, scrSz.y);
+    
+    if (_shdrIDmillisecs >= 0)
+        GLUniform1i(_shdrIDmillisecs, SDL_GetTicks());
     
     
     glViewport(0, 0, scrSz.x, scrSz.y);
