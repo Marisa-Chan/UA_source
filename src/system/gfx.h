@@ -564,8 +564,10 @@ protected:
     uint32_t _vsShader = 0;
     uint32_t _shaderProg = 0;
     
-    int32_t _shdrIDNorm = 0;
-    int32_t _shdrIDInv = 0;
+    int32_t _shdrIDNorm = -1;
+    int32_t _shdrIDInv = -1;
+    int32_t _shdrIDrand = -1;
+    int32_t _shdrIDscrsize = -1;
 };
     
 static constexpr GFXEngine &Engine = GFXEngine::Instance;
