@@ -3773,7 +3773,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub0(const Common::Point &sc)
         }
     }
 
-    if (  !v9 || !_world->IsGamePlaySector(sc) )
+    if (  !v9 || _world->IsSectorBorder(sc, 2) )
         return -1;
 
     return v14;
