@@ -300,7 +300,7 @@ bool GameAnalyzer::IsFewSeeSectors(NC_STACK_ypaworld *world)
             see++;
     }
     
-    float prc = ((float)see) / ((float)(world->_mapWidth - 2) * (world->_mapHeight - 2));
+    float prc = ((float)see) / ((float)(world->_mapSize.x - 2) * (world->_mapSize.y - 2));
     if (prc < 0.75)
         return true;
     return false;        

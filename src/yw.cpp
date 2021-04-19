@@ -49,14 +49,9 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 {
     GameShell = NULL;
     b64_parms = NULL;
-    _mapAbsMaxX = 0;
-    _mapAbsMaxY = 0;
-    _mapWidth = 0;
-    _mapHeight = 0;
+    _mapSize = Common::Point();
 
-    map_Width_meters = 0.0;
-    map_Height_meters = 0.0;
-
+    _mapLength = vec2d();
 
     _nextPSForUpdate = 0;
     set_number = 0;
@@ -549,10 +544,8 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
     field_15e8 = stak.Get<int32_t>(YW_ATT_FADELENGTH, 600);
     field_15ec = stak.Get<int32_t>(YW_ATT_SKYVISLIMIT, 4200);
     field_15f0 = stak.Get<int32_t>(YW_ATT_SKYFADELENGTH, 1100);
-    _mapAbsMaxX = stak.Get<int32_t>(YW_ATT_MAPMAX_X, 64);
-    _mapAbsMaxY = stak.Get<int32_t>(YW_ATT_MAPMAX_Y, 64);
-    _mapWidth = _mapAbsMaxX;
-    _mapHeight = _mapAbsMaxY;
+    _mapSize.x = stak.Get<int32_t>(YW_ATT_MAPMAX_X, 64);
+    _mapSize.y = stak.Get<int32_t>(YW_ATT_MAPMAX_Y, 64);
     field_15f4 = stak.Get<int32_t>(YW_ATT_SKYHEIGHT, -550);
     field_15f8 = stak.Get<int32_t>(YW_ATT_SKYRENDER, 1);
     field_15fc = stak.Get<int32_t>(YW_ATT_DOENERGYRECALC, 1);
@@ -1174,13 +1167,12 @@ void sub_44FD6C(NC_STACK_ypaworld *yw, const cellArea &cell, int secX, int secY,
     {
         const cityBases &v10 = yw->legos[  yw->GetLegoBld(&cell, bldX, bldY) ];
 
-        float v32 = secX * 1200.0 + 600.0;
-        float v27 = -(secY * 1200.0 + 600.0);
+        vec2d ttt = World::SectorIDToCenterPos2( {secX, secY} );
 
         if ( cell.comp_type != 1 )
         {
-            v32 += (bldX - 1) * 300.0;
-            v27 += (bldY - 1) * 300.0;
+            ttt.x += (bldX - 1) * 300.0;
+            ttt.y += (bldY - 1) * 300.0;
         }
 
         for (int i = 0; i < yw->fxnumber; i++)
@@ -1190,9 +1182,9 @@ void sub_44FD6C(NC_STACK_ypaworld *yw, const cellArea &cell, int secX, int secY,
 
             ypaworld_arg146 arg146;
             arg146.vehicle_id = v10.field_14[i];
-            arg146.pos.x = v32 + v10.field_24[i].pos_x;
+            arg146.pos.x = ttt.x + v10.field_24[i].pos_x;
             arg146.pos.y = cell.height + v10.field_24[i].pos_y;
-            arg146.pos.z = v27 + v10.field_24[i].pos_z;
+            arg146.pos.z = ttt.y + v10.field_24[i].pos_z;
 
             NC_STACK_ypabact *boom = yw->ypaworld_func146(&arg146);
 
@@ -1257,12 +1249,11 @@ void ypaworld_func129__sub0(NC_STACK_ypaworld *yw, const cellArea &cell, yw_arg1
 
 void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 {
-    int secX = arg->pos.x / 1200.0;
-    int secY = -arg->pos.z / 1200.0;
+    Common::Point sec = World::PositionToSectorID( arg->pos );
 
-    if ( secX > 0 && _mapWidth - 1 > secX && secY > 0 && _mapHeight - 1 > secY )
+    if ( IsGamePlaySector(sec) )
     {
-        cellArea &cell = _cells(secX, secY);
+        cellArea &cell = _cells.At(sec);
 
         int v8 = (int)(arg->pos.x / 150.0) % 8;
 
@@ -1318,7 +1309,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             {
                 while ( v18 > v36 )
                 {
-                    sub_44FD6C(this, cell, secX, secY, bldX, bldY);
+                    sub_44FD6C(this, cell, sec.x, sec.y, bldX, bldY);
 
                     v18--;
                 }
@@ -1327,7 +1318,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
             {
                 while ( v18 < v36 )
                 {
-                    sub_44FD6C(this, cell, secX, secY, bldX, bldY);
+                    sub_44FD6C(this, cell, sec.x, sec.y, bldX, bldY);
 
                     v18++;
                 }
@@ -1337,7 +1328,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
             ypaworld_func129__sub0(this, cell, arg);
 
-            CellCheckHealth(&cell, secX, secY, arg->field_14, arg);
+            CellCheckHealth(&cell, sec.x, sec.y, arg->field_14, arg);
 
             if ( cell.w_type == 4 )
             {
@@ -1348,7 +1339,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
                     else
                         yw_ActivateWunderstein(&cell, cell.w_id);                  
 
-                    HistoryEventAdd( World::History::Upgrade(secX, secY, cell.owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
+                    HistoryEventAdd( World::History::Upgrade(sec.x, sec.y, cell.owner, _Gems[ field_2b78 ].Type, last_modify_vhcl, last_modify_weapon, last_modify_build) );
                 }
             }
             else if ( cell.w_type == 7 )
@@ -1371,15 +1362,19 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
 size_t NC_STACK_ypaworld::GetSectorInfo(yw_130arg *arg)
 {
-    arg->sec_x = arg->pos_x / 1200;
-    arg->sec_z = -arg->pos_z / 1200;
+    Common::Point stmp = World::PositionToSectorID( arg->pos_x, arg->pos_z );
+            
+    arg->sec_x = stmp.x;
+    arg->sec_z = stmp.y;
+    
+    vec2d tmp = World::SectorIDToCenterPos2(stmp);
 
-    arg->pos_x_cntr = arg->pos_x - arg->sec_x * 1200.0 + -600.0;
-    arg->pos_y_cntr = arg->pos_z + arg->sec_z * 1200.0 + 600.0;
+    arg->pos_x_cntr = arg->pos_x - tmp.x;
+    arg->pos_y_cntr = arg->pos_z - tmp.y;
 
-    if ( arg->sec_x < 0 || arg->sec_z < 0 || arg->sec_x >= _mapWidth || arg->sec_z >= _mapHeight )
+    if ( !IsSector( {arg->sec_x, arg->sec_z} ) )
     {
-        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, _mapWidth, _mapHeight);
+        ypa_log_out("YWM_GETSECTORINFO %d %d max: %d %d\n", arg->sec_x, arg->sec_z, _mapSize.x, _mapSize.y);
         ypa_log_out("YWM_GETSECTORINFO ausserhalb!!!\n");
 
         arg->pcell = NULL;
@@ -2229,7 +2224,7 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
         int v12 = -v7 >> 16;
         int v29 = v6 >> 16;
 
-        if ( v29 >= 0 && v29 < _mapWidth && v12 >= 0 && v12 < _mapHeight )
+        if ( IsSector( {v29, v12} ) )
         {
             for ( NC_STACK_ypabact* &sect_bacts : _cells(v29, v12).unitsList )
             {
@@ -5884,9 +5879,9 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
                                 yw_InitSquads(mapp.Squads);
                                 InitBuddies();
 
-                                for (int yy = 0; yy < _mapHeight; yy++)
+                                for (int yy = 0; yy < _mapSize.y; yy++)
                                 {
-                                    for (int xx = 0; xx < _mapWidth; xx++)
+                                    for (int xx = 0; xx < _mapSize.x; xx++)
                                     {
                                         CellCheckHealth(&_cells(xx, yy), xx, yy, 255, NULL);
                                     }
@@ -6559,9 +6554,9 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
     if ( saveFile.find(".fin") != std::string::npos || saveFile.find(".FIN") != std::string::npos )
         InitBuddies();
 
-    for(int y = 0; y < _mapHeight; y++)
+    for(int y = 0; y < _mapSize.y; y++)
     {
-        for(int x = 0; x < _mapWidth; x++)
+        for(int x = 0; x < _mapSize.x; x++)
         {
             CellCheckHealth(&_cells(x, y), x, y, 255, NULL);
         }
@@ -7044,9 +7039,9 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
             return;
     }
 
-    for (int i = 0; i < _mapHeight; i++)
+    for (int i = 0; i < _mapSize.y; i++)
     {
-        for (int j = 0; j < _mapWidth; j++)
+        for (int j = 0; j < _mapSize.x; j++)
         {
             cellArea &v9 = _cells(j, i);
 
@@ -7061,9 +7056,9 @@ void NC_STACK_ypaworld::ypaworld_func177(yw_arg177 *arg)
     if ( UserRobo->_owner != arg->field_4 )
         return;
 
-    for (int i = 0; i < _mapHeight; i++)
+    for (int i = 0; i < _mapSize.y; i++)
     {
-        for (int j = 0; j < _mapWidth; j++)
+        for (int j = 0; j < _mapSize.x; j++)
         {
             cellArea &v15 = _cells(j, i);
 
@@ -7365,26 +7360,19 @@ void NC_STACK_ypaworld::setYW_dontRender(int drndr)
 }
 
 
-
-
-int NC_STACK_ypaworld::getYW_mapMaxX()
-{
-    return _mapAbsMaxX;
-}
-
-int NC_STACK_ypaworld::getYW_mapMaxY()
-{
-    return _mapAbsMaxY;
-}
-
 int NC_STACK_ypaworld::getYW_mapSizeX()
 {
-    return _mapWidth;
+    return _mapSize.x;
 }
 
 int NC_STACK_ypaworld::getYW_mapSizeY()
 {
-    return _mapHeight;
+    return _mapSize.y;
+}
+
+Common::Point NC_STACK_ypaworld::GetMapSize()
+{
+    return _mapSize;
 }
 
 int NC_STACK_ypaworld::getYW_normVisLimit()
@@ -7601,22 +7589,31 @@ std::string NC_STACK_ypaworld::GetLocaleString(int32_t id, const std::string &de
 
 cellArea *NC_STACK_ypaworld::GetSector(int32_t x, int32_t y)
 {
-    if (x >= 0 && x < _mapWidth
-    &&  y >= 0 && y < _mapHeight)
+    if (_cells.empty())
+        return NULL;
+    
+    if (x >= 0 && x < _mapSize.x
+    &&  y >= 0 && y < _mapSize.y)
         return &_cells(x, y); 
     return NULL;
 }
 
 cellArea *NC_STACK_ypaworld::GetSector(const Common::Point &sec)
 {
-    if (sec.x >= 0 && sec.x < _mapWidth
-    &&  sec.y >= 0 && sec.y < _mapHeight)
+    if (_cells.empty())
+        return NULL;
+    
+    if (sec.x >= 0 && sec.x < _mapSize.x
+    &&  sec.y >= 0 && sec.y < _mapSize.y)
         return &_cells(sec.x, sec.y); 
     return NULL;
 }
 
 cellArea *NC_STACK_ypaworld::GetSector(size_t id)
 {
+    if (_cells.empty())
+        return NULL;
+    
     if (id >= 0 && id < _cells.size())
         return &_cells.At(id);
     return NULL;
@@ -7640,11 +7637,9 @@ cellArea &NC_STACK_ypaworld::SectorAt(size_t id)
 
 void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
 {
-    _mapWidth = sz.x;
-    _mapHeight = sz.y;
+    _mapSize = sz;
 
-    map_Width_meters = _mapWidth * 1200.0;
-    map_Height_meters = _mapHeight * 1200.0;
+    _mapLength = World::SectorIDToPos2(_mapSize);
     
     _cells.Clear();
     _cells.Resize(sz);
@@ -7666,17 +7661,17 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
 
 bool NC_STACK_ypaworld::IsGamePlaySector(const Common::Point &sz) const
 {
-    return sz.x > 0 && sz.x < (_mapWidth - 1) && sz.y > 0 && sz.y < (_mapHeight - 1);
+    return sz.x > 0 && sz.x < (_mapSize.x - 1) && sz.y > 0 && sz.y < (_mapSize.y - 1);
 }
 
 bool NC_STACK_ypaworld::IsSectorBorder(const Common::Point &sz, int border) const
 {
-    return sz.x < border || sz.x >= (_mapWidth - border) || sz.y < border || sz.y >= (_mapHeight - border);
+    return sz.x < border || sz.x >= (_mapSize.x - border) || sz.y < border || sz.y >= (_mapSize.y - border);
 }
 
 bool NC_STACK_ypaworld::IsSector(const Common::Point &sz) const
 {
-    return sz.x >= 0 && sz.x < _mapWidth  && sz.y >= 0 && sz.y < _mapHeight;
+    return sz.x >= 0 && sz.x < _mapSize.x  && sz.y >= 0 && sz.y < _mapSize.y;
 }
 
 Common::PlaneVector<cellArea> &NC_STACK_ypaworld::Sectors()

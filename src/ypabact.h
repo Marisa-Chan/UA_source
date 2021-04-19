@@ -610,10 +610,11 @@ public:
     int _sectX;
     int _sectY;
     cellArea *_pSector;
-    float _wrldX;
-    float _wrldY;
-    int16_t _secMaxX;
-    int16_t _secMaxY;
+    
+    vec2d _wrldSize;
+    
+    Common::Point _wrldSectors;
+ 
     int _bact_type;
     uint32_t _gid; // global bact id
     uint8_t _vehicleID; // vehicle id, from scr files

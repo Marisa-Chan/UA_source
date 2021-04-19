@@ -449,8 +449,8 @@ void NC_STACK_yparobo::InitForce(NC_STACK_ypabact *unit)
     setTarget_msg arg67;
     arg67.tgt_type = BACT_TGT_TYPE_CELL;
     arg67.priority = 0;
-    arg67.tgt_pos.x = _position.x + _rotation.m20 * 1200.0 * 0.5;
-    arg67.tgt_pos.z = _position.z + _rotation.m22 * 1200.0 * 0.5;
+    arg67.tgt_pos.x = _position.x + _rotation.m20 * World::SectorLength * 0.5;
+    arg67.tgt_pos.z = _position.z + _rotation.m22 * World::SectorLength * 0.5;
     newUnit->SetTarget(&arg67);
 
     if ( _world->isNetGame )
@@ -614,9 +614,8 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK
 
                 if ( pcell.owner == unit1->_owner && pcell.w_type == 2 )
                 {
-                    float yy = (pt.y + 0.5) * -1200.0;
-                    float xx = (pt.x + 0.5) * 1200.0;
-                    sub_4A5A08(unit2, xx, yy);
+                    vec2d xy = World::SectorIDToCenterPos2(pt);
+                    sub_4A5A08(unit2, xy.x, xy.y);
 
                     unit2->setBACT_aggression(25);
                     return;
@@ -655,10 +654,9 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK
     }
     else
     {
-        float yy = (unit1->_sectY + 0.5) * -1200.0;
-        float xx = (unit1->_sectX + 0.5) * 1200.0;
+        vec2d xy = World::SectorIDToCenterPos2( {unit1->_sectX, unit1->_sectY} );
 
-        sub_4A5A08(unit2, xx, yy);
+        sub_4A5A08(unit2, xy.x, xy.y);
 
         unit2->setBACT_aggression(50);
     }
@@ -1813,8 +1811,8 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos)
 
 void NC_STACK_yparobo::sub_4F4FF4(int sectID, setTarget_msg *parg67)
 {
-    int sX = sectID % _secMaxX;
-    int sY = sectID / _secMaxX;
+    int sX = sectID % _wrldSectors.x;
+    int sY = sectID / _wrldSectors.x;
 
     if ( sX == _sectX && sY == _sectY )
     {
@@ -1838,14 +1836,13 @@ void NC_STACK_yparobo::sub_4F4FF4(int sectID, setTarget_msg *parg67)
 
     parg67->tgt_type = BACT_TGT_TYPE_CELL;
     parg67->priority = 0;
-    parg67->tgt_pos.x = (sX + 0.5) * 1200.0;
-    parg67->tgt_pos.z = -(sY + 0.5) * 1200.0;
+    parg67->tgt_pos = World::SectorIDToCenterPos3( {sX, sY} );
 }
 
 void NC_STACK_yparobo::buildRadar(update_msg *arg)
 {
-    int xx = _roboBuildingCellID % _secMaxX;
-    int yy = _roboBuildingCellID / _secMaxX;
+    int xx = _roboBuildingCellID % _wrldSectors.x;
+    int yy = _roboBuildingCellID / _wrldSectors.x;
 
     float v35 = arg->frameTime * 0.001;
 
@@ -1895,8 +1892,7 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
                     arg67.priority = 0;
                     SetTarget(&arg67);
 
-                    vec2d t ( (xx + 0.5) * 1200.0 - _position.x,
-                              -(yy + 0.5) * 1200.0 - _position.z );
+                    vec2d t = World::SectorIDToCenterPos2( {xx, yy} ) - _position.XZ();
 
                     t.normalise();
 
@@ -2015,8 +2011,8 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos)
 
 void NC_STACK_yparobo::buildPower(update_msg *arg)
 {
-    int xx = _roboBuildingCellID % _secMaxX;
-    int yy = _roboBuildingCellID / _secMaxX;
+    int xx = _roboBuildingCellID % _wrldSectors.x;
+    int yy = _roboBuildingCellID / _wrldSectors.x;
 
     float v38 = arg->frameTime * 0.001;
 
@@ -2068,8 +2064,7 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
                         arg67.priority = 0;
                         SetTarget(&arg67);
 
-                        vec2d t ( (xx + 0.5) * 1200.0 - _position.x,
-                                  -(yy + 0.5) * 1200.0 - _position.z );
+                        vec2d t = World::SectorIDToCenterPos2( {xx, yy} ) - _position.XZ();
 
                         t.normalise();
 
@@ -2191,8 +2186,8 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos)
 void NC_STACK_yparobo::buildSafe(update_msg *arg)
 {
     // Copy of sub4_sub0 with minor changes
-    int xx = _roboBuildingCellID % _secMaxX;
-    int yy = _roboBuildingCellID / _secMaxX;
+    int xx = _roboBuildingCellID % _wrldSectors.x;
+    int yy = _roboBuildingCellID / _wrldSectors.x;
 
     float v35 = arg->frameTime * 0.001;
 
@@ -2241,9 +2236,8 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
                     arg67.tgt_type = BACT_TGT_TYPE_NONE;
                     arg67.priority = 0;
                     SetTarget(&arg67);
-
-                    vec2d t ( (xx + 0.5) * 1200.0 - _position.x,
-                              -(yy + 0.5) * 1200.0 - _position.z );
+                    
+                    vec2d t = World::SectorIDToCenterPos2( {xx, yy} ) - _position.XZ();
 
                     t.normalise();
 
@@ -2326,23 +2320,18 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
 
 void NC_STACK_yparobo::changePlace()
 {
-    int xx = _roboBuildingCellID % _secMaxX;
-    int yy = _roboBuildingCellID / _secMaxX;
-
-    if ( xx >= 1 && xx <= (_secMaxX - 2) && yy >= 1 && yy <= (_secMaxY - 2) )
+    Common::Point pt(_roboBuildingCellID % _wrldSectors.x, _roboBuildingCellID / _wrldSectors.x);
+    
+    if ( _world->IsGamePlaySector(pt) )
     {
-        int tmp1 = _sectY - yy;
-        int tmp2 = _sectX - xx;
-
-        float v12 = sqrt(tmp1 * tmp1 + tmp2 * tmp2);
+        float v12 = pt.LengthTo<float>( {_sectX, _sectY} );
 
         if ( v12 >= 0.1 )
         {
             setTarget_msg arg67;
             arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
             arg67.priority = 0;
-            arg67.tgt_pos.x = (xx + 0.5) * 1200.0;
-            arg67.tgt_pos.z = -(yy + 0.5) * 1200.0;
+            arg67.tgt_pos = World::SectorIDToCenterPos3( pt );
 
             SetTarget(&arg67);
         }
@@ -2490,7 +2479,7 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
                             int v80 = _world->TestVehicle(i, arg->job);
 
                             int v27 = 0;
-                            if ( v2 < (_secMaxX + _secMaxY) / 5 )
+                            if ( v2 < (_wrldSectors.x + _wrldSectors.y) / 5 )
                                 v27 = 1;
 
                             if ( _energy < ((float)_energy_max * 0.9) )
@@ -2629,8 +2618,8 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
         setTarget_msg arg67;
         arg67.tgt_type = BACT_TGT_TYPE_CELL;
         arg67.priority = 0;
-        arg67.tgt_pos.x = _rotation.m20 * 1200.0 * 0.5 + _position.x;
-        arg67.tgt_pos.z = _rotation.m22 * 1200.0 * 0.5 + _position.z;
+        arg67.tgt_pos.x = _rotation.m20 * World::SectorLength * 0.5 + _position.x;
+        arg67.tgt_pos.z = _rotation.m22 * World::SectorLength * 0.5 + _position.z;
 
         newUnit->SetTarget(&arg67);
 
@@ -2693,8 +2682,7 @@ void NC_STACK_yparobo::buildConquer()
 {
     bact_arg92 arg92;
     arg92.field_14 = 2;
-    arg92.pos.x = ((_roboVehicleCellID % _secMaxX) + 0.5) * 1200.0;
-    arg92.pos.z = -( (_roboVehicleCellID / _secMaxX ) + 0.5) * 1200.0;
+    arg92.pos = World::SectorIDToCenterPos3( {_roboVehicleCellID % _wrldSectors.x, _roboVehicleCellID / _wrldSectors.x} );
 
     GetForcesRatio(&arg92);
 
@@ -3007,9 +2995,7 @@ void NC_STACK_yparobo::buildReconnoitre()
     else
     {
         robo_loct1 loct;
-        loct.tgt_pos.x = ((_roboVehicleCellID % _secMaxX) + 0.5) * 1200.0;
-        loct.tgt_pos.y = 0;
-        loct.tgt_pos.z = -((_roboVehicleCellID / _secMaxX) + 0.5) * 1200.0;
+        loct.tgt_pos = World::SectorIDToCenterPos3( {_roboVehicleCellID % _wrldSectors.x, _roboVehicleCellID / _wrldSectors.x} );
 
         loct.energ = 10;
         loct.aggr = 25;
@@ -4275,8 +4261,8 @@ int NC_STACK_yparobo::sub_4F4E48(int x, int y)
 
 int NC_STACK_yparobo::yparobo_func70__sub6__sub7()
 {
-    int xx = _roboPositionCellIndex % _secMaxX;
-    int yy = _roboPositionCellIndex / _secMaxX;
+    int xx = _roboPositionCellIndex % _wrldSectors.x;
+    int yy = _roboPositionCellIndex / _wrldSectors.x;
 
     int a1_4 = sub_4F4E48(_sectX, _sectY);
     int v14 = sub_4F4E48(xx, yy);
@@ -4306,18 +4292,18 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpConquer && v6 )
     {
-        int v89 = (_secMaxY + _secMaxX) / 20 + 1;
+        int v89 = (_wrldSectors.y + _wrldSectors.x) / 20 + 1;
 
         for (int i = v89; i > 0; i--)
         {
-            if ( _secMaxX * _secMaxY == _roboConqCellIndex )
+            if ( _wrldSectors.x * _wrldSectors.y == _roboConqCellIndex )
             {
                 _roboConqCellIndex = 0;
                 _roboState |= ROBOSTATE_READYCONQUER;
                 return;
             }
 
-            Common::Point pt (_roboConqCellIndex % _secMaxX, _roboConqCellIndex / _secMaxX);
+            Common::Point pt (_roboConqCellIndex % _wrldSectors.x, _roboConqCellIndex / _wrldSectors.x);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -4326,8 +4312,7 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
                 {
                     arg128.flags = 2;
                     arg128.tgType = BACT_TGT_TYPE_CELL;
-                    arg128.tgt_pos.x = (pt.x + 0.5) * 1200.0;
-                    arg128.tgt_pos.z = -(pt.y + 0.5) * 1200.0;
+                    arg128.tgt_pos = World::SectorIDToCenterPos3(pt);
 
                     yparobo_func128(&arg128);
 
@@ -4380,7 +4365,7 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
                 _roboEnemyValue = v17;
                 _roboEnemyCommandID = v91;
                 _roboEnemyTime = arg->gTime;
-                _roboEnemyCellID = yy * _secMaxX + xx;
+                _roboEnemyCellID = yy * _wrldSectors.x + xx;
             }
         }
         _roboState |= ROBOSTATE_READYDEFENSE;
@@ -4421,7 +4406,7 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
                 _roboDangerValue = v22;
                 _roboDangerCommandID = v91;
                 _roboDangerTime = arg->gTime;
-                _roboDangerCellID = _secMaxX * yy + xx;
+                _roboDangerCellID = _wrldSectors.x * yy + xx;
             }
         }
         _roboState |= ROBOSTATE_READYROBO;
@@ -4442,21 +4427,18 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpChangePlace && v6 )
     {
-        int v25 = (_secMaxX + _secMaxY) / 10 + 1;
+        int v25 = (_wrldSectors.x + _wrldSectors.y) / 10 + 1;
 
         for (int i = v25; i > 0; i--)
         {
-            if ( _secMaxX * _secMaxY == _roboPositionCellIndex )
+            if ( _wrldSectors.x * _wrldSectors.y == _roboPositionCellIndex )
             {
                 _roboPositionCellIndex = 0;
                 _roboState |= ROBOSTATE_FOUNDPLACE;
                 return;
             }
 
-            int xx = _roboPositionCellIndex % _secMaxX;
-            int yy = _roboPositionCellIndex / _secMaxX;
-
-            if ( xx && xx != _secMaxX - 1 && yy && yy != _secMaxY - 1 )
+            if ( _world->IsGamePlaySector( {_roboPositionCellIndex % _wrldSectors.x, _roboPositionCellIndex / _wrldSectors.x} ) )
             {
                 int v34 = yparobo_func70__sub6__sub7();
                 if ( v34 > _roboPositionValue )
@@ -4502,17 +4484,17 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpPower && (v85.field_8 > v93 || v85.field_4 < 0.0001) && v6 )
     {
-        int v99 = (_secMaxX + _secMaxY) / 20 + 1;
+        int v99 = (_wrldSectors.x + _wrldSectors.y) / 20 + 1;
         for (int i = v99; i > 0; i--)
         {
-            if ( _secMaxX * _secMaxY == _roboPowerCellIndex )
+            if ( _wrldSectors.x * _wrldSectors.y == _roboPowerCellIndex )
             {
                 _roboPowerCellIndex = 0;
                 _roboState |= ROBOSTATE_READYPOWER;
                 return;
             }
             
-            Common::Point pt(_roboPowerCellIndex % _secMaxX, _roboPowerCellIndex / _secMaxX);
+            Common::Point pt(_roboPowerCellIndex % _wrldSectors.x, _roboPowerCellIndex / _wrldSectors.x);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -4545,18 +4527,18 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpRadar && (yparobo_func70__sub6__sub11() / 64 > yparobo_func70__sub6__sub9()) && v6 )
     {
-        int v48 = (_secMaxY + _secMaxX) / 20 + 1;
+        int v48 = (_wrldSectors.y + _wrldSectors.x) / 20 + 1;
 
         for(int i = v48; i > 0; i--)
         {
-            if ( _secMaxX * _secMaxY == _roboRadarCellIndex )
+            if ( _wrldSectors.x * _wrldSectors.y == _roboRadarCellIndex )
             {
                 _roboRadarCellIndex = 0;
                 _roboState |= ROBOSTATE_READYRADAR;
                 return;
             }
             
-            Common::Point pt(_roboRadarCellIndex % _secMaxX, _roboRadarCellIndex / _secMaxX);
+            Common::Point pt(_roboRadarCellIndex % _wrldSectors.x, _roboRadarCellIndex / _wrldSectors.x);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -4597,18 +4579,18 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpSafety && (yparobo_func70__sub6__sub10() / v92) >= yparobo_func70__sub6__sub8() && v6 )
     {
-        int v60 = (_secMaxY + _secMaxX) / 20 + 1;
+        int v60 = (_wrldSectors.y + _wrldSectors.x) / 20 + 1;
 
         for(int i = v60; i > 0; i--)
         {
-            if ( _secMaxX * _secMaxY == _roboSafetyCellIndex )
+            if ( _wrldSectors.x * _wrldSectors.y == _roboSafetyCellIndex )
             {
                 _roboSafetyCellIndex = 0;
                 _roboState |= ROBOSTATE_READYSAFE;
                 return;
             }
             
-            Common::Point pt(_roboSafetyCellIndex % _secMaxX, _roboSafetyCellIndex / _secMaxX);
+            Common::Point pt(_roboSafetyCellIndex % _wrldSectors.x, _roboSafetyCellIndex / _wrldSectors.x);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -4643,18 +4625,18 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpRecon && v6 )
     {
-        int v90 = (_secMaxY + _secMaxX) / 20 + 1;
+        int v90 = (_wrldSectors.y + _wrldSectors.x) / 20 + 1;
 
         for (int i = v90; i > 0; i-- )
         {
-            if ( _secMaxX * _secMaxY == _roboExploreCellIndex )
+            if ( _wrldSectors.x * _wrldSectors.y == _roboExploreCellIndex )
             {
                 _roboExploreCellIndex = 0;
                 _roboState |= ROBOSTATE_READYRECON;
                 return;
             }
 
-            Common::Point pt(_roboExploreCellIndex % _secMaxX, _roboExploreCellIndex / _secMaxX);
+            Common::Point pt(_roboExploreCellIndex % _wrldSectors.x, _roboExploreCellIndex / _wrldSectors.x);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -4665,8 +4647,7 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
                     robo_arg128 arg128_1;
                     arg128_1.tgType = BACT_TGT_TYPE_CELL;
                     arg128_1.flags = 2;
-                    arg128_1.tgt_pos.x = (pt.x + 0.5) * 1200.0;
-                    arg128_1.tgt_pos.z = -(pt.y + 0.5) * 1200.0;
+                    arg128_1.tgt_pos = World::SectorIDToCenterPos3(pt);
 
                     yparobo_func128(&arg128_1);
 
@@ -5518,26 +5499,24 @@ void NC_STACK_yparobo::yparobo_func128(robo_arg128 *arg)
             {
                 if ( node->_primTtype == arg->tgType || _roboDockTargetType == arg->tgType )
                 {
-                    int v28 = arg->tgt_pos.x / 1200.0;
-                    int v29 = (-arg->tgt_pos.z) / 1200.0;
+                    Common::Point tgsec = World::PositionToSectorID(arg->tgt_pos);
+                    Common::Point rbtg;
 
-                    int v30, v31, v16;
+                    int v16;
                     if ( node->_commandID == _roboDockUser && _roboDockUser )
                     {
-                        v30 = _roboDockTargetPos.x / 1200.0;
-                        v31 = (-_roboDockTargetPos.z) / 1200.0;
+                        rbtg = World::PositionToSectorID( _roboDockTargetPos );
                         v16 = _roboDockTargetCommandID;
                     }
                     else
                     {
-                        v30 = node->_primTpos.x / 1200.0;
-                        v31 = (-node->_primTpos.z) / 1200.0;
+                        rbtg = World::PositionToSectorID( node->_primTpos );
                         v16 = node->_primT_cmdID;
                     }
 
                     if ( (arg->tgType == BACT_TGT_TYPE_UNIT && !arg->prim_comm_id && arg->tgt.pbact == node->_primT.pbact)
                             || (arg->tgType == BACT_TGT_TYPE_UNIT && arg->prim_comm_id != 0 && v16 == arg->prim_comm_id)
-                            || (arg->tgType == BACT_TGT_TYPE_CELL && v30 == v28 && v31 == v29) )
+                            || (arg->tgType == BACT_TGT_TYPE_CELL && rbtg == tgsec) )
                     {
                         arg->comm_bact = node;
                         arg->comm_bacto = node;
@@ -5959,8 +5938,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
     else
     {
 
-        _position.x = (_sectX + 0.5) * 1200.0;
-        _position.z = -(_sectY + 0.5) * 1200.0;
+        _position = World::SectorIDToCenterPos3( {_sectX, _sectY} );
 
         for (NC_STACK_ypabact* &unit : _kidList )
         {
@@ -5980,8 +5958,9 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
             {
                 if ( bct->_bact_type != BACT_TYPES_ROBO && bct->_bact_type != BACT_TYPES_MISSLE && bct->_bact_type != BACT_TYPES_GUN && bct->_owner == _owner )
                 {
-                    float v17 = fabs(bct->_position.x - (_sectX + 0.5) * 1200.0);
-                    float v29 = fabs(bct->_position.z + (_sectY + 0.5) * 1200.0);
+                    vec2d temp = World::SectorIDToCenterPos2( {_sectX, _sectY} );
+                    float v17 = fabs(bct->_position.x - temp.x);
+                    float v29 = fabs(bct->_position.z - temp.y);
 
                     if ( v17 <= 450.0 || v29 <= 450.0 )
                     {

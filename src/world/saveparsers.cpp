@@ -595,9 +595,9 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
 
     if ( _o.own_map )
     {
-        for (int y = 0; y < _o._mapHeight; y++)
+        for (int y = 0; y < _o._mapSize.y; y++)
         {
-            for (int x = 0; x < _o._mapWidth; x++)
+            for (int x = 0; x < _o._mapSize.x; x++)
             {
                 int own = _o.own_map->At(x, y);
                 _o._cells(x, y).owner = own;
@@ -627,9 +627,9 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
     _o.blg_map = ReadMapAsPlaneBytes(parser);
     if ( _o.blg_map )
     {
-        for (int y = 0; y < _o._mapHeight; y++)
+        for (int y = 0; y < _o._mapSize.y; y++)
         {
-            for (int x = 0; x < _o._mapWidth; x++)
+            for (int x = 0; x < _o._mapSize.x; x++)
             {
                 cellArea &cell = _o._cells(x, y);
                 int blg = _o.blg_map->At(x, y);
@@ -669,9 +669,9 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
 
     if ( nrgmap )
     {
-        for (int y = 0; y < _o._mapHeight * 3; y++)
+        for (int y = 0; y < _o._mapSize.y * 3; y++)
         {
-            for (int x = 0; x < _o._mapWidth; x++)
+            for (int x = 0; x < _o._mapSize.x; x++)
             {
                 cellArea &cell = _o._cells(x, y / 3);
                 

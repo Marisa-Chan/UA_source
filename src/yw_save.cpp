@@ -424,13 +424,13 @@ void yw_write_map(NC_STACK_ypaworld *yw, Common::PlaneBytes *map, const std::str
 
 void yw_write_ownermap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    Common::PlaneBytes *ownermap = new Common::PlaneBytes(yw->_mapWidth, yw->_mapHeight);
+    Common::PlaneBytes *ownermap = new Common::PlaneBytes(yw->_mapSize);
 
     if ( ownermap )
     {
-        for (int y = 0; y < yw->_mapHeight; y++)
+        for (int y = 0; y < yw->_mapSize.y; y++)
         {
-            for (int x = 0; x < yw->_mapWidth; x++)
+            for (int x = 0; x < yw->_mapSize.x; x++)
                 ownermap->At(x, y) = yw->_cells(x, y).owner;
         }
 
@@ -451,13 +451,13 @@ void yw_write_buildmap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 void yw_write_energymap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    Common::PlaneBytes *energymap = new Common::PlaneBytes(yw->_mapWidth * 3, yw->_mapHeight * 3);
+    Common::PlaneBytes *energymap = new Common::PlaneBytes(yw->_mapSize.x * 3, yw->_mapSize.y * 3);
 
     if ( energymap )
     {
-        for (int y = 0; y < yw->_mapHeight * 3; y++)
+        for (int y = 0; y < yw->_mapSize.y * 3; y++)
         {
-            for (int x = 0; x < yw->_mapWidth; x++)
+            for (int x = 0; x < yw->_mapSize.x; x++)
             {
                 cellArea &cell = yw->_cells(x, y / 3);
                 

@@ -27,6 +27,8 @@
 
 #include "glob_funcs.h"
 
+#include "world/consts.h"
+#include "world/tools.h"
 #include "world/parsers.h"
 #include "world/saveparsers.h"
 #include "world/nparticle.h"
@@ -2435,10 +2437,11 @@ public:
     virtual void setYW_screenH(int);
     virtual void setYW_dontRender(int);
 
-    virtual int getYW_mapMaxX();
-    virtual int getYW_mapMaxY();
     virtual int getYW_mapSizeX();
     virtual int getYW_mapSizeY();
+    
+    Common::Point GetMapSize();
+    
     virtual int getYW_normVisLimit();
     virtual int getYW_fadeLength();
     virtual int getYW_skyHeight();
@@ -2711,14 +2714,12 @@ public:
     
     UserData *GameShell;
     base_64arg *b64_parms;
-    int _mapAbsMaxX;
-    int _mapAbsMaxY;
-    int _mapWidth;
-    int _mapHeight;
+    Common::Point _mapSize;
+
     Common::PlaneVector<cellArea> _cells;
 
-    float map_Width_meters;
-    float map_Height_meters;
+    vec2d _mapLength;
+
     Common::PlaneVector<EnergyAccum> _energyAccumMap;
     std::vector<PowerStationRef> _powerStations;
     int _nextPSForUpdate;

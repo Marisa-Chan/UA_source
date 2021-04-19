@@ -2335,13 +2335,13 @@ int MapRobosParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
     {
         int tmp = std::stol(p2, NULL, 0);
         _r->Pos.y = -300;
-        _r->Pos.x = tmp * 1200.0 + 600.0;
+        _r->Pos.x = tmp * SectorLength + SectorHalfLength;
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
         int tmp = std::stol(p2, NULL, 0);
         _r->Pos.y = -300;
-        _r->Pos.z = -(tmp * 1200.0 + 600.0);
+        _r->Pos.z = -(tmp * SectorLength + SectorHalfLength);
     }
     else if ( !StriCmp(p1, "pos_x") )
     {

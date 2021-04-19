@@ -440,7 +440,7 @@ void NC_STACK_ypaworld::yw_netApplyVhclDataI(NC_STACK_ypabact *bact, uamessage_v
         v49.y = 2 * dat->data[id].pos_y;
         v49.z = 2 * dat->data[id].pos_z;
 
-        if ( v49.x < 0.0 || v49.x > bact->_wrldX || v49.z > 0.0 || v49.z < bact->_wrldY )
+        if ( v49.x < 0.0 || v49.x > bact->_wrldSize.x || v49.z > 0.0 || v49.z < bact->_wrldSize.y )
             log_netlog(
                 "\n+++ EVD: impossible position x %7.2f(%d) z %7.2f(%d) of object %d\n",
                 v49.x,
@@ -3857,9 +3857,9 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
                     {
                         if ( LoadBlgMap(proto.BlgStr) )
                         {
-                            for (int y = 0; y < _mapHeight; y++)
+                            for (int y = 0; y < _mapSize.y; y++)
                             {
-                                for (int x = 0; x < _mapWidth; x++)
+                                for (int x = 0; x < _mapSize.x; x++)
                                 {
                                     CellCheckHealth(&_cells(x, y), x, y, 255, NULL);
                                 }

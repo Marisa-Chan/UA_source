@@ -44,10 +44,8 @@ NC_STACK_ypabact::NC_STACK_ypabact()
     _sectX = 0;
     _sectY = 0;
     _pSector = NULL;
-    _wrldX = 0.0;
-    _wrldY = 0.0;
-    _secMaxX = 0;
-    _secMaxY = 0;
+    _wrldSize = vec2d();
+    _wrldSectors = Common::Point();
     _bact_type = 0;
     _gid = 0;
     _vehicleID = 0;
@@ -341,13 +339,9 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
 
     _status = BACT_STATUS_NORMAL;
 
-    int secMaxX = _world->getYW_mapSizeX();
-    int secMaxY = _world->getYW_mapSizeY();
+    _wrldSectors = _world->GetMapSize();
 
-    _wrldX =  secMaxX * 1200.0;
-    _wrldY = -secMaxY * 1200.0;
-    _secMaxX = secMaxX;
-    _secMaxY = secMaxY;
+    _wrldSize = World::SectorIDToPos2( _wrldSectors );
 
     return 1;
 }
@@ -559,23 +553,19 @@ void NC_STACK_ypabact::FixSectorFall()
 
 void NC_STACK_ypabact::FixBeyondTheWorld()
 {
-    int maxX = _world->getYW_mapSizeX();
-    int maxY = _world->getYW_mapSizeY();
+    vec2d mv = World::SectorIDToPos2( _world->GetMapSize() );
 
-    float mx = maxX * 1200.0;
-    float my = -(maxY * 1200.0);
-
-    if ( _position.x > mx )
-        _position.x = mx - 600.0;
+    if ( _position.x > mv.x )
+        _position.x = mv.x - World::SectorHalfLength;
 
     if ( _position.x < 0.0 )
-        _position.x = 600.0;
+        _position.x = World::SectorHalfLength;
 
-    if ( _position.z < my )
-        _position.z = my + 600.0;
+    if ( _position.z < mv.y )
+        _position.z = mv.y + World::SectorHalfLength;
 
     if ( _position.z > 0.0 )
-        _position.z = -600.0;
+        _position.z = -World::SectorHalfLength;
 
     FixSectorFall();
 }
@@ -774,6 +764,8 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
 {
     _assess_time = 0;
     yw_130arg arg130;
+    
+    constexpr float CurSectrLength = World::SectorLength + 10.0;
 
     if ( _status_flg & BACT_STFLAG_DEATH1 && arg->tgt_type == BACT_TGT_TYPE_UNIT )
     {
@@ -793,17 +785,17 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
             arg130.pos_x = arg->tgt_pos.x;
             arg130.pos_z = arg->tgt_pos.z;
 
-            if ( arg130.pos_x < 1210.0 )
-                arg130.pos_x = 1210.0;
+            if ( arg130.pos_x < CurSectrLength )
+                arg130.pos_x = CurSectrLength;
 
-            if ( arg130.pos_x > _wrldX - 1210.0 )
-                arg130.pos_x = _wrldX - 1210.0;
+            if ( arg130.pos_x > _wrldSize.x - CurSectrLength )
+                arg130.pos_x = _wrldSize.x - CurSectrLength;
 
-            if ( arg130.pos_z > -1210.0 )
-                arg130.pos_z = -1210.0;
+            if ( arg130.pos_z > -CurSectrLength )
+                arg130.pos_z = -CurSectrLength;
 
-            if ( arg130.pos_z < _wrldY + 1210.0 )
-                arg130.pos_z = _wrldY + 1210.0;
+            if ( arg130.pos_z < _wrldSize.y + CurSectrLength )
+                arg130.pos_z = _wrldSize.y + CurSectrLength;
 
             if ( _world->GetSectorInfo(&arg130) )
             {
@@ -874,17 +866,17 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
             arg130.pos_x = arg->tgt_pos.x;
             arg130.pos_z = arg->tgt_pos.z;
 
-            if ( arg130.pos_x < 1210.0 )
-                arg130.pos_x = 1210.0;
+            if ( arg130.pos_x < CurSectrLength )
+                arg130.pos_x = CurSectrLength;
 
-            if ( arg130.pos_x > _wrldX - 1210.0 )
-                arg130.pos_x = _wrldX - 1210.0;
+            if ( arg130.pos_x > _wrldSize.x - CurSectrLength )
+                arg130.pos_x = _wrldSize.x - CurSectrLength;
 
-            if ( arg130.pos_z > -1210.0 )
-                arg130.pos_z = -1210.0;
+            if ( arg130.pos_z > -CurSectrLength )
+                arg130.pos_z = -CurSectrLength;
 
-            if ( arg130.pos_z < _wrldY + 1210.0 )
-                arg130.pos_z = _wrldY + 1210.0;
+            if ( arg130.pos_z < _wrldSize.y + CurSectrLength )
+                arg130.pos_z = _wrldSize.y + CurSectrLength;
 
             if ( _world->GetSectorInfo(&arg130) )
             {
@@ -1132,6 +1124,8 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
 
 void NC_STACK_ypabact::AI_layer2(update_msg *arg)
 {
+    constexpr float CurSectrLength = 1.05 * World::SectorLength;
+    
     if ( (_clock - _AI_time2) < 250 
        || _owner == 0 
        || _secndTtype == BACT_TGT_TYPE_DRCT 
@@ -1238,10 +1232,10 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                      (_secndTtype == BACT_TGT_TYPE_FRMT || 
                       _secndTtype == BACT_TGT_TYPE_NONE) )
                 {
-                    if (  _position.x > 1260.0 && 
-                          _position.x < _wrldX + -1260.0 && 
-                          _position.z < -1260.0 && 
-                          _position.z > _wrldY + 1260.0 )
+                    if (  _position.x > CurSectrLength && 
+                          _position.x < _wrldSize.x + -CurSectrLength && 
+                          _position.z < -CurSectrLength && 
+                          _position.z > _wrldSize.y + CurSectrLength )
                     {
                         _search_time2 = _clock;
 
@@ -1444,7 +1438,7 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
     {
         if ( _oflags & BACT_OFLAG_BACTCOLL )
         {
-            if ( (v80 || (_secndTtype == BACT_TGT_TYPE_NONE && v77 < 1200.0)) && !(_status_flg & BACT_STFLAG_LAND) )
+            if ( (v80 || (_secndTtype == BACT_TGT_TYPE_NONE && v77 < World::SectorLength)) && !(_status_flg & BACT_STFLAG_LAND) )
             {
                 CollisionWithBact(arg->frameTime);
             }
@@ -2325,6 +2319,8 @@ void NC_STACK_ypabact::Move(move_msg *arg)
 
 void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
 {
+    constexpr float CurSectrLen = 1.1 * World::SectorLength;
+    
     arg->pos = arg->target.pbact->_position;
 
     vec3d v40 = arg->target.pbact->_position - _position;
@@ -2367,7 +2363,7 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
         {
             _status_flg &= ~BACT_STFLAG_ATTACK;
 
-            if ( (_position.x < 1320.0 || _position.z > -1320.0 || _position.x > _wrldX - 1320.0 || _position.z < _wrldY + 1320.0) || _adist_bact < foeDistance )
+            if ( (_position.x < CurSectrLen || _position.z > -CurSectrLen || _position.x > _wrldSize.x - CurSectrLen || _position.z < _wrldSize.y + CurSectrLen) || _adist_bact < foeDistance )
             {
                 _status_flg &= ~BACT_STFLAG_APPROACH;
             }
@@ -2614,6 +2610,8 @@ void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
 
 void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
 {
+    constexpr float CurSectrLen = 1.1 * World::SectorLength;
+    
     int v64 = 0;
     int v68 = 0;
 
@@ -2658,7 +2656,7 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
         {
             _status_flg &= ~BACT_STFLAG_ATTACK;
 
-            if ( (_position.x < 1320 || _position.z > -1320.0 || _position.x > _wrldX - 1320.0 || _position.z < _wrldY + 1320.0) || _adist_sector < cellDistance )
+            if ( (_position.x < CurSectrLen || _position.z > -CurSectrLen || _position.x > _wrldSize.x - CurSectrLen || _position.z < _wrldSize.y + CurSectrLen) || _adist_sector < cellDistance )
             {
                 _status_flg &= ~BACT_STFLAG_APPROACH;
             }
@@ -2722,11 +2720,13 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
                 if ( v65 )
                 {
                     robo_arg134 arg134;
+                    
+                    Common::Point tmp = World::PositionToSectorID(_primTpos);
 
                     arg134.unit = this;
                     arg134.field_4 = 4;
-                    arg134.field_8 = _primTpos.x / 1200.0;
-                    arg134.field_C = -_primTpos.z / 1200.0;
+                    arg134.field_8 = tmp.x;
+                    arg134.field_C = tmp.y;
                     arg134.field_14 = 18;
                     arg134.field_10 = 0;
 
@@ -2749,13 +2749,15 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
                 if ( v65 )
                 {
                     robo_arg134 arg134;
+                    
+                    Common::Point tmp = World::PositionToSectorID(_sencdTpos);
 
                     arg134.unit = this;
                     arg134.field_4 = 4;
-                    arg134.field_8 = _sencdTpos.x / 1200.0;
+                    arg134.field_8 = tmp.x;
                     arg134.field_10 = 0;
                     arg134.field_14 = 18;
-                    arg134.field_C = -_sencdTpos.z / 1200.0;
+                    arg134.field_C = tmp.y;
 
                     _host_station->placeMessage(&arg134);
                 }
@@ -2779,15 +2781,17 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
         {
             if ( v68 )
             {
-                if ( v62 < 1200.0 )
+                if ( v62 < World::SectorLength )
                 {
                     if ( !(_status_flg & BACT_STFLAG_FIGHT_P) && v65 && _secndT.pcell != _primT.pcell )
                     {
                         robo_arg134 arg134;
+                        
+                        Common::Point tmp = World::PositionToSectorID(_primTpos);
 
                         arg134.field_4 = 3;
-                        arg134.field_8 = _primTpos.x / 1200.0;
-                        arg134.field_C = -_primTpos.z / 1200.0;
+                        arg134.field_8 = tmp.x;
+                        arg134.field_C = tmp.y;
                         arg134.unit = this;
                         arg134.field_10 = 0;
                         arg134.field_14 = 20;
@@ -2805,15 +2809,17 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
 
             if ( v64 )
             {
-                if ( v62 < 1200.0 )
+                if ( v62 < World::SectorLength )
                 {
                     if ( v65 && !(_status_flg & BACT_STFLAG_FIGHT_S) )
                     {
                         robo_arg134 arg134;
+                        
+                        Common::Point tmp = World::PositionToSectorID(_sencdTpos);
 
                         arg134.field_4 = 3;
-                        arg134.field_8 = _sencdTpos.x / 1200.0;
-                        arg134.field_C = -_sencdTpos.z / 1200.0;
+                        arg134.field_8 = tmp.x;
+                        arg134.field_C = tmp.y;
                         arg134.unit = this;
                         arg134.field_10 = 0;
                         arg134.field_14 = 20;
@@ -2885,10 +2891,12 @@ void NC_STACK_ypabact::FightWithSect(bact_arg75 *arg)
                 if ( v65 && _secndT.pcell != _primT.pcell )
                 {
                     robo_arg134 arg134;
+                    
+                    Common::Point tmp = World::PositionToSectorID(_sencdTpos);
 
                     arg134.field_4 = 2;
-                    arg134.field_8 = _sencdTpos.x / 1200.0;
-                    arg134.field_C = -_sencdTpos.z / 1200.0;
+                    arg134.field_8 = tmp.x;
+                    arg134.field_C = tmp.y;
                     arg134.field_10 = 0;
                     arg134.field_14 = 22;
                     arg134.unit = this;
@@ -2956,8 +2964,8 @@ void NC_STACK_ypabact::Die()
     if ( _status_flg & BACT_STFLAG_DEATH1 )
         return;
     
-    int maxy = _world->getYW_mapMaxY();
-    int maxx = _world->getYW_mapMaxX();
+    int maxy = _world->getYW_mapSizeY();
+    int maxx = _world->getYW_mapSizeX();
 
     uamessage_dead deadMsg;
     deadMsg.msgID = UAMSG_DEAD;
@@ -3003,10 +3011,10 @@ void NC_STACK_ypabact::Die()
                 if ( deputy )
                     deputyLen = (deputy->_position.XZ() - _position.XZ()).square();
                 else
-                    deputyLen = (POW2(maxx) + POW2(maxy)) * 1200.0 * 1200.0;
+                    deputyLen = (POW2(maxx) + POW2(maxy)) * World::SectorLength * World::SectorLength;
 
                 if ( kid->_bact_type == BACT_TYPES_UFO )
-                    kidLen = (POW2(maxx) + POW2(maxy)) * 1200.0 * 1200.0 - 1000.0;
+                    kidLen = (POW2(maxx) + POW2(maxy)) * World::SectorLength * World::SectorLength - 1000.0;
 
                 if ( kidLen <= deputyLen )
                     deputy = kid;
@@ -4562,11 +4570,10 @@ void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
 
     _world->GetSectorInfo(&arg130);
 
-    float v15 = arg130.sec_x * 1200.0 + 600.0;
-    float v13 = -(arg130.sec_z * 1200.0 + 600.0);
+    vec2d ttmp = World::SectorIDToCenterPos2( {arg130.sec_x, arg130.sec_z} );
 
-    arg->x = v15;
-    arg->z = v13;
+    arg->x = ttmp.x;
+    arg->z = ttmp.y;
 
     if ( arg130.pcell->comp_type != 1 )
     {
@@ -4578,8 +4585,8 @@ void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
             {
                 if ( arg130.pcell->buildings_health.At(x, y) > v7 )
                 {
-                    arg->z = 300.0 * (-1 + y) + v13;
-                    arg->x = 300.0 * (-1 + x) + v15;
+                    arg->z = 300.0 * (-1 + y) + ttmp.y;
+                    arg->x = 300.0 * (-1 + x) + ttmp.x;
 
                     v7 = arg130.pcell->buildings_health.At(x, y);
                 }
@@ -4591,9 +4598,6 @@ void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
 void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
 {
     yw_130arg arg130;
-
-    int v4 = _secMaxX;
-    int v5 = _secMaxY;
 
     arg->energ1 = 0;
     arg->energ2 = 0;
@@ -4664,7 +4668,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x < v4 - 1 && arg130.sec_z )
+        if ( arg130.sec_x < _wrldSectors.x - 1 && arg130.sec_z )
         {
             // right-up
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y - 1);
@@ -4734,7 +4738,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
                 }
         }
 
-        if ( arg130.sec_x < v4 - 1 )
+        if ( arg130.sec_x < _wrldSectors.x - 1 )
         {
             // right
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y);
@@ -4759,7 +4763,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x != 0 && arg130.sec_z < v5 - 1 )
+        if ( arg130.sec_x != 0 && arg130.sec_z < _wrldSectors.y - 1 )
         {
             // left-down
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y + 1);
@@ -4784,7 +4788,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_z < v5 - 1  )
+        if ( arg130.sec_z < _wrldSectors.y - 1  )
         {
             // down
             cellArea &tcell = _world->SectorAt(pt.x, pt.y + 1);
@@ -4809,7 +4813,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x < v4 - 1 && arg130.sec_z < v5 - 1 )
+        if ( arg130.sec_x < _wrldSectors.x - 1 && arg130.sec_z < _wrldSectors.y - 1 )
         {
             // down-right
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y + 1);
@@ -4911,13 +4915,9 @@ void NC_STACK_ypabact::Renew()
     _secndTtype = BACT_TGT_TYPE_NONE;
     _primT_cmdID = 0;
 
-    int maxX = _world->getYW_mapSizeX();
-    int maxY = _world->getYW_mapSizeY();
+    _wrldSectors = _world->GetMapSize();
 
-    _wrldX = maxX * 1200.0;
-    _wrldY = -maxY * 1200.0;
-    _secMaxX = maxX;
-    _secMaxY = maxY;
+    _wrldSize = World::SectorIDToPos2( _wrldSectors );
 
     _commandID = 0;
 //    bact->field_3D1 = 1;
@@ -5174,14 +5174,14 @@ size_t NC_STACK_ypabact::CheckFireAI(bact_arg101 *arg)
         {
             if ( v36 == 16 )
             {
-                if ( len < 1200.0 && tmp.XZ().dot( _rotation.AxisZ().XZ() ) > 0.93 )
+                if ( len < World::SectorLength && tmp.XZ().dot( _rotation.AxisZ().XZ() ) > 0.93 )
                     return 1;
             }
             else
             {
                 vec3d tmp2 = tmp * _rotation.AxisZ();
 
-                if ( len < 1200.0 && (tmp.dot( _rotation.AxisZ() ) > 0.0) && v32 / len > tmp2.length() )
+                if ( len < World::SectorLength && (tmp.dot( _rotation.AxisZ() ) > 0.0) && v32 / len > tmp2.length() )
                     return 1;
             }
         }
@@ -5197,10 +5197,10 @@ size_t NC_STACK_ypabact::CheckFireAI(bact_arg101 *arg)
         {
             if ( v36 == 16 )
             {
-                if ( len < 1200.0 && tmp.XZ().dot( _rotation.AxisZ().XZ() ) > 0.91 )
+                if ( len < World::SectorLength && tmp.XZ().dot( _rotation.AxisZ().XZ() ) > 0.91 )
                     return 1;
             }
-            else if ( len < 1200.0 && tmp.dot( _rotation.AxisZ() ) > 0.91 )
+            else if ( len < World::SectorLength && tmp.dot( _rotation.AxisZ() ) > 0.91 )
             {
                 return 1;
             }
@@ -5244,14 +5244,14 @@ void NC_STACK_ypabact::MarkSectorsForView()
 
                         if ( _radar == 1 )
                         {
-                            if ( yy > 0 && yy < _secMaxY - 1 )
+                            if ( yy > 0 && yy < _wrldSectors.y - 1 )
                             {
                                 if ( _sectX - 1 > 0 )
                                     _world->SectorAt(_sectX - 1, yy).AddToViewMask(_owner);
 
                                 _world->SectorAt(_sectX, yy).AddToViewMask(_owner);
 
-                                if ( _sectX + 1 < _secMaxX - 1 )
+                                if ( _sectX + 1 < _wrldSectors.x - 1 )
                                     _world->SectorAt(_sectX + 1, yy).AddToViewMask(_owner);
                             }
                         }
@@ -5741,7 +5741,7 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
 
         _world->GetSectorInfo(&arg130);
 
-        vec2d tmp = _rotation.AxisZ().XZ() * 1200.0 + _position.XZ();
+        vec2d tmp = _rotation.AxisZ().XZ() * World::SectorLength + _position.XZ();
 
         cellArea *pCells[3];
 
@@ -6726,29 +6726,31 @@ void NC_STACK_ypabact::CorrectPositionOnLand()
 void NC_STACK_ypabact::CorrectPositionInLevelBox(void *)
 {
     int v4 = 0;
+    
+    constexpr float CurSectrLen = World::SectorLength + 10.0;
 
-    if ( _position.x > _wrldX - 1210.0 )
+    if ( _position.x > _wrldSize.x - CurSectrLen )
     {
         v4 = 1;
-        _position.x = _wrldX - 1210.0;
+        _position.x = _wrldSize.x - CurSectrLen;
     }
 
-    if ( _position.x < 1210.0 )
+    if ( _position.x < CurSectrLen )
     {
         v4 = 1;
-        _position.x = 1210.0;
+        _position.x = CurSectrLen;
     }
 
-    if ( _position.z > -1210.0 )
+    if ( _position.z > -CurSectrLen )
     {
         v4 = 1;
-        _position.z = -1210.0;
+        _position.z = -CurSectrLen;
     }
 
-    if ( _position.z < _wrldY + 1210.0 )
+    if ( _position.z < _wrldSize.y + CurSectrLen )
     {
         v4 = 1;
-        _position.z = _wrldY + 1210.0;
+        _position.z = _wrldSize.y + CurSectrLen;
     }
 
     if ( _oflags & BACT_OFLAG_VIEWER )
@@ -7549,8 +7551,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         cll.pf_treeup= NULL;
     }
 
-    cellArea *target_pcell = _world->GetSector(arg->to.x / 1200.0 , -arg->to.y / 1200.0);
-    cellArea *start_pcell = _world->GetSector(arg->from.x / 1200.0 , -arg->from.y / 1200.0);
+    cellArea *target_pcell = _world->GetSector( World::PositionToSectorID( arg->to ) );
+    cellArea *start_pcell = _world->GetSector( World::PositionToSectorID( arg->from ) );
 
     if ( target_pcell == start_pcell )
     {
@@ -7746,9 +7748,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
             v61 = nextcell->Pos.x - curcell->Pos.x;
             v62 = nextcell->Pos.y - curcell->Pos.y;
-
-            arg->waypoints[ step_id ].x = (curcell->Pos.x + 0.5) * 1200.0 + tx;
-            arg->waypoints[ step_id ].z = -(curcell->Pos.y + 0.5) * 1200.0 + tz;
+            
+            arg->waypoints[ step_id ] = World::SectorIDToCenterPos3(curcell->Pos) + vec3d(tx, 0.0, tz);
             maxsteps--;
             step_id++;
         }

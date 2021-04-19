@@ -99,6 +99,7 @@ OBJS =  \
 	world/parsers.cpp\
 	world/nparticle.cpp\
 	world/saveparsers.cpp\
+	world/tools.cpp\
 	wrapal.cpp\
 	yw.cpp\
 	yw_brif.cpp\

@@ -279,7 +279,7 @@ void sb_0x451034__sub8(NC_STACK_ypaworld *yw)
 }
 
 
-Common::Point sub_4F681C(Common::FPoint in)
+Common::Point sub_4F681C(vec2d in)
 {
     if ( robo_map.field_1E8 & 0x100 )
     {
@@ -509,31 +509,28 @@ void  sb_0x4f8f64__sub1__sub0(NC_STACK_ypaworld *yw)
 
                 if ( v10 )
                 {
-                    float a5 = (v10 % yw->_mapWidth) * 1200.0 + 600.0;
-                    float a6 = -((v10 / yw->_mapWidth) * 1200.0 + 600.0);
+                    vec2d secC = World::SectorIDToCenterPos2( {v10 % yw->_mapSize.x, v10 / yw->_mapSize.x} );
 
-                    sub_4F68FC(bact->_position.x, bact->_position.z, a5, a6, yw->GetColor(i));
+                    sub_4F68FC(bact->_position.x, bact->_position.z, secC.x, secC.y, yw->GetColor(i));
                 }
             }
 
 
             if ( robo->_roboBuildingDuty )
             {
-                float v26 = -((robo->_roboBuildingCellID / yw->_mapWidth) * 1200.0 + 600.0);
-                float v28 = (robo->_roboBuildingCellID % yw->_mapWidth) * 1200.0 + 600.0;
+                vec2d secC = World::SectorIDToCenterPos2( {robo->_roboBuildingCellID % yw->_mapSize.x, robo->_roboBuildingCellID / yw->_mapSize.x} );
 
                 if ( (yw->timeStamp / 300) & 1 )
-                    sub_4F68FC(bact->_position.x, bact->_position.z, v28, v26, yw->GetColor(0));
+                    sub_4F68FC(bact->_position.x, bact->_position.z, secC.x, secC.y, yw->GetColor(0));
             }
 
             if ( robo->_roboVehicleDuty )
             {
-                float v22 = (robo->_roboVehicleCellID % yw->_mapWidth) * 1200.0 + 600.0;
-                float v27 = -(robo->_roboVehicleCellID / yw->_mapWidth * 1200.0 + 600.0);
+                vec2d secC = World::SectorIDToCenterPos2( {robo->_roboVehicleCellID % yw->_mapSize.x, robo->_roboVehicleCellID / yw->_mapSize.x} );
 
                 if ( (yw->timeStamp / 300) & 1 )
                 {
-                    sub_4F68FC(bact->_position.x, bact->_position.z, v22, v27, yw->GetColor(7));
+                    sub_4F68FC(bact->_position.x, bact->_position.z, secC.x, secC.y, yw->GetColor(7));
                 }
             }
         }
@@ -602,8 +599,8 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
 
         if ( yw->UserUnit )
         {
-            sub_4F68FC(yw->UserUnit->_position.x, 0.0, yw->UserUnit->_position.x, -yw->map_Height_meters, yw->GetColor(13));
-            sub_4F68FC(0.0, yw->UserUnit->_position.z, yw->map_Width_meters, yw->UserUnit->_position.z, yw->GetColor(13));
+            sub_4F68FC(yw->UserUnit->_position.x, 0.0, yw->UserUnit->_position.x, -yw->_mapLength.y, yw->GetColor(13));
+            sub_4F68FC(0.0, yw->UserUnit->_position.z, yw->_mapLength.x, yw->UserUnit->_position.z, yw->GetColor(13));
         }
 
         if ( robo_map.field_1E8 & 0x200 )
@@ -761,8 +758,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                         if ( ps.EffectivePower > 0 )
                         {
                             int v9 = 0;
-                            float a1 = ps.Cell.x * 1200.0 + 600.0;
-                            float a2 = -(ps.Cell.y * 1200.0 + 600.0);
+                            
+                            vec2d tmp = World::SectorIDToCenterPos2(ps.Cell);
 
                             if ( ps.EffectivePower <= 32)
                                 v9 = 0x80;
@@ -781,8 +778,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                             else if ( ps.EffectivePower <= 256)
                                 v9 = 0x87;
 
-                            pcur = sub_4F6980(pcur, a1, a2, 0x89, a4, a4);
-                            pcur = sb_0x4f8f64__sub2__sub0(pcur, a1, a2, v9, a4, a4 / 8);
+                            pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x89, a4, a4);
+                            pcur = sb_0x4f8f64__sub2__sub0(pcur, tmp.x, tmp.y, v9, a4, a4 / 8);
                         }
                     }
                 }
@@ -803,9 +800,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
 
                     if ( v13 )
                     {
-                        float v14 = gem.SecX * 1200.0 + 600.0;
-                        float v15 = -(gem.SecY * 1200.0 + 600.0);
-                        pcur = sub_4F6980(pcur, v14, v15, 0x88, a4, a4);
+                        vec2d tmp = World::SectorIDToCenterPos2( {gem.SecX, gem.SecY} );
+                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x88, a4, a4);
                     }
                 }
             }
@@ -816,9 +812,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 {
                     if ( gate.PCell->IsCanSee(yw->UserRobo->_owner) )
                     {
-                        float v19 = gate.SecX * 1200.0 + 600.0;
-                        float v20 = -(gate.SecY * 1200.0 + 600.0);
-                        pcur = sub_4F6980(pcur, v19, v20, 0x93, a4, a4);
+                        vec2d tmp = World::SectorIDToCenterPos2( {gate.SecX, gate.SecY} );
+                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x93, a4, a4);
                     }
 
                     for ( const MapKeySector &ks : gate.KeySectors )
@@ -829,9 +824,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                             {
                                 if ( ks.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 300 & 1 )
                                 {
-                                    float v23 = ks.x * 1200.0 + 600.0;
-                                    float v24 = -(ks.y * 1200.0 + 600.0);
-                                    pcur = sub_4F6980(pcur, v23, v24, 0x8A, a4, a4);
+                                    vec2d tmp = World::SectorIDToCenterPos2( {ks.x, ks.y} );
+                                    pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x8A, a4, a4);
                                 }
                             }
                         }
@@ -843,9 +837,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                     {
                         if ( yw->timeStamp / 300 & 1 )
                         {
-                            float v25 = gate.SecX * 1200.0 + 600.0;
-                            float v26 = -(gate.SecY * 1200.0 + 600.0);
-                            pcur = sub_4F6980(pcur, v25, v26, 0x94, a4, a4);
+                            vec2d tmp = World::SectorIDToCenterPos2( {gate.SecX, gate.SecY} );
+                            pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x94, a4, a4);
                         }
                     }
                 }
@@ -891,9 +884,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
 
                     if ( v34 )
                     {
-                        float v35 = sitem.SecX * 1200.0 + 600.0;
-                        float v36 = -(sitem.SecY * 1200.0 + 600.0);
-                        pcur = sub_4F6980(pcur, v35, v36, v61, a4, a4);
+                        vec2d tmp = World::SectorIDToCenterPos2( {sitem.SecX, sitem.SecY} );
+                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, v61, a4, a4);
                     }
 
                     if ( v29 )
@@ -906,10 +898,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                                 {
                                     if ( ks.PCell->owner == yw->UserRobo->_owner || yw->timeStamp / 500 & 1 )
                                     {
-                                        float v39 = ks.x * 1200.0 + 600.0;
-                                        float v40 = -(ks.y * 1200.0 + 600.0);
-
-                                        pcur = sub_4F6980(pcur, v39, v40, v61, a4, a4);
+                                        vec2d tmp = World::SectorIDToCenterPos2( {ks.x, ks.y} );
+                                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, v61, a4, a4);
                                     }
                                 }
                             }
@@ -1185,7 +1175,7 @@ char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const std::string &labl, i
 {
     int v8 = yw->tiles[tileset_id]->GetWidth(labl);
 
-    Common::Point tmp = sub_4F681C( {(float)(a4 * 1200.0), (float)-(a5 * 1200.0)} );
+    Common::Point tmp = sub_4F681C( World::SectorIDToPos2( {a4, a5} ) );
 
     int v9 = tmp.x - robo_map.field_200;
     int v10 = tmp.y - robo_map.field_204;
@@ -1371,12 +1361,11 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
                 {
                     if ( v47->_primT.pcell->owner != yw->UserRobo->_owner )
                     {
-                        int v101 = ( (int)v47->_primTpos.x / 1200) * 1200.0 + 600.0;
-                        int v100 = -(( (int)-v47->_primTpos.z / 1200) * 1200.0 + 600.0);
+                        vec2d tmp = World::SectorIDToCenterPos2( World::PositionToSectorID(v47->_primTpos) );
 
                         FontUA::select_tileset(&pcur, v110);
 
-                        pcur = sub_4F6980(pcur, v101, v100, 66, v111, v111);
+                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, 66, v111, v111);
 
                         FontUA::select_tileset(&pcur, v114);
 
@@ -1564,11 +1553,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
     if ( v38 < 1 )
         v38 = 1;
 
-    if ( v43 >= yw->_mapWidth )
-        v43 = yw->_mapWidth - 1;
+    if ( v43 >= yw->_mapSize.x )
+        v43 = yw->_mapSize.x - 1;
 
-    if ( vii >= yw->_mapHeight )
-        vii = yw->_mapHeight - 1;
+    if ( vii >= yw->_mapSize.y )
+        vii = yw->_mapSize.y - 1;
 
     char *pcur = sb_0x4f8f64__sub2(yw, t1_cmdbuf_3);
 
@@ -1667,7 +1656,7 @@ void sub_4C157C(NC_STACK_ypaworld *yw)
     float v1 = (robo_map.h - robo_map.field_250) * robo_map.field_1E4;
     float v3 = (robo_map.w - robo_map.field_24C) * robo_map.field_1E0;
 
-    float v6 = (yw->_mapWidth * 1200.0);
+    float v6 = (yw->_mapSize.x * World::SectorLength);
     int v20 = robo_map.w - robo_map.field_248;
 
     int v17 = ((robo_map.field_1D8 - v3 * 0.5) * v20) / v6;
@@ -1700,7 +1689,7 @@ void sub_4C157C(NC_STACK_ypaworld *yw)
 
 
     float v15 = -(robo_map.field_1DC + v1 * 0.5);
-    float v14 = (yw->_mapHeight * 1200.0);
+    float v14 = (yw->_mapSize.y * World::SectorLength);
 
     v20 = robo_map.h - robo_map.field_250;
     v19 = (v20 * v1 / v14);
@@ -2105,7 +2094,7 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
 
 int sub_4F60A4(NC_STACK_ypaworld *yw, int x, int y)
 {
-    if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
+    if ( yw->IsSector( {x, y} ) )
     {
         if ( (robo_map.field_1EC & 3) && (robo_map.MapViewMask & yw->_cells(x, y).view_mask) )
             return 0;
@@ -2118,7 +2107,7 @@ int sub_4F60A4(NC_STACK_ypaworld *yw, int x, int y)
 
 int sub_4F6048(NC_STACK_ypaworld *yw, int x, int y)
 {
-    if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
+    if ( yw->IsSector( {x, y} ) )
     {
         cellArea &v4 = yw->_cells(x, y);
 
@@ -2136,7 +2125,7 @@ int sub_4F6048(NC_STACK_ypaworld *yw, int x, int y)
 
 int sub_4F5FE0(NC_STACK_ypaworld *yw, int x, int y)
 {
-    if ( x >= 0 && x < yw->_mapWidth && y >= 0 && y < yw->_mapHeight )
+    if ( yw->IsSector( {x, y} ) )
     {
         cellArea &v6 = yw->_cells(x, y);
 
@@ -2154,7 +2143,7 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
     int v7 = y / 4;
     int v27 = y & 3;
 
-    if ( v9 < 0 || v9 >= yw->_mapWidth || v7 < 0 || v7 >= yw->_mapHeight )
+    if ( !yw->IsSector( {v9, v7} ) )
         return 0;
 
     cellArea &v12 = yw->_cells(v9, v7);
@@ -2290,8 +2279,8 @@ char *sb_0x4f6650(NC_STACK_ypaworld *yw, char *cmdbuf, int x, int y)
 
 void sub_4C1814(NC_STACK_ypaworld *yw, int a2, int a3)
 {
-    float v15 = yw->_mapWidth * 1200.0;
-    float v12 = yw->_mapHeight * 1200.0;
+    float v15 = yw->_mapSize.x * World::SectorLength;
+    float v12 = yw->_mapSize.y * World::SectorLength;
 
     float v4 = a2 * robo_map.field_1E0;
     float v13 = v4 * 0.5;
@@ -5972,28 +5961,28 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
 {
     int v8 = 0;
 
-    int v22 = flt_516524 / 1200;
-    int v6 = -flt_516530 / 1200;
-    int v24 = flt_51652C / 1200;
-    int v23 = -flt_516528 / 1200;
+    int v22 = flt_516524 / World::SectorLength;
+    int v6 = -flt_516530 / World::SectorLength;
+    int v24 = flt_51652C / World::SectorLength;
+    int v23 = -flt_516528 / World::SectorLength;
 
-    if ( v22 >= yw->_mapWidth )
-        v22 = yw->_mapWidth - 1;
+    if ( v22 >= yw->_mapSize.x )
+        v22 = yw->_mapSize.x - 1;
     else if ( v22 < 1 )
         v22 = 1;
 
-    if ( v24 >= yw->_mapWidth )
-        v24 = yw->_mapWidth - 1;
+    if ( v24 >= yw->_mapSize.x )
+        v24 = yw->_mapSize.x - 1;
     else if ( v24 < 1 )
         v24 = 1;
 
-    if ( v6 >= yw->_mapHeight )
-        v6 = yw->_mapHeight - 1;
+    if ( v6 >= yw->_mapSize.y )
+        v6 = yw->_mapSize.y - 1;
     else if ( v6 < 1 )
         v6 = 1;
 
-    if ( v23 >= yw->_mapHeight )
-        v23 = yw->_mapHeight - 1;
+    if ( v23 >= yw->_mapSize.y )
+        v23 = yw->_mapSize.y - 1;
     else if ( v23 < 1 )
         v23 = 1;
 
@@ -6172,7 +6161,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1D8 = (yw->_mapWidth * 1200.0) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
+                robo_map.field_1D8 = (yw->_mapSize.x * World::SectorLength) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
             }
             else
             {
@@ -6185,7 +6174,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1DC = robo_map.field_224 - (yw->_mapHeight * 1200.0) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
+                robo_map.field_1DC = robo_map.field_224 - (yw->_mapSize.y * World::SectorLength) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
             }
             else
             {
@@ -6349,7 +6338,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1D8 = yw->_mapWidth * 1200.0 / (-1.0 * (float)robo_map.field_1CC) + robo_map.field_1D8;
+                    robo_map.field_1D8 = yw->_mapSize.x * World::SectorLength / (-1.0 * (float)robo_map.field_1CC) + robo_map.field_1D8;
                 }
                 break;
 
@@ -6358,7 +6347,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1D8 = yw->_mapWidth * 1200.0 / (float)robo_map.field_1CC + robo_map.field_1D8;
+                    robo_map.field_1D8 = yw->_mapSize.x * World::SectorLength / (float)robo_map.field_1CC + robo_map.field_1D8;
                 }
                 break;
 
@@ -6367,7 +6356,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapHeight * 1200.0 / (-1.0 * (float)robo_map.field_1D2);
+                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapSize.y * World::SectorLength / (-1.0 * (float)robo_map.field_1D2);
                 }
                 break;
 
@@ -6376,7 +6365,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapHeight * 1200.0 / (float)robo_map.field_1D2;
+                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapSize.y * World::SectorLength / (float)robo_map.field_1D2;
                 }
                 break;
 
@@ -10005,11 +9994,11 @@ char * yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, char *cur)
         if ( v17 < 1 )
             v17 = 1;
 
-        if ( v16 >= yw->_mapWidth )
-            v16 = yw->_mapWidth - 1;
+        if ( v16 >= yw->_mapSize.x )
+            v16 = yw->_mapSize.x - 1;
 
-        if ( v14 >= yw->_mapHeight )
-            v14 = yw->_mapHeight - 1;
+        if ( v14 >= yw->_mapSize.y )
+            v14 = yw->_mapSize.y - 1;
 
         for (int i = v17; i <= v14; i++ )
         {
@@ -10178,10 +10167,10 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
 
     GFX::Engine.raster_func211(drect);
 
-    int v14 = dround(robo_map.field_1F0 * robo_map.field_1E0) / 1200;
-    int v29 = dround(robo_map.field_1F4 * robo_map.field_1E4) / 1200;
-    int v28 = dround( (robo_map.field_1F8 + robo_map.field_1F0) * robo_map.field_1E0 ) / 1200;
-    int v30 = dround( (robo_map.field_1FC + robo_map.field_1F4) * robo_map.field_1E4 ) / 1200;
+    int v14 = dround(robo_map.field_1F0 * robo_map.field_1E0) / World::SectorLength;
+    int v29 = dround(robo_map.field_1F4 * robo_map.field_1E4) / World::SectorLength;
+    int v28 = dround( (robo_map.field_1F8 + robo_map.field_1F0) * robo_map.field_1E0 ) / World::SectorLength;
+    int v30 = dround( (robo_map.field_1FC + robo_map.field_1F4) * robo_map.field_1E4 ) / World::SectorLength;
 
     if ( v14 < 1 )
         v14 = 1;
@@ -10189,11 +10178,11 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
     if ( v29 < 1 )
         v29 = 1;
 
-    if ( v28 >= yw->_mapWidth )
-        v28 = yw->_mapWidth - 1;
+    if ( v28 >= yw->_mapSize.x )
+        v28 = yw->_mapSize.x - 1;
 
-    if ( v30 >= yw->_mapHeight )
-        v30 = yw->_mapHeight - 1;
+    if ( v30 >= yw->_mapSize.y )
+        v30 = yw->_mapSize.y - 1;
 
     int v38 = 0;
 
@@ -10217,7 +10206,7 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
                                                 , robo_map.w
                                                 , robo_map.h };
 
-                            if ( r.IsIn( sub_4F681C({(float)bact->_position.x, (float)bact->_position.z}) ) )
+                            if ( r.IsIn( sub_4F681C( bact->_position.XZ() ) ) )
                                 v19 = 1;
                         }
 
@@ -10851,7 +10840,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub21__sub3()
     if ( abs(v19 - v20) > 800 )
         return 2;
 
-    if ( field_1a6c.x < 1500.0 || field_1a6c.z > -1500.0 || field_1a6c.x > map_Width_meters - 1500.0 || field_1a6c.z < 1500.0 - map_Height_meters )
+    if ( field_1a6c.x < 1500.0 || field_1a6c.z > -1500.0 || field_1a6c.x > _mapLength.x - 1500.0 || field_1a6c.z < 1500.0 - _mapLength.y )
         return 2;
 
     field_1a6c.y = v20 - UserRobo->_height;
@@ -10986,7 +10975,7 @@ void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
     int v10 = v23 >> v9;
     int v11 = v24 >> v9;
 
-    if ( v10 >= 1  &&  v11 >= 1  &&  _mapWidth - 1 > v10  &&  _mapHeight - 1 > v11 )
+    if ( IsGamePlaySector( {v10, v11} ) )
     {
         cellArea &cell = _cells(v10, v11);
 
@@ -11000,9 +10989,8 @@ void NC_STACK_ypaworld::yw_MAP_MouseSelect(ClickBoxInf *winp)
             field_1a6c.y = cell.height;
             field_1a6c.z = -((float)v24 * robo_map.field_1E4 + 0.75);
 
-            field_1a7c.x = (float)v10 * 1200.0 + 600.0;
+            field_1a7c = World::SectorIDToCenterPos3( {v10, v11} );
             field_1a7c.y = cell.height;
-            field_1a7c.z = -((float)v11 * 1200.0 + 600.0);
         }
 
         if ( field_1a58 & 2 && !(bzda.field_1D0 & 0x30) && cell.IsCanSee(UserRobo->_owner) )
@@ -11150,16 +11138,14 @@ void NC_STACK_ypaworld::yw_3D_MouseSelect(ClickBoxInf *winp)
 
     if ( field_1a58 & 0x10 )
     {
-        int v12 = -arg149.isectPos.z / 1200.0;
-        int v25 = arg149.isectPos.x / 1200.0;
+        Common::Point tmp = World::PositionToSectorID(arg149.isectPos);
 
-        field_1a60 = &_cells(v25, v12);
-        field_1a64 = v25;
-        field_1A66 = v12;
+        field_1a60 = &_cells(tmp.x, tmp.y);
+        field_1a64 = tmp.x;
+        field_1A66 = tmp.y;
         field_1a6c = arg149.isectPos;
-        field_1a7c.x = v25 * 1200.0 + 600.0;
+        field_1a7c = World::SectorIDToCenterPos3(tmp);
         field_1a7c.y = field_1a60->height;
-        field_1a7c.z = -(v12 * 1200.0 + 600.0);
     }
 
     if ( field_1a58 & 0x20 )

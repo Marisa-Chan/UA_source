@@ -691,9 +691,9 @@ bool NC_STACK_ypaworld::LoadTypeMap(const std::string &mapName)
     SetMapSize(typ_map->Size());
 
     int32_t id = 0;
-    for(int y = 0; y < _mapHeight; y++)
+    for(int y = 0; y < _mapSize.y; y++)
     {
-        for (int x = 0; x < _mapWidth; x++)
+        for (int x = 0; x < _mapSize.x; x++)
         {
             cellArea &cell = _cells(x, y);
             
@@ -733,9 +733,9 @@ bool NC_STACK_ypaworld::LoadOwnerMap(const std::string &mapName)
     if ( !own_map )
         return 0;
 
-    if ( (int)own_map->Width() != _mapWidth || (int)own_map->Height() != _mapHeight )
+    if ( (int)own_map->Width() != _mapSize.x || (int)own_map->Height() != _mapSize.y )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapName.c_str(), own_map->Width(), own_map->Height(), _mapWidth, _mapHeight);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapName.c_str(), own_map->Width(), own_map->Height(), _mapSize.x, _mapSize.y);
         delete own_map;
         own_map = NULL;
         return 0;
@@ -746,7 +746,7 @@ bool NC_STACK_ypaworld::LoadOwnerMap(const std::string &mapName)
     {
         for (uint32_t xx = 0; xx < own_map->Width(); xx++)
         {
-            if ( xx > 0 && yy > 0 && xx != (uint32_t)_mapWidth - 1 && yy != (uint32_t)_mapHeight - 1 )
+            if ( IsGamePlaySector( {(int)xx, (int)yy} ) )
             {
                 _cells(xx, yy).owner = own_map->At(xx, yy);
                 sectors_count_by_owner[ own_map->At(xx, yy) ]++;
@@ -767,23 +767,23 @@ bool NC_STACK_ypaworld::LoadHightMap(const std::string &mapName)
     if ( !hgt_map )
         return false;
 
-    if ( (int)hgt_map->Width() != _mapWidth || (int)hgt_map->Height() != _mapHeight )
+    if ( (int)hgt_map->Width() != _mapSize.x || (int)hgt_map->Height() != _mapSize.y )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapName.c_str(), hgt_map->Width(), hgt_map->Height(), _mapWidth, _mapHeight);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapName.c_str(), hgt_map->Width(), hgt_map->Height(), _mapSize.x, _mapSize.y);
         delete hgt_map;
         hgt_map = NULL;
         return false;
     }
 
-    for (int y = 0; y < _mapHeight; y++)
+    for (int y = 0; y < _mapSize.y; y++)
     {
-        for (int x = 0; x < _mapWidth; x++)
+        for (int x = 0; x < _mapSize.x; x++)
             _cells(x, y).height = (-100.0) * hgt_map->At(x, y);
     }
 
-    for (int y = 1; y < _mapHeight; y++)
+    for (int y = 1; y < _mapSize.y; y++)
     {
-        for (int x = 1; x < _mapWidth; x++)
+        for (int x = 1; x < _mapSize.x; x++)
         {
             _cells(x, y).averg_height = (_cells(x    ,     y).height +
                                          _cells(x - 1,     y).height +
@@ -903,17 +903,17 @@ bool NC_STACK_ypaworld::LoadBlgMap(const std::string &mapName)
     if ( !blg_map )
         return false;
 
-    if ( (int)blg_map->Width() != _mapWidth || (int)blg_map->Height() != _mapHeight )
+    if ( (int)blg_map->Width() != _mapSize.x || (int)blg_map->Height() != _mapSize.y )
     {
-        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapName.c_str(), blg_map->Width(), blg_map->Height(), _mapWidth, _mapHeight);
+        ypa_log_out("Mapsize mismatch %s: is [%d,%d], should be [%d,%d].\n", mapName.c_str(), blg_map->Width(), blg_map->Height(), _mapSize.x, _mapSize.y);
         delete blg_map;
         blg_map = NULL;
         return false;
     }
 
-    for ( int y = 0; y < _mapHeight; y++)
+    for ( int y = 0; y < _mapSize.y; y++)
     {
-        for ( int x = 0; x < _mapWidth; x++)
+        for ( int x = 0; x < _mapSize.x; x++)
         {
             int blg = blg_map->At(x, y);
             cellArea &cell = _cells(x, y);
@@ -1108,7 +1108,7 @@ void NC_STACK_ypaworld::InitGates()
 
         for (MapKeySector &ks : gate.KeySectors)
         {
-            if ( ks.x && ks.x < _mapWidth - 1 && ks.y && ks.y < _mapHeight - 1 )
+            if ( IsGamePlaySector( {ks.x, ks.y} ) )
             {
                 ks.PCell = &_cells(ks.x, ks.y);
             }
@@ -1140,7 +1140,7 @@ void NC_STACK_ypaworld::InitSuperItems()
 
         for ( MapKeySector &ks : sitem.KeySectors )
         {
-            if ( ks.x && ks.x < _mapWidth - 1 && ks.y && ks.y < _mapHeight - 1 )
+            if ( IsGamePlaySector( {ks.x, ks.y} ) )
                 ks.PCell = &_cells(ks.x, ks.y);
 
         }
@@ -1156,9 +1156,9 @@ void NC_STACK_ypaworld::UpdatePowerEnergy()
 {
     // Apply power to sectors and clean power matrix for next compute iteration.
 
-    for (int y = 0; y < _mapHeight; y++)
+    for (int y = 0; y < _mapSize.y; y++)
     {
-        for (int x = 0; x < _mapWidth; x++)
+        for (int x = 0; x < _mapSize.x; x++)
         {
             cellArea &cell = _cells(x, y);
             EnergyAccum &accum = _energyAccumMap(x, y);
@@ -1275,7 +1275,7 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
 
 void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6)
 {
-    if ( secX && secY && _mapWidth - 1 != secX && _mapHeight - 1 != secY )
+    if ( IsGamePlaySector( {secX, secY} ) )
     {
         int helth = 0;
 
@@ -1330,7 +1330,7 @@ TSectorCollision NC_STACK_ypaworld::sub_44DBF8(int _dx, int _dz, int _dxx, int _
     
     
 
-    if ( _dxx > 0 && _dxx < 4 * _mapWidth - 1 && _dzz > 0  &&  _dzz < 4 * _mapHeight - 1)
+    if ( _dxx > 0 && _dxx < 4 * _mapSize.x - 1 && _dzz > 0  &&  _dzz < 4 * _mapSize.y - 1)
     {
         tmp.Cell = Common::Point(_dxx / 4, _dzz / 4);
         
@@ -1350,9 +1350,8 @@ TSectorCollision NC_STACK_ypaworld::sub_44DBF8(int _dx, int _dz, int _dxx, int _
                 if ( (_dxx / 4) == (_dx / 4)  &&  (_dz / 4) == (_dzz / 4) )
                     v8 = flags & ~1;
 
-                tmp.pos.x =   1200.0 * tmp.Cell.x + 600.0;
+                tmp.pos = World::SectorIDToCenterPos3(tmp.Cell);
                 tmp.pos.y = cell.height;
-                tmp.pos.z = -(1200.0 * tmp.Cell.y + 600.0);
             }
             else
             {
@@ -1900,15 +1899,14 @@ void sub_4D7F60(NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_ms
     sct->dword8 = 0;
     sct->dword4 = 0;
 
-    if ( x >= 0  &&  x < yw->_mapWidth  &&  y >= 0  &&  y < yw->_mapHeight )
+    if ( yw->IsSector( {x, y} ) )
     {
         sct->dword4 = 1;
         sct->p_cell = &yw->_cells(x, y);
         sct->smooth_height = sct->p_cell->averg_height;
 
-        vec3d pos  {  x * 1200.0 + 600.0
-                    , sct->p_cell->height
-                    ,-(y * 1200.0 + 600.0) };
+        vec3d pos = World::SectorIDToCenterPos3( {x, y} );
+        pos.y = sct->p_cell->height;
 
         sct->x = pos.x;
         sct->y = pos.y;
@@ -2027,7 +2025,7 @@ int sb_0x4d7c08__sub1__sub0__sub0(NC_STACK_ypaworld *yw, float xx, float yy)
     int v7 = ((xx + 150) / 300) / 4;
     int v8 = ((-yy + 150) / 300) / 4;
 
-    if ( v7 <= 0 || v7 >= yw->_mapWidth || v8 <= 0 || v8 >= yw->_mapHeight || !yw->current_bact )
+    if ( !yw->IsGamePlaySector( {v7, v8} ) || !yw->current_bact )
         return 0;
 
     int v11 = abs(yw->current_bact->_sectX - v7);
@@ -2043,7 +2041,7 @@ void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float po
 {
     if ( yw->superbomb_wall_vproto )
     {
-        if ( xx > 0.0 && yy < 0.0 && xx < yw->map_Width_meters && -yw->map_Height_meters < yy )
+        if ( xx > 0.0 && yy < 0.0 && xx < yw->_mapLength.x && -yw->_mapLength.y < yy )
         {
             if ( sb_0x4d7c08__sub1__sub0__sub0(yw, xx, yy) )
             {
@@ -2110,11 +2108,9 @@ void sb_0x4d7c08__sub1(NC_STACK_ypaworld *yw, baseRender_msg *arg)
     {
         if ( sitem.State == 3 )
         {
-            float a4 = sitem.SecX * 1200.0 + 600.0;
-            float a5 = -(sitem.SecY * 1200.0 + 600.0);
+            vec2d pos = World::SectorIDToCenterPos2( {sitem.SecX, sitem.SecY} );
 
-
-            float v14 = sqrt( POW2(yw->map_Width_meters) + POW2(yw->map_Height_meters) );
+            float v14 = sqrt( POW2(yw->_mapLength.x) + POW2(yw->_mapLength.y) );
 
             if ( sitem.CurrentRadius > 300 && sitem.CurrentRadius < v14 )
             {
@@ -2127,10 +2123,10 @@ void sb_0x4d7c08__sub1(NC_STACK_ypaworld *yw, baseRender_msg *arg)
                     for (float j = 0.0; j < 6.283; j = j + v9 )
                     {
                         float v10 = sitem.CurrentRadius;
-                        float a3 = v10 * sin(j) + a5;
-                        float a2 = v10 * cos(j) + a4;
+                        float a3 = v10 * sin(j) + pos.y;
+                        float a2 = v10 * cos(j) + pos.x;
 
-                        sb_0x4d7c08__sub1__sub0(yw, a2, a3, a4, a5, arg);
+                        sb_0x4d7c08__sub1__sub0(yw, a2, a3, pos.x, pos.y, arg);
                     }
                 }
             }
@@ -2344,9 +2340,9 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 
 void NC_STACK_ypaworld::sb_0x456384__sub0__sub0()
 {
-    for( int y = 0; y < _mapHeight; y++ )
+    for( int y = 0; y < _mapSize.y; y++ )
     {
-        for( int x = 0; x < _mapWidth; x++ )
+        for( int x = 0; x < _mapSize.x; x++ )
         {
             EnergyAccum &accum = _energyAccumMap(x, y);
             accum.Energy = 0;
@@ -2404,7 +2400,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
 
     NC_STACK_yparobo *robo = NULL;
 
-    if ( x && y && _mapWidth - 1 != x && _mapHeight - 1 != y )
+    if ( IsGamePlaySector( {x, y} ) )
     {
         (*blg_map)(x, y) = blg_id;
         (*typ_map)(x, y) = bld->SecType;
@@ -2475,7 +2471,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
 
                     ypaworld_arg146 v33;
                     v33.vehicle_id = GunProto.VhclID;
-                    v33.pos = GunProto.Pos + vec3d(x * 1200.0 + 600.0, 0.0, -(y * 1200.0 + 600.0));
+                    v33.pos = GunProto.Pos + World::SectorIDToCenterPos3( {x, y} );
 
                     NC_STACK_ypabact *gun_obj = ypaworld_func146(&v33);
                     NC_STACK_ypagun *gunn = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
@@ -2594,7 +2590,7 @@ void ypaworld_func148__sub0(NC_STACK_ypaworld *yw, int x, int y)
 
 int NC_STACK_ypaworld::ypaworld_func148__sub1(int id, int a4, int x, int y, int ownerID2, char blg_ID)
 {
-    if ( id < 8 && !field_80[id].field_0 && x && y && x != _mapWidth - 1 && y != _mapHeight - 1 )
+    if ( id < 8 && !field_80[id].field_0 && IsGamePlaySector( {x, y} ) )
     {
         field_80[id].field_4 = 0;
         field_80[id].field_0 = 1;
@@ -2908,11 +2904,11 @@ void ypaworld_func64__sub5__sub0(NC_STACK_ypaworld *yw, int a2)
     if ( ps.Cell.y + sdy < 1 )
         sdy = 1 - ps.Cell.y;
 
-    if ( ps.Cell.x + edx >= yw->_mapWidth )
-        edx = yw->_mapWidth - ps.Cell.x - 1;
+    if ( ps.Cell.x + edx >= yw->_mapSize.x )
+        edx = yw->_mapSize.x - ps.Cell.x - 1;
 
-    if ( ps.Cell.y + edy >= yw->_mapHeight )
-        edy = yw->_mapHeight - ps.Cell.y - 1;
+    if ( ps.Cell.y + edy >= yw->_mapSize.y )
+        edy = yw->_mapSize.y - ps.Cell.y - 1;
 
     for (int dy = sdy; dy < edy; dy++)
     {
@@ -3600,12 +3596,11 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
 {
     MapSuperItem &sitem = _levelInfo->SuperItems[id];
 
-    sitem.CurrentRadius = (timeStamp - sitem.TriggerTime) * 1200.0 / 2400.0;
+    sitem.CurrentRadius = (timeStamp - sitem.TriggerTime) * World::SectorLength / 2400.0;
 
-    float a5 = sitem.SecX * 1200.0 + 600.0;
-    float a6 = -(sitem.SecY * 1200.0 + 600.0);
+    vec2d tmp = World::SectorIDToCenterPos2( {sitem.SecX, sitem.SecY} );
 
-    float v19 = sqrt(POW2(map_Width_meters) + POW2(map_Height_meters));
+    float v19 = sqrt(POW2(_mapLength.x) + POW2(_mapLength.y));
 
     if ( sitem.CurrentRadius > 300 && sitem.CurrentRadius - sitem.LastRadius > 200 && sitem.CurrentRadius < v19 )
     {
@@ -3618,10 +3613,10 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
             for (float v25 = 0.0; v25 < 6.283 ; v25 += 6.283 / v9 )
             {
                 float v10 = sitem.CurrentRadius;
-                float v26 = cos(v25) * v10 + a5;
-                float v21 = sin(v25) * v10 + a6;
+                float v26 = cos(v25) * v10 + tmp.x;
+                float v21 = sin(v25) * v10 + tmp.y;
 
-                if ( v26 > 600.0 && v21 < -600.0 && v26 < map_Width_meters - 600.0 && v21 > -(map_Height_meters - 600.0) )
+                if ( v26 > 600.0 && v21 < -600.0 && v26 < _mapLength.x - 600.0 && v21 > -(_mapLength.y - 600.0) )
                 {
                     int v12 = fxnumber;
 
@@ -3643,7 +3638,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
         }
     }
 
-    ypaworld_func64__sub19__sub2__sub0__sub0(sitem.ActivateOwner, a5, a6, sitem.CurrentRadius);
+    ypaworld_func64__sub19__sub2__sub0__sub0(sitem.ActivateOwner, tmp.x, tmp.y, sitem.CurrentRadius);
 }
 
 void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2(int id)
@@ -5955,7 +5950,7 @@ int NC_STACK_ypaworld::sub_4D5360(NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::HistoryAktCreate(NC_STACK_ypabact *bact)
 {
-    HistoryEventAdd( World::History::VhclCreate(bact->_owner, bact->_vehicleID, bact->_position.x * 256.0 / bact->_wrldX, bact->_position.z * 256.0 / bact->_wrldY) );
+    HistoryEventAdd( World::History::VhclCreate(bact->_owner, bact->_vehicleID, bact->_position.x * 256.0 / bact->_wrldSize.x, bact->_position.z * 256.0 / bact->_wrldSize.y) );
 }
 
 void NC_STACK_ypaworld::HistoryAktKill(NC_STACK_ypabact *bact)
@@ -5975,6 +5970,6 @@ void NC_STACK_ypaworld::HistoryAktKill(NC_STACK_ypabact *bact)
         if ( bact->_bact_type == BACT_TYPES_ROBO )
             vp |= 0x8000;
 
-        HistoryEventAdd( World::History::VhclKill(owners, vp, bact->_position.x * 256.0 / bact->_wrldX, bact->_position.z * 256.0 / bact->_wrldY) );
+        HistoryEventAdd( World::History::VhclKill(owners, vp, bact->_position.x * 256.0 / bact->_wrldSize.x, bact->_position.z * 256.0 / bact->_wrldSize.y) );
     }
 }

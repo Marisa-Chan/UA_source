@@ -376,7 +376,7 @@ void NC_STACK_ypagun::User_layer(update_msg *arg)
 
             bact_arg79 arg79;
             arg79.tgType = BACT_TGT_TYPE_CELL;
-            arg79.tgt_pos = _position + _rotation.AxisZ() * (1200.0 * 3.0);
+            arg79.tgt_pos = _position + _rotation.AxisZ() * (World::SectorLength * 3.0);
 
             bact_arg106 arg106;
             arg106.field_4 = _rotation.AxisZ();

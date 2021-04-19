@@ -104,11 +104,11 @@ void NC_STACK_ypacar::DoKamikaze()
         for (int j = 0; j <= v4; j++)
         {
             yw_arg129 arg120;
-            arg120.field_10 = exp( sqrt( POW2(i) + POW2(j) ) * (1200.0 * -2.8) / 1200.0 ) * _carBlast;
+            arg120.field_10 = exp( sqrt( POW2(i) + POW2(j) ) * (World::SectorLength * -2.8) / World::SectorLength ) * _carBlast;
             arg120.pos = vec3d(i, 0, j) * 300.0 + _position.X0Z();
             arg120.unit = this;
 
-            if ( arg120.pos.x > 1200.0  &&  arg120.pos.x < _wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > _wrldY + 1200.0 )
+            if ( arg120.pos.x > World::SectorLength  &&  arg120.pos.x < _wrldSize.x - World::SectorLength  &&  arg120.pos.z < -World::SectorLength  &&  arg120.pos.z > _wrldSize.y + World::SectorLength )
                 ChangeSectorEnergy(&arg120);
 
             if ( i )
@@ -116,9 +116,9 @@ void NC_STACK_ypacar::DoKamikaze()
                 arg120.pos.x = _position.x - i * 300.0;
                 arg120.pos.z = _position.z + j * 300.0;
 
-                if ( arg120.pos.x > 1200.0 )
+                if ( arg120.pos.x > World::SectorLength )
                 {
-                    if ( arg120.pos.x < _wrldX - 1200.0 && arg120.pos.z < -1200.0 && arg120.pos.z > _wrldY + 1200.0 )
+                    if ( arg120.pos.x < _wrldSize.x - World::SectorLength && arg120.pos.z < -World::SectorLength && arg120.pos.z > _wrldSize.y + World::SectorLength )
                         ChangeSectorEnergy(&arg120);
                 }
             }
@@ -128,9 +128,9 @@ void NC_STACK_ypacar::DoKamikaze()
                 arg120.pos.x = _position.x + i * 300.0;
                 arg120.pos.z = _position.z - j * 300.0;
 
-                if ( arg120.pos.x > 1200.0 )
+                if ( arg120.pos.x > World::SectorLength )
                 {
-                    if ( arg120.pos.x < _wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > _wrldY + 1200.0 )
+                    if ( arg120.pos.x < _wrldSize.x - World::SectorLength  &&  arg120.pos.z < -World::SectorLength  &&  arg120.pos.z > _wrldSize.y + World::SectorLength )
                         ChangeSectorEnergy(&arg120);
                 }
             }
@@ -140,16 +140,16 @@ void NC_STACK_ypacar::DoKamikaze()
                 arg120.pos.x = _position.x - i * 300.0;
                 arg120.pos.z = _position.z - j * 300.0;
 
-                if ( arg120.pos.x > 1200.0 )
+                if ( arg120.pos.x > World::SectorLength )
                 {
-                    if ( arg120.pos.x < _wrldX - 1200.0  &&  arg120.pos.z < -1200.0  &&  arg120.pos.z > _wrldY + 1200.0 )
+                    if ( arg120.pos.x < _wrldSize.x - World::SectorLength  &&  arg120.pos.z < -World::SectorLength  &&  arg120.pos.z > _wrldSize.y + World::SectorLength )
                         ChangeSectorEnergy(&arg120);
                 }
             }
         }
     }
 
-    int v13 = v53 / 1200.0;
+    int v13 = v53 / World::SectorLength;
 
     for (int i = 0; i < v13; i++)
     {
@@ -171,7 +171,7 @@ void NC_STACK_ypacar::DoKamikaze()
                         {
                             vec3d tmp = _position - v19->_position;
 
-                            int v26 = exp(tmp.length() * -2.8 / 1200.0) * _carBlast;
+                            int v26 = exp(tmp.length() * -2.8 / World::SectorLength) * _carBlast;
                             int v67 = ((1.0 - (float)v19->_shield * 0.01) * (float)v26);
 
                             v19->_energy -= v67;
