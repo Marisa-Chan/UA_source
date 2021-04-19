@@ -67,6 +67,16 @@ struct TPoint
             x -= delta.x;
             y -= delta.y;
     }
+    
+    template <typename R>
+    R Length() const {
+        return sqrt( (x * x) + (y * y) );
+    }
+    
+    template <typename R>
+    R LengthTo(const __Point &b) const {
+        return sqrt( (x - b.x) * (x - b.x) + ((y - b.y)  * (y - b.y)) );
+    }
 
     __Point Invert() const { return TPoint( -x, -y ); }
     
@@ -543,6 +553,7 @@ public:
     using std::vector<T>::end;
     using std::vector<T>::rbegin;
     using std::vector<T>::rend;
+    using std::vector<T>::empty;
     
     PlaneVector()
     {}
@@ -690,7 +701,7 @@ public:
     using _BaseType::rbegin;
     using _BaseType::rend;
     using _BaseType::fill;
-    
+
     PlaneArray()
     {}
     
