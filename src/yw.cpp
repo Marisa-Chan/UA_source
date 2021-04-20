@@ -7639,7 +7639,7 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
 {
     _mapSize = sz;
 
-    _mapLength = World::SectorIDToPos2(_mapSize);
+    _mapLength = vec2d( _mapSize.x * World::SectorLength, _mapSize.y * World::SectorLength );
     
     _cells.Clear();
     _cells.Resize(sz);
