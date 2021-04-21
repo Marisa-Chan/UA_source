@@ -7,7 +7,6 @@
       </df>
       <df name="gui">
         <in>oldcompat.cpp</in>
-        <in>oldcompat.h</in>
         <in>root.cpp</in>
         <in>uabutton.cpp</in>
         <in>uacommon.cpp</in>
@@ -29,28 +28,26 @@
       </df>
       <df name="system">
         <in>fsmgr.cpp</in>
-        <in>fsmgr.h</in>
         <in>gfx.cpp</in>
         <in>inivals.cpp</in>
-        <in>inivals.h</in>
-        <in>gfx.h</in>
         <in>inpt.cpp</in>
-        <in>inpt.h</in>
+        <in>luascript.cpp</in>
+        <in>luascript.h</in>
         <in>movie.cpp</in>
-        <in>movie.h</in>
         <in>sound.cpp</in>
-        <in>sound.h</in>
         <in>system.cpp</in>
-        <in>system.h</in>
         <in>tform.cpp</in>
-        <in>tform.h</in>
       </df>
       <df name="world">
         <in>analyzer.cpp</in>
+        <in>consts.h</in>
+        <in>luaevents.cpp</in>
+        <in>luaevents.h</in>
         <in>nparticle.cpp</in>
-        <in>nparticle.h</in>
         <in>parsers.cpp</in>
         <in>saveparsers.cpp</in>
+        <in>tools.cpp</in>
+        <in>tools.h</in>
       </df>
       <in>3ds.cpp</in>
       <in>IFFile.cpp</in>
@@ -66,7 +63,6 @@
       <in>def_parser.cpp</in>
       <in>embed.cpp</in>
       <in>env.cpp</in>
-      <in>env.h</in>
       <in>font.cpp</in>
       <in>glob_funcs.cpp</in>
       <in>idev.cpp</in>

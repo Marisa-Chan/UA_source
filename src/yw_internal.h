@@ -281,27 +281,6 @@ struct debrif_t1
     int status;
 };
 
-struct evnt
-{
-    int field_0;
-    int (* field_4)(NC_STACK_ypaworld *);
-    int field_8;
-    int field_C;
-    int field_10;
-    int field_14;
-    int field_18;
-    int field_1C[8];
-};
-
-struct map_event
-{
-    int event_loop_id;
-    int field_4;
-    int field_8;
-    int field_C;
-    int event_count;
-    evnt evnts[16];
-};
 
 void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, InputState *inpt);
 void ypaworld_func64__sub8(NC_STACK_ypaworld *yw);
@@ -352,8 +331,6 @@ void FFeedback_Update(NC_STACK_ypaworld *yw);
 void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt);
 void recorder_update_time(NC_STACK_ypaworld *yw, int dtime);
 void recorder_write_frame(NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub22(NC_STACK_ypaworld *yw);
-void ypaworld_func151__sub5(NC_STACK_ypaworld *yw);
 
 int yw_write_levelnum(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 void yw_write_ownermap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);

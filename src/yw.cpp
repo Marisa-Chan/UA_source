@@ -309,7 +309,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     one_game_res = 0;
     shell_default_res = 0;
     game_default_res = 0;
-    map_events = NULL;
+
     max_impulse = 0.0;
 
     memset(&field_81CB, 0, sizeof(field_81CB));
@@ -877,7 +877,11 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                 }
             }
 
-            ypaworld_func64__sub22(this); // scene events
+            //ypaworld_func64__sub22(this); // scene events
+            
+            if (_script)
+                _script->CallUpdate(timeStamp, arg->DTime);
+                        
             ypaworld_func64__sub23(this); // update sound messages
 
             if ( isNetGame ) // update additional sounds of netplay
@@ -2351,7 +2355,7 @@ void NC_STACK_ypaworld::DeleteLevel()
         deleteSplashScreen(this, disk);
     }
 
-    ypaworld_func151__sub5(this);
+    //ypaworld_func151__sub5(this); Free map events
     ypaworld_func151__sub6(this);
 
     SFXEngine::SFXe.setMasterVolume(audio_volume);
@@ -7190,9 +7194,9 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
             ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", savename.c_str());
 
         UserRobo->_energy = UserRobo->_energy_max;
-
-        if ( map_events )
-            map_events->event_loop_id = 0;
+//
+//        if ( map_events )
+//            map_events->event_loop_id = 0;
     }
     else
     {

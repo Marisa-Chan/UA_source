@@ -962,6 +962,8 @@ void UserData::sb_0x46cdf8()
     p_ypaworld->_levelInfo->Buddies.clear();
 
     sb_0x47f810(p_ypaworld);
+    
+    Common::DeleteAndNull(&p_ypaworld->_script);
 
     if ( init_prototypes(p_ypaworld) )
     {

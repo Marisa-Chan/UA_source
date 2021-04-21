@@ -35,6 +35,8 @@
 
 #include "gui/uamsgbox.h"
 
+#include "world/luaevents.h"
+
 
 
 #define YW_RENDER_SECTORS_DEF   5
@@ -2667,17 +2669,6 @@ public:
     
     void SetLangDefault();
     
-    int sb_0x44ca90__sub7(int event_loop_id);
-    
-    //Event funcs
-    static int sub_4D528C(NC_STACK_ypaworld *);
-    static int sub_4D51A4(NC_STACK_ypaworld *);
-    static int sub_4D5218(NC_STACK_ypaworld *);
-    static int sub_4D5160(NC_STACK_ypaworld *);
-    static int sub_4D5300(NC_STACK_ypaworld *);
-    static int sub_4D5348(NC_STACK_ypaworld *);
-    static int sub_4D5360(NC_STACK_ypaworld *);
-    
     void PlayIntroMovie();    
     
     void SituationAnalyzer();
@@ -2970,7 +2961,7 @@ public:
     int one_game_res;
     int shell_default_res;
     int game_default_res;
-    map_event *map_events;
+
     float max_impulse;
     yw_81cb field_81CB;
     float vehicle_sector_ratio_1;
@@ -2999,6 +2990,7 @@ protected:
     
     World::ParticleSystem _particles;
 
+    World::LuaEvents *_script = NULL;
 };
 
 #endif
