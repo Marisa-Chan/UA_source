@@ -261,11 +261,12 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
     int tod = loadTOD(this, "tod.def");
 
-    tod++;
-    if ( tod + 2490 > 2512 )
-        tod = 0;
+    int next_tod = tod + 1;
+    
+    if ( next_tod + 2490 > 2512 )
+        next_tod = 0;
 
-    writeTOD(this, "tod.def", tod);
+    writeTOD(this, "tod.def", next_tod);
 
     if ( diskScreenImage )
     {
