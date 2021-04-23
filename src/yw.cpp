@@ -6436,6 +6436,7 @@ int NC_STACK_ypaworld::LoadingParseSaveFile(const std::string &filename)
         new World::Parsers::SaveHistoryParser(this),
         new World::Parsers::SaveMasksParser(this),
         new World::Parsers::SaveSuperBombParser(this),
+        new World::Parsers::SaveLuaScriptParser(this),
     };
 
     return ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
@@ -6674,6 +6675,19 @@ size_t NC_STACK_ypaworld::SaveGame(const std::string &saveFile)
         {
             yw_write_history(this, fil);
             yw_write_masks(this, fil);
+        }
+    }
+    
+    if (_script)
+    {
+        std::string buf = _script->GetSaveString();
+        
+        if (!buf.empty())
+        {
+            fil->printf("\nbegin_luascript\n");
+            fil->printf("%s\n", buf.c_str());
+            fil->printf("EOF\n");
+            fil->printf("end\n");
         }
     }
 
@@ -7194,9 +7208,6 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
             ypa_log_out("Warning: in YWM_ADVANCEDCREATELEVEL: YWM_LOADGAME of %s failed!\n", savename.c_str());
 
         UserRobo->_energy = UserRobo->_energy_max;
-//
-//        if ( map_events )
-//            map_events->event_loop_id = 0;
     }
     else
     {

@@ -835,5 +835,38 @@ int SaveSuperBombParser::Handle(ScriptParser::Parser &parser, const std::string 
     return ScriptParser::RESULT_OK;
 }
 
+
+bool SaveLuaScriptParser::IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt)
+{
+    if ( StriCmp(word, "begin_luascript") )
+        return false;
+
+    std::string buf;
+    std::string script;
+    std::regex re(".*EOF.*");
+    while ( parser.ReadLine(&buf) )
+    {
+        if ( std::regex_search(buf, re) )
+        {
+            if (_o._script)
+                _o._script->RunBuffer(script);
+                
+            break;
+        }
+        
+        script += buf;
+    }
+    
+    return true;
+}
+
+int SaveLuaScriptParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
+{
+    if ( !StriCmp(p1, "end") )
+        return ScriptParser::RESULT_SCOPE_END;
+    return ScriptParser::RESULT_OK;
+}
+
+
 }
 }

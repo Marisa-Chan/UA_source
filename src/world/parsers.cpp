@@ -2146,6 +2146,7 @@ bool LevelDataParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     _o.unit_limit_1 = _o.unit_limit;
     _o.unit_limit_type_1 = _o.unit_limit_type;
     _o.unit_limit_arg_1 = _o.unit_limit_arg;
+    _o._luaScriptName = "";
     return true;
 }
 
@@ -2293,6 +2294,10 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     else if ( !StriCmp(p1, "unit_limit_arg") )
     {
         _o.unit_limit_arg_1 = std::stol(p2, NULL, 0);
+    }
+    else if ( !StriCmp(p1, "lua_script") )
+    {
+        _o._luaScriptName = p2;
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

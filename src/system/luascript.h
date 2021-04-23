@@ -4,9 +4,9 @@
 #include <string>
 
 extern "C" {
-# include <lua5.3/lua.h>
-# include <lua5.3/lauxlib.h>
-# include <lua5.3/lualib.h>
+#include <lua5.3/lua.h>
+#include <lua5.3/lauxlib.h>
+#include <lua5.3/lualib.h>
 }
 
 namespace System
@@ -21,10 +21,13 @@ public:
     virtual bool LoadFile(const std::string &fname);
     void CallFunc(const std::string &name);
     
+    void RunBuffer(const std::string &buffer);
+    
 protected:
     void Register();
     
     static void RunScript(lua_State *l, const std::string &fname);
+    static void RunBuffer(lua_State *l, const std::string &buffer);
     static void PushPointer(lua_State *l, void *data);
     
 protected:

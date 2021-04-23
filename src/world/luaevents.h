@@ -29,6 +29,8 @@ public:
     
     void CallInit(int32_t ts);
     void CallUpdate(int32_t ts, int32_t delta);
+    
+    std::string GetSaveString();
 
 protected:
     void RegisterWorld();

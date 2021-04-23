@@ -74,6 +74,25 @@ void LuaEvents::CallUpdate(int32_t ts, int32_t delta)
 
 }
 
+std::string LuaEvents::GetSaveString()
+{
+    std::string buf;
+    
+    int t = lua_getglobal(_lua, "makesave");
+    if (t != LUA_TFUNCTION)
+    {
+        lua_pop(_lua, 1);
+        return "";
+    }
+        
+    if ( lua_pcall(_lua, 0, 1, 0) != 0 )
+        printf("Err CallFunc makesave:\n %s\n", lua_tostring(_lua, -1));
+    
+    buf = lua_tostring(_lua, -1);
+    lua_pop(_lua, 1);
+    return buf;    
+}
+
 void LuaEvents::RegisterWorld()
 {
     static luaL_Reg WorldFuncs[] = 

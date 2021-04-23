@@ -80,5 +80,25 @@ void LuaScript::PushPointer(lua_State *l, void *data)
         lua_pushnil(l);
 }
 
+void LuaScript::RunBuffer(const std::string &buffer)
+{
+    RunBuffer(_lua, buffer);
+}
 
+void LuaScript::RunBuffer(lua_State *l, const std::string &buffer)
+{
+    int top = lua_gettop(l);
+    
+    if ( luaL_loadbuffer(l, buffer.c_str(), buffer.size(), NULL) != LUA_OK )
+    {
+        printf("Err on loading script %s\n %s\n", buffer.c_str(), lua_tostring(l, -1));
+        return;
+    }
+    
+    if ( lua_pcall(l, 0, LUA_MULTRET, 0) != 0 )
+        printf("Err on run script %s\n %s\n", buffer.c_str(), lua_tostring(l, -1));
+    
+    lua_settop(l, -(lua_gettop(l) - top) - 1);
+}
+    
 }

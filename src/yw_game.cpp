@@ -302,9 +302,11 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
             _script->LoadFile(fmt::sprintf("lesson%d.lua", mapp->EventLoopID));
             _script->CallInit(timeStamp);
         }
-        else
+        else if (!_luaScriptName.empty())
         {
-            
+            _script = new World::LuaEvents(this);
+            _script->LoadFile(_luaScriptName);
+            _script->CallInit(timeStamp);
         }
 
         _energyAccumMap.Clear();

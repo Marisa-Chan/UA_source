@@ -2319,6 +2319,7 @@ friend class World::Parsers::LevelStatusParser;
 friend class World::Parsers::SaveHistoryParser;
 friend class World::Parsers::SaveMasksParser;
 friend class World::Parsers::SaveSuperBombParser;
+friend class World::Parsers::SaveLuaScriptParser;
 
 
 
@@ -2981,6 +2982,8 @@ public:
 
     std::string initScriptLoc;
     int playerOwner;
+    
+    std::string _luaScriptName;
 
 protected:
 
