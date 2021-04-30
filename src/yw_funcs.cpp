@@ -3187,12 +3187,9 @@ void UserData::clear()
 
     returnToTitle = false;
 
-    for(int i = 0; i < 16; i++)
-        samples1[i] = NULL;
-    for(int i = 0; i < 16; i++)
-        samples2[i] = NULL;
+    for (NC_STACK_sample * &smpl : samples1)
+        smpl = NULL;
 
-    field_ADA = NULL;
     sub_bar_button = NULL;
     
     titel_button = NULL;

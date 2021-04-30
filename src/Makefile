@@ -100,6 +100,7 @@ OBJS =  \
 	world/luaevents.cpp\
 	world/parsers.cpp\
 	world/nparticle.cpp\
+	world/protos.cpp\
 	world/saveparsers.cpp\
 	world/tools.cpp\
 	wrapal.cpp\

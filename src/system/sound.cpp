@@ -146,45 +146,38 @@ int SFXEngine::getMasterVolume()
     return audio_volume;
 }
 
-void SFXEngine::sub_423DB0(samples_collection1 *smpls)
-{
-    memset(smpls, 0, sizeof(samples_collection1));
 
-    for (int i = 0; i < 16; i++)
+void SFXEngine::startSound(TSndCarrier *smpls, int a2)
+{
+    TSoundSource *result = &smpls->Sounds.at(a2);
+
+    result->StartTime = currentTime;
+
+    if ( result->IsFragmented() || result->PSample )
     {
-        smpls->samples_data[i].parent_sample_collection = smpls;
+        result->CurrentFrag = 0;
+        result->SetEnabled(true);
+        result->SetPlay(false);
+    }
+    if ( result->IsPFx() )
+    {
+        result->SetPFxEnable(true);
+        result->SetPFxPlay(false);
+        result->PFxMag = result->PPFx->mag0;
+    }
+    if ( result->IsShk() )
+    {
+        result->SetShkEnable(true);
+        result->SetShkPlay(false);
+        result->ShkMag = result->PShkFx->mag0;
     }
 }
 
-void SFXEngine::startSound(samples_collection1 *smpls, int a2)
+void SFXEngine::sub_424000(TSndCarrier *smpls, int a2)
 {
-    userdata_sample_info *result = &smpls->samples_data[a2];
-
-    result->startTime = currentTime;
-
-    if ( result->flags & 0x200 || result->psampl )
-    {
-        result->fragmentID = 0;
-        result->flags |= 2;
-        result->flags &= ~4;
-    }
-    if ( result->flags & 8 )
-    {
-        result->flags |= 0x10;
-        result->flags &= ~0x20;
-        result->palMag = result->paletteFX->mag0;
-    }
-    if ( result->flags & 0x40 )
-    {
-        result->flags |= 0x80;
-        result->flags &= ~0x100;
-        result->shkMag = result->shakeFX->mag0;
-    }
-}
-
-void SFXEngine::sub_424000(samples_collection1 *smpls, int a2)
-{
-    smpls->samples_data[a2].flags &= ~(0x80 | 0x10 | 2);
+    smpls->Sounds[a2].SetShkEnable(false);
+    smpls->Sounds[a2].SetPFxEnable(false);
+    smpls->Sounds[a2].SetEnabled(false);
 }
 
 
@@ -239,24 +232,26 @@ void SFXEngine::SetMusicTrack(int trackID, int minDelay, int maxDelay)
 }
 
 // Shutoff samples set
-void SFXEngine::sub_423DD8(samples_collection1 *smpls)
+void SFXEngine::StopCarrier(TSndCarrier *carr)
 {
     for (int i = 0; i < audio_channels; i++)
     {
         if ( digDriver )
         {
-            if (snd_channels[i].sndSouce && snd_channels[i].sndSouce->parent_sample_collection == smpls )
+            if (snd_channels[i].sndSouce && snd_channels[i].sndSouce->PCarrier == carr )
             {
-                snd_channels[i].sndSouce->flags &= ~(4 | 2);
+                snd_channels[i].sndSouce->SetPlay(false);
+                snd_channels[i].sndSouce->SetEnabled(false);
 
                 snd_channels[i].hSample->stop();
 
                 snd_channels[i].sndSouce = NULL;
             }
 
-            if (soundSources[i] && soundSources[i]->parent_sample_collection == smpls )
+            if (soundSources[i] && soundSources[i]->PCarrier == carr )
             {
-                soundSources[i]->flags &= ~(4 | 2);
+                soundSources[i]->SetPlay(false);
+                soundSources[i]->SetEnabled(false);
                 soundSources[i] = NULL;
             }
         }
@@ -264,25 +259,76 @@ void SFXEngine::sub_423DD8(samples_collection1 *smpls)
 
     for (int i = 0; i < audio_num_palfx; i++)
     {
-        if ( palFXs[i] && palFXs[i]->parent_sample_collection == smpls )
+        if ( palFXs[i] && palFXs[i]->PCarrier == carr )
         {
-            palFXs[i]->flags &= ~(0x20 | 0x10);
+            palFXs[i]->SetPFxEnable(false);
+            palFXs[i]->SetPFxPlay(false);
             palFXs[i] = NULL;
         }
     }
 
     for (int i = 0; i < dword_546E14; i++)
     {
-        if ( ShakeFXs[i] && ShakeFXs[i]->parent_sample_collection == smpls )
+        if ( ShakeFXs[i] && ShakeFXs[i]->PCarrier == carr )
         {
-            ShakeFXs[i]->flags &= ~(0x100 | 0x80);
+            ShakeFXs[i]->SetShkEnable(false);
+            ShakeFXs[i]->SetShkPlay(false);
             ShakeFXs[i] = NULL;
         }
     }
 
-    for (int i = 0; i < 16; i++)
-        smpls->samples_data[i].flags &= ~(0x80 | 0x10 | 2);
+    for (TSoundSource &snd : carr->Sounds)
+    {
+        snd.SetShkEnable(false);
+        snd.SetPFxEnable(false);
+        snd.SetEnabled(false);
+    }
+}
 
+void SFXEngine::StopSource(TSoundSource *snd)
+{
+    for (int i = 0; i < audio_channels; i++)
+    {
+        if ( digDriver )
+        {
+            if (snd_channels[i].sndSouce == snd )
+            {
+                snd_channels[i].sndSouce->SetPlay(false);
+                snd_channels[i].sndSouce->SetEnabled(false);
+
+                snd_channels[i].hSample->stop();
+
+                snd_channels[i].sndSouce = NULL;
+            }
+
+            if (soundSources[i] == snd )
+            {
+                soundSources[i]->SetPlay(false);
+                soundSources[i]->SetEnabled(false);
+                soundSources[i] = NULL;
+            }
+        }
+    }
+
+    for (int i = 0; i < audio_num_palfx; i++)
+    {
+        if ( palFXs[i] == snd )
+        {
+            palFXs[i]->SetPFxEnable(false);
+            palFXs[i]->SetPFxPlay(false);
+            palFXs[i] = NULL;
+        }
+    }
+
+    for (int i = 0; i < dword_546E14; i++)
+    {
+        if ( ShakeFXs[i] == snd )
+        {
+            ShakeFXs[i]->SetShkEnable(false);
+            ShakeFXs[i]->SetShkPlay(false);
+            ShakeFXs[i] = NULL;
+        }
+    }
 }
 
 float SFXEngine::audio_rnd()
@@ -297,7 +343,7 @@ float SFXEngine::audio_rnd()
     return tmp;
 }
 
-void SFXEngine::audio_InsertSoundSource(userdata_sample_info *smpl)
+void SFXEngine::audio_InsertSoundSource(TSoundSource *smpl)
 {
     int min_i = -1;
     int v3 = 1000000;
@@ -308,10 +354,10 @@ void SFXEngine::audio_InsertSoundSource(userdata_sample_info *smpl)
         {
             if ( soundSources[i] )
             {
-                if ( soundSources[i]->priority < v3 )
+                if ( soundSources[i]->Priority < v3 )
                 {
                     min_i = i;
-                    v3 = soundSources[i]->priority;
+                    v3 = soundSources[i]->Priority;
                 }
             }
             else
@@ -325,31 +371,33 @@ void SFXEngine::audio_InsertSoundSource(userdata_sample_info *smpl)
         if ( min_i == -1 )
             ypa_log_out("-> audio_InsertSoundSource(): <min_i> not initialized.\n");
 
-        if ( min_i != -1 && v3 < smpl->priority )
+        if ( min_i != -1 && v3 < smpl->Priority )
             soundSources[min_i] = smpl;
     }
 }
 
-int SFXEngine::sub_423B3C(userdata_sample_info *smpl, int a2, int *a3)
+int SFXEngine::sub_423B3C(TSoundSource *smpl, int a2, int *a3)
 {
     int i = 0;
 
-    for (i = 0; i < smpl->smplExt->cnt; i++)
+    for (TSampleParams &pr : *(smpl->PFragments))
     {
-        if ( !smpl->smplExt->sndExts[0].loop )
+        if ( !pr.Loop )
             break;
 
-        int v9 = smpl->smplExt->sndExts[0].smplRate + smpl->smplExt->sndExts[0].sample->SampleRate + smpl->pitch;
+        int v9 = pr.SampleRate + pr.Sample->SampleRate + smpl->Pitch;
 
         if ( v9 <= 0 )
             v9 = 1;
 
-        int v10 = (smpl->smplExt->sndExts[0].loop * smpl->smplExt->sndExts[0].rlSmplCnt / 1024) / v9;
+        int v10 = (pr.Loop * pr.rlSmplCnt / 1024) / v9;
 
         if ( a2 < v10 )
             break;
 
         a2 -= v10;
+        
+        i++;
     }
 
     if ( a3 )
@@ -358,63 +406,61 @@ int SFXEngine::sub_423B3C(userdata_sample_info *smpl, int a2, int *a3)
     return i;
 }
 
-void SFXEngine::sb_0x4242e0__sub0(samples_collection1 *smpls, float a2)
+void SFXEngine::SoundCarrierProcessSounds(TSndCarrier *smpls, float distance)
 {
-    float v10 = a2 / 200.0;
+    float v10 = distance / 200.0;
 
-    for (int i = 0; i < 16; i++)
+    for (TSoundSource &snd : smpls->Sounds)
     {
-        userdata_sample_info *v2 = &smpls->samples_data[i];
-
-        if ( v2->psampl || v2->flags & 0x200 )
+        if ( snd.PSample || snd.IsFragmented() )
         {
-            int v5 = 0;
+            size_t fragId = 0;
 
-            if ( v2->flags & 2 )
+            if ( snd.IsEnabled() )
             {
-                int v6 = currentTime - v2->startTime;
+                int v6 = currentTime - snd.StartTime;
 
-                if ( v2->flags & 0x200 )
+                if ( snd.IsFragmented() )
                 {
-                    if ( v2->flags & 4 )
-                        v5 = v2->fragmentID;
+                    if ( snd.IsPlay() )
+                        fragId = snd.CurrentFrag;
                     else
-                        v5 = sub_423B3C(v2, currentTime - v2->startTime, NULL);
+                        fragId = sub_423B3C(&snd, currentTime - snd.StartTime, NULL);
                 }
 
-                int ok = 1;
+                bool ok = true;
 
-                if ( !(v2->flags & 1) && !(v2->flags & 4) && v6 > 0 )
+                if ( !snd.IsLoop() && !snd.IsPlay() && v6 > 0 )
                 {
-                    if ( v2->flags & 0x200 )
+                    if ( snd.IsFragmented() )
                     {
-                        if ( v5 >= v2->smplExt->cnt )
+                        if ( fragId >= snd.PFragments->size() )
                         {
-                            v2->flags &= ~2;
-                            ok = 0;
+                            snd.SetEnabled(false);
+                            ok = false;
                         }
                     }
-                    else if ( (v6 * (v2->pitch + v2->psampl->SampleRate) / 1024) > v2->psampl->bufsz )
+                    else if ( (v6 * (snd.Pitch + snd.PSample->SampleRate) / 1024) > snd.PSample->bufsz )
                     {
-                        v2->flags &= ~2;
-                        ok = 0;
+                        snd.SetEnabled(false);
+                        ok = false;
                     }
                 }
 
                 if (ok)
                 {
-                    v2->resultVol = v2->volume;
+                    snd.ResultVol = snd.Volume;
 
-                    if ( v2->flags & 0x200 )
-                        v2->resultVol += v2->smplExt->sndExts[v5].vol;
+                    if ( snd.IsFragmented() )
+                        snd.ResultVol += snd.PFragments->at(fragId).Vol;
 
                     if ( v10 >= 1.0 )
-                        v2->resultVol /= v10;
+                        snd.ResultVol /= v10;
 
-                    if ( v2->resultVol > 4 )
+                    if ( snd.ResultVol > 4 )
                     {
-                        v2->priority = v2->resultVol;
-                        audio_InsertSoundSource(v2);
+                        snd.Priority = snd.ResultVol;
+                        audio_InsertSoundSource(&snd);
                     }
                 }
 
@@ -424,7 +470,7 @@ void SFXEngine::sb_0x4242e0__sub0(samples_collection1 *smpls, float a2)
 }
 
 
-void SFXEngine::audio_InsertPalFX(userdata_sample_info *smpl)
+void SFXEngine::audio_InsertPalFX(TSoundSource *smpl)
 {
     int min_i = -1;
     int a1 = 1000000;
@@ -433,9 +479,9 @@ void SFXEngine::audio_InsertPalFX(userdata_sample_info *smpl)
     {
         if ( palFXs[i] )
         {
-            if ( palFXs[i]->palMag )
+            if ( palFXs[i]->PFxMag )
             {
-                a1 = palFXs[i]->palMag;
+                a1 = palFXs[i]->PFxMag;
                 min_i = i;
             }
         }
@@ -450,56 +496,54 @@ void SFXEngine::audio_InsertPalFX(userdata_sample_info *smpl)
     if ( min_i == -1 )
         ypa_log_out("-> audio_InsertPalFX(): <min_i> not initialized.\n");
 
-    if ( min_i != -1 && a1 < smpl->palMag )
+    if ( min_i != -1 && a1 < smpl->PFxMag )
         palFXs[min_i] = smpl;
 }
 
-void SFXEngine::sb_0x4242e0__sub1(samples_collection1 *smpls, float a2)
+void SFXEngine::SoundCarrierProcessPFx(TSndCarrier *smpls, float distance)
 {
-    float v6 = a2 / 300.0;
+    float v6 = distance / 300.0;
 
-    for (int i = 0; i < 16; i++)
+    for (TSoundSource &snd : smpls->Sounds)
     {
-        userdata_sample_info *v2 = &smpls->samples_data[i];
-
-        if ( v2->flags & 8 )
+        if ( snd.IsPFx() )
         {
-            if ( v2->flags & 0x10 )
+            if ( snd.IsPFxEnabled() )
             {
-                if ( !(v2->flags & 1) && (size_t)(v2->startTime + v2->paletteFX->time) < currentTime )
-                    v2->flags &= ~0x10;
+                if ( !snd.IsLoop() && (size_t)(snd.StartTime + snd.PPFx->time) < currentTime )
+                    snd.SetPFxEnable(false);
             }
 
-            if ( v2->flags & 0x10 )
+            if ( snd.IsPFxEnabled() )
             {
-                if ( v2->flags & 1 )
-                    v2->palMag = v2->paletteFX->mag0;
+                if ( snd.IsLoop() )
+                    snd.PFxMag = snd.PPFx->mag0;
                 else
-                    v2->palMag = (v2->paletteFX->mag1 - v2->paletteFX->mag0) * ((float)(currentTime - v2->startTime) / (float)v2->paletteFX->time) + v2->paletteFX->mag0;
+                    snd.PFxMag = (snd.PPFx->mag1 - snd.PPFx->mag0) * ((float)(currentTime - snd.StartTime) / (float)snd.PPFx->time) + snd.PPFx->mag0;
 
                 if ( v6 >= 1.0 )
-                    v2->palMag /= v6;
+                    snd.PFxMag /= v6;
 
-                audio_InsertPalFX(v2);
+                audio_InsertPalFX(&snd);
             }
         }
     }
 }
 
-void SFXEngine::InsertShakeFX(userdata_sample_info *smpl)
+void SFXEngine::InsertShakeFX(TSoundSource *smpl)
 {
     int min_i = -1;
     int var_1C = 1000;
 
     for (int i = 0; i < dword_546E14; i++)
     {
-        userdata_sample_info *v5 = ShakeFXs[i];
+        TSoundSource *v5 = ShakeFXs[i];
 
         if ( v5 )
         {
-            if ( var_1C > v5->shkMag )
+            if ( var_1C > v5->ShkMag )
             {
-                var_1C = v5->shkMag;
+                var_1C = v5->ShkMag;
                 min_i = i;
             }
         }
@@ -514,58 +558,56 @@ void SFXEngine::InsertShakeFX(userdata_sample_info *smpl)
     if ( min_i == -1 )
         ypa_log_out("-> audio_InsertShakeFX(): <min_i> not initialized.\n");
 
-    if ( min_i != -1 && var_1C < smpl->shkMag )
+    if ( min_i != -1 && var_1C < smpl->ShkMag )
         ShakeFXs[min_i] = smpl;
 }
 
-void SFXEngine::sb_0x4242e0__sub2(samples_collection1 *smpls, float a2)
+void SFXEngine::SoundCarrierProcessShake(TSndCarrier *smpls, float distance)
 {
-    for (int i = 0; i < 16; i++)
+    for (TSoundSource &snd : smpls->Sounds)
     {
-        userdata_sample_info *v2 = &smpls->samples_data[i];
-
-        if ( v2->flags & 0x40 )
+        if ( snd.IsShk() )
         {
-            if ( v2->flags & 0x80 )
+            if ( snd.IsShkEnabled() )
             {
-                if ( !(v2->flags & 1) && (size_t)(v2->startTime + v2->shakeFX->time) < currentTime )
-                    v2->flags &= ~0x80;
+                if ( !snd.IsLoop() && (size_t)(snd.StartTime + snd.PShkFx->time) < currentTime )
+                    snd.SetShkEnable(false);
             }
 
-            if ( v2->flags & 0x80 )
+            if ( snd.IsShkEnabled() )
             {
-                if ( v2->flags & 1 )
-                    v2->shkMag = v2->shakeFX->mag0;
+                if ( snd.IsLoop() )
+                    snd.ShkMag = snd.PShkFx->mag0;
                 else
-                    v2->shkMag = (v2->shakeFX->mag1 - v2->shakeFX->mag0) * ((float)(currentTime - v2->startTime) / (float)v2->shakeFX->time) + v2->shakeFX->mag0;
+                    snd.ShkMag = (snd.PShkFx->mag1 - snd.PShkFx->mag0) * ((float)(currentTime - snd.StartTime) / (float)snd.PShkFx->time) + snd.PShkFx->mag0;
 
-                float v6 = a2 * v2->shakeFX->mute;
+                float v6 = distance * snd.PShkFx->mute;
 
                 if ( v6 >= 1.0 )
-                    v2->shkMag /= v6;
+                    snd.ShkMag /= v6;
 
-                InsertShakeFX(v2);
+                InsertShakeFX(&snd);
             }
         }
     }
 }
 
 // Insert new sound
-void SFXEngine::sb_0x4242e0(samples_collection1 *smpls)
+void SFXEngine::UpdateSoundCarrier(TSndCarrier *smpls)
 {
-    float a2 = (smpls->field_0 - stru_547018).length();
+    float distance = (smpls->Position - stru_547018).length();
 
-    if ( a2 < 6000.0 )
+    if ( distance < 6000.0 )
     {
         if ( digDriver->inited() )
-            sb_0x4242e0__sub0(smpls, a2);
+            SoundCarrierProcessSounds(smpls, distance);
 
-        if ( a2 < 2400.0 )
+        if ( distance < 2400.0 )
         {
             if ( audio_num_palfx )
-                sb_0x4242e0__sub1(smpls, a2);
+                SoundCarrierProcessPFx(smpls, distance);
 
-            sb_0x4242e0__sub2(smpls, a2);
+            SoundCarrierProcessShake(smpls, distance);
         }
     }
 }
@@ -575,7 +617,7 @@ void SFXEngine::sb_0x424c74__sub0()
     //Free ended channels
     for (int i = 0; i < audio_channels; i++)
     {
-        userdata_sample_info *v2 = snd_channels[i].sndSouce;
+        TSoundSource *v2 = snd_channels[i].sndSouce;
 
         if ( v2 )
         {
@@ -592,7 +634,7 @@ void SFXEngine::sb_0x424c74__sub0()
 
             if ( v3 )
             {
-                v2->flags &= ~4;
+                v2->SetPlay(false);
 
                 snd_channels[i].sndSouce = NULL;
 
@@ -609,9 +651,9 @@ void SFXEngine::sb_0x424c74__sub1()
 
     for (int i = 0; i < audio_channels; i++)
     {
-        userdata_sample_info *v3 = soundSources[i];
+        TSoundSource *v3 = soundSources[i];
 
-        if ( v3 && !(v3->flags & 4) )
+        if ( v3 && !v3->IsPlay() )
         {
             while ( v1 < audio_channels )
             {
@@ -632,14 +674,14 @@ void SFXEngine::sb_0x424c74__sub1()
     }
 }
 
-void SFXEngine::sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
+void SFXEngine::sb_0x424c74__sub2__sub1(TSoundSource *smpl)
 {
-    samples_collection1 *v2 = smpl->parent_sample_collection;
+    TSndCarrier *v2 = smpl->PCarrier;
 
-    vec3d v3 = stru_547018 - v2->field_0;
+    vec3d v3 = stru_547018 - v2->Position;
     float v27 = v3.length();
 
-    vec3d v8 = v2->field_C - stru_547024;
+    vec3d v8 = v2->Vector - stru_547024;
     float v20 = v8.length();
 
     float v21 = v27  *  v20;
@@ -650,10 +692,10 @@ void SFXEngine::sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
 
     int v14;
 
-    if ( smpl->flags & 0x200 )
-        v14 = smpl->smplExt->sndExts[smpl->fragmentID].smplRate + smpl->smplExt->sndExts[smpl->fragmentID].sample->SampleRate + smpl->pitch;
+    if ( smpl->IsFragmented() )
+        v14 = smpl->PFragments->at(smpl->CurrentFrag).SampleRate + smpl->PFragments->at(smpl->CurrentFrag).Sample->SampleRate + smpl->Pitch;
     else
-        v14 = smpl->pitch + smpl->psampl->SampleRate;
+        v14 = smpl->Pitch + smpl->PSample->SampleRate;
 
     if ( v14 < 2000 )
         v14 = 2000;
@@ -662,7 +704,7 @@ void SFXEngine::sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
 
     float v31 = stru_547030.AxisX().dot( v3 );
 
-    smpl->resultRate = v14 + v14 * (int)(v19 * v20) / 400;
+    smpl->ResultRate = v14 + v14 * (int)(v19 * v20) / 400;
 
     float v32;
 
@@ -679,26 +721,26 @@ void SFXEngine::sb_0x424c74__sub2__sub1(userdata_sample_info *smpl)
         v32 = v31 / -v27;
     }
 
-    smpl->resultPan = (v32 * 64.0 + 64.0);
+    smpl->ResultPan = (v32 * 64.0 + 64.0);
 
-    if ( smpl->resultVol < 0 )
-        smpl->resultVol = 0;
-    else if ( smpl->resultVol > 127 )
-        smpl->resultVol = 127;
+    if ( smpl->ResultVol < 0 )
+        smpl->ResultVol = 0;
+    else if ( smpl->ResultVol > 127 )
+        smpl->ResultVol = 127;
 
-    if ( smpl->resultPan < 0 )
-        smpl->resultPan = 0;
-    else if ( smpl->resultPan > 127 )
-        smpl->resultPan = 127;
+    if ( smpl->ResultPan < 0 )
+        smpl->ResultPan = 0;
+    else if ( smpl->ResultPan > 127 )
+        smpl->ResultPan = 127;
 
-    if ( v14 / 2 <= smpl->resultRate )
+    if ( v14 / 2 <= smpl->ResultRate )
     {
-        if ( smpl->resultRate > v14 * 2)
-            smpl->resultRate = v14 * 2;
+        if ( smpl->ResultRate > v14 * 2)
+            smpl->ResultRate = v14 * 2;
     }
     else
     {
-        smpl->resultRate = v14 / 2;
+        smpl->ResultRate = v14 / 2;
     }
 }
 
@@ -707,7 +749,7 @@ void SFXEngine::sound_eos_clbk(void *_smpl)
     walsmpl *smpl = static_cast<walsmpl *>(_smpl);
 
     int v2 = 0;
-    userdata_sample_info *v3 = NULL;
+    TSoundSource *v3 = NULL;
 
     for (int i = 0; i < SFXe.audio_channels; i++)
     {
@@ -721,21 +763,21 @@ void SFXEngine::sound_eos_clbk(void *_smpl)
 
     if ( v3 )
     {
-        if ( v3->flags & 2 )
+        if ( v3->IsEnabled() )
         {
-            if ( v3->flags & 0x200 )
+            if ( v3->IsFragmented() )
             {
-                v3->fragmentID++;
+                v3->CurrentFrag++;
 
-                if ( v3->fragmentID >= v3->smplExt->cnt )
+                if ( v3->CurrentFrag >= v3->PFragments->size() )
                 {
-                    if ( v3->flags & 1 )
-                        v3->fragmentID = 0;
+                    if ( v3->IsLoop() )
+                        v3->CurrentFrag = 0;
                     else
-                        v3->flags &= ~2;
+                        v3->SetEnabled(false);
                 }
 
-                if ( v3->flags & 2 )
+                if ( v3->IsEnabled() )
                 {
                     for (int i = 0; i < SFXe.audio_channels; i++)
                     {
@@ -747,72 +789,72 @@ void SFXEngine::sound_eos_clbk(void *_smpl)
                         }
                     }
 
-                    sndExt *v10 = &v3->smplExt->sndExts[ v3->fragmentID ];
+                    TSampleParams *v10 = &v3->PFragments->at( v3->CurrentFrag );
 
                     wrapper_playSound(
                         SFXe.digDriver,
                         smpl,
                         sound_eos_clbk,
-                        (char *)v10->sample->sample_buffer + v10->rlOffset,
+                        (char *)v10->Sample->Data + v10->rlOffset,
                         v10->rlSmplCnt,
-                        v3->resultRate,
-                        v3->resultVol,
+                        v3->ResultRate,
+                        v3->ResultVol,
                         SFXe.audio_volume,
-                        v3->resultPan,
-                        v10->loop,
+                        v3->ResultPan,
+                        v10->Loop,
                         0);
                 }
             }
             else
             {
-                v3->flags &= ~2;
+                v3->SetEnabled(false);
             }
         }
     }
 }
 
 
-void SFXEngine::sb_0x424c74__sub2__sub0(int id, userdata_sample_info *smpl)
+void SFXEngine::sb_0x424c74__sub2__sub0(int id, TSoundSource *smpl)
 {
     walsmpl *v3 = snd_channels[id].hSample;
 
-    smpl->flags |= 4;
+    smpl->SetPlay(true);
 
-    if ( smpl->flags & 0x200 )
+    if ( smpl->IsFragmented() )
     {
-        int v4 = currentTime - smpl->startTime;
+        int v4 = currentTime - smpl->StartTime;
         int v8;
 
         if ( v4 <= 0 )
         {
-            smpl->fragmentID = 0;
+            smpl->CurrentFrag = 0;
             v8 = 0;
         }
         else
         {
             int a3;
-            int v7 = sub_423B3C(smpl, v4, &a3);
+            size_t v7 = sub_423B3C(smpl, v4, &a3);
 
-            if ( v7 == smpl->smplExt->cnt )
-                v7 = smpl->smplExt->cnt - 1;
+            if ( v7 == smpl->PFragments->size() )
+                v7 = smpl->PFragments->size() - 1;
 
-            v8 = ((smpl->resultRate * a3) / 1024) % smpl->smplExt->sndExts[v7].rlSmplCnt;
-            smpl->fragmentID = v7;
+            v8 = ((smpl->ResultRate * a3) / 1024) % smpl->PFragments->at(v7).rlSmplCnt;
+            smpl->CurrentFrag = v7;
         }
 
-        sndExt *v9 = &smpl->smplExt->sndExts[smpl->fragmentID];
+        TSampleParams *v9 = &smpl->PFragments->at(smpl->CurrentFrag);
 
         wrapper_playSound(
             digDriver,
             v3,
             sound_eos_clbk,
-            (char *)v9->sample->sample_buffer + v9->rlOffset,
+            (char *)v9->Sample->Data + v9->rlOffset,
             v9->rlSmplCnt,
-            smpl->resultRate,
-            smpl->resultVol,
+            smpl->ResultRate,
+            smpl->ResultVol,
             audio_volume,
-            smpl->resultPan,
-            v9->loop,
+            smpl->ResultPan,
+            v9->Loop,
             v8);
     }
     else
@@ -821,14 +863,14 @@ void SFXEngine::sb_0x424c74__sub2__sub0(int id, userdata_sample_info *smpl)
             digDriver,
             v3,
             sound_eos_clbk,
-            smpl->psampl->sample_buffer,
-            smpl->psampl->bufsz,
-            smpl->resultRate,
-            smpl->resultVol,
+            smpl->PSample->Data,
+            smpl->PSample->bufsz,
+            smpl->ResultRate,
+            smpl->ResultVol,
             audio_volume,
-            smpl->resultPan,
-            (smpl->flags & 1) == 0,
-            (int)((smpl->psampl->SampleRate + smpl->pitch) * (currentTime - smpl->startTime) >> 10) % smpl->psampl->bufsz);
+            smpl->ResultPan,
+            (smpl->IsLoop() ? 0 : 1),
+            (int)((smpl->PSample->SampleRate + smpl->Pitch) * (currentTime - smpl->StartTime) >> 10) % smpl->PSample->bufsz);
     }
 }
 
@@ -836,17 +878,17 @@ void SFXEngine::sb_0x424c74__sub2()
 {
     for (int i = 0; i < audio_channels; i++)
     {
-        userdata_sample_info *v2 = snd_channels[i].sndSouce;
+        TSoundSource *v2 = snd_channels[i].sndSouce;
         walsmpl *v3 = snd_channels[i].hSample;
 
         if ( v2 )
         {
-            if ( v2->psampl || v2->flags & 0x200 )
+            if ( v2->PSample || v2->IsFragmented() )
             {
                 sb_0x424c74__sub2__sub1(snd_channels[i].sndSouce);
 
-                if ( v2->flags & 4 )
-                    wrapper_setSampleVRP(digDriver, v3, v2->resultRate, v2->resultVol, v2->resultPan);
+                if ( v2->IsPlay() )
+                    wrapper_setSampleVRP(digDriver, v3, v2->ResultRate, v2->ResultVol, v2->ResultPan);
                 else
                     sb_0x424c74__sub2__sub0(i, v2);
             }
@@ -866,16 +908,16 @@ void SFXEngine::sb_0x424c74__sub3()
     int i = 0;
     for (i = 0; i < audio_num_palfx; i++)
     {
-        userdata_sample_info *v3 = palFXs[i];
+        TSoundSource *v3 = palFXs[i];
 
         if ( !v3 )
             break;
         
-        float magpwr = v3->palMag * GFX::Engine.GetColorEffectPower(v3->paletteFX->slot);
+        float magpwr = v3->PFxMag * GFX::Engine.GetColorEffectPower(v3->PPFx->slot);
 
         pwr -= magpwr;
         
-        fxes.emplace_back(v3->paletteFX->slot, magpwr);
+        fxes.emplace_back(v3->PPFx->slot, magpwr);
     }
 
     if ( i )
@@ -904,11 +946,11 @@ void SFXEngine::sb_0x424c74__sub4()
 
     for (i = 0; i < dword_546E14 && ShakeFXs[i]; i++)
     {
-        userdata_sample_info *v2 = ShakeFXs[i];
+        TSoundSource *v2 = ShakeFXs[i];
 
-        tmp.x += audio_rnd() * v2->shkMag * v2->shakeFX->pos.x;
-        tmp.y += audio_rnd() * v2->shkMag * v2->shakeFX->pos.y;
-        tmp.z += audio_rnd() * v2->shkMag * v2->shakeFX->pos.z;
+        tmp.x += audio_rnd() * v2->ShkMag * v2->PShkFx->pos.x;
+        tmp.y += audio_rnd() * v2->ShkMag * v2->PShkFx->pos.y;
+        tmp.z += audio_rnd() * v2->ShkMag * v2->PShkFx->pos.z;
     }
 
     if ( i > 0 )
@@ -978,7 +1020,7 @@ void SFXEngine::sub_423EFC(int a1, const vec3d &a2, const vec3d &a3, const mat3x
     memset(ShakeFXs, 0, sizeof(ShakeFXs));
 }
 
-void SFXEngine::sub_424CC8()
+void SFXEngine::StopPlayingSounds()
 {
     if ( digDriver )
     {
@@ -987,7 +1029,8 @@ void SFXEngine::sub_424CC8()
 
             if (snd_channels[i].sndSouce )
             {
-                snd_channels[i].sndSouce->flags &= ~(4 | 2);
+                snd_channels[i].sndSouce->SetPlay(false);
+                snd_channels[i].sndSouce->SetEnabled(false);
 
                 snd_channels[i].hSample->stop();
 
@@ -1000,7 +1043,8 @@ void SFXEngine::sub_424CC8()
     {
         if (soundSources[i] )
         {
-            soundSources[i]->flags &= ~(4 | 2);
+            soundSources[i]->SetPlay(false);
+            soundSources[i]->SetEnabled(false);
             soundSources[i] = NULL;
         }
     }
@@ -1009,7 +1053,8 @@ void SFXEngine::sub_424CC8()
     {
         if ( palFXs[i] )
         {
-            palFXs[i]->flags &= ~(0x20 | 0x10);
+            palFXs[i]->SetPFxEnable(false);
+            palFXs[i]->SetPFxPlay(false);
             palFXs[i] = NULL;
         }
     }
@@ -1018,13 +1063,14 @@ void SFXEngine::sub_424CC8()
     {
         if ( ShakeFXs[i] )
         {
-            ShakeFXs[i]->flags &= ~(0x100 | 0x80);
+            ShakeFXs[i]->SetShkEnable(false);
+            ShakeFXs[i]->SetShkPlay(false);
             ShakeFXs[i] = NULL;
         }
     }
 }
 
-userdata_sample_info *SFXEngine::SndGetTopShake()
+TSoundSource *SFXEngine::SndGetTopShake()
 {
     return ShakeFXs[0];
 }

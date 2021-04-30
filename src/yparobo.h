@@ -3,6 +3,7 @@
 
 #include "nucleas.h"
 #include "ypabact.h"
+#include "world/protos.h"
 
 
 class NC_STACK_yparobo;
@@ -168,7 +169,7 @@ public:
 
 
     virtual void setBACT_inputting(int);
-    virtual void setROBO_proto(roboProto *);
+    virtual void setROBO_proto(World::TRoboProto *);
     virtual void setROBO_epConquer(int);
     virtual void setROBO_epDefense(int);
     virtual void setROBO_epRadar(int);
@@ -193,7 +194,7 @@ public:
     virtual void setROBO_robDelay(int);
     virtual void setROBO_recDelay(int);
 
-    virtual rbcolls *getBACT_collNodes();
+    virtual World::rbcolls *getBACT_collNodes();
     virtual int getROBO_epConquer();
     virtual int getROBO_epDefense();
     virtual int getROBO_epRadar();
@@ -203,7 +204,7 @@ public:
     virtual int getROBO_battVehicle();
     virtual int getROBO_battBeam();
     virtual int getROBO_fillMode();
-    virtual roboGun *getROBO_guns();
+    virtual std::vector<World::TRoboGun> &GetGuns();
     virtual int getROBO_epChangeplace();
     virtual int getROBO_epReconnoitre();
     virtual int getROBO_epRobo();
@@ -300,9 +301,9 @@ protected:
     void sub_4F4FF4(int a2, setTarget_msg *parg67);
     
     void yparobo_func71__sub0(update_msg *arg);
-    int yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos);
-    int yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos);
-    int yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos);
+    int FindBestBldPowerStation();
+    int FindBestBldDefenceCenter();
+    int FindBestBldRadar();
 
 
 public:
@@ -312,7 +313,7 @@ public:
 
     
     float _roboFlotage;
-    rbcolls _roboColls;
+    World::rbcolls _roboColls;
     float _roboYPos;
 
     char _roboWFlags;
@@ -411,7 +412,7 @@ public:
     
     int _roboTestEnemyTime;
     
-    std::array<roboGun, 8> _roboGuns;
+    std::vector<World::TRoboGun> _roboGuns;
 
     int _roboEnergyLife; //??
     

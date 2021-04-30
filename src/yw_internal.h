@@ -75,7 +75,7 @@ void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr);
 
 void sub_46D0F8(const std::string &path);
 
-int init_prototypes(NC_STACK_ypaworld *yw);
+
 
 
 
@@ -103,7 +103,7 @@ void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, 
 void ypaworld_func2__sub0__sub0(NC_STACK_ypaworld *yw);
 void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabact *bact2);
 
-void sub_44BF34(vhclSndFX *sndfx);
+
 
 
 void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2);
@@ -292,7 +292,6 @@ void ypaworld_func64__sub17(NC_STACK_ypaworld *yw);
 
 int sub_47B388(int a1, const std::string &a2);
 
-void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg);
 void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw);
 
 
@@ -323,7 +322,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg);
 void ypaworld_func64__sub2(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub19(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub9(NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub23(NC_STACK_ypaworld *yw);
+
 void ypaworld_func64__sub3(NC_STACK_ypaworld *yw);
 void sub_44A094(NC_STACK_ypaworld *yw);
 
@@ -347,8 +346,6 @@ int yw_write_masks(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 void sub_471AB8(NC_STACK_ypaworld *yw);
 void sub_47DB04(NC_STACK_ypaworld *yw, char a2);
 
-void ypaworld_func151__sub6(NC_STACK_ypaworld *yw);
-void ypaworld_func151__sub0(NC_STACK_ypaworld *yw);
 void ypaworld_func151__sub1(NC_STACK_ypaworld *yw);
 
 NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw);
@@ -357,7 +354,6 @@ void deleteSplashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 
 void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, SDL_Color coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
 void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt);
-void sub_4D6958(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, samples_collection1 *collection);
 
 int sub_4C885C();
 void sub_4476AC(NC_STACK_ypaworld *yw);

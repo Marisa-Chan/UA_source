@@ -2,19 +2,11 @@
 #define SAMPLE_H_INCLUDED
 
 #include "rsrc.h"
-
-struct sampl
-{
-    void *sample_buffer;
-    int bufsz;
-    int field_8;
-    int SampleRate;
-    int field_10;
-};
+#include "system/sound.h"
 
 struct __NC_STACK_sample
 {
-    sampl * p_sampl;
+    TSampleData * p_sampl;
 };
 
 class NC_STACK_sample: public NC_STACK_rsrc
@@ -46,7 +38,7 @@ public:
         SMPL_ATT_BUFFER = 0x80002003
     };
 
-    virtual sampl *getSMPL_pSample();
+    virtual TSampleData *GetSampleData();
     virtual int getSMPL_type();
     virtual int getSMPL_len();
     virtual void *getSMPL_buffer();

@@ -215,9 +215,9 @@ int LuaEvents::Lua_WrldShowMessageID(lua_State *l)
     int32_t msgId = lua_tointeger(l, 2);
     
     yw_arg159 arg159;
-    arg159.field_4 = 100;
+    arg159.Priority = 100;
     arg159.unit = NULL;
-    arg159.field_C = msgId;
+    arg159.MsgID = msgId;
     
     wrld->ypaworld_func159(&arg159);
     return 0;

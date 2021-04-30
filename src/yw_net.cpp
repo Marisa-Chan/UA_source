@@ -1478,8 +1478,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         if ( nwMsg->targetType == BACT_TGT_TYPE_UNIT )
             break;
 
-        WeapProto *protos = yw->getYW_weaponProtos();
-        int weapLifeTime = protos[nwMsg->type].life_time_nt;
+        int weapLifeTime = yw->GetWeaponsProtos().at(nwMsg->type).life_time_nt;
 
         if ( weapLifeTime )
             weapo->setMISS_lifeTime(weapLifeTime);
@@ -2095,8 +2094,8 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             if ( wee == 1 && nwee == 0 )
             {
                 yw_arg159 arg159;
-                arg159.field_4 = 10;
-                arg159.field_C = 91;
+                arg159.Priority = 10;
+                arg159.MsgID = 91;
                 arg159.unit = 0;
                 yw->ypaworld_func159(&arg159);
 
@@ -2129,20 +2128,20 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
                 yw_arg159 arg159;
                 arg159.unit = 0;
-                arg159.field_4 = 50;
+                arg159.Priority = 50;
                 switch ( hdMsg->owner)
                 {
                 case 3:
-                    arg159.field_C = 90;
+                    arg159.MsgID = 90;
                     break;
                 case 4:
-                    arg159.field_C = 89;
+                    arg159.MsgID = 89;
                     break;
                 case 6:
-                    arg159.field_C = 88;
+                    arg159.MsgID = 88;
                     break;
                 case 1:
-                    arg159.field_C = 87;
+                    arg159.MsgID = 87;
                     break;
                 case 2:
                 case 5:
@@ -2221,8 +2220,8 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
                         yw_arg159 arg159;
                         arg159.txt = bff;
-                        arg159.field_C = 93;
-                        arg159.field_4 = 10;
+                        arg159.MsgID = 93;
+                        arg159.Priority = 10;
                         arg159.unit = NULL;
 
                         yw->ypaworld_func159(&arg159);
@@ -2339,9 +2338,9 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             bff += gemProt.MsgDefault;
 
             yw_arg159 arg159;
-            arg159.field_4 = 80;
+            arg159.Priority = 80;
             arg159.txt = bff;
-            arg159.field_C = 29;
+            arg159.MsgID = 29;
             arg159.unit = NULL;
 
             yw->ypaworld_func159(&arg159);
@@ -3009,25 +3008,25 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         strcpy(yw->field_81CB.field_8, msg->senderName.c_str());
 
         yw_arg159 arg159;
-        arg159.field_4 = 50;
+        arg159.Priority = 50;
         arg159.unit = NULL;
 
         switch ( exitMsg->owner )
         {
         case 3:
-            arg159.field_C = 86;
+            arg159.MsgID = 86;
             break;
 
         case 4:
-            arg159.field_C = 85;
+            arg159.MsgID = 85;
             break;
 
         case 6:
-            arg159.field_C = 84;
+            arg159.MsgID = 84;
             break;
 
         case 1:
-            arg159.field_C = 83;
+            arg159.MsgID = 83;
             break;
 
         default:

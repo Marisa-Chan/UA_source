@@ -1104,8 +1104,8 @@ void NC_STACK_ypatank::Move(move_msg *arg)
 
     CorrectPositionInLevelBox(NULL);
 
-    _soundcarrier.samples_data[0].pitch = _pitch;
-    _soundcarrier.samples_data[0].volume = _volume;
+    _soundcarrier.Sounds[0].Pitch = _pitch;
+    _soundcarrier.Sounds[0].Volume = _volume;
 
     float v48 = fabs(_fly_dir_length) / (_force / _airconst_static);
     float v46;
@@ -1120,8 +1120,8 @@ void NC_STACK_ypatank::Move(move_msg *arg)
     if ( v49 > v46 )
         v49 = v46;
 
-    if ( _soundcarrier.samples_data[0].psampl )
-        _soundcarrier.samples_data[0].pitch += (float)(_soundcarrier.samples_data[0].psampl->SampleRate + _soundcarrier.samples_data[0].pitch) * v49;
+    if ( _soundcarrier.Sounds[0].PSample )
+        _soundcarrier.Sounds[0].Pitch += (float)(_soundcarrier.Sounds[0].PSample->SampleRate + _soundcarrier.Sounds[0].Pitch) * v49;
 }
 
 size_t NC_STACK_ypatank::SetPosition(bact_arg80 *arg)
@@ -1289,12 +1289,12 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                     && v12 != this )
             {
 
-                rbcolls *v96 = v12->getBACT_collNodes();
+                World::rbcolls *v96 = v12->getBACT_collNodes();
 
                 int v110;
 
                 if ( v96 )
-                    v110 = v96->robo_coll_num;
+                    v110 = v96->roboColls.size();
                 else
                     v110 = 1;
 
@@ -1310,7 +1310,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                     }
                     else
                     {
-                        roboColl &v15 = v96->roboColls[j];
+                        World::TRoboColl &v15 = v96->roboColls[j];
 
                         v89 = v12->_position + v12->_rotation.Transpose().Transform(v15.coll_pos);
                         v19 = v15.robo_coll_radius;
@@ -1333,7 +1333,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                                 v12->_scale_time = -1;
 
                                 if ( _world->GameShell )
-                                    SFXEngine::SFXe.startSound(&_world->GameShell->samples2_info, 4);
+                                    SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_PLASMA);
 
                                 if ( _world->isNetGame )
                                 {
@@ -1633,8 +1633,6 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
 
     v34 /= v37;
 
-    WeapProto *a4 = _world->getYW_weaponProtos();
-
     _tankExpectTgt = true;
 
     ypaworld_arg136 arg149;
@@ -1702,7 +1700,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
         }
     }
 
-    WeapProto *v22 = NULL;
+    World::TWeapProto *v22 = NULL;
     int v43 = 0;
 
     if ( _weapon == -1 )
@@ -1711,7 +1709,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     }
     else
     {
-        v22 = &a4[ _weapon ];
+        v22 = &_world->GetWeaponsProtos().at( _weapon );
 
         if ( v22->model_id & 1 )
             v43 = v22->model_id & 0xFE;

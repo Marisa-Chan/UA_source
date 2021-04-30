@@ -321,62 +321,68 @@ int yw_write_shell(FSMgr::FileHandle *fil, UserData *usr)
 
 int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    for (int i = 0; i < 256; i++)
+    int i = 0;
+    for (const World::TVhclProto &proto : yw->VhclProtos)
     {
-        if ( yw->VhclProtos[i].model_id )
+        if ( proto.model_id != BACT_TYPES_NOPE )
         {
             fil->printf("modify_vehicle %d\n", i);
 
             for (int j = 1; j < 8; j++)
             {
-                if ( yw->VhclProtos[i].disable_enable_bitmask & (1 << j) )
+                if ( proto.disable_enable_bitmask & (1 << j) )
                     fil->printf("    enable         = %d\n", j);
                 else
                     fil->printf("    disable        = %d\n", j);
             }
 
-            fil->printf("    shield         = %d\n", yw->VhclProtos[i].shield);
-            fil->printf("    energy         = %d\n", yw->VhclProtos[i].energy);
-            fil->printf("    num_weapons    = %d\n", yw->VhclProtos[i].num_weapons);
-            fil->printf("    weapon         = %d\n", yw->VhclProtos[i].weapon);
-            fil->printf("    radar          = %d\n", yw->VhclProtos[i].radar);
-            fil->printf("    fire_x         = %4.2f\n", yw->VhclProtos[i].fire_x);
-            fil->printf("    fire_y         = %4.2f\n", yw->VhclProtos[i].fire_y);
-            fil->printf("    fire_z         = %4.2f\n", yw->VhclProtos[i].fire_z);
+            fil->printf("    shield         = %d\n", proto.shield);
+            fil->printf("    energy         = %d\n", proto.energy);
+            fil->printf("    num_weapons    = %d\n", proto.num_weapons);
+            fil->printf("    weapon         = %d\n", proto.weapon);
+            fil->printf("    radar          = %d\n", proto.radar);
+            fil->printf("    fire_x         = %4.2f\n", proto.fire_x);
+            fil->printf("    fire_y         = %4.2f\n", proto.fire_y);
+            fil->printf("    fire_z         = %4.2f\n", proto.fire_z);
             fil->printf("end\n\n");
         }
+        i++;
     }
 
-    for (int i = 0; i < 128; i++)
+    i = 0;
+    for (const World::TWeapProto &proto : yw->WeaponProtos)
     {
-        if ( yw->WeaponProtos[i].field_0 )
+        if ( proto.field_0 )
         {
             fil->printf("modify_weapon %d\n", i);
 
             for (int j = 1; j < 8; j++)
             {
-                if ( yw->WeaponProtos[i].enable_mask & (1 << j) )
+                if ( proto.enable_mask & (1 << j) )
                     fil->printf("    enable         = %d\n", j);
                 else
                     fil->printf("    disable        = %d\n", j);
             }
 
-            fil->printf("    shot_time      = %d\n", yw->WeaponProtos[i].shot_time);
-            fil->printf("    shot_time_user = %d\n", yw->WeaponProtos[i].shot_time_user);
-            fil->printf("    energy         = %d\n", yw->WeaponProtos[i].energy);
+            fil->printf("    shot_time      = %d\n", proto.shot_time);
+            fil->printf("    shot_time_user = %d\n", proto.shot_time_user);
+            fil->printf("    energy         = %d\n", proto.energy);
             fil->printf("end\n\n");
         }
+        
+        i++;
     }
 
-    for (int i = 0; i < 128; i++)
+    i = 0;
+    for (const World::TBuildingProto &proto : yw->BuildProtos )
     {
-        if ( yw->BuildProtos[i].TypeIcon )
+        if ( proto.TypeIcon )
         {
             fil->printf("modify_building %d\n", i);
 
             for (int j = 1; j < 8; j++)
             {
-                if ( yw->BuildProtos[i].EnableMask & (1 << j) )
+                if ( proto.EnableMask & (1 << j) )
                     fil->printf("    enable         = %d\n", j);
                 else
                     fil->printf("    disable        = %d\n", j);
@@ -384,6 +390,7 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
             fil->printf("end\n\n");
         }
+        i++;
     }
 
     return 1;
@@ -659,13 +666,16 @@ int yw_write_extraviewer(NC_STACK_ypabact *bct, FSMgr::FileHandle *fil)
         
         fil->printf("\nbegin_extraviewer\n");
 
-        for (int i = 0; i < 8; i++)
+        int i = 0;
+        for (World::TRoboGun &gun : bct->_host_station->_roboGuns)
         {
-            if ( bct->_host_station->_roboGuns[i].gun_obj == bct )
+            if ( gun.gun_obj == bct )
             {
                 v7 = i;
                 break;
             }
+            
+            i++;
         }
 
         if ( v7 >= 0 )

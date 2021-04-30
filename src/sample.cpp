@@ -12,7 +12,7 @@ size_t NC_STACK_sample::Init(IDVList &stak)
     if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
-    stack__sample.p_sampl = (sampl *)getRsrc_pData();
+    stack__sample.p_sampl = (TSampleData *)getRsrc_pData();
 
     return 1;
 }
@@ -30,7 +30,7 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
     if ( bufsz == 0 || type == 0xFFFF )
         return res;
 
-    sampl *smpl = (sampl *)AllocVec(sizeof(sampl), 65537);
+    TSampleData *smpl = (TSampleData *)AllocVec(sizeof(TSampleData), 65537);
 
     if ( !smpl )
         return res;
@@ -43,7 +43,7 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
     if ( !buf )
     {
         buf = AllocVec(bufsz, 65537);
-        smpl->sample_buffer = buf;
+        smpl->Data = buf;
 
         if ( !buf )
         {
@@ -53,7 +53,7 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
     }
     else
     {
-        smpl->sample_buffer = buf;
+        smpl->Data = buf;
         smpl->field_10 |= 1;
     }
 
@@ -64,14 +64,14 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
 
 size_t NC_STACK_sample::rsrc_func65(rsrc *res)
 {
-    sampl *smpl = (sampl *)res->data;
+    TSampleData *smpl = (TSampleData *)res->data;
 
     if ( smpl )
     {
         if ( !(smpl->field_10 & 1) )
         {
-            if ( smpl->sample_buffer )
-                nc_FreeMem(smpl->sample_buffer);
+            if ( smpl->Data )
+                nc_FreeMem(smpl->Data);
         }
         nc_FreeMem(smpl);
         res->data = NULL;
@@ -83,14 +83,14 @@ size_t NC_STACK_sample::rsrc_func65(rsrc *res)
 void * NC_STACK_sample::sample_func128(void **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","sample_func128");
-    sampl *smpl = stack__sample.p_sampl;
+    TSampleData *smpl = stack__sample.p_sampl;
     arg[2] = smpl;
     return smpl;
 }
 
 
 
-sampl *NC_STACK_sample::getSMPL_pSample()
+TSampleData *NC_STACK_sample::GetSampleData()
 {
     return stack__sample.p_sampl;
 }
@@ -112,7 +112,7 @@ int NC_STACK_sample::getSMPL_len()
 void *NC_STACK_sample::getSMPL_buffer()
 {
     if (stack__sample.p_sampl)
-        return stack__sample.p_sampl->sample_buffer;
+        return stack__sample.p_sampl->Data;
     return 0;
 }
 

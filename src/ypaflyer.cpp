@@ -1001,7 +1001,7 @@ void NC_STACK_ypaflyer::User_layer(update_msg *arg)
                     break;
                 }
 
-                if ( !(_soundcarrier.samples_data[5].flags & 2) )
+                if ( !_soundcarrier.Sounds[5].IsEnabled() )
                 {
                     if ( !(_status_flg & BACT_STFLAG_LCRASH) )
                     {
@@ -1077,8 +1077,8 @@ void NC_STACK_ypaflyer::Move(move_msg *arg)
 
     CorrectPositionInLevelBox(NULL);
 
-    _soundcarrier.samples_data[0].pitch = _pitch;
-    _soundcarrier.samples_data[0].volume = _volume;
+    _soundcarrier.Sounds[0].Pitch = _pitch;
+    _soundcarrier.Sounds[0].Volume = _volume;
 
     float v48 = fabs(_fly_dir_length) / (_force / _airconst_static);
     float v44;
@@ -1093,8 +1093,8 @@ void NC_STACK_ypaflyer::Move(move_msg *arg)
     if ( v49 > v44 )
         v49 = v44;
 
-    if ( _soundcarrier.samples_data[0].psampl )
-        _soundcarrier.samples_data[0].pitch += (_soundcarrier.samples_data[0].psampl->SampleRate + _soundcarrier.samples_data[0].pitch) * v49;
+    if ( _soundcarrier.Sounds[0].PSample )
+        _soundcarrier.Sounds[0].Pitch += (_soundcarrier.Sounds[0].PSample->SampleRate + _soundcarrier.Sounds[0].Pitch) * v49;
 }
 
 size_t NC_STACK_ypaflyer::SetPosition(bact_arg80 *arg)

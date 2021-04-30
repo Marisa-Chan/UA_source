@@ -6,6 +6,7 @@
 #include "base.h"
 #include "listnode.h"
 #include "types.h"
+#include "world/protos.h"
 
 // !!!! if period is small, then this never happen
 #define BACT_MIN_ANGLE 0.0002
@@ -21,31 +22,7 @@ struct yw_arg129;
 struct cellArea;
 
 
-struct DestFX
-{
-    enum FXTYPES {
-        FX_NONE = 0,
-        FX_DEATH,    // "death"
-        FX_MEGADETH, // "megadeth"
-        FX_CREATE,   // "create"
-        FX_BEAM      // "beam"
-    };
-    
-    uint8_t Type = FX_NONE;
-    int ModelID  = 0; // Model id. >= 0
-    vec3d Pos;
-    bool Accel   = false;
 
-    void Clear()
-    {
-        Type = FX_NONE;
-        ModelID = 0;
-        Pos = vec3d();
-        Accel = false;
-    }
-    
-    static uint8_t ParseTypeName(const std::string &in);
-};
 
 
 enum EVPROTO_FLAG
@@ -159,44 +136,7 @@ union BactTarget
 };
 
 
-struct roboColl
-{
-    float robo_coll_radius;
-    vec3d coll_pos;
-    vec3d field_10;
 
-    roboColl()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        robo_coll_radius = 0.;
-        coll_pos = vec3d();
-        field_10 = vec3d();
-    }
-};
-
-struct rbcolls
-{
-    int field_0;
-    int8_t robo_coll_num;
-    std::array<roboColl, 16> roboColls;
-
-    rbcolls()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        field_0 = 0;
-        robo_coll_num = 0;
-        for ( auto &c : roboColls )
-            c.clear();
-    }
-};
 
 enum BACT_TYPES
 {
@@ -564,7 +504,7 @@ public:
     virtual int getBACT_yourLastSeconds();
     virtual NC_STACK_base *GetVP();
     virtual int getBACT_aggression();
-    virtual rbcolls *getBACT_collNodes();
+    virtual World::rbcolls *getBACT_collNodes();
     virtual int getBACT_extraViewer();
     virtual int getBACT_alwaysRender();
     
@@ -574,7 +514,7 @@ public:
     
     void sub_4843BC(NC_STACK_ypabact *bact2, int a3);
     void sub_493480(NC_STACK_ypabact *bact2, int mode);
-    void StartDestFX(const DestFX &fx);
+    void StartDestFX(const World::DestFX &fx);
 
     void DoTargetWaypoint();
     void FixSectorFall();
@@ -624,7 +564,7 @@ public:
     NC_STACK_ypabact *_parent;
     World::RefBactList _kidList;
     World::RefBactList::Node _kidRef;
-    samples_collection1 _soundcarrier;
+    TSndCarrier _soundcarrier;
     int _soundFlags;
     int _volume;
     int _pitch;
@@ -698,8 +638,8 @@ public:
     int _vp_active;
     extra_vproto _vp_extra[3];
     int _vp_extra_mode;
-    std::array<DestFX, 16> _destroyFX;    // dest_fx
-    std::vector<DestFX>    _extDestroyFX; // ext_dest_fx
+    std::vector<World::DestFX> _destroyFX;    // dest_fx
+    std::vector<World::DestFX> _extDestroyFX; // ext_dest_fx
     float _radius;
     float _viewer_radius;
     float _overeof;

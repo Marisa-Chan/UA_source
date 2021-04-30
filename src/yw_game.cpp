@@ -150,18 +150,6 @@ void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
     }
 }
 
-int sb_0x44ca90__sub8(NC_STACK_ypaworld *yw)
-{
-    yw->samples = (yw_samples *)AllocVec(sizeof(yw_samples), 65537);
-    if ( !yw->samples )
-        return 0;
-
-    yw->samples->field_0 = -1;
-    SFXEngine::SFXe.sub_423DB0(&yw->samples->field_4);
-
-    return 1;
-}
-
 int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 {
     int ok = 0;
@@ -288,7 +276,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
     audio_volume = SFXEngine::SFXe.getMasterVolume();
 
-    sb_0x44ca90__sub8(this);
+    _voiceMessage.Reset();
 
     Common::Env.SetPrefix("rsrc", "data:");
 
@@ -870,8 +858,8 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                 {
                     yw_arg159 v21;
                     v21.unit = a5->unit;
-                    v21.field_4 = 78;
-                    v21.field_C = 45;
+                    v21.Priority = 78;
+                    v21.MsgID = 45;
 
                     ypaworld_func159(&v21);
                 }
@@ -880,8 +868,8 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
             {
                 yw_arg159 v24;
                 v24.unit = NULL;
-                v24.field_4 = 78;
-                v24.field_C = 67;
+                v24.Priority = 78;
+                v24.MsgID = 67;
 
                 ypaworld_func159(&v24);
             }
@@ -898,8 +886,8 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                         {
                             yw_arg159 v23;
                             v23.unit = NULL;
-                            v23.field_4 = 80;
-                            v23.field_C = 82;
+                            v23.Priority = 80;
+                            v23.MsgID = 82;
 
                             ypaworld_func159(&v23);
                         }
@@ -907,8 +895,8 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
                         {
                             yw_arg159 v22;
                             v22.unit = NULL;
-                            v22.field_4 = 80;
-                            v22.field_C = 81;
+                            v22.Priority = 80;
+                            v22.MsgID = 81;
 
                             ypaworld_func159(&v22);
                         }
@@ -1494,52 +1482,6 @@ NC_STACK_ypabact *NC_STACK_ypaworld::yw_createUnit( int model_id)
 }
 
 
-void sub_44BF34(vhclSndFX *sndfx)
-{
-    if ( !sndfx->wavs[0] && !sndfx->single_sample )
-    {
-        std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
-
-        if ( sndfx->extS.cnt )
-        {
-            for (int i = 0; i < sndfx->extS.cnt; i++)
-            {
-                sndfx->wavs[i] = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->extSampleNames[i]}} );
-
-                if ( sndfx->wavs[i] )
-                {
-                    sampl *sample = sndfx->wavs[i]->getSMPL_pSample();
-
-                    sndfx->extS.sndExts[i].sample = sample;
-                    sndfx->extS.sndExts[i].rlOffset = sample->SampleRate * sndfx->extS.sndExts[i].offset / 11000;
-                    sndfx->extS.sndExts[i].rlSmplCnt = sample->SampleRate * sndfx->extS.sndExts[i].smplCnt / 11000;
-
-                    if ( sndfx->extS.sndExts[i].rlOffset > sample->bufsz )
-                        sndfx->extS.sndExts[i].rlOffset = sample->bufsz;
-
-                    if ( !sndfx->extS.sndExts[i].rlSmplCnt )
-                        sndfx->extS.sndExts[i].rlSmplCnt = sample->bufsz;
-
-                    if ( sndfx->extS.sndExts[i].rlSmplCnt + sndfx->extS.sndExts[i].rlOffset > sample->bufsz )
-                        sndfx->extS.sndExts[i].rlSmplCnt = sample->bufsz - sndfx->extS.sndExts[i].rlOffset;
-                }
-                else
-                {
-                    ypa_log_out("Warning: Could not load sample %s.\n", sndfx->extSampleNames[i].c_str());
-                }
-            }
-        }
-        else if ( sndfx->sample_name[0] )
-        {
-            sndfx->single_sample = Nucleus::CInit<NC_STACK_wav>( {{NC_STACK_rsrc::RSRC_ATT_NAME, sndfx->sample_name}} );
-
-            if ( !sndfx->single_sample )
-                ypa_log_out("Warning: Could not load sample %s.\n", sndfx->sample_name.c_str());
-        }
-
-        Common::Env.SetPrefix("rsrc", oldRsrc);
-    }
-}
 
 
 void sub_4D7F60(NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_msg *bs77)
@@ -2041,7 +1983,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
     memset(&bvMsg, 0, sizeof(bvMsg));
 
     cellArea &cell = _cells(x, y);
-    TBuildingProto *bld = &BuildProtos[ blg_id ];
+    World::TBuildingProto *bld = &BuildProtos[ blg_id ];
     secType *sectp = &secTypes[ bld->SecType ];
 
     int v43 = 1;
@@ -2112,7 +2054,7 @@ void NC_STACK_ypaworld::sb_0x456384(int x, int y, int ownerid2, int blg_id, int 
 
                 for ( size_t i = 0; i < bld->Guns.size(); i++)
                 {
-                    TBuildingProto::TGun &GunProto = bld->Guns[i];
+                    World::TBuildingProto::TGun &GunProto = bld->Guns[i];
                     
                     if ( !GunProto.VhclID )
                         break;
@@ -2403,16 +2345,16 @@ void ypaworld_func64__sub20(NC_STACK_ypaworld *yw, int dtime)
                         yw_arg159 arg159;
 
                         arg159.unit = yw->UserRobo;
-                        arg159.field_4 = 65;
+                        arg159.Priority = 65;
 
                         if ( yw->BuildProtos[a6].ModelID == 1 )
-                            arg159.field_C = 36;
+                            arg159.MsgID = 36;
                         else if ( yw->BuildProtos[a6].ModelID == 2 )
-                            arg159.field_C = 38;
+                            arg159.MsgID = 38;
                         else if ( yw->BuildProtos[a6].ModelID == 3 )
-                            arg159.field_C = 37;
+                            arg159.MsgID = 37;
                         else
-                            arg159.field_C = 0;
+                            arg159.MsgID = 0;
 
                         yw->ypaworld_func159(&arg159);
                     }
@@ -2640,21 +2582,21 @@ void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 
     yw_arg159 arg159;
     arg159.unit = 0;
-    arg159.field_4 = 94;
+    arg159.Priority = 94;
 
     if ( sitem.Type == 1 )
     {
         arg159.txt = GetLocaleString(250, "Superbomb activated.");
-        arg159.field_C = 70;
+        arg159.MsgID = 70;
     }
     else if ( sitem.Type == 2 )
     {
         arg159.txt = GetLocaleString(254, "Superwave activated.");
-        arg159.field_C = 74;
+        arg159.MsgID = 74;
     }
     else
     {
-        arg159.field_C = 0;
+        arg159.MsgID = 0;
         arg159.txt = "Cant happen.";
     }
 
@@ -2683,21 +2625,21 @@ void NC_STACK_ypaworld::sub_4D1594(int id)
 
     yw_arg159 arg159;
     arg159.unit = 0;
-    arg159.field_4 = 93;
+    arg159.Priority = 93;
 
     if ( sitem.Type == 1 )
     {
         arg159.txt = GetLocaleString(252, "Superbomb frozen.");
-        arg159.field_C = 72;
+        arg159.MsgID = 72;
     }
     else if ( sitem.Type == 2 )
     {
         arg159.txt = GetLocaleString(256, "Superwave frozen.");
-        arg159.field_C = 76;
+        arg159.MsgID = 76;
     }
     else
     {
-        arg159.field_C = 0;
+        arg159.MsgID = 0;
         arg159.txt = "Cant happen.";
     }
 
@@ -2727,22 +2669,22 @@ void NC_STACK_ypaworld::sub_4D1444(int id)
     sitem.LastRadius = 0;
 
     yw_arg159 arg159;
-    arg159.field_4 = 95;
+    arg159.Priority = 95;
     arg159.unit = 0;
 
     if ( sitem.Type == 1 )
     {
         arg159.txt = GetLocaleString(251, "Superbomb triggered.");
-        arg159.field_C = 71;
+        arg159.MsgID = 71;
     }
     else if ( sitem.Type == 2 )
     {
         arg159.txt = GetLocaleString(255, "Superwave triggered.");
-        arg159.field_C = 75;
+        arg159.MsgID = 75;
     }
     else
     {
-        arg159.field_C = 0;
+        arg159.MsgID = 0;
         arg159.txt = "Cant happen.";
     }
 
@@ -2916,15 +2858,10 @@ void ypaworld_func64__sub2(NC_STACK_ypaworld *yw)
     {
         NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
 
-        roboGun *guns = robo->getROBO_guns();
-
-        if ( guns )
+        for (World::TRoboGun &gun : robo->GetGuns())
         {
-            for (int i = 0; i < 8; i++)
-            {
-                if ( yw->UserUnit == guns[i].gun_obj )
-                    yw->field_1b70 = 1;
-            }
+            if ( yw->UserUnit == gun.gun_obj )
+                yw->field_1b70 = 1;
         }
     }
 }
@@ -2976,9 +2913,9 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
 
                 yw_arg159 arg159;
                 arg159.unit = 0;
-                arg159.field_4 = 65;
+                arg159.Priority = 65;
                 arg159.txt = yw->GetLocaleString(224, "TRANSPORTER GATE CLOSED!");
-                arg159.field_C = 24;
+                arg159.MsgID = 24;
 
                 yw->ypaworld_func159(&arg159);
             }
@@ -3008,9 +2945,9 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                 {
                     yw_arg159 arg159_1;
                     arg159_1.unit = 0;
-                    arg159_1.field_4 = 49;
+                    arg159_1.Priority = 49;
                     arg159_1.txt = yw->GetLocaleString(223, "TRANSPORTER GATE OPENED!");
-                    arg159_1.field_C = 23;
+                    arg159_1.MsgID = 23;
 
                     yw->ypaworld_func159(&arg159_1);
                     yw->field_1a00 = yw->timeStamp;
@@ -3022,9 +2959,9 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                 {
                     yw_arg159 arg159_2;
                     arg159_2.unit = 0;
-                    arg159_2.field_4 = 10;
+                    arg159_2.Priority = 10;
                     arg159_2.txt = yw->GetLocaleString(258, "WARNING: BEAM GATE FULL!");
-                    arg159_2.field_C = 46;
+                    arg159_2.MsgID = 46;
 
                     yw->ypaworld_func159(&arg159_2);
                     yw->field_1a00 = yw->timeStamp;
@@ -3090,21 +3027,21 @@ void NC_STACK_ypaworld::sub_4D16C4(int id)
 
     yw_arg159 arg159;
     arg159.unit = NULL;
-    arg159.field_4 = 92;
+    arg159.Priority = 92;
 
     if ( sitem.Type == 1 )
     {
         arg159.txt = GetLocaleString(253, "Superbomb deactivated.");
-        arg159.field_C = 73;
+        arg159.MsgID = 73;
     }
     else if ( sitem.Type == 2 )
     {
         arg159.txt = GetLocaleString(257, "Superwave deactivated.");
-        arg159.field_C = 77;
+        arg159.MsgID = 77;
     }
     else
     {
-        arg159.field_C = 0;
+        arg159.MsgID = 0;
         arg159.txt = "Cant happen.";
     }
 
@@ -3342,54 +3279,42 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19()
     }
 }
 
-void sub_4D6958(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, samples_collection1 *collection)
+void NC_STACK_ypaworld::VoiceMessageCalcPositionToUnit()
 {
-    if ( unit == yw->UserRobo )
+    if ( _voiceMessage.Unit == UserRobo )
     {
-        collection->field_0 = yw->UserUnit->_position;
+        _voiceMessage.Carrier.Position = UserUnit->_position;
     }
     else
     {
-        vec3d tmp = unit->_position - yw->UserUnit->_position;
+        vec3d tmp = _voiceMessage.Unit->_position - UserUnit->_position;
 
         float v11 = tmp.length();
 
         if ( v11 > 0.0 )
             tmp *= (100.0 / v11);
 
-        collection->field_0 = yw->UserUnit->_position + tmp;
+        _voiceMessage.Carrier.Position = UserUnit->_position + tmp;
     }
 }
 
-void ypaworld_func64__sub23(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::VoiceMessageUpdate()
 {
-    yw_samples *smpls = yw->samples;
-
-    if ( smpls->field_0 >= 0 )
+    if ( _voiceMessage.Priority >= 0 )
     {
-        NC_STACK_ypabact *unit = smpls->field_360;
-
-        if ( unit->_status != BACT_STATUS_DEAD )
+        if ( _voiceMessage.Unit->_status != BACT_STATUS_DEAD )
         {
-            sub_4D6958(yw, unit, &smpls->field_4);
+            VoiceMessageCalcPositionToUnit();
 
-            smpls->field_4.field_C = yw->UserUnit->_fly_dir * yw->UserUnit->_fly_dir_length;
+            _voiceMessage.Carrier.Vector = UserUnit->_fly_dir * UserUnit->_fly_dir_length;
         }
 
-        if ( smpls->field_4.samples_data[0].flags & 2 )
+        if ( _voiceMessage.Carrier.Sounds[0].IsEnabled() )
         {
-            SFXEngine::SFXe.sb_0x4242e0(&smpls->field_4);
+            SFXEngine::SFXe.UpdateSoundCarrier(&_voiceMessage.Carrier);
         }
         else
-        {
-            SFXEngine::SFXe.sub_423DD8(&smpls->field_4);
-
-            if ( smpls->field_35C )
-                delete_class_obj(smpls->field_35C);
-
-            memset(smpls, 0, sizeof(yw_samples));
-            smpls->field_0 = -1;
-        }
+            _voiceMessage.Reset();
     }
 }
 
@@ -3405,9 +3330,9 @@ void ypaworld_func64__sub3(NC_STACK_ypaworld *yw)
                 {
                     yw_arg159 arg159;
                     arg159.unit = yw->UserUnit;
-                    arg159.field_4 = 24;
+                    arg159.Priority = 24;
                     arg159.txt = yw->GetLocaleString(222, "ENEMY SECTOR ENTERED");
-                    arg159.field_C = 22;
+                    arg159.MsgID = 22;
 
                     yw->ypaworld_func159(&arg159);
                 }
@@ -3476,24 +3401,6 @@ void NC_STACK_ypaworld::sub_471AB8()
     }
 }
 
-void ypaworld_func151__sub6(NC_STACK_ypaworld *yw)
-{
-    if ( yw->samples )
-    {
-        SFXEngine::SFXe.sub_423DD8(&yw->samples->field_4);
-
-        if ( yw->samples->field_35C )
-            delete_class_obj(yw->samples->field_35C);
-
-        memset(yw->samples, 0, sizeof(yw_samples));
-
-        yw->samples->field_0 = -1;
-
-        nc_FreeMem(yw->samples);
-        yw->samples = NULL;
-    }
-}
-
 void NC_STACK_ypaworld::NetReleaseMissiles(NC_STACK_ypabact *bact)
 {
     while(!bact->_missiles_list.empty())
@@ -3525,12 +3432,10 @@ void NC_STACK_ypaworld::sub_4F1BE8(NC_STACK_ypabact *bct)
 
         if ( gun->IsRoboGun() )
         {
-            roboGun *v4 = bct->_host_station->getROBO_guns();
-
-            for (int i = 0; i < 8; i++)
+            for (World::TRoboGun &pgun : bct->_host_station->GetGuns())
             {
-                if ( bct == v4[i].gun_obj )
-                    v4[i].gun_obj = NULL;
+                if ( bct == pgun.gun_obj )
+                    pgun.gun_obj = NULL;
             }
         }
     }
@@ -3570,10 +3475,8 @@ void NC_STACK_ypaworld::NetRemove(NC_STACK_ypabact *bct)
     {
         NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(bct);
 
-        roboGun *a4 = robo->getROBO_guns();
-
-        for (int i = 0; i < 8; i++)
-            a4[i].gun_obj = NULL;
+        for (World::TRoboGun &gun : robo->GetGuns())
+            gun.gun_obj = NULL;
     }
 
     bct->CleanAttackersTarget();
@@ -3586,50 +3489,24 @@ void NC_STACK_ypaworld::NetRemove(NC_STACK_ypabact *bct)
     bct->_status_flg |= BACT_STFLAG_DEATH1;
 }
 
-void sub_44C144(vhclSndFX *sndfx)
+void NC_STACK_ypaworld::ProtosFreeSounds()
 {
-    for (int i = 0; i < sndfx->extS.cnt; i++)
+    SFXEngine::SFXe.StopPlayingSounds();
+
+    for (World::TVhclProto &vhcl : VhclProtos)
     {
-        if ( sndfx->wavs[i] )
-        {
-            delete_class_obj(sndfx->wavs[i]);
-            sndfx->wavs[i] = NULL;
-        }
+        for (World::TVhclSound &sfx : vhcl.sndFX)
+            sfx.ClearSounds();
     }
 
-    if ( sndfx->single_sample )
+    for (World::TWeapProto &wep : WeaponProtos)
     {
-        delete_class_obj(sndfx->single_sample);
-        sndfx->single_sample = NULL;
-    }
-}
-
-void ypaworld_func151__sub0(NC_STACK_ypaworld *yw)
-{
-    SFXEngine::SFXe.sub_424CC8();
-
-    for (int i = 0; i < 256; i++)
-    {
-        VhclProto *vhcl = &yw->VhclProtos[i];
-        for (int j = 0; j < 12; j++)
-        {
-            sub_44C144(&vhcl->sndFX[j]);
-        }
+        for (World::TVhclSound &fx : wep.sndFXes)
+            fx.ClearSounds();
     }
 
-    for (int i = 0; i < 128; i++)
-    {
-        WeapProto *weap = &yw->WeaponProtos[i];
-        for (int j = 0; j < 3; j++)
-        {
-            sub_44C144(&weap->sndFXes[j]);
-        }
-    }
-
-    for (int i = 0; i < 128; i++)
-    {
-        sub_44C144(&yw->BuildProtos[i].SndFX);
-    }
+    for (World::TBuildingProto &proto : BuildProtos)
+        proto.SndFX.ClearSounds();
 }
 
 
@@ -3674,19 +3551,19 @@ void NC_STACK_ypaworld::FFeedback_Update()
             }
         }
 
-        userdata_sample_info *top = SFXEngine::SFXe.SndGetTopShake();
+        TSoundSource *top = SFXEngine::SFXe.SndGetTopShake();
         if ( top )
         {
             field_7572 = top;
-            if ( top->startTime == SFXEngine::SFXe.currentTime )
+            if ( top->StartTime == SFXEngine::SFXe.currentTime )
             {
-                float p1 = top->shkMag;
+                float p1 = top->ShkMag;
                 if ( p1 > 1.0 )
                     p1 = 1.0;
 
-                vec3d tmp = top->parent_sample_collection->field_0 - UserUnit->_position;
+                vec3d tmp = top->PCarrier->Position - UserUnit->_position;
 
-                float p2 = top->shakeFX->time;
+                float p2 = top->PShkFx->time;
                 float p3 = UserUnit->_rotation.AxisX().dot( tmp );
                 float p4 = -UserUnit->_rotation.AxisZ().dot( tmp );
 
@@ -3771,8 +3648,8 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
         yw_arg159 info_msg;
         info_msg.txt = "Screenshot saved.";
         info_msg.unit = NULL;
-        info_msg.field_4 = 100;
-        info_msg.field_C = 0;
+        info_msg.Priority = 100;
+        info_msg.MsgID = 0;
 
         yw->ypaworld_func159(&info_msg);
     }
@@ -3787,8 +3664,8 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
             yw_arg159 info_msg;
             info_msg.txt = "Screenshotting: stopped.";
             info_msg.unit = NULL;
-            info_msg.field_4 = 100;
-            info_msg.field_C = 0;
+            info_msg.Priority = 100;
+            info_msg.MsgID = 0;
 
             yw->ypaworld_func159(&info_msg);
         }
@@ -3806,8 +3683,8 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
         yw_arg159 info_msg;
         info_msg.txt = "Screenshotting: started.";
         info_msg.unit = NULL;
-        info_msg.field_4 = 100;
-        info_msg.field_C = 0;
+        info_msg.Priority = 100;
+        info_msg.MsgID = 0;
 
         yw->ypaworld_func159(&info_msg);
     }
@@ -3821,8 +3698,8 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
             yw_arg159 info_msg;
             info_msg.txt = "Replay recordering: stopped.";
             info_msg.unit = NULL;
-            info_msg.field_4 = 100;
-            info_msg.field_C = 0;
+            info_msg.Priority = 100;
+            info_msg.MsgID = 0;
 
             yw->ypaworld_func159(&info_msg);
         }
@@ -3837,8 +3714,8 @@ void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
             yw_arg159 info_msg;
             info_msg.txt = "Replay recordering: started.";
             info_msg.unit = NULL;
-            info_msg.field_4 = 100;
-            info_msg.field_C = 0;
+            info_msg.Priority = 100;
+            info_msg.MsgID = 0;
 
             yw->ypaworld_func159(&info_msg);
         }
@@ -3958,11 +3835,13 @@ void NC_STACK_ypaworld::recorder_world_to_frame(recorder *rcrd)
 
         for (int j = 0; j < 16; j++)
         {
-            if (bact->_soundcarrier.samples_data[j].flags & 0x92)
+            if (bact->_soundcarrier.Sounds[j].IsEnabled() || 
+                bact->_soundcarrier.Sounds[j].IsPFxEnabled() || 
+                bact->_soundcarrier.Sounds[j].IsShkEnabled())
                 ssnd[0] |= 1 << j;
         }
 
-        ssnd[1] = bact->_soundcarrier.samples_data[0].pitch;
+        ssnd[1] = bact->_soundcarrier.Sounds[0].Pitch;
     }
 }
 
@@ -4197,7 +4076,7 @@ bool NC_STACK_ypaworld::recorder_create_camera()
 
     bacto->_rotation = mat3x3::Ident();
 
-    SFXEngine::SFXe.sub_423DB0(&bacto->_soundcarrier);
+    bacto->_soundcarrier.Clear();
 
     ypaworld_func134(bacto);
 
@@ -4296,11 +4175,11 @@ NC_STACK_ypabact *NC_STACK_ypaworld::recorder_newObject(trec_bct *oinf)
             arg146.vehicle_id = oinf->vhcl_id;
             arg146.pos = vec3d(0.0, 0.0, 0.0);
 
-            VhclProto *prot = &VhclProtos[ oinf->vhcl_id ];
+            World::TVhclProto *prot = &VhclProtos[ oinf->vhcl_id ];
 
             int v6 = prot->model_id;
 
-            prot->model_id = 1;
+            prot->model_id = BACT_TYPES_BACT;
 
             bacto = ypaworld_func146(&arg146);
 
@@ -4438,7 +4317,7 @@ void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *
         break;
     }
 
-    bact->_soundcarrier.samples_data[0].pitch = ssnd[1];
+    bact->_soundcarrier.Sounds[0].Pitch = ssnd[1];
 
     for(int i = 0; i < 16; i++)
     {
@@ -4457,7 +4336,7 @@ void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *
             {
                 bact->_soundFlags &= ~v48;
 
-                if ( bact->_soundcarrier.samples_data[i].flags & 1 )
+                if ( bact->_soundcarrier.Sounds[i].IsLoop() )
                     SFXEngine::SFXe.sub_424000(&bact->_soundcarrier, i);
             }
         }

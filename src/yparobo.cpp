@@ -175,7 +175,7 @@ size_t NC_STACK_yparobo::func2(IDVList &stak)
                 break;
 
             case ROBO_ATT_PROTO:
-                setROBO_proto(val.Get<roboProto *>());
+                setROBO_proto(val.Get<World::TRoboProto *>());
                 break;
 
             case ROBO_ATT_EP_CONQUER:
@@ -290,13 +290,13 @@ void NC_STACK_yparobo::AI_layer1(update_msg *arg)
 
     _airconst = _airconst_static;
 
-    _soundcarrier.samples_data[0].pitch = _pitch;
-    _soundcarrier.samples_data[0].volume = _volume;
+    _soundcarrier.Sounds[0].Pitch = _pitch;
+    _soundcarrier.Sounds[0].Volume = _volume;
 
-    for (int i = 0; i < 8; i++)
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        if (_roboGuns[i].gun_obj)
-            _roboGuns[i].gun_obj->_owner = _owner;
+        if (gun.gun_obj)
+            gun.gun_obj->_owner = _owner;
     }
 
     EnergyInteract(arg);
@@ -802,14 +802,14 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 
 void NC_STACK_yparobo::sub_4A1270(const vec3d &vaxis, float angle)
 {
-    for (int i = 0; i < 8; i++)
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        if ( _roboGuns[i].gun_obj )
+        if ( gun.gun_obj )
         {
-            NC_STACK_ypagun *gungun = dynamic_cast<NC_STACK_ypagun *>(_roboGuns[i].gun_obj);
+            NC_STACK_ypagun *gungun = dynamic_cast<NC_STACK_ypagun *>(gun.gun_obj);
 
             if (gungun)
-                _roboGuns[i].dir = gungun->ypagun_func129(vaxis, -angle);
+                gun.dir = gungun->ypagun_func129(vaxis, -angle);
         }
     }
 }
@@ -848,12 +848,12 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
     ypaworld_arg136 arg136;
 
-    for (int i = 0; i < _roboColls.robo_coll_num; i++)
+    for (const World::TRoboColl &rcoll : _roboColls.roboColls)
     {
         if ( !v81 || _primTtype )
         {
-            vec3d tmp = _roboColls.roboColls[i].field_10;
-            vec3d t = _position + _rotation.Transform( _roboColls.roboColls[i].coll_pos );
+            vec3d tmp = rcoll.field_10;
+            vec3d t = _position + _rotation.Transform( rcoll.coll_pos );
 
             arg136.stPos = tmp;
             arg136.flags = 0;
@@ -870,13 +870,13 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
             if ( arg136.isect )
             {
-                if ( arg136.tVal * 300.0 >= _roboColls.roboColls[i].robo_coll_radius + v82)
+                if ( arg136.tVal * 300.0 >= rcoll.robo_coll_radius + v82)
                 {
                     _status_flg &= ~BACT_STFLAG_LCRASH;
                     _status_flg |= BACT_STFLAG_UPWRD;
                     return 0;
                 }
-                else if ( _roboColls.roboColls[i].robo_coll_radius > 0.01 )
+                else if ( rcoll.robo_coll_radius > 0.01 )
                 {
                     bact_arg88 arg88;
                     arg88.pos1 = arg136.skel->polygons[ arg136.polyID ].Normal();
@@ -918,10 +918,10 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
         int v26 = _world->ypaworld_func145(this);
 
-        if ( (a4 || (v26 && v79)) && _roboColls.roboColls[i].robo_coll_radius > 0.01 )
+        if ( (a4 || (v26 && v79)) && rcoll.robo_coll_radius > 0.01 )
         {
-            vec3d tmp = _roboColls.roboColls[i].field_10;
-            vec3d t = _position + _rotation.Transform( _roboColls.roboColls[i].coll_pos );
+            vec3d tmp = rcoll.field_10;
+            vec3d t = _position + _rotation.Transform( rcoll.coll_pos );
 
             ypaworld_arg137 arg137;
             arg137.pos = tmp;
@@ -942,7 +942,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
             yw_137col v57[32];
 
-            arg137.radius = _roboColls.roboColls[i].robo_coll_radius;
+            arg137.radius = rcoll.robo_coll_radius;
             arg137.collisions = v57;
             arg137.field_30 = 0;
             arg137.coll_max = 32;
@@ -1043,25 +1043,23 @@ void NC_STACK_yparobo::wallow(update_msg *arg)
 {
     _position.y = sin(arg->gTime * C_PI / 3000.0) * 25.0 + _roboYPos;
 
-    for (int i = 0; i < 8; i++)
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        roboGun *gun = &_roboGuns[i];
-
-        if (gun->gun_obj)
+        if (gun.gun_obj)
         {
             bact_arg80 v11;
-            v11.pos = _position + _rotation.Transpose().Transform(gun->pos);
+            v11.pos = _position + _rotation.Transpose().Transform(gun.pos);
             v11.field_C = 4;
 
-            gun->gun_obj->SetPosition(&v11);
+            gun.gun_obj->SetPosition(&v11);
         }
     }
 }
 
 void NC_STACK_yparobo::yparobo_func70__sub2__sub0()
 {
-    for (int i = 0; i < _roboColls.robo_coll_num; i++)
-        _roboColls.roboColls[i].field_10 = _position + _rotation.Transform( _roboColls.roboColls[i].coll_pos );
+    for (World::TRoboColl &rcoll : _roboColls.roboColls)
+        rcoll.field_10 = _position + _rotation.Transform( rcoll.coll_pos );
 }
 
 bool NC_STACK_yparobo::yparobo_func70__sub2__sub1()
@@ -1071,8 +1069,8 @@ bool NC_STACK_yparobo::yparobo_func70__sub2__sub1()
     if ( yw_1b7c == this )
         return false;
 
-    for (int i = 0; i < 8; i++)
-        if (_roboGuns[i].gun_obj && _roboGuns[i].gun_obj == yw_1b7c)
+    for (World::TRoboGun &gun : _roboGuns)
+        if (gun.gun_obj && gun.gun_obj == yw_1b7c)
             return false;
 
     return true;
@@ -1373,7 +1371,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
         if ( !v6 )
         {
             if ( _world->GameShell )
-                SFXEngine::SFXe.startSound(&_world->GameShell->samples2_info, 1);
+                SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_ERROR);
         }
         else
         {
@@ -1657,7 +1655,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 arg->selectBact->_waypoints[0].z = arg->target_point.z;
 
                 if ( _world->GameShell )
-                    SFXEngine::SFXe.startSound(&_world->GameShell->samples2_info, 1);
+                    SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_ERROR);
             }
         }
         else
@@ -1725,7 +1723,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     arg->selectBact->_waypoints_count++;
 
                     if ( _world->GameShell )
-                        SFXEngine::SFXe.startSound(&_world->GameShell->samples2_info, 1);
+                        SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_ERROR);
                 }
             }
             else
@@ -1773,24 +1771,23 @@ void NC_STACK_yparobo::HandleUserCommands(update_msg *arg)
         doUserCommands(arg);
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos)
+int NC_STACK_yparobo::FindBestBldRadar()
 {
     int id = -1;
     int power = 0;
-
-    for (int i = 0; i < 128; i++)
+    int i = 0;
+    
+    for (const World::TBuildingProto &proto : _world->GetBuildProtos())
     {
-        TBuildingProto *proto = &protos[i];
-
-        if ( proto->EnableMask & (1 << _owner) )
+        if ( proto.EnableMask & (1 << _owner) )
         {
-            if ( proto->ModelID == 2 )
+            if ( proto.ModelID == 2 )
             {
-                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->Energy )
+                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto.Energy )
                 {
-                    int protoPow = proto->Power;
+                    int protoPow = proto.Power;
 
-                    for (TBuildingProto::TGun &gun : proto->Guns)
+                    for (const World::TBuildingProto::TGun &gun : proto.Guns)
                     {
                         if ( gun.VhclID )
                             protoPow += 10;
@@ -1804,6 +1801,8 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub0__sub0(TBuildingProto *protos)
                 }
             }
         }
+        
+        i++;
     }
 
     return id;
@@ -1857,9 +1856,7 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
     }
     else
     {
-        TBuildingProto *buildprotos = _world->getYW_buildProtos();
-
-        int build_id = yparobo_func70__sub4__sub0__sub0(buildprotos);
+        int build_id = FindBestBldRadar();
 
         if ( build_id == -1 )
         {
@@ -1927,15 +1924,15 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
 
                         if ( _world->ypaworld_func148(&arg148) )
                         {
-                            TBuildingProto *proto = &buildprotos[build_id];
+                            const World::TBuildingProto &proto = _world->GetBuildProtos().at(build_id);
 
-                            if ( _roboBuildSpare >= proto->Energy )
+                            if ( _roboBuildSpare >= proto.Energy )
                             {
-                                _roboBuildSpare -= proto->Energy;
+                                _roboBuildSpare -= proto.Energy;
                             }
                             else
                             {
-                                _energy -= proto->Energy - _roboBuildSpare;
+                                _energy -= proto.Energy - _roboBuildSpare;
                                 _roboBuildSpare = 0;
                             }
 
@@ -1973,24 +1970,23 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
     }
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos)
+int NC_STACK_yparobo::FindBestBldPowerStation()
 {
     int id = -1;
     int power = 0;
+    int i = 0;
 
-    for (int i = 0; i < 128; i++)
+    for (const World::TBuildingProto &proto : _world->GetBuildProtos())
     {
-        TBuildingProto *proto = &protos[i];
-
-        if ( proto->EnableMask & (1 << _owner) )
+        if ( proto.EnableMask & (1 << _owner) )
         {
-            if ( proto->ModelID == 1 )
+            if ( proto.ModelID == 1 )
             {
-                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->Energy )
+                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto.Energy )
                 {
-                    int protoPow = proto->Power;
+                    int protoPow = proto.Power;
 
-                    for (TBuildingProto::TGun &gun : proto->Guns)
+                    for (const World::TBuildingProto::TGun &gun : proto.Guns)
                     {
                         if ( gun.VhclID )
                             protoPow += 10;
@@ -2004,6 +2000,7 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub2__sub0(TBuildingProto *protos)
                 }
             }
         }
+        i++;
     }
 
     return id;
@@ -2033,9 +2030,7 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
 
         if ( _world->SectorAt( _roboBuildingCellID ).energy_power != 255 && ( arg176.field_4 >= 0.9 || arg176.field_4 <= 0.001) )
         {
-            TBuildingProto *buildprotos = _world->getYW_buildProtos();
-
-            int bldid = yparobo_func70__sub4__sub2__sub0(buildprotos);
+            int bldid = FindBestBldPowerStation();
 
             if ( bldid == -1 )
             {
@@ -2098,15 +2093,15 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
 
                             if ( _world->ypaworld_func148(&arg148) )
                             {
-                                TBuildingProto *proto = &buildprotos[bldid];
+                                const World::TBuildingProto &proto = _world->GetBuildProtos().at(bldid);
 
-                                if ( _roboBuildSpare >= proto->Energy )
+                                if ( _roboBuildSpare >= proto.Energy )
                                 {
-                                    _roboBuildSpare -= proto->Energy;
+                                    _roboBuildSpare -= proto.Energy;
                                 }
                                 else
                                 {
-                                    _energy -= proto->Energy - _roboBuildSpare;
+                                    _energy -= proto.Energy - _roboBuildSpare;
                                     _roboBuildSpare = 0;
                                 }
 
@@ -2146,24 +2141,23 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
     }
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos)
+int NC_STACK_yparobo::FindBestBldDefenceCenter()
 {
     int id = -1;
     int power = 0;
+    int i = 0;
 
-    for (int i = 0; i < 128; i++)
+    for (const World::TBuildingProto &proto : _world->GetBuildProtos())
     {
-        TBuildingProto *proto = &protos[i];
-
-        if ( proto->EnableMask & (1 << _owner) )
+        if ( proto.EnableMask & (1 << _owner) )
         {
-            if ( proto->ModelID == 3 )
+            if ( proto.ModelID == 3 )
             {
-                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto->Energy )
+                if ( (_roboBuildSpare + _energy - _energy_max * 0.2) > proto.Energy )
                 {
-                    int protoPow = proto->Power;
+                    int protoPow = proto.Power;
 
-                    for (TBuildingProto::TGun &gun : proto->Guns)
+                    for (const World::TBuildingProto::TGun &gun : proto.Guns)
                     {
                         if ( gun.VhclID )
                             protoPow += 10;
@@ -2177,6 +2171,7 @@ int NC_STACK_yparobo::yparobo_func70__sub4__sub1__sub0(TBuildingProto *protos)
                 }
             }
         }
+        i++;
     }
 
     return id;
@@ -2202,9 +2197,7 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
     }
     else
     {
-        TBuildingProto *buildprotos = _world->getYW_buildProtos();
-
-        int build_id = yparobo_func70__sub4__sub1__sub0(buildprotos);
+        int build_id = FindBestBldDefenceCenter();
 
         if ( build_id == -1 )
         {
@@ -2272,15 +2265,15 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
 
                         if ( _world->ypaworld_func148(&arg148) )
                         {
-                            TBuildingProto *proto = &buildprotos[build_id];
+                            const World::TBuildingProto &proto = _world->GetBuildProtos().at(build_id);
 
-                            if ( _roboBuildSpare >= proto->Energy )
+                            if ( _roboBuildSpare >= proto.Energy )
                             {
-                                _roboBuildSpare -= proto->Energy;
+                                _roboBuildSpare -= proto.Energy;
                             }
                             else
                             {
-                                _energy -= proto->Energy - _roboBuildSpare;
+                                _energy -= proto.Energy - _roboBuildSpare;
                                 _roboBuildSpare = 0;
                             }
 
@@ -2457,11 +2450,10 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
 
         v73 = arg81_2.enrg_sum * 0.05 + 1.0;
 
-        VhclProto *vhcl_protos = _world->getYW_vhclProtos();
-
-        for (int i = 0; i < 256; i++)
+        int i = 0;
+        for ( const World::TVhclProto &proto : _world->GetVhclProtos() )
         {
-            if ( vhcl_protos[i].model_id )
+            if ( proto.model_id != BACT_TYPES_NOPE )
             {
                 float v20 = _energy_max * 0.2;
                 int v67 = _energy - v20;
@@ -2469,12 +2461,11 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
                 if ( _roboState & ROBOSTATE_BUILDROBO )
                     v67 += _roboVehicleSpare;
 
-                VhclProto *vhclprt = &vhcl_protos[i];
-                if ( (1 << _owner) & vhclprt->disable_enable_bitmask )
+                if ( (1 << _owner) & proto.disable_enable_bitmask )
                 {
-                    if ( vhclprt->model_id != 3 && vhclprt->model_id != 9 && vhclprt->model_id != 4 )
+                    if ( proto.model_id != BACT_TYPES_ROBO && proto.model_id != BACT_TYPES_GUN && proto.model_id != BACT_TYPES_MISSLE )
                     {
-                        if ( v67 > ((float)vhclprt->energy * v73) )
+                        if ( v67 > ((float)proto.energy * v73) )
                         {
                             int v80 = _world->TestVehicle(i, arg->job);
 
@@ -2502,6 +2493,8 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
                     }
                 }
             }
+            
+            i++;
         }
     }
 
@@ -4867,25 +4860,25 @@ void NC_STACK_yparobo::Move(move_msg *arg)
 
     CorrectPositionInLevelBox(NULL);
 
-    for (int i = 0; i < 8; i++)
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        if (_roboGuns[i].gun_obj)
+        if (gun.gun_obj)
         {
             bact_arg80 arg80;
-            arg80.pos = _position + _rotation.Transpose().Transform( _roboGuns[i].pos );
+            arg80.pos = _position + _rotation.Transpose().Transform( gun.pos );
             arg80.field_C = 4;
 
-            _roboGuns[i].gun_obj->SetPosition(&arg80);
+            gun.gun_obj->SetPosition(&arg80);
         }
     }
 
-    _soundcarrier.samples_data[0].pitch = _pitch;
-    _soundcarrier.samples_data[0].volume = _volume;
+    _soundcarrier.Sounds[0].Pitch = _pitch;
+    _soundcarrier.Sounds[0].Volume = _volume;
 
     float v60 = fabs(_fly_dir_length) / (_force / _airconst_static) * 1.4;
 
-    if ( _soundcarrier.samples_data[0].psampl )
-        _soundcarrier.samples_data[0].pitch = (_soundcarrier.samples_data[0].psampl->SampleRate + _soundcarrier.samples_data[0].pitch) * v60;
+    if ( _soundcarrier.Sounds[0].PSample )
+        _soundcarrier.Sounds[0].Pitch = (_soundcarrier.Sounds[0].PSample->SampleRate + _soundcarrier.Sounds[0].Pitch) * v60;
 }
 
 void NC_STACK_yparobo::Die()
@@ -5047,10 +5040,8 @@ size_t NC_STACK_yparobo::SetPosition(bact_arg80 *arg)
 
     _roboFlotage = _mass * 9.80665;
 
-    for (int i = 0; i < 8; i++)
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        roboGun &gun = _roboGuns[i];
-
         if (gun.gun_obj)
         {
             bact_arg80 v11;
@@ -5338,8 +5329,8 @@ void NC_STACK_yparobo::Renew()
 
     _roboDockTime = 0;
 
-    for(auto &g : _roboGuns)
-        g.clear();
+    _roboGuns.clear();
+    
     memset(_roboAttackers, 0, sizeof(_roboAttackers));
 
     _commandID = dword_5B1128;
@@ -5831,9 +5822,9 @@ int NC_STACK_yparobo::placeMessage(robo_arg134 *arg)
         return 0;
 
     yw_arg159 v8;
-    v8.field_4 = arg->field_14;
+    v8.Priority = arg->field_14;
     v8.unit = arg->unit;
-    v8.field_C = arg->field_4;
+    v8.MsgID = arg->field_4;
     
     switch ( arg->field_4 )
     {
@@ -5993,41 +5984,41 @@ void NC_STACK_yparobo::setBACT_inputting(int inpt)
     }
 }
 
-void NC_STACK_yparobo::setROBO_proto(roboProto *proto)
+void NC_STACK_yparobo::setROBO_proto(World::TRoboProto *proto)
 {
-    for (int i = 0; i < 8; i++)
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        if ( _roboGuns[i].gun_obj )
+        if ( gun.gun_obj )
         {
-            if ( !( _roboGuns[i].gun_obj->_status_flg & BACT_STFLAG_DEATH1 ) )
-                _roboGuns[i].gun_obj->Die();
+            if ( !( gun.gun_obj->_status_flg & BACT_STFLAG_DEATH1 ) )
+                gun.gun_obj->Die();
 
-            _roboGuns[i].gun_obj->Release();
+            gun.gun_obj->Release();
 
-            _roboGuns[i].gun_obj = NULL;
+            gun.gun_obj = NULL;
         }
     }
 
-    for (int i = 0; i < proto->robo_num_guns; i++)
+    _roboGuns = proto->guns;
+    
+    for (World::TRoboGun &gun : _roboGuns)
     {
-        _roboGuns[i] = proto->guns[i];
-
         ypaworld_arg146 gun_req;
 
-        gun_req.pos = _position + _rotation.Transpose().Transform(_roboGuns[i].pos);
+        gun_req.pos = _position + _rotation.Transpose().Transform(gun.pos);
 
-        gun_req.vehicle_id = _roboGuns[i].robo_gun_type;
+        gun_req.vehicle_id = gun.robo_gun_type;
 
         NC_STACK_ypabact *gun_obj = _world->ypaworld_func146(&gun_req);
         NC_STACK_ypagun *gungun = dynamic_cast<NC_STACK_ypagun *>(gun_obj);
 
-        _roboGuns[i].gun_obj = gun_obj;
+        gun.gun_obj = gun_obj;
 
         if ( gun_obj )
         {
             if (gungun)
             {
-                gungun->ypagun_func128(_roboGuns[i].dir, false);
+                gungun->ypagun_func128(gun.dir, false);
 
                 gungun->setGUN_roboGun(1);
             }
@@ -6191,7 +6182,7 @@ void NC_STACK_yparobo::setROBO_recDelay(int delay)
 
 
 
-rbcolls *NC_STACK_yparobo::getBACT_collNodes()
+World::rbcolls *NC_STACK_yparobo::getBACT_collNodes()
 {
     return &_roboColls;
 }
@@ -6241,9 +6232,9 @@ int NC_STACK_yparobo::getROBO_fillMode()
     return _roboFillMode;
 }
 
-roboGun *NC_STACK_yparobo::getROBO_guns()
+std::vector<World::TRoboGun> &NC_STACK_yparobo::GetGuns()
 {
-    return _roboGuns.data();
+    return _roboGuns;
 }
 
 int NC_STACK_yparobo::getROBO_epChangeplace()
@@ -6331,7 +6322,7 @@ bool NC_STACK_yparobo::IsPlayerRobo() const
 NC_STACK_yparobo::NC_STACK_yparobo()
 {
     _roboFlotage = 0.;
-    _roboColls.clear();
+    _roboColls = World::rbcolls();
     _roboYPos = 0.;
 
     _roboWFlags = 0;
@@ -6426,8 +6417,7 @@ NC_STACK_yparobo::NC_STACK_yparobo()
 
     _roboTestEnemyTime = 0;
 
-    for(auto &g : _roboGuns)
-        g.clear();
+    _roboGuns.clear();
 
     _roboEnergyLife = 0; //??
 

@@ -809,78 +809,14 @@ void  UserData::sb_0x46ca74()
     }
 }
 
-void sb_0x47f810__sub0(NC_STACK_ypaworld *yw)
-{
-    if ( yw->VhclProtos )
-    {
-        for (int i = 0; i < 256; i++)
-        {
-            VhclProto *v3 = &yw->VhclProtos[i];
-
-            if ( v3->wireframe )
-            {
-                delete_class_obj(v3->wireframe);
-                v3->wireframe = NULL;
-            }
-
-            if ( v3->hud_wireframe )
-            {
-                delete_class_obj(v3->hud_wireframe);
-                v3->hud_wireframe = NULL;
-            }
-
-            if ( v3->mg_wireframe )
-            {
-                delete_class_obj(v3->mg_wireframe);
-                v3->mg_wireframe = NULL;
-            }
-
-            if ( v3->wpn_wireframe_1 )
-            {
-                delete_class_obj(v3->wpn_wireframe_1);
-                v3->wpn_wireframe_1 = NULL;
-            }
-
-            if ( v3->wpn_wireframe_2 )
-            {
-                delete_class_obj(v3->wpn_wireframe_2);
-                v3->wpn_wireframe_2 = NULL;
-            }
-        }
-    }
-
-    if ( yw->WeaponProtos )
-    {
-        for (int i = 0; i < 128; i++)
-        {
-            WeapProto *v6 = &yw->WeaponProtos[i];
-            if ( v6->wireframe )
-            {
-                delete_class_obj(v6->wireframe);
-                v6->wireframe = NULL;
-            }
-        }
-    }
-}
-
 void sb_0x47f810(NC_STACK_ypaworld *yw)
 {
-    sb_0x47f810__sub0(yw);
-
     yw->RoboProtos.clear();
     yw->BuildProtos.clear();
+    
+    yw->WeaponProtos.clear();
 
-    if ( yw->WeaponProtos )
-    {
-        delete[] yw->WeaponProtos;
-        yw->WeaponProtos = NULL;
-    }
-
-    if ( yw->VhclProtos )
-    {
-        delete[] yw->VhclProtos;
-        yw->VhclProtos = NULL;
-    }
+    yw->VhclProtos.clear();
 }
 
 void sub_44A1FC(NC_STACK_ypaworld *yw)
@@ -965,7 +901,7 @@ void UserData::sb_0x46cdf8()
     
     Common::DeleteAndNull(&p_ypaworld->_script);
 
-    if ( init_prototypes(p_ypaworld) )
+    if ( p_ypaworld->ProtosInit() )
     {
         for (int i = 0; i < 256; i++)
         {
@@ -1740,27 +1676,26 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 
     if ( !uaFileExist(std::string("rsrc:") + wavName) )
         wavName = fmt::sprintf("sounds/speech/language/9%d.wav", arg);
+    
+    NC_STACK_sample *&pSmpl = usr->samples1.at(World::SOUND_ID_CHAT);
 
-    if ( usr->field_ADA )
+    if ( pSmpl )
     {
-        SFXEngine::SFXe.sub_424000(&usr->field_782, 0);
-        SFXEngine::SFXe.sub_423DD8(&usr->field_782);
-        delete_class_obj(usr->field_ADA);
-        usr->field_ADA = 0;
+        SFXEngine::SFXe.sub_424000(&usr->samples1_info, World::SOUND_ID_CHAT);
+        SFXEngine::SFXe.ForceStopSource(&usr->samples1_info, World::SOUND_ID_CHAT);
+        Nucleus::Delete( pSmpl );
+        pSmpl = NULL;
     }
 
-    usr->field_ADA = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, wavName}});
-    if ( usr->field_ADA )
+    pSmpl = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, wavName}});
+    if ( pSmpl )
     {
-        SFXEngine::SFXe.sub_423DB0(&usr->field_782);
-
-        usr->field_782.field_C = vec3d(0.0, 0.0, 0.0);
-        usr->field_782.field_0 = vec3d(0.0, 0.0, 0.0);
-        usr->field_782.samples_data[0].volume = 500;
-        usr->field_782.samples_data[0].pitch = 0;
-
-        usr->field_782.samples_data[0].psampl = usr->field_ADA->getSMPL_pSample();
-        SFXEngine::SFXe.startSound(&usr->field_782, 0);
+        TSoundSource &pSnd = usr->samples1_info.Sounds.at(World::SOUND_ID_CHAT);
+        pSnd.Volume = 500;
+        pSnd.Pitch = 0;
+        pSnd.PSample = pSmpl->GetSampleData();
+        
+        SFXEngine::SFXe.startSound(&usr->samples1_info, World::SOUND_ID_CHAT);
     }
 
     Common::Env.SetPrefix("rsrc", oldRsrc);
@@ -3771,7 +3706,7 @@ void UserData::GameShellUiHandleInput()
                 if ( p_ypaworld->sub_449678(_input, Input::KC_K) )
                 {
                     ypaworld_func158__sub0__sub4();
-                    SFXEngine::SFXe.startSound(&samples2_info, 3);
+                    SFXEngine::SFXe.startSound(&samples1_info, World::SOUND_ID_SECRET);
                 }
                 else
                 {
@@ -4996,34 +4931,22 @@ void UserData::GameShellUiHandleInput()
 
 }
 
-bool UserData::LoadSample(int block, int sampleID, const std::string &file)
+bool UserData::LoadSample(int sampleID, const std::string &file)
 {
-    if (block < 0 || block >= 2)
-        return false;
-
     std::string rsrc = Common::Env.SetPrefix("rsrc", "data:");
 
     NC_STACK_wav *wav = Nucleus::CInit<NC_STACK_wav>({{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(file)}});
     if ( !wav )
         return false;
 
-    if (block == 0)
-    {
-        samples1[sampleID] = wav;
-        samples1_info.samples_data[sampleID].psampl = wav->getSMPL_pSample();
+    samples1[sampleID] = wav;
+    samples1_info.Sounds[sampleID].PSample = wav->GetSampleData();
 
-        if (sampleID == World::SOUND_ID_VOLUME ||
-            sampleID == World::SOUND_ID_SLIDER ||
-            sampleID == World::SOUND_ID_TEXTAPPEAR ||
-            sampleID == World::SOUND_ID_TIMERCOUNT)
-            samples1_info.samples_data[sampleID].flags |= 1;
-
-    }
-    else if (block == 1)
-    {
-        samples2[sampleID] = wav;
-        samples2_info.samples_data[sampleID].psampl = wav->getSMPL_pSample();
-    }
+    if (sampleID == World::SOUND_ID_VOLUME ||
+        sampleID == World::SOUND_ID_SLIDER ||
+        sampleID == World::SOUND_ID_TEXTAPPEAR ||
+        sampleID == World::SOUND_ID_TIMERCOUNT)
+        samples1_info.Sounds[sampleID].SetLoop(true);
 
     Common::Env.SetPrefix("rsrc", rsrc);
     return true;

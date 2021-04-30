@@ -28,6 +28,7 @@
 #include "glob_funcs.h"
 
 #include "world/consts.h"
+#include "world/protos.h"
 #include "world/tools.h"
 #include "world/parsers.h"
 #include "world/saveparsers.h"
@@ -48,10 +49,6 @@ class NC_STACK_windp;
 struct cityBases;
 struct subSec;
 struct secType;
-struct VhclProto;
-struct WeapProto;
-struct TBuildingProto;
-struct roboProto;
 struct map_event;
 struct uamessage_base;
 struct uamessage_vhclData;
@@ -229,11 +226,15 @@ enum SOUND_ID
     SOUND_ID_BLDGCONQ = 14,
     SOUND_ID_TIMERCOUNT = 15,
 
-    SOUND_ID_SELECT = 0,
-    SOUND_ID_ERROR  = 1,
-    SOUND_ID_ATTEN  = 2,
-    SOUND_ID_SECRET = 3,
-    SOUND_ID_PLASMA = 4,
+    SOUND_ID_SELECT = 16,
+    SOUND_ID_ERROR  = 17,
+    SOUND_ID_ATTEN  = 18,
+    SOUND_ID_SECRET = 19,
+    SOUND_ID_PLASMA = 20,
+    
+    SOUND_ID_CHAT = 21,
+    
+    SOUND_ID_MAX
 };
 
 enum GFX_FLAG
@@ -503,12 +504,9 @@ public:
 
     bool returnToTitle;
 
-    samples_collection1 samples1_info;
-    NC_STACK_wav *samples1[16];
-    samples_collection1 samples2_info;
-    NC_STACK_wav *samples2[16];
-    samples_collection1 field_782;
-    NC_STACK_wav *field_ADA;
+    TSndCarrier samples1_info;
+    std::array<NC_STACK_sample *, World::SOUND_ID_MAX> samples1 = {NULL};
+    
     NC_STACK_button *sub_bar_button;
 
     NC_STACK_button *titel_button;
@@ -734,7 +732,7 @@ public:
     static int InputIndexFromConfig(uint32_t type, uint32_t index);
 
 protected:
-    bool LoadSample(int block, int sampleID, const std::string &file);
+    bool LoadSample(int sampleID, const std::string &file);
 };
 
 struct trec_bct
@@ -1048,26 +1046,6 @@ struct MapGem
     int16_t NwBprotoNum4 = 0;
     Engine::StringList ActionsList;
     int Type = 0;
-
-    void clear()
-    {
-        BuildingID = 0;
-        SecX = 0;
-        SecY = 0;
-        MbStatus = 0;
-        ScriptFile.clear();
-        MsgDefault.clear();
-        NwVprotoNum1 = 0;
-        NwVprotoNum2 = 0;
-        NwVprotoNum3 = 0;
-        NwVprotoNum4 = 0;
-        NwBprotoNum1 = 0;
-        NwBprotoNum2 = 0;
-        NwBprotoNum3 = 0;
-        NwBprotoNum4 = 0;
-        ActionsList.clear();
-        Type = 0;
-    }
     
     operator Common::Point() const { return Common::Point(SecX, SecY); };
 };
@@ -1644,12 +1622,39 @@ struct yw_81cb
     char field_C[128];
 };
 
-struct yw_samples
+struct TSingleVoiceMessage
 {
-    int field_0;
-    samples_collection1 field_4;
-    NC_STACK_wav *field_35C;
-    NC_STACK_ypabact *field_360;
+    int Priority = -1;
+    TSndCarrier Carrier;
+    NC_STACK_sample *Sample = NULL;
+    NC_STACK_ypabact *Unit = NULL;
+    
+    TSingleVoiceMessage()
+    {
+        Carrier.Resize(1);
+    }
+    
+    ~TSingleVoiceMessage()
+    {
+        SFXEngine::SFXe.StopCarrier(&Carrier);
+        
+        if (Sample)
+            Nucleus::Delete(Sample);
+        
+    }
+    
+    void Reset()
+    {
+        SFXEngine::SFXe.StopCarrier(&Carrier);
+        
+        if (Sample)
+            Nucleus::Delete(Sample);
+        
+        Carrier.Resize(1);
+        Priority = -1;
+        Sample = NULL;
+        Unit = NULL;
+    }
 };
 
 struct yw_f80
@@ -1729,418 +1734,7 @@ struct secType
 };
 
 
-struct vhclSndFX
-{
-    std::string sample_name;
-    std::array<std::string, 8> extSampleNames;
-    NC_STACK_wav *single_sample;
-    std::array<NC_STACK_wav *, 8> wavs;
-    int16_t volume;
-    int16_t pitch;
-    sndFXprm sndPrm;
-    sndFXprm2 sndPrm_shk;
-    sndExtends extS;
 
-    vhclSndFX()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        sample_name.clear();
-        single_sample = NULL;
-
-        for (auto &t : extSampleNames)
-            t.clear();
-
-        for (auto &t : wavs)
-            t = NULL;
-
-        volume = 0;
-        pitch = 0;
-
-        sndPrm.clear();
-        sndPrm_shk.clear();
-        extS.clear();
-    }
-};
-
-struct VhclProto
-{
-    char model_id;
-    char disable_enable_bitmask;
-    int8_t weapon;
-    int field_4;
-    char mgun;
-    uint8_t type_icon;
-    std::string name;
-    int16_t vp_normal;
-    int16_t vp_fire;
-    int16_t vp_dead;
-    int16_t vp_wait;
-    int16_t vp_megadeth;
-    int16_t vp_genesis;
-    std::array<DestFX, 16> dest_fx;      // dest_fx
-    std::vector<DestFX>    ExtDestroyFX; // ext_dest_fx
-    std::array<vhclSndFX, 12> sndFX;
-    int vo_type;
-    float max_pitch;
-    int16_t field_1D6D;
-    int16_t field_1D6F;
-    int shield;
-    int energy;
-    int field_1D79;
-    float adist_sector;
-    float adist_bact;
-    float sdist_sector;
-    float sdist_bact;
-    char radar;
-    float mass;
-    float force;
-    float airconst;
-    float maxrot;
-    float height;
-    float radius;
-    float overeof;
-    float vwr_radius;
-    float vwr_overeof;
-    float gun_angle;
-    float fire_x;
-    float fire_y;
-    float fire_z;
-    uint16_t destFxCount;
-    int16_t num_weapons;
-    float gun_power;
-    float gun_radius;
-    int kill_after_shot;
-    float scale_fx_p0;
-    float scale_fx_p1;
-    float scale_fx_p2;
-    int scale_fx_p3;
-    std::array<int16_t, 32> scale_fx_pXX;
-    char job_fighttank;
-    char job_fighthelicopter;
-    char job_fightflyer;
-    char job_fightrobo;
-    char job_conquer;
-    char job_reconnoitre;
-    NC_STACK_sklt *wireframe;
-    NC_STACK_sklt *hud_wireframe;
-    NC_STACK_sklt *mg_wireframe;
-    NC_STACK_sklt *wpn_wireframe_1;
-    NC_STACK_sklt *wpn_wireframe_2;
-    IDVList initParams;
-
-    VhclProto()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        model_id = 0;
-        disable_enable_bitmask = 0;
-        weapon = 0;
-        field_4 = 0;
-        mgun = 0;
-        type_icon = 0;
-        name.clear();
-        vp_normal = 0;
-        vp_fire = 0;
-        vp_dead = 0;
-        vp_wait = 0;
-        vp_megadeth = 0;
-        vp_genesis = 0;
-
-        for (auto &x : dest_fx)
-            x.Clear();
-        
-        ExtDestroyFX.clear();
-
-        for (auto &x : sndFX)
-            x.clear();
-
-        vo_type = 0;
-        max_pitch = 0.0;
-        field_1D6D = 0;
-        field_1D6F = 0;
-        shield = 0;
-        energy = 0;
-        field_1D79 = 0;
-        adist_sector = 0.0;
-        adist_bact = 0.0;
-        sdist_sector = 0.0;
-        sdist_bact = 0.0;
-        radar = 0;
-        mass = 0.0;
-        force = 0.0;
-        airconst = 0.0;
-        maxrot = 0.0;
-        height = 0.0;
-        radius = 0.0;
-        overeof = 0.0;
-        vwr_radius = 0.0;
-        vwr_overeof = 0.0;
-        gun_angle = 0.0;
-        fire_x = 0.0;
-        fire_y = 0.0;
-        fire_z = 0.0;
-        destFxCount = 0;
-        num_weapons = 0;
-        gun_power = 0.0;
-        gun_radius = 0.0;
-        kill_after_shot = 0;
-        scale_fx_p0 = 0.0;
-        scale_fx_p1 = 0.0;
-        scale_fx_p2 = 0.0;
-        scale_fx_p3 = 0;
-
-        for (auto &x : scale_fx_pXX)
-            x = 0;
-
-        job_fighttank = 0;
-        job_fighthelicopter = 0;
-        job_fightflyer = 0;
-        job_fightrobo = 0;
-        job_conquer = 0;
-        job_reconnoitre = 0;
-        wireframe = NULL;
-        hud_wireframe = NULL;
-        mg_wireframe = NULL;
-        wpn_wireframe_1 = NULL;
-        wpn_wireframe_2 = NULL;
-
-        initParams.clear();
-    }
-};
-
-struct WeapProto
-{
-    char field_0;
-    char enable_mask;
-    int16_t model_id;
-    char type_icon;
-    std::string name;
-    int16_t vp_normal;
-    int16_t vp_fire;
-    int16_t vp_dead;
-    int16_t vp_wait;
-    int16_t vp_megadeth;
-    int16_t vp_genesis;
-    int destFxCount;
-    std::array<DestFX, 16> dfx;
-    std::vector<DestFX>    ExtDestroyFX; // ext_dest_fx
-    vhclSndFX sndFXes[3];
-    int field_870;
-    int field_874;
-    int energy;
-    int field_87C;
-    int life_time;
-    int life_time_nt;
-    int drive_time;
-    int delay_time;
-    int field_890;
-    int field_894;
-    int shot_time;
-    int shot_time_user;
-    int salve_shots;
-    int salve_delay;
-    float energy_heli;
-    float energy_tank;
-    float energy_flyer;
-    float energy_robo;
-    float radius_heli;
-    float radius_tank;
-    float radius_flyer;
-    float radius_robo;
-    float mass;
-    float force;
-    float airconst;
-    float maxrot;
-    int field_8D8;
-    float radius;
-    float overeof;
-    float vwr_radius;
-    float vwr_overeof;
-    float start_speed;
-    NC_STACK_sklt *wireframe;
-    IDVList initParams;
-
-    WeapProto()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        field_0 = 0;
-        enable_mask = 0;
-        model_id = 0;
-        type_icon = 0;
-        name.clear();
-        vp_normal = 0;
-        vp_fire = 0;
-        vp_dead = 0;
-        vp_wait = 0;
-        vp_megadeth = 0;
-        vp_genesis = 0;
-        destFxCount = 0;
-
-        for (auto &f: dfx)
-            f.Clear();
-
-        ExtDestroyFX.clear();
-        
-        for (auto &s: sndFXes)
-            s.clear();
-
-        field_870 = 0;
-        field_874 = 0;
-        energy = 0;
-        field_87C = 0;
-        life_time = 0;
-        life_time_nt = 0;
-        drive_time = 0;
-        delay_time = 0;
-        field_890 = 0;
-        field_894 = 0;
-        shot_time = 0;
-        shot_time_user = 0;
-        salve_shots = 0;
-        salve_delay = 0;
-        energy_heli = 0.0;
-        energy_tank = 0.0;
-        energy_flyer = 0.0;
-        energy_robo = 0.0;
-        radius_heli = 0.0;
-        radius_tank = 0.0;
-        radius_flyer = 0.0;
-        radius_robo = 0.0;
-        mass = 0.0;
-        force = 0.0;
-        airconst = 0.0;
-        maxrot = 0.0;
-        field_8D8 = 0;
-        radius = 0.0;
-        overeof = 0.0;
-        vwr_radius = 0.0;
-        vwr_overeof = 0.0;
-        start_speed = 0.0;
-        wireframe = NULL;
-    }
-};
-
-
-
-struct TBuildingProto
-{
-    struct TGun
-    {
-        int32_t VhclID;
-        vec3d Pos;
-        vec3d Dir;
-
-        TGun()
-        {
-            VhclID = 0;
-            Pos = vec3d();
-            Dir = vec3d();
-        }
-    };
-
-    
-    uint8_t SecType;
-    uint8_t EnableMask;
-    uint8_t ModelID;
-    uint8_t Power;
-    uint8_t TypeIcon;
-    std::string Name;
-    int Energy;
-    vhclSndFX SndFX;
-    std::vector<TGun> Guns;
-
-    TBuildingProto()
-    {
-        SecType = 0;
-        EnableMask = 0;
-        ModelID = 0;
-        Power = 0;
-        TypeIcon = 0;
-        Energy = 0;
-    }
-};
-
-struct roboGun
-{
-    vec3d pos;
-    vec3d dir;
-    NC_STACK_ypabact *gun_obj;
-    std::string robo_gun_name;
-    uint8_t robo_gun_type;
-
-    roboGun()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        pos = vec3d();
-        dir = vec3d();
-        gun_obj = NULL;
-        robo_gun_name.clear();
-        robo_gun_type = 0;
-    }
-
-    roboGun& operator=(const roboGun &b)
-    {
-        pos = b.pos;
-        dir = b.dir;
-        gun_obj = b.gun_obj;
-        robo_gun_name = b.robo_gun_name;
-        robo_gun_type = b.robo_gun_type;
-        return *this;
-    }
-};
-
-struct roboProto
-{
-    vec3d viewer;
-    mat3x3 matrix;
-    int field_30;
-    int field_34;
-    float robo_viewer_max_up;
-    float robo_viewer_max_down;
-    float robo_viewer_max_side;
-    std::array<roboGun, 8> guns;
-    int8_t robo_num_guns;
-    vec3d dock;
-    rbcolls coll;
-
-    roboProto()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        viewer = vec3d();
-        matrix = mat3x3();
-        field_30 = 0;
-        field_34 = 0;
-        robo_viewer_max_up = 0.;
-        robo_viewer_max_down = 0.;
-        robo_viewer_max_side = 0.;
-
-        for( auto &g : guns )
-            g.clear();
-
-        robo_num_guns = 0;
-        dock = vec3d();
-        coll.clear();
-    }
-};
 
 
 struct yw_arg172
@@ -2177,7 +1771,7 @@ struct yw_174arg
 
 struct ypaworld_arg146
 {
-    int vehicle_id;
+    size_t vehicle_id;
     vec3d pos;
 };
 
@@ -2263,9 +1857,9 @@ struct yw_arg129
 struct yw_arg159
 {
     NC_STACK_ypabact *unit;
-    int field_4;
+    int Priority;
     std::string txt;
-    int field_C;
+    int MsgID;
 };
 
 struct yw_arg176
@@ -2321,7 +1915,15 @@ friend class World::Parsers::SaveMasksParser;
 friend class World::Parsers::SaveSuperBombParser;
 friend class World::Parsers::SaveLuaScriptParser;
 
-
+public:
+    enum
+    {
+        NUM_BUILD_PROTO = 128,
+        NUM_VHCL_PROTO  = 256,
+        NUM_WEAPON_PROTO = 128,
+        NUM_ROBO_PROTO = 16,   //reserve
+        
+    };
 
 public:
     virtual size_t Init(IDVList &stak);
@@ -2453,9 +2055,10 @@ public:
     virtual int getYW_visSectors();
     virtual NC_STACK_ypabact *getYW_userHostStation();
     virtual NC_STACK_ypabact *getYW_userVehicle();
-    virtual WeapProto *getYW_weaponProtos();
-    virtual TBuildingProto *getYW_buildProtos();
-    virtual VhclProto *getYW_vhclProtos();
+    virtual std::vector<World::TWeapProto> &GetWeaponsProtos() { return WeaponProtos; };
+    virtual std::vector<World::TBuildingProto> &GetBuildProtos() { return BuildProtos; };
+    virtual std::vector<World::TVhclProto> &GetVhclProtos() { return VhclProtos; };
+    virtual std::vector<World::TRoboProto> &GetRoboProtos() { return RoboProtos; };
     virtual int getYW_lvlFinished();
     virtual int getYW_screenW();
     virtual int getYW_screenH();
@@ -2502,7 +2105,7 @@ public:
 
 //protected:
     void sub_4491A0(const std::string &movie_fname);
-    bool sub_4DA354(const std::string &filename);
+    bool LoadProtosScript(const std::string &filename);
     bool sb_0x4e1a88__sub0__sub0(LevelDesc *mapp, const std::string &fname);
     void ypaworld_func158__sub4__sub1();
     bool InitDebrief();
@@ -2693,6 +2296,18 @@ public:
     void sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision &loc);
     void ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2);
     
+    
+    void VoiceMessageUpdate();
+    void VoiceMessagePlayFile(const std::string &flname, NC_STACK_ypabact *unit, int a5);
+    void VoiceMessagePlayMsg(NC_STACK_ypabact *unit, int priority, int msgID);
+    void VoiceMessageCalcPositionToUnit();
+    
+    bool ProtosInit();
+    void ProtosFreeSounds();
+    
+    
+    
+    
     World::ParticleSystem &ParticleSystem() { return _particles; };
     
     int32_t GetLegoBld(const cellArea *cell, int bldX, int bldY);
@@ -2723,10 +2338,10 @@ public:
     std::array<cityBases, 256> legos;
     std::array<subSec, 256> subSectors;
     std::array<secType, 256> secTypes;
-    VhclProto *VhclProtos;
-    WeapProto *WeaponProtos;
-    std::vector<TBuildingProto> BuildProtos;
-    std::vector<roboProto> RoboProtos;
+    std::vector<World::TVhclProto> VhclProtos;
+    std::vector<World::TWeapProto> WeaponProtos;
+    std::vector<World::TBuildingProto> BuildProtos;
+    std::vector<World::TRoboProto> RoboProtos;
     yw_f80 field_80[8];
     int16_t build_hp_ref[256];
     uint8_t sqrt_table[64][64];
@@ -2920,7 +2535,7 @@ public:
     int field_7566;
     float field_756A;
     float field_756E;
-    userdata_sample_info *field_7572;
+    TSoundSource *field_7572;
     NC_STACK_windp *windp;
     uint32_t netUpdateTime;
     int isNetGame;
@@ -2946,7 +2561,7 @@ public:
     std::array<World::player_status, 8> ingamePlayerStatus;
     int _maxRoboEnergy;
     int _maxReloadConst;
-    yw_samples *samples;
+    TSingleVoiceMessage _voiceMessage;
     int field_7882;
     int field_7886;
     int field_788A;

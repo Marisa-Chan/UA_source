@@ -68,7 +68,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const std::string &fil
                     if ( res )
                     {
 
-                        sampl *smpl = (sampl *)res->data;
+                        TSampleData *smpl = (TSampleData *)res->data;
 
                         if ( !smpl )
                         {
@@ -77,7 +77,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const std::string &fil
                             return NULL;
                         }
 
-                        fil->read(smpl->sample_buffer, sbchunk.SubchunkSize);
+                        fil->read(smpl->Data, sbchunk.SubchunkSize);
                         smpl->SampleRate = fmt.SampleRate;
                     }
                 }

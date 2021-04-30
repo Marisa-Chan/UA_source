@@ -561,12 +561,10 @@ void NC_STACK_ypagun::Die()
 
         if ( (_gunFlags & GUN_FLAGS_ROBO) && _host_station )
         {
-            roboGun *hostGun = _host_station->getROBO_guns();
-
-            for (int i = 0; i < 8; i++)
+            for (World::TRoboGun &gun : _host_station->GetGuns())
             {
-                if ( this == hostGun[i].gun_obj )
-                    hostGun[i].gun_obj = NULL;
+                if ( this == gun.gun_obj )
+                    gun.gun_obj = NULL;
             }
         }
     }

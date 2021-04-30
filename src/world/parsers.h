@@ -8,6 +8,8 @@
 
 #include "../def_parser.h"
 
+#include "protos.h"
+
 
 class NC_STACK_ypaworld;
 class NC_STACK_ypabact;
@@ -15,10 +17,6 @@ class NC_STACK_yparobo;
 class NC_STACK_bitmap;
 class UserData;
 struct save_status;
-struct vhclSndFX;
-struct VhclProto;
-struct WeapProto;
-struct TBuildingProto;
 struct LevelDesc;
 struct MapRobo;
 struct MapGem;
@@ -166,9 +164,9 @@ protected:
 class FxParser
 {
 protected:
-    virtual vhclSndFX *GetSndFxByName(const std::string &sndname) = 0;
+    virtual TVhclSound *GetSndFxByName(const std::string &sndname) = 0;
 
-    bool ParseExtSampleDef(vhclSndFX *sndfx, const std::string &p2);
+    bool ParseExtSampleDef(TVhclSound *sndfx, const std::string &p2);
     int ParseSndFX(const std::string &p1, const std::string &p2);
 };
 
@@ -180,13 +178,14 @@ public:
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    virtual vhclSndFX *GetSndFxByName(const std::string &sndname);
+    virtual TVhclSound *GetSndFxByName(const std::string &sndname);
 
     NC_STACK_ypaworld &_o;
-    VhclProto *_vhcl;
+    TVhclProto *_vhcl;
     int32_t _vhclID;
     int32_t _gunID;
     int32_t _collID;
+    TRoboProto _roboTmp;
 };
 
 
@@ -198,10 +197,10 @@ public:
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    virtual vhclSndFX *GetSndFxByName(const std::string &sndname);
+    virtual TVhclSound *GetSndFxByName(const std::string &sndname);
 
     NC_STACK_ypaworld &_o;
-    WeapProto *_wpn;
+    TWeapProto *_wpn;
 };
 
 class BuildProtoParser : public ScriptParser::DataHandler

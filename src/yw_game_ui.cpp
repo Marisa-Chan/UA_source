@@ -3164,7 +3164,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
         {
             int v5 = bzda.field_4DC[ v3 ].d;
 
-            VhclProto *v6 = &yw->VhclProtos[v5];
+            World::TVhclProto *v6 = &yw->VhclProtos[v5];
 
             int v17 = dround(yw->sub_4498F4() * 2 * v6->energy / 100.0);
 
@@ -3178,7 +3178,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
         else if ( bzda.field_4DC[ v3 ].i == 2 )
         {
             int v9 = bzda.field_4DC[ v3 ].d;
-            TBuildingProto *v10 = &yw->BuildProtos[v9];
+            World::TBuildingProto *v10 = &yw->BuildProtos[v9];
 
             int v18 = dround(yw->sub_4498F4() * v10->Energy / 100.0);
             int v12;
@@ -3570,7 +3570,7 @@ char *ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, char *cur)
     {
         if ( bzda.field_8EC != -1 && !yw->field_1b70 )
         {
-            VhclProto *v4 = &yw->VhclProtos[ bzda.field_2DC[ bzda.field_8EC ] ];
+            World::TVhclProto *v4 = &yw->VhclProtos[ bzda.field_2DC[ bzda.field_8EC ] ];
             int a6 = v4->job_fighttank / 2;
             int v26 = v4->job_fightflyer / 2;
             int v25 = v4->job_fighthelicopter / 2;
@@ -4188,11 +4188,9 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub5(NC_STACK_ypaworld *yw)
 
             NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
 
-            roboGun *a4 = robo->getROBO_guns();
-
             yw->field_1b70 = 1;
 
-            return a4[ bzda.field_1DC[ bzda.field_8F0 ] ].gun_obj;
+            return robo->GetGuns().at(  bzda.field_1DC[ bzda.field_8F0 ]  ).gun_obj;
         }
         else
         {
@@ -4200,11 +4198,9 @@ NC_STACK_ypabact * ypaworld_func64__sub7__sub2__sub5(NC_STACK_ypaworld *yw)
 
             NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
 
-            roboGun *v5 = robo->getROBO_guns();
-
             yw->field_1b70 = 1;
 
-            return v5[ bzda.field_1DC[ bzda.field_8F0 ] ].gun_obj;
+            return robo->GetGuns().at( bzda.field_1DC[ bzda.field_8F0 ] ).gun_obj;
         }
     }
     return NULL;
@@ -4269,8 +4265,8 @@ void NC_STACK_ypaworld::SituationAnalyzer()
     yw_arg159 v38;
     v38.txt = World::GameAnalyzer::Analyze(this);
     v38.unit = 0;
-    v38.field_4 = 100;
-    v38.field_C = 0;
+    v38.Priority = 100;
+    v38.MsgID = 0;
 
     ypaworld_func159(&v38);
 }
@@ -4321,8 +4317,8 @@ void sb_0x4c66f8__sub0(NC_STACK_ypaworld *yw)
     {
         yw_arg159 arg159;
         arg159.unit = yw->UserRobo;
-        arg159.field_4 = 10;
-        arg159.field_C = 39;
+        arg159.Priority = 10;
+        arg159.MsgID = 39;
 
         yw->ypaworld_func159(&arg159);
     }
@@ -4361,8 +4357,8 @@ void sb_0x4c66f8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabac
             {
                 yw_arg159 arg159;
                 arg159.unit = yw->UserUnit;
-                arg159.field_4 = 33;
-                arg159.field_C = 17;
+                arg159.Priority = 33;
+                arg159.MsgID = 17;
 
                 yw->ypaworld_func159(&arg159);
             }
@@ -6686,9 +6682,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
             {
                 yw_arg159 v18;
                 v18.unit = 0;
-                v18.field_4 = 10;
+                v18.Priority = 10;
                 v18.txt = GetLocaleString(259, "GAME SAVED OK.");
-                v18.field_C = 0;
+                v18.MsgID = 0;
 
                 ypaworld_func159(&v18);
             }
@@ -7399,40 +7395,40 @@ int sub_4C3C88(const void *a1, const void *a2)
     uint8_t aa1 = *(const uint8_t *)a1;
     uint8_t aa2 = *(const uint8_t *)a2;
 
-    VhclProto *v4 = &dword_5BAA60->VhclProtos[aa1];
-    VhclProto *v5 = &dword_5BAA60->VhclProtos[aa2];
+    const World::TVhclProto &v4 = dword_5BAA60->VhclProtos[aa1];
+    const World::TVhclProto &v5 = dword_5BAA60->VhclProtos[aa2];
 
     int v7, v8;
 
-    switch ( v4->model_id - 1 )
+    switch ( v4.model_id )
     {
-    case 0:
+    case BACT_TYPES_BACT:
         v7 = 1;
         break;
 
-    case 1:
-    case 7:
+    case BACT_TYPES_TANK:
+    case BACT_TYPES_CAR:
         v7 = 0;
         break;
 
-    case 2:
+    case BACT_TYPES_ROBO:
         v7 = 5;
         break;
 
-    case 5:
+    case BACT_TYPES_FLYER:
         v7 = 2;
         break;
 
-    case 6:
+    case BACT_TYPES_UFO:
         v7 = 3;
         break;
 
-    case 8:
+    case BACT_TYPES_GUN:
         v7 = 4;
         break;
 
-    case 3:
-    case 4:
+    case BACT_TYPES_MISSLE:
+    case BACT_TYPES_ZEPP:
         v7 = 10;
         break;
 
@@ -7441,35 +7437,35 @@ int sub_4C3C88(const void *a1, const void *a2)
         break;
     }
 
-    switch ( v5->model_id - 1 )
+    switch ( v5.model_id )
     {
-    case 0:
+    case BACT_TYPES_BACT:
         v8 = 1;
         break;
 
-    case 1:
-    case 7:
+    case BACT_TYPES_TANK:
+    case BACT_TYPES_CAR:
         v8 = 0;
         break;
 
-    case 2:
+    case BACT_TYPES_ROBO:
         v8 = 5;
         break;
 
-    case 5:
+    case BACT_TYPES_FLYER:
         v8 = 2;
         break;
 
-    case 6:
+    case BACT_TYPES_UFO:
         v8 = 3;
         break;
 
-    case 8:
+    case BACT_TYPES_GUN:
         v8 = 4;
         break;
 
-    case 3:
-    case 4:
+    case BACT_TYPES_MISSLE:
+    case BACT_TYPES_ZEPP:
         v8 = 10;
         break;
 
@@ -7478,23 +7474,16 @@ int sub_4C3C88(const void *a1, const void *a2)
         break;
     }
 
-    if ( v7 >= v8 )
-    {
-        if ( v7 <= v8 )
-        {
-            if ( v4->energy >= v5->energy )
-                return v4->energy > v5->energy;
-            else
-                return -1;
-        }
-        else
-        {
-            return 1;
-        }
-    }
-    else
-    {
+    if ( v7 < v8 )
         return -1;
+    else if ( v7 > v8)
+        return 1;
+    else if ( v7 == v8 )
+    {
+        if ( v4.energy > v5.energy )
+            return 1;
+        else if (v4.energy < v5.energy)
+            return -1;
     }
 
     return 0;
@@ -7508,14 +7497,15 @@ void ypaworld_func64__sub16(NC_STACK_ypaworld *yw)
         v6 = 1 << yw->UserRobo->_owner;
 
     int v3 = 0;
-
-    for (int i = 0; i < 256; i++)
+    int i = 0;
+    for (World::TVhclProto &proto : yw->VhclProtos)
     {
-        if ( v6 & yw->VhclProtos[i].disable_enable_bitmask )
+        if ( v6 & proto.disable_enable_bitmask )
         {
             bzda.field_2DC[v3] = i;
             v3++;
         }
+        i++;
     }
 
     bzda.field_8E0 = v3;
@@ -7547,8 +7537,8 @@ int sub_4C3D6C(const void *a1, const void *a2)
     uint8_t aa1 = *(const uint8_t *)a1;
     uint8_t aa2 = *(const uint8_t *)a2;
 
-    TBuildingProto *v3 = &dword_5BAA60->BuildProtos[aa1];
-    TBuildingProto *v4 = &dword_5BAA60->BuildProtos[aa2];
+    World::TBuildingProto *v3 = &dword_5BAA60->BuildProtos[aa1];
+    World::TBuildingProto *v4 = &dword_5BAA60->BuildProtos[aa2];
 
     int v6, v8;
 
@@ -7601,13 +7591,15 @@ void ypaworld_func64__sub17(NC_STACK_ypaworld *yw)
 
     int v3 = 0;
 
-    for (int i = 0; i < 128; i++)
+    int i = 0;
+    for (const World::TBuildingProto &proto : yw->BuildProtos)
     {
-        if ( v6 & yw->BuildProtos[i].EnableMask )
+        if ( v6 & proto.EnableMask )
         {
             bzda.field_3DC[v3] = i;
             v3++;
         }
+        i++;
     }
 
     bzda.field_8E4 = v3;
@@ -7637,21 +7629,21 @@ void ypaworld_func64__sub15(NC_STACK_ypaworld *yw)
 {
     NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(yw->UserRobo);
 
-    roboGun *a4 = robo->getROBO_guns();
-
     int v4 = 0;
+    int i = 0;
 
-    for(int i = 0; i < 8 ; i++ )
+    for(World::TRoboGun &gun : robo->GetGuns())
     {
-        if ( a4[i].gun_obj )
+        if ( gun.gun_obj )
         {
             bzda.field_1DC[v4] = i;
 
-            if ( a4[i].gun_obj == yw->UserUnit )
+            if ( gun.gun_obj == yw->UserUnit )
                 bzda.field_8F0 = v4;
 
             v4++;
         }
+        i++;
     }
 
     bzda.field_8DC = v4;
@@ -7673,23 +7665,16 @@ void ypaworld_func64__sub15(NC_STACK_ypaworld *yw)
     }
 }
 
-void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, const std::string &flname, NC_STACK_ypabact *unit, int a5)
+void NC_STACK_ypaworld::VoiceMessagePlayFile(const std::string &flname, NC_STACK_ypabact *unit, int priority)
 {
-    SFXEngine::SFXe.sub_423DD8(&smpls->field_4);
-
-    if ( smpls->field_35C )
-        delete_class_obj(smpls->field_35C);
-
-    memset(smpls, 0, sizeof(yw_samples));
-
-    smpls->field_0 = -1;
+    _voiceMessage.Reset();
 
     std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
 
     std::string filename = "sounds/speech/";
 
-    if ( !yw->_localeName.empty() )
-        filename += yw->_localeName + "/";
+    if ( !_localeName.empty() )
+        filename += _localeName + "/";
     else
         filename += "language/";
 
@@ -7706,833 +7691,392 @@ void ypaworld_func159__sub0__sub0(NC_STACK_ypaworld *yw, yw_samples *smpls, cons
     Common::Env.SetPrefix("rsrc", oldRsrc);
 
     if ( v23 )
-    {
-        SFXEngine::SFXe.sub_423DB0(&smpls->field_4);
-        smpls->field_4.samples_data[0].pitch = 0;
-        smpls->field_4.samples_data[0].volume = a5 + 500;
+    {        
+        _voiceMessage.Carrier.Sounds[0].Pitch = 0;
+        _voiceMessage.Carrier.Sounds[0].Volume = priority + 500;
 
         if ( v23 )
-            smpls->field_4.samples_data[0].psampl = v23->getSMPL_pSample();
+            _voiceMessage.Carrier.Sounds[0].PSample = v23->GetSampleData();
         else
-            smpls->field_4.samples_data[0].psampl = NULL;
+            _voiceMessage.Carrier.Sounds[0].PSample = NULL;
 
-        smpls->field_0 = a5;
-        smpls->field_35C = v23;
-        smpls->field_360 = unit;
+        _voiceMessage.Priority = priority;
+        _voiceMessage.Sample = v23;
+        _voiceMessage.Unit = unit;
 
-        sub_4D6958(yw, unit, &smpls->field_4);
+        VoiceMessageCalcPositionToUnit();
 
-        smpls->field_4.field_C = yw->UserUnit->_fly_dir * yw->UserUnit->_fly_dir_length;
-        SFXEngine::SFXe.startSound(&smpls->field_4, 0);
+        _voiceMessage.Carrier.Vector = UserUnit->_fly_dir * UserUnit->_fly_dir_length;
+        SFXEngine::SFXe.startSound(&_voiceMessage.Carrier, 0);
     }
 }
-
-void ypaworld_func159__sub0(NC_STACK_ypaworld *yw, NC_STACK_ypabact *unit, int a4, int a3)
+void NC_STACK_ypaworld::VoiceMessagePlayMsg(NC_STACK_ypabact *unit, int priority, int msgID)
 {
-    if ( yw->samples )
+    if ( _voiceMessage.Priority < 0 || _voiceMessage.Priority < priority )
     {
-        int v5 = -1;
 
-        for (int i = 0; i < 1; i++)
+        struct TMsgVals
         {
-            if ( yw->samples[i].field_0 < 0 || yw->samples[i].field_0 < a4 )
-            {
-                v5 = i;
-                break;
-            }
-        }
+            int v1 = 0;
+            int type = 0;
+            int v3 = 0;
+            int v4 = 0;
+            int num = 0;
+            
+            TMsgVals() {};
+            
+            TMsgVals(int p1, int t, int p2, int p3, int n)
+            : v1(p1), type(t), v3(p2), v4(p3), num(n) {};
+            
+        } msgvals;
 
-
-        if ( v5 != -1 )
+        switch ( msgID )
         {
-            int vo_type = 0;
-            int v10 = 0;
-            int v11 = 0;
-            int v13 = 0;
-            int v14 = 0;
-
-            switch ( a3 )
-            {
-            case 14:
-                v14 = 1;
-                v11 = 2;
-                v13 = 1;
-                v10 = 1;
-                break;
-            case 1:
-                v14 = 1;
-                v10 = 2;
-                v13 = 1;
-                v11 = 2;
-                break;
-            case 15:
-                v14 = 1;
-                v10 = 3;
-                v11 = 2;
-                v13 = 1;
-                break;
-            case 16:
-                v14 = 1;
-                v10 = 4;
-                v11 = 2;
-                v13 = 1;
-                break;
-            case 17:
-                v14 = 1;
-                v10 = 5;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 22:
-                v14 = 1;
-                v10 = 6;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 10:
-                v14 = 1;
-                v13 = 2;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 7:
-                v13 = 2;
-                v14 = 1;
-                v10 = 2;
-                v11 = 2;
-                break;
-            case 6:
-                v14 = 1;
-                v13 = 2;
-                v10 = 3;
-                v11 = 1;
-                break;
-            case 18:
-                v14 = 1;
-                v13 = 2;
-                v10 = 4;
-                v11 = 1;
-                break;
-            case 9:
-                v14 = 1;
-                v13 = 2;
-                v10 = 5;
-                v11 = 1;
-                break;
-            case 8:
-                v13 = 2;
-                v10 = 6;
-                v14 = 1;
-                v11 = 2;
-                break;
-            case 19:
-                v14 = 1;
-                v13 = 3;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 5:
-                v13 = 3;
-                v10 = 2;
-                v14 = 1;
-                v11 = 2;
-                break;
-            case 11:
-                v13 = 3;
-                v14 = 1;
-                v10 = 3;
-                v11 = 1;
-                break;
-            case 45:
-                v14 = 1;
-                v13 = 3;
-                v10 = 4;
-                v11 = 1;
-                if ( !unit )
-                    return;
-                break;
-            case 23:
-                vo_type = 1;
-                v14 = 2;
-                v13 = 1;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 24:
-                vo_type = 1;
-                v14 = 2;
-                v13 = 1;
-                v10 = 2;
-                v11 = 1;
-                break;
-            case 25:
-                vo_type = 1;
-                v10 = 3;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 26:
-                vo_type = 1;
-                v10 = 4;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 27:
-                vo_type = 1;
-                v10 = 5;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 28:
-                vo_type = 1;
-                v10 = 6;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 78:
-                vo_type = 1;
-                v10 = 12;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 79:
-                v14 = 2;
-                vo_type = 4;
-                v13 = 1;
-                v10 = 2;
-                v11 = 1;
-                break;
-            case 80:
-                vo_type = 1;
-                v10 = 13;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 29:
-                vo_type = 1;
-                v10 = 7;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 30:
-                vo_type = 1;
-                v10 = 8;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 31:
-            case 68:
-                v14 = 2;
-                v13 = 1;
-                v10 = 8;
-                vo_type = 2;
-                v11 = 1;
-                break;
-            case 32:
-            case 69:
-                vo_type = 3;
-                v13 = 1;
-                v10 = 8;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 33:
-                vo_type = 1;
-                v10 = 9;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 34:
-                v14 = 2;
-                v13 = 1;
-                v10 = 9;
-                vo_type = 2;
-                v11 = 1;
-                break;
-            case 35:
-                vo_type = 3;
-                v13 = 1;
-                v10 = 9;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 36:
-                vo_type = 1;
-                v10 = 10;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 37:
-                v14 = 2;
-                v13 = 1;
-                v10 = 10;
-                vo_type = 2;
-                v11 = 1;
-                break;
-            case 38:
-                vo_type = 3;
-                v13 = 1;
-                v10 = 10;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 13:
-                v14 = 2;
-                vo_type = 1;
-                v13 = 2;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 39:
-                v13 = 1;
-                v10 = 7;
-                v14 = 3;
-                v11 = 1;
-                break;
-            case 40:
-                v14 = 2;
-                vo_type = 1;
-                v10 = 3;
-                v13 = 2;
-                v11 = 1;
-                break;
-            case 41:
-                v14 = 2;
-                vo_type = 1;
-                v10 = 4;
-                v13 = 2;
-                v11 = 2;
-                break;
-            case 42:
-                v14 = 2;
-                vo_type = 1;
-                v10 = 5;
-                v13 = 2;
-                v11 = 2;
-                break;
-            case 12:
-                v14 = 2;
-                vo_type = 1;
-                v10 = 6;
-                v13 = 2;
-                v11 = 2;
-                break;
-            case 43:
-                v14 = 2;
-                vo_type = 1;
-                v10 = 7;
-                v11 = 3;
-                v13 = 2;
-                break;
-            case 44:
-                v14 = 2;
-                vo_type = 1;
-                v10 = 8;
-                v13 = 2;
-                v11 = 2;
-                break;
-            case 67:
-                vo_type = 1;
-                v10 = 11;
-                v14 = 2;
-                v13 = 1;
-                v11 = 1;
-                break;
-            case 47:
-                v10 = 1;
-                v14 = 3;
-                v11 = 1;
-                a4++;
-                break;
-            case 48:
-                v10 = 2;
-                v14 = 3;
-                v11 = 2;
-                a4 += 2;
-                break;
-            case 49:
-                v14 = 3;
-                v10 = 3;
-                v11 = 3;
-                a4 += 3;
-                break;
-            case 60:
-                v10 = 4;
-                v11 = 1;
-                v14 = 3;
-                a4 += 4;
-                break;
-            case 50:
-                v11 = 1;
-                v10 = 5;
-                v14 = 3;
-                a4++;
-                break;
-            case 64:
-                v10 = 6;
-                v11 = 1;
-                v14 = 3;
-                a4 += 2;
-                break;
-            case 51:
-                v14 = 3;
-                v10 = 7;
-                v11 = 1;
-                a4 += 3;
-                break;
-            case 52:
-                v10 = 8;
-                v11 = 1;
-                v14 = 3;
-                a4 += 4;
-                break;
-            case 53:
-                v10 = 9;
-                v11 = 1;
-                v14 = 3;
-                a4 += 5;
-                break;
-            case 61:
-                v13 = 1;
-                v14 = 3;
-                v11 = 1;
-                a4 += 6;
-                break;
-            case 54:
-                v13 = 1;
-                v14 = 3;
-                v10 = 1;
-                v11 = 1;
-                a4++;
-                break;
-            case 55:
-                v13 = 1;
-                v10 = 2;
-                v14 = 3;
-                v11 = 1;
-                a4 += 2;
-                break;
-            case 56:
-                v14 = 3;
-                v13 = 1;
-                v10 = 3;
-                v11 = 1;
-                a4 += 3;
-                break;
-            case 65:
-                v13 = 1;
-                v10 = 4;
-                v14 = 3;
-                v11 = 1;
-                a4 += 4;
-                break;
-            case 66:
-                v13 = 1;
-                v10 = 6;
-                v14 = 3;
-                v11 = 1;
-                a4 += 5;
-                break;
-            case 70:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 5;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 71:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 8;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 72:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 6;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 73:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 7;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 74:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 9;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 75:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 12;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 76:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 10;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 77:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 11;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 46:
-                vo_type = 4;
-                v13 = 1;
-                v14 = 2;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 82:
-                vo_type = 4;
-                v13 = 1;
-                v14 = 2;
-                v10 = 4;
-                v11 = 1;
-                break;
-            case 81:
-                vo_type = 4;
-                v13 = 1;
-                v10 = 3;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 83:
-                v14 = 2;
-                vo_type = 5;
-                v13 = 1;
-                v10 = 2;
-                v11 = 1;
-                break;
-            case 84:
-                vo_type = 5;
-                v13 = 1;
-                v14 = 2;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 85:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 3;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 86:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 4;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 87:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 7;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 88:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 6;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 89:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 8;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 90:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 9;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 91:
-                vo_type = 5;
-                v13 = 1;
-                v14 = 2;
-                v10 = 5;
-                v11 = 1;
-                break;
-            case 92:
-                vo_type = 5;
-                v13 = 1;
-                v10 = 10;
-                v14 = 2;
-                v11 = 1;
-                break;
-            case 93:
-                vo_type = 1;
-                v14 = 4;
-                v13 = 1;
-                v10 = 1;
-                v11 = 1;
-                break;
-            case 59:
-                v13 = 1;
-                v10 = 8;
-                v14 = 3;
-                v11 = 1;
-                a4++;
-                break;
-            case 94:
-                v13 = 1;
-                v10 = 9;
-                v14 = 3;
-                v11 = 1;
-                a4 += 2;
-                break;
-            case 95:
-                v14 = 3;
-                v13 = 2;
-                v11 = 1;
-                a4 += 3;
-                break;
-            case 96:
-                v13 = 2;
-                v10 = 1;
-                v14 = 3;
-                v11 = 1;
-                a4 += 4;
-                break;
-            case 97:
-                v13 = 2;
-                v11 = 1;
-                v14 = 3;
-                v10 = 2;
-                a4 += 5;
-                break;
-            case 98:
-                v14 = 3;
-                v13 = 2;
-                v11 = 1;
-                v10 = 3;
-                a4 += 6;
-                break;
-            case 99:
-                v13 = 2;
-                v10 = 4;
-                v11 = 1;
-                v14 = 3;
-                a4 += 7;
-                break;
-            case 100:
-                v13 = 2;
-                v10 = 5;
-                v11 = 1;
-                v14 = 3;
-                a4 += 8;
-                break;
-            case 101:
-                v13 = 2;
-                v10 = 6;
-                v11 = 1;
-                v14 = 3;
-                a4 += 9;
-                break;
-            case 102:
-                v13 = 2;
-                v10 = 7;
-                v11 = 1;
-                v14 = 3;
-                a4 += 10;
-                break;
-            case 103:
-                v13 = 2;
-                v10 = 8;
-                v11 = 1;
-                v14 = 3;
-                a4 += 11;
-                break;
-            case 104:
-                v13 = 2;
-                v10 = 9;
-                v11 = 1;
-                v14 = 3;
-                a4 += 12;
-                break;
-            case 63:
-                v14 = 3;
-                v11 = 1;
-                v13 = 3;
-                a4 += 13;
-                break;
-            default:
-                break;
-            }
-
-            if ( v14 )
-            {
-                if ( !unit )
-                    unit = yw->UserRobo;
-
-                if ( v14 == 1 )
-                {
-                    vo_type = yw->VhclProtos[unit->_vehicleID].vo_type;
-
-                    if ( !vo_type )
-                        vo_type = 11;
-                }
-
-                int v16;
-                if ( v11 <= 1 )
-                    v16 = 1;
-                else
-                    v16 = rand() % v11 + 1;
-
-                ypaworld_func159__sub0__sub0(yw, &yw->samples[v5], fmt::sprintf("%x%x%x%x%x.wav", v14, vo_type, v13, v10, v16), unit, a4);
-            }
+        case 1:
+            msgvals = TMsgVals(1, 0, 1, 2, 2);
+            break;
+        case 5:
+            msgvals = TMsgVals(1, 0, 3, 2, 2);
+            break;
+        case 6:
+            msgvals = TMsgVals(1, 0, 2, 3, 1);
+            break;
+        case 7:
+            msgvals = TMsgVals(1, 0, 2, 2, 2);
+            break;
+        case 8:
+            msgvals = TMsgVals(1, 0, 2, 6, 2);
+            break;
+        case 9:
+            msgvals = TMsgVals(1, 0, 2, 5, 1);
+            break;
+        case 10:
+            msgvals = TMsgVals(1, 0, 2, 1, 1);
+            break;
+        case 11:
+            msgvals = TMsgVals(1, 0, 3, 3, 1);
+            break;
+        case 12:
+            msgvals = TMsgVals(2, 1, 2, 6, 2);
+            break;
+        case 13:
+            msgvals = TMsgVals(2, 1, 2, 1, 1);
+            break;
+        case 14:
+            msgvals = TMsgVals(1, 0, 1, 1, 2);
+            break;
+        case 15:
+            msgvals = TMsgVals(1, 0, 1, 3, 2);
+            break;
+        case 16:
+            msgvals = TMsgVals(1, 0, 1, 4, 2);
+            break;
+        case 17:
+            msgvals = TMsgVals(1, 0, 1, 5, 1);
+            break;
+        case 18:
+            msgvals = TMsgVals(1, 0, 2, 4, 1);
+            break;
+        case 19:
+            msgvals = TMsgVals(1, 0, 3, 1, 1);
+            break;
+        case 22:
+            msgvals = TMsgVals(1, 0, 1, 6, 1);
+            break;
+        case 23:
+            msgvals = TMsgVals(2, 1, 1, 1, 1);
+            break;
+        case 24:
+            msgvals = TMsgVals(2, 1, 1, 2, 1);
+            break;
+        case 25:
+            msgvals = TMsgVals(2, 1, 1, 3, 1);
+            break;
+        case 26:
+            msgvals = TMsgVals(2, 1, 1, 4, 1);
+            break;
+        case 27:
+            msgvals = TMsgVals(2, 1, 1, 5, 1);
+            break;
+        case 28:
+            msgvals = TMsgVals(2, 1, 1, 6, 1);
+            break;
+        case 29:
+            msgvals = TMsgVals(2, 1, 1, 7, 1);
+            break;
+        case 30:
+            msgvals = TMsgVals(2, 1, 1, 8, 1);
+            break;
+        case 31:
+            msgvals = TMsgVals(2, 2, 1, 8, 1);
+            break;
+        case 32:
+            msgvals = TMsgVals(2, 3, 1, 8, 1);
+            break;
+        case 33:
+            msgvals = TMsgVals(2, 1, 1, 9, 1);
+            break;
+        case 34:
+            msgvals = TMsgVals(2, 2, 1, 9, 1);
+            break;
+        case 35:
+            msgvals = TMsgVals(2, 3, 1, 9, 1);
+            break;
+        case 36:
+            msgvals = TMsgVals(2, 1, 1, 10, 1);
+            break;
+        case 37:
+            msgvals = TMsgVals(2, 2, 1, 10, 1);
+            break;
+        case 38:
+            msgvals = TMsgVals(2, 3, 1, 10, 1);
+            break;
+        case 39:
+            msgvals = TMsgVals(3, 0, 1, 7, 1);
+            break;
+        case 40:
+            msgvals = TMsgVals(2, 1, 2, 3, 1);
+            break;
+        case 41:
+            msgvals = TMsgVals(2, 1, 2, 4, 2);
+            break;
+        case 42:
+            msgvals = TMsgVals(2, 1, 2, 5, 2);
+            break;
+        case 43:
+            msgvals = TMsgVals(2, 1, 2, 7, 3);
+            break;
+        case 44:
+            msgvals = TMsgVals(2, 1, 2, 8, 2);
+            break;
+        case 45:
+            msgvals = TMsgVals(1, 0, 3, 4, 1);
+            if ( !unit )
+                return;
+            break;
+        case 46:
+            msgvals = TMsgVals(2, 4, 1, 1, 1);
+            break;
+        case 47:
+            msgvals = TMsgVals(3, 0, 0, 1, 1);
+            priority++;
+            break;
+        case 48:
+            msgvals = TMsgVals(3, 0, 0, 2, 2);
+            priority += 2;
+            break;
+        case 49:
+            msgvals = TMsgVals(3, 0, 0, 3, 3);
+            priority += 3;
+            break;
+        case 50:
+            msgvals = TMsgVals(3, 0, 0, 5, 1);
+            priority++;
+            break;
+        case 51:
+            msgvals = TMsgVals(3, 0, 0, 7, 1);
+            priority += 3;
+            break;
+        case 52:
+            msgvals = TMsgVals(3, 0, 0, 8, 1);
+            priority += 4;
+            break;
+        case 53:
+            msgvals = TMsgVals(3, 0, 0, 9, 1);
+            priority += 5;
+            break;
+        case 54:
+            msgvals = TMsgVals(3, 0, 1, 1, 1);
+            priority++;
+            break;
+        case 55:
+            msgvals = TMsgVals(3, 0, 1, 2, 1);
+            priority += 2;
+            break;
+        case 56:
+            msgvals = TMsgVals(3, 0, 1, 3, 1);
+            priority += 3;
+            break;
+        case 59:
+            msgvals = TMsgVals(3, 0, 1, 8, 1);
+            priority++;
+            break;
+        case 60:
+            msgvals = TMsgVals(3, 0, 0, 4, 1);
+            priority += 4;
+            break;
+        case 61:
+            msgvals = TMsgVals(3, 0, 1, 0, 1);
+            priority += 6;
+            break;
+        case 63:
+            msgvals = TMsgVals(3, 0, 3, 0, 1);
+            priority += 13;
+            break;
+        case 64:
+            msgvals = TMsgVals(3, 0, 0, 6, 1);
+            priority += 2;
+            break;
+        case 65:
+            msgvals = TMsgVals(3, 0, 1, 4, 1);
+            priority += 4;
+            break;
+        case 66:
+            msgvals = TMsgVals(3, 0, 1, 6, 1);
+            priority += 5;
+            break;
+        case 67:
+            msgvals = TMsgVals(2, 1, 1, 11, 1);
+            break;
+        case 68:
+            msgvals = TMsgVals(2, 2, 1, 8, 1);
+            break;
+        case 69:
+            msgvals = TMsgVals(2, 3, 1, 8, 1);
+            break;
+        case 70:
+            msgvals = TMsgVals(2, 4, 1, 5, 1);
+            break;
+        case 71:
+            msgvals = TMsgVals(2, 4, 1, 8, 1);
+            break;
+        case 72:
+            msgvals = TMsgVals(2, 4, 1, 6, 1);
+            break;
+        case 73:
+            msgvals = TMsgVals(2, 4, 1, 7, 1);
+            break;
+        case 74:
+            msgvals = TMsgVals(2, 4, 1, 9, 1);
+            break;
+        case 75:
+            msgvals = TMsgVals(2, 4, 1, 12, 1);
+            break;
+        case 76:
+            msgvals = TMsgVals(2, 4, 1, 10, 1);
+            break;
+        case 77:
+            msgvals = TMsgVals(2, 4, 1, 11, 1);
+            break;
+        case 78:
+            msgvals = TMsgVals(2, 1, 1, 12, 1);
+            break;
+        case 79:
+            msgvals = TMsgVals(2, 4, 1, 2, 1);
+            break;
+        case 80:
+            msgvals = TMsgVals(2, 1, 1, 13, 1);
+            break;
+        case 81:
+            msgvals = TMsgVals(2, 4, 1, 3, 1);
+            break;
+        case 82:
+            msgvals = TMsgVals(2, 4, 1, 4, 1);
+            break;
+        case 83:
+            msgvals = TMsgVals(2, 5, 1, 2, 1);
+            break;
+        case 84:
+            msgvals = TMsgVals(2, 5, 1, 1, 1);
+            break;
+        case 85:
+            msgvals = TMsgVals(2, 5, 1, 3, 1);
+            break;
+        case 86:
+            msgvals = TMsgVals(2, 5, 1, 4, 1);
+            break;
+        case 87:
+            msgvals = TMsgVals(2, 5, 1, 7, 1);
+            break;
+        case 88:
+            msgvals = TMsgVals(2, 5, 1, 6, 1);
+            break;
+        case 89:
+            msgvals = TMsgVals(2, 5, 1, 8, 1);
+            break;
+        case 90:
+            msgvals = TMsgVals(2, 5, 1, 9, 1);
+            break;
+        case 91:
+            msgvals = TMsgVals(2, 5, 1, 5, 1);
+            break;
+        case 92:
+            msgvals = TMsgVals(2, 5, 1, 10, 1);
+            break;
+        case 93:
+            msgvals = TMsgVals(4, 1, 1, 1, 1);
+            break;
+        case 94:
+            msgvals = TMsgVals(3, 0, 1, 9, 1);
+            priority += 2;
+            break;
+        case 95:
+            msgvals = TMsgVals(3, 0, 2, 0, 1);
+            priority += 3;
+            break;
+        case 96:
+            msgvals = TMsgVals(3, 0, 2, 1, 1);
+            priority += 4;
+            break;
+        case 97:
+            msgvals = TMsgVals(3, 0, 2, 2, 1);
+            priority += 5;
+            break;
+        case 98:
+            msgvals = TMsgVals(3, 0, 2, 3, 1);
+            priority += 6;
+            break;
+        case 99:
+            msgvals = TMsgVals(3, 0, 2, 4, 1);
+            priority += 7;
+            break;
+        case 100:
+            msgvals = TMsgVals(3, 0, 2, 5, 1);
+            priority += 8;
+            break;
+        case 101:
+            msgvals = TMsgVals(3, 0, 2, 6, 1);
+            priority += 9;
+            break;
+        case 102:
+            msgvals = TMsgVals(3, 0, 2, 7, 1);
+            priority += 10;
+            break;
+        case 103:
+            msgvals = TMsgVals(3, 0, 2, 8, 1);
+            priority += 11;
+            break;
+        case 104:
+            msgvals = TMsgVals(3, 0, 2, 9, 1);
+            priority += 12;
+            break;
+        
+        default:
+            break;
         }
-    }
-}
-
-void ypaworld_func159__real(NC_STACK_ypaworld *obj, yw_arg159 *arg)
-{
-    if ( arg->field_C )
-        ypaworld_func159__sub0(obj, arg->unit, arg->field_4, arg->field_C);
-
-    if ( arg->unit )
-        info_log.field_255C = arg->unit->_gid;
-    else
-        info_log.field_255C = 0;
-
-    info_log.field_2560 = obj->timeStamp;
-    info_log.field_2564 = arg->field_C;
-
-    if ( !arg->txt.empty() )
-    {
-        inflog_msg *v6;
-
-        if ( info_log.field_250 >= 5 )
+        
+        if ( msgvals.v1 )
         {
-            info_log.msg_count++;
+            if ( !unit )
+                unit = UserRobo;
+            
+            int vo_type = msgvals.type;
 
-            if ( info_log.msg_count >= 64 )
-                info_log.msg_count = 0;
-
-            if ( info_log.field_254 == info_log.msg_count )
+            if ( msgvals.v1 == 1 )
             {
-                info_log.field_254++;
+                vo_type = VhclProtos[unit->_vehicleID].vo_type;
 
-                if ( info_log.field_254 >= 64 )
-                    info_log.field_254 = 0;
+                if ( !vo_type )
+                    vo_type = 11;
             }
 
-            info_log.numEntries++;;
+            int v16 = 1;
+            
+            if ( msgvals.num > 1 )
+                v16 = rand() % msgvals.num + 1;
 
-            if ( info_log.numEntries > 64 )
-                info_log.numEntries = 64;
-
-            v6 = &info_log.msgs[info_log.msg_count];
-
-            info_log.field_24C = info_log.msg_count;
+            VoiceMessagePlayFile(fmt::sprintf("%x%x%x%x%x.wav", msgvals.v1, vo_type, msgvals.v3, msgvals.v4, v16), unit, priority);
         }
-        else
-        {
-            info_log.msg_count = info_log.field_24C;
-
-            v6 = &info_log.msgs[info_log.field_24C];
-        }
-
-        info_log.field_256C = 5000;
-        info_log.field_2568 = 1;
-        info_log.field_250 = arg->field_4;
-
-        if ( arg->unit )
-            v6->id = arg->unit->_gid;
-        else
-            v6->id = 0;
-
-        v6->field_8 = 7000;
-        v6->field_4 = obj->timeStamp;
-
-        const char *v5 = arg->txt.c_str();
-
-        int v10 = 0;
-
-        while ( *v5 )
-        {
-            if ( *v5 == '\n' )
-            {
-                v6->txt[v10] = 0;
-
-                v10 = 0;
-
-                info_log.msg_count++;
-
-                if ( info_log.msg_count >= 64 )
-                    info_log.msg_count = 0;
-
-                if ( info_log.field_254 == info_log.msg_count )
-                {
-                    info_log.field_254++;
-
-                    if ( info_log.field_254 >= 64 )
-                        info_log.field_254 = 0;
-                }
-
-                info_log.numEntries++;
-
-                if ( info_log.numEntries > 64 )
-                    info_log.numEntries = 64;
-
-                info_log.field_256C += 5000;
-                info_log.field_2568++;
-
-                v6 = &info_log.msgs[ info_log.msg_count ];
-
-                if ( arg->unit )
-                    v6->id = arg->unit->_gid;
-                else
-                    v6->id = 0;
-
-                v6->field_8 = 7000;
-                v6->field_4 = 0;
-            }
-            else if ( v10 < 125 )
-            {
-                v6->txt[v10] = *v5;
-                v10++;
-            }
-
-            v5++;
-        }
-
-        v6->txt[v10] = 0;
-
-        info_log.firstShownEntries = info_log.numEntries - info_log.shownEntries;
-
-        if ( info_log.firstShownEntries < 0 )
-            info_log.firstShownEntries = 0;
     }
 }
 
@@ -8776,7 +8320,7 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
     }
 }
 
-void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, VhclProto *vhcl, float a4, float a5, float a6)
+void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, World::TVhclProto *vhcl, float a4, float a5, float a6)
 {
     SDL_Color color_25 = yw->GetColor(25);
     SDL_Color color_34 = yw->GetColor(34);
@@ -8916,7 +8460,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
     return pcur;
 }
 
-char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, VhclProto *vhcl, float xpos, float ypos)
+char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, float xpos, float ypos)
 {
     int a6a;
     int v10;
@@ -8936,7 +8480,7 @@ char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_
 }
 
 
-char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, VhclProto *vhcl, float xpos, float ypos)
+char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, float xpos, float ypos)
 {
     int v10;
 
@@ -9021,7 +8565,7 @@ char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur,
 }
 
 
-void yw_RenderInfoWeaponWire(NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wpn, float xpos, float ypos)
+void yw_RenderInfoWeaponWire(NC_STACK_ypaworld *yw, sklt_wis *wis, World::TWeapProto *wpn, float xpos, float ypos)
 {
     UAskeleton::Data *wairufureimu = NULL;
 
@@ -9054,7 +8598,7 @@ void yw_RenderInfoWeaponWire(NC_STACK_ypaworld *yw, sklt_wis *wis, WeapProto *wp
     }
 }
 
-char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, WeapProto *wpn, float xpos, float ypos)
+char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TWeapProto *wpn, float xpos, float ypos)
 {
     char *pcur = cur;
 
@@ -9093,7 +8637,7 @@ char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
     return pcur;
 }
 
-char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, VhclProto *vhcl, WeapProto *weap, float xpos, float ypos)
+char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, World::TWeapProto *weap, float xpos, float ypos)
 {
     char *pcur = cur;
 
@@ -9152,15 +8696,15 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
     if ( vhclid == -1 )
         vhclid = bact->_vehicleID;
 
-    VhclProto *vhcl = &yw->VhclProtos[vhclid];
+    World::TVhclProto *vhcl = &yw->VhclProtos[vhclid];
 
 
-    WeapProto *weap;
+    World::TWeapProto *weap;
 
     if ( vhcl->weapon == -1 )
         weap = NULL;
     else
-        weap = &yw->WeaponProtos[vhcl->weapon];
+        weap = &yw->WeaponProtos.at(vhcl->weapon);
 
     if ( v25 )
         yw_RenderInfoVehicleWire(yw, wis, vhcl, xpos, ypos, a6a);
@@ -9173,7 +8717,7 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
 
     if ( v25 )
     {
-        if ( vhcl->model_id != 9 )
+        if ( vhcl->model_id != BACT_TYPES_GUN )
         {
             float v15 = wis->field_92 * 12.0 + ypos;
 
@@ -9232,25 +8776,25 @@ int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
 
     int a8 = 0;
     int v6 = yw->last_modify_vhcl;
-    int v4 = yw->last_modify_weapon;
     int v14 = yw->last_modify_build;
 
-    if ( !v6 )
+    if ( !v6 && yw->last_modify_weapon)
     {
-        if ( v4 )
+        bool notOk = true;
+        int i = 0;
+        for (const World::TVhclProto &proto : yw->VhclProtos)
         {
-            for (int i = 0; i <= 256; i++)
+            if ( proto.weapon == yw->last_modify_weapon)
             {
-                if (i == 256)
-                    return 0;
-
-                if ( yw->VhclProtos[i].weapon == v4)
-                {
-                    v6 = i;
-                    break;
-                }
+                v6 = i;
+                notOk = false;
+                break;
             }
+            i++;
         }
+        
+        if (notOk)
+            return 0;
     }
 
     wis->field_86 = 1.0;
@@ -9681,9 +9225,9 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis)
 
     if ( v86 > 0.0 )
     {
-        VhclProto *vhcl;
+        World::TVhclProto *vhcl;
 
-        if ( yw->UserUnit && yw->VhclProtos != NULL )
+        if ( yw->UserUnit )
             vhcl = &yw->VhclProtos[ yw->UserUnit->_vehicleID ];
         else
             vhcl = NULL;
@@ -10649,7 +10193,7 @@ void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, 
 
 int NC_STACK_ypaworld::yw_MouseFindCreationPoint(ClickBoxInf *winp)
 {
-    const VhclProto &vhcl = VhclProtos[bzda.field_2DC[bzda.field_8EC]];
+    const World::TVhclProto &vhcl = VhclProtos[bzda.field_2DC[bzda.field_8EC]];
 
     vec3d v47( (float)(winp->move.ScreenPos.x - (screen_width / 2)) / (float)(screen_width / 2),
                (float)(winp->move.ScreenPos.y - (screen_height / 2)) / (float)(screen_height / 2),

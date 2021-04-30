@@ -20,6 +20,7 @@
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
 
+extern yw_infolog info_log;
 
 int word_5A50C2;
 int word_5A50AC;
@@ -58,8 +59,8 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     additionalSet = NULL;
 //nlist bact_list;
 //nlist dead_cache;
-    VhclProtos = NULL;
-    WeaponProtos = NULL;
+    VhclProtos.clear();
+    WeaponProtos.clear();
     BuildProtos.clear();
     RoboProtos.clear();
 //yw_f80 field_80[8];
@@ -291,7 +292,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 //	player_status field_7796[8];
     _maxRoboEnergy = 0;
     _maxReloadConst = 0;
-    samples = NULL;
+    _voiceMessage.Reset();
     field_7882 = 0;
     field_7886 = 0;
     field_788A = 0;
@@ -384,7 +385,7 @@ void NC_STACK_ypaworld::SetLangDefault()
     _localeName = "default";
 }
 
-bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
+bool NC_STACK_ypaworld::LoadProtosScript(const std::string &filename)
 {
     std::string buf = Common::Env.SetPrefix("rsrc", "data:");
 
@@ -400,20 +401,19 @@ bool NC_STACK_ypaworld::sub_4DA354(const std::string &filename)
     return res;
 }
 
-int init_prototypes(NC_STACK_ypaworld *yw)
+bool NC_STACK_ypaworld::ProtosInit()
 {
-    yw->VhclProtos = new VhclProto[256];
-    yw->WeaponProtos = new WeapProto[128];
-    yw->BuildProtos.resize(128);
-    yw->RoboProtos.resize(16);
+    VhclProtos.resize(NUM_VHCL_PROTO);
+    WeaponProtos.resize(NUM_WEAPON_PROTO);
+    BuildProtos.resize(NUM_BUILD_PROTO);
+    
+    RoboProtos.reserve(NUM_ROBO_PROTO);
+    RoboProtos.resize(1);    
 
-    if ( yw->VhclProtos && yw->WeaponProtos )
-    {
-        if ( yw->sub_4DA354(yw->initScriptLoc) )
-            return 1;
-    }
+    if ( !LoadProtosScript(initScriptLoc) )
+        return false;
 
-    return 0;
+    return true;
 }
 
 
@@ -523,7 +523,7 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
 
     vhcls_models.clear();
 
-    if ( !init_prototypes(this) )
+    if ( !ProtosInit() )
     {
         ypa_log_out("ERROR: couldn't initialize prototypes.\n");
         Deinit();
@@ -695,8 +695,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         {
             yw_arg159 arg159;
             arg159.unit = UserRobo;
-            arg159.field_4 = 128;
-            arg159.field_C = 41;
+            arg159.Priority = 128;
+            arg159.MsgID = 41;
 
             ypaworld_func159(&arg159);
         }
@@ -869,11 +869,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             {
                 if ( GameShell )
                 {
-                    GameShell->samples1_info.field_0 = UserUnit->_position;
-                    GameShell->samples2_info.field_0 = UserUnit->_position;
-
-                    SFXEngine::SFXe.sb_0x4242e0(&GameShell->samples1_info);
-                    SFXEngine::SFXe.sb_0x4242e0(&GameShell->samples2_info);
+                    GameShell->samples1_info.Position = UserUnit->_position;
+                    SFXEngine::SFXe.UpdateSoundCarrier(&GameShell->samples1_info);
                 }
             }
 
@@ -882,15 +879,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
             if (_script)
                 _script->CallUpdate(timeStamp, arg->DTime);
                         
-            ypaworld_func64__sub23(this); // update sound messages
-
-            if ( isNetGame ) // update additional sounds of netplay
-            {
-                if ( UserUnit )
-                    GameShell->field_782.field_0 = UserUnit->_position;
-
-                SFXEngine::SFXe.sb_0x4242e0(&GameShell->field_782);
-            }
+            VoiceMessageUpdate(); // update sound messages
 
             const mat3x3 &v57 = SFXEngine::SFXe.sb_0x424c74();
             TF::TForm3D *v58 = TF::Engine.GetViewPoint();
@@ -1035,12 +1024,12 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     yw_arg159 v14;
     v14.txt = yw->GetLocaleString(221, "TECHNOLOGY UPGRADE!\n");
     v14.unit = 0;
-    v14.field_4 = 48;
+    v14.Priority = 48;
 
     if ( gem.Type )
-        v14.field_C = World::Log::GetUpgradeLogID(gem.Type);
+        v14.MsgID = World::Log::GetUpgradeLogID(gem.Type);
     else
-        v14.field_C = 0;
+        v14.MsgID = 0;
 
     yw->ypaworld_func159(&v14);
 
@@ -1087,9 +1076,9 @@ void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
 
     yw_arg159 arg159;
     arg159.unit = 0;
-    arg159.field_4 = 80;
+    arg159.Priority = 80;
     arg159.txt = v13;
-    arg159.field_C = 29;
+    arg159.MsgID = 29;
 
     yw->ypaworld_func159(&arg159);
 
@@ -1128,7 +1117,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
 
     if ( !gem.ScriptFile.empty() )
     {
-        if ( !sub_4DA354(gem.ScriptFile) )
+        if ( !LoadProtosScript(gem.ScriptFile) )
             ypa_log_out("yw_ActivateWunderstein: ERROR parsing script %s.\n", gem.ScriptFile.c_str());
     }
     else
@@ -1147,13 +1136,13 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
 
     yw_arg159 arg159;
     arg159.unit = NULL;
-    arg159.field_4 = 48;
+    arg159.Priority = 48;
     arg159.txt = GetLocaleString(221, "TECHNOLOGY UPGRADE!\n");
 
     if ( gem.Type )
-        arg159.field_C = World::Log::GetUpgradeLogID(gem.Type);
+        arg159.MsgID = World::Log::GetUpgradeLogID(gem.Type);
     else
-        arg159.field_C = 0;
+        arg159.MsgID = 0;
 
     ypaworld_func159(&arg159);
 
@@ -1239,8 +1228,8 @@ void ypaworld_func129__sub0(NC_STACK_ypaworld *yw, const cellArea &cell, yw_arg1
 
                     yw_arg159 arg159;
                     arg159.unit = NULL;
-                    arg159.field_4 = 77;
-                    arg159.field_C = 33;
+                    arg159.Priority = 77;
+                    arg159.MsgID = 33;
 
                     yw->ypaworld_func159(&arg159);
                 }
@@ -1625,7 +1614,7 @@ void NC_STACK_ypaworld::ypaworld_func144(NC_STACK_ypabact *bacto)
             ypa_log_out("OH NO! The DEATH CACHE BUG is back!\n");
     }
 
-    SFXEngine::SFXe.sub_423DD8(&bacto->_soundcarrier);
+    SFXEngine::SFXe.StopCarrier(&bacto->_soundcarrier);
 
     newMaster_msg cache;
     cache.bact = NULL;
@@ -1700,133 +1689,133 @@ size_t NC_STACK_ypaworld::ypaworld_func145(NC_STACK_ypabact *bact)
 
 NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 {
-    if ( vhcl_id->vehicle_id > 256 )
+    if ( vhcl_id->vehicle_id > NUM_VHCL_PROTO )
         return NULL;
 
-    VhclProto *vhcl = &VhclProtos[vhcl_id->vehicle_id];
+    World::TVhclProto &vhcl = VhclProtos[vhcl_id->vehicle_id];
 
-    NC_STACK_ypabact *bacto = yw_createUnit(vhcl->model_id);
+    NC_STACK_ypabact *bacto = yw_createUnit(vhcl.model_id);
 
     if ( bacto )
     {
-        bacto->_energy = vhcl->energy;
-        bacto->_energy_max = vhcl->energy;
-        bacto->_shield = vhcl->shield;
-        bacto->_mass = vhcl->mass;
-        bacto->_force = vhcl->force;
-        bacto->_maxrot = vhcl->maxrot;
-        bacto->_height = vhcl->height;
-        bacto->_radius = vhcl->radius;
-        bacto->_viewer_radius = vhcl->vwr_radius;
-        bacto->_overeof = vhcl->overeof;
-        bacto->_viewer_overeof = vhcl->vwr_overeof;
-        bacto->_airconst = vhcl->airconst;
-        bacto->_airconst_static = vhcl->airconst;
-        bacto->_adist_sector = vhcl->adist_sector;
-        bacto->_adist_bact = vhcl->adist_bact;
-        bacto->_sdist_sector = vhcl->sdist_sector;
-        bacto->_sdist_bact = vhcl->sdist_bact;
-        bacto->_radar = vhcl->radar;
-        bacto->_gun_radius = vhcl->gun_radius;
-        bacto->_gun_power = vhcl->gun_power;
-        bacto->_pitch_max = vhcl->max_pitch;
+        bacto->_energy = vhcl.energy;
+        bacto->_energy_max = vhcl.energy;
+        bacto->_shield = vhcl.shield;
+        bacto->_mass = vhcl.mass;
+        bacto->_force = vhcl.force;
+        bacto->_maxrot = vhcl.maxrot;
+        bacto->_height = vhcl.height;
+        bacto->_radius = vhcl.radius;
+        bacto->_viewer_radius = vhcl.vwr_radius;
+        bacto->_overeof = vhcl.overeof;
+        bacto->_viewer_overeof = vhcl.vwr_overeof;
+        bacto->_airconst = vhcl.airconst;
+        bacto->_airconst_static = vhcl.airconst;
+        bacto->_adist_sector = vhcl.adist_sector;
+        bacto->_adist_bact = vhcl.adist_bact;
+        bacto->_sdist_sector = vhcl.sdist_sector;
+        bacto->_sdist_bact = vhcl.sdist_bact;
+        bacto->_radar = vhcl.radar;
+        bacto->_gun_radius = vhcl.gun_radius;
+        bacto->_gun_power = vhcl.gun_power;
+        bacto->_pitch_max = vhcl.max_pitch;
         bacto->_vehicleID = vhcl_id->vehicle_id;
-        bacto->_weapon = vhcl->weapon;
+        bacto->_weapon = vhcl.weapon;
 
-        if ( vhcl->weapon == -1 )
+        if ( vhcl.weapon == -1 )
             bacto->_weapon_flags = 0;
         else
-            bacto->_weapon_flags = WeaponProtos[ vhcl->weapon ].model_id;
+            bacto->_weapon_flags = WeaponProtos.at( vhcl.weapon ).model_id;
 
-        bacto->_mgun = vhcl->mgun;
-        bacto->_fire_pos.x = vhcl->fire_x;
-        bacto->_fire_pos.y = vhcl->fire_y;
-        bacto->_fire_pos.z = vhcl->fire_z;
-        bacto->_gun_angle = vhcl->gun_angle;
-        bacto->_gun_angle_user = vhcl->gun_angle;
-        bacto->_num_weapons = vhcl->num_weapons;
-        bacto->_kill_after_shot = vhcl->kill_after_shot;
-        bacto->_vp_normal = vhcls_models.at( vhcl->vp_normal );
-        bacto->_vp_fire = vhcls_models.at( vhcl->vp_fire );
-        bacto->_vp_dead = vhcls_models.at( vhcl->vp_dead );
-        bacto->_vp_wait = vhcls_models.at( vhcl->vp_wait );
-        bacto->_vp_megadeth = vhcls_models.at( vhcl->vp_megadeth );
-        bacto->_vp_genesis = vhcls_models.at( vhcl->vp_genesis );
+        bacto->_mgun = vhcl.mgun;
+        bacto->_fire_pos.x = vhcl.fire_x;
+        bacto->_fire_pos.y = vhcl.fire_y;
+        bacto->_fire_pos.z = vhcl.fire_z;
+        bacto->_gun_angle = vhcl.gun_angle;
+        bacto->_gun_angle_user = vhcl.gun_angle;
+        bacto->_num_weapons = vhcl.num_weapons;
+        bacto->_kill_after_shot = vhcl.kill_after_shot;
+        bacto->_vp_normal = vhcls_models.at( vhcl.vp_normal );
+        bacto->_vp_fire = vhcls_models.at( vhcl.vp_fire );
+        bacto->_vp_dead = vhcls_models.at( vhcl.vp_dead );
+        bacto->_vp_wait = vhcls_models.at( vhcl.vp_wait );
+        bacto->_vp_megadeth = vhcls_models.at( vhcl.vp_megadeth );
+        bacto->_vp_genesis = vhcls_models.at( vhcl.vp_genesis );
 
-        bacto->_destroyFX = vhcl->dest_fx;
-        bacto->_extDestroyFX = vhcl->ExtDestroyFX;
+        bacto->_destroyFX = vhcl.dest_fx;
+        bacto->_extDestroyFX = vhcl.ExtDestroyFX;
 
         for (NC_STACK_base *& vp_fx : bacto->_vp_fx_models)
             vp_fx = NULL;
 
-        bacto->_scale_start = vhcl->scale_fx_p0;
-        bacto->_scale_speed = vhcl->scale_fx_p1;
-        bacto->_scale_accel = vhcl->scale_fx_p2;
-        bacto->_scale_duration = vhcl->scale_fx_p3;
+        bacto->_scale_start = vhcl.scale_fx_p0;
+        bacto->_scale_speed = vhcl.scale_fx_p1;
+        bacto->_scale_accel = vhcl.scale_fx_p2;
+        bacto->_scale_duration = vhcl.scale_fx_p3;
         bacto->_scale_pos = 0;
 
-        for (int i = 0; vhcl->scale_fx_pXX[ i ]; i++ )
+        for (int i = 0; vhcl.scale_fx_pXX[ i ]; i++ )
         {
-            bacto->_vp_fx_models[i] = vhcls_models.at( vhcl->scale_fx_pXX[ i ] );
+            bacto->_vp_fx_models[i] = vhcls_models.at( vhcl.scale_fx_pXX[ i ] );
 
             bacto->_status_flg |= BACT_STFLAG_SEFFECT;
         }
 
-        SFXEngine::SFXe.sub_423DB0(&bacto->_soundcarrier);
+        bacto->_soundcarrier.Resize(vhcl.sndFX.size());
 
-        for (int i = 0; i < 12; i++)
-            sub_44BF34(&vhcl->sndFX[i]);
+        for (World::TVhclSound &sfx : vhcl.sndFX)
+            sfx.LoadSamples();
 
-        for (int i = 0; i < 12; i++)
+        for (size_t i = 0; i < vhcl.sndFX.size(); i++)
         {
-            userdata_sample_info *smpl_inf = &bacto->_soundcarrier.samples_data[ i ];
+            TSoundSource *smpl_inf = &bacto->_soundcarrier.Sounds[ i ];
 
-            smpl_inf->volume = vhcl->sndFX[i].volume;
-            smpl_inf->pitch = vhcl->sndFX[i].pitch;
+            smpl_inf->Volume = vhcl.sndFX[i].volume;
+            smpl_inf->Pitch = vhcl.sndFX[i].pitch;
 
-            if ( i <= 3 || (i >= 7 && i <= 8) )
-                smpl_inf->flags |= 1;
+            if ( World::TVhclProto::IsLoopingSnd(i) )
+                smpl_inf->SetLoop(true);
 
-            if ( vhcl->sndFX[i].single_sample )
-                smpl_inf->psampl = vhcl->sndFX[i].single_sample->getSMPL_pSample();
+            if ( vhcl.sndFX[i].MainSample.Sample )
+                smpl_inf->PSample = vhcl.sndFX[i].MainSample.Sample->GetSampleData();
             else
-                smpl_inf->psampl = 0;
+                smpl_inf->PSample = 0;
 
-            if ( vhcl->sndFX[i].sndPrm.slot )
+            if ( vhcl.sndFX[i].sndPrm.slot )
             {
-                smpl_inf->paletteFX = &vhcl->sndFX[i].sndPrm;
-                smpl_inf->flags |= 8;
-            }
-            else
-            {
-                smpl_inf->flags &= ~8;
-            }
-
-            if ( vhcl->sndFX[i].sndPrm_shk.slot )
-            {
-                smpl_inf->shakeFX = &vhcl->sndFX[i].sndPrm_shk;
-                smpl_inf->flags |= 0x40;
+                smpl_inf->PPFx = &vhcl.sndFX[i].sndPrm;
+                smpl_inf->SetPFx(true);
             }
             else
             {
-                smpl_inf->flags &= ~0x40;
+                smpl_inf->SetPFx(false);
             }
 
-            if ( vhcl->sndFX[i].extS.cnt )
+            if ( vhcl.sndFX[i].sndPrm_shk.slot )
             {
-                smpl_inf->smplExt = &vhcl->sndFX[i].extS; //CHECK IT
-                smpl_inf->flags |= 0x200;
+                smpl_inf->PShkFx = &vhcl.sndFX[i].sndPrm_shk;
+                smpl_inf->SetShk(true);
             }
             else
             {
-                smpl_inf->flags &= ~0x200;
+                smpl_inf->SetShk(false);
+            }
+
+            if ( !vhcl.sndFX[i].extS.empty() )
+            {
+                smpl_inf->PFragments = &vhcl.sndFX[i].extS; //CHECK IT
+                smpl_inf->SetFragmented(true);
+            }
+            else
+            {
+                smpl_inf->SetFragmented(false);
             }
         }
 
-        bacto->_pitch = bacto->_soundcarrier.samples_data[0].pitch;
-        bacto->_volume = bacto->_soundcarrier.samples_data[0].volume;
+        bacto->_pitch = bacto->_soundcarrier.Sounds[0].Pitch;
+        bacto->_volume = bacto->_soundcarrier.Sounds[0].Volume;
 
-        bacto->func2(vhcl->initParams);
+        bacto->func2(vhcl.initParams);
 
         bact_arg80 arg80;
         arg80.pos = vhcl_id->pos;
@@ -1846,50 +1835,50 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
 
 NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 {
-    if ( arg->vehicle_id > 128 )
+    if ( arg->vehicle_id > WeaponProtos.size() )
         return NULL;
 
-    WeapProto *wproto = &WeaponProtos[arg->vehicle_id];
+    World::TWeapProto &wproto = WeaponProtos.at(arg->vehicle_id);
 
-    if ( !(wproto->model_id & 1) )
+    if ( !(wproto.model_id & 1) )
         return NULL;
 
-    NC_STACK_ypamissile *wobj = dynamic_cast<NC_STACK_ypamissile *>( yw_createUnit(wproto->field_0) );
+    NC_STACK_ypamissile *wobj = dynamic_cast<NC_STACK_ypamissile *>( yw_createUnit(wproto.field_0) );
 
     if ( !wobj )
         return NULL;
 
-    wobj->_energy = wproto->energy;
-    wobj->_energy_max = wproto->energy;
+    wobj->_energy = wproto.energy;
+    wobj->_energy_max = wproto.energy;
     wobj->_shield = 0;
-    wobj->_mass = wproto->mass;
-    wobj->_force = wproto->force;
-    wobj->_maxrot = wproto->maxrot;
-    wobj->_height = wproto->field_8D8;
-    wobj->_radius = wproto->radius;
-    wobj->_viewer_radius = wproto->vwr_radius;
-    wobj->_overeof = wproto->overeof;
-    wobj->_viewer_overeof = wproto->vwr_overeof;
-    wobj->_airconst = wproto->airconst;
-    wobj->_airconst_static = wproto->airconst;
-    wobj->_adist_sector = wproto->field_890;
-    wobj->_adist_bact = wproto->field_894;
+    wobj->_mass = wproto.mass;
+    wobj->_force = wproto.force;
+    wobj->_maxrot = wproto.maxrot;
+    wobj->_height = wproto.field_8D8;
+    wobj->_radius = wproto.radius;
+    wobj->_viewer_radius = wproto.vwr_radius;
+    wobj->_overeof = wproto.overeof;
+    wobj->_viewer_overeof = wproto.vwr_overeof;
+    wobj->_airconst = wproto.airconst;
+    wobj->_airconst_static = wproto.airconst;
+    wobj->_adist_sector = wproto.field_890;
+    wobj->_adist_bact = wproto.field_894;
     wobj->_vehicleID = arg->vehicle_id;
     wobj->_weapon = 0;
 
-    wobj->_vp_normal =   vhcls_models.at(wproto->vp_normal);
-    wobj->_vp_fire =     vhcls_models.at(wproto->vp_fire);
-    wobj->_vp_dead =     vhcls_models.at(wproto->vp_dead);
-    wobj->_vp_wait =     vhcls_models.at(wproto->vp_wait);
-    wobj->_vp_megadeth = vhcls_models.at(wproto->vp_megadeth);
-    wobj->_vp_genesis =  vhcls_models.at(wproto->vp_genesis);
+    wobj->_vp_normal =   vhcls_models.at(wproto.vp_normal);
+    wobj->_vp_fire =     vhcls_models.at(wproto.vp_fire);
+    wobj->_vp_dead =     vhcls_models.at(wproto.vp_dead);
+    wobj->_vp_wait =     vhcls_models.at(wproto.vp_wait);
+    wobj->_vp_megadeth = vhcls_models.at(wproto.vp_megadeth);
+    wobj->_vp_genesis =  vhcls_models.at(wproto.vp_genesis);
 
-    wobj->_destroyFX = wproto->dfx;
-    wobj->_extDestroyFX = wproto->ExtDestroyFX;
+    wobj->_destroyFX = wproto.dfx;
+    wobj->_extDestroyFX = wproto.ExtDestroyFX;
 
     int missileType;
 
-    switch(wproto->model_id)
+    switch(wproto.model_id)
     {
     case 1:
         missileType = NC_STACK_ypamissile::MISL_BOMB;
@@ -1912,21 +1901,21 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         break;
     }
 
-    wobj->setMISS_lifeTime(wproto->life_time);
-    wobj->setMISS_delay(wproto->delay_time);
-    wobj->setMISS_driveTime(wproto->drive_time);
+    wobj->setMISS_lifeTime(wproto.life_time);
+    wobj->setMISS_delay(wproto.delay_time);
+    wobj->setMISS_driveTime(wproto.drive_time);
     wobj->setMISS_type(missileType);
-    wobj->setMISS_powHeli(wproto->energy_heli * 1000.0);
-    wobj->setMISS_powTank(wproto->energy_tank * 1000.0);
-    wobj->setMISS_powFlyer(wproto->energy_flyer * 1000.0);
-    wobj->setMISS_powRobo(wproto->energy_robo * 1000.0);
+    wobj->setMISS_powHeli(wproto.energy_heli * 1000.0);
+    wobj->setMISS_powTank(wproto.energy_tank * 1000.0);
+    wobj->setMISS_powFlyer(wproto.energy_flyer * 1000.0);
+    wobj->setMISS_powRobo(wproto.energy_robo * 1000.0);
 
     if (tuneGetWeaponRadiusFix())
     {
-        wobj->setMISS_radHeli(wproto->radius_heli);
-        wobj->setMISS_radTank(wproto->radius_tank);
-        wobj->setMISS_radFlyer(wproto->radius_flyer);
-        wobj->setMISS_radRobo(wproto->radius_robo);
+        wobj->setMISS_radHeli(wproto.radius_heli);
+        wobj->setMISS_radTank(wproto.radius_tank);
+        wobj->setMISS_radFlyer(wproto.radius_flyer);
+        wobj->setMISS_radRobo(wproto.radius_robo);
     }
     else
     {
@@ -1936,58 +1925,58 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         wobj->setMISS_radRobo(0.0);
     }
 
-    SFXEngine::SFXe.sub_423DB0(&wobj->_soundcarrier);
+    wobj->_soundcarrier.Resize(wproto.sndFXes.size());
 
-    for (int i = 0; i < 3; i++)
-        sub_44BF34(&wproto->sndFXes[i]);
+    for (World::TVhclSound &sfx : wproto.sndFXes)
+        sfx.LoadSamples();
 
-    for (int i = 0; i < 3; i++)
+    for (size_t i = 0; i < wproto.sndFXes.size(); i++)
     {
-        userdata_sample_info *v25 = &wobj->_soundcarrier.samples_data[i];
+        TSoundSource *v25 = &wobj->_soundcarrier.Sounds[i];
 
-        v25->volume = wproto->sndFXes[i].volume;
-        v25->pitch = wproto->sndFXes[i].pitch;
+        v25->Volume = wproto.sndFXes[i].volume;
+        v25->Pitch = wproto.sndFXes[i].pitch;
 
         if ( i == 0 )
-            v25->flags |= 1;
+            v25->SetLoop(true);
 
-        if ( wproto->sndFXes[i].single_sample )
-            v25->psampl = wproto->sndFXes[i].single_sample->getSMPL_pSample();
+        if ( wproto.sndFXes[i].MainSample.Sample )
+            v25->PSample = wproto.sndFXes[i].MainSample.Sample->GetSampleData();
         else
-            v25->psampl = 0;
+            v25->PSample = 0;
 
-        if ( wproto->sndFXes[i].sndPrm.slot )
+        if ( wproto.sndFXes[i].sndPrm.slot )
         {
-            v25->flags |= 8;
-            v25->paletteFX = &wproto->sndFXes[i].sndPrm;
-        }
-        else
-        {
-            v25->flags &= ~8;
-        }
-
-        if ( wproto->sndFXes[i].sndPrm_shk.slot )
-        {
-            v25->flags |= 0x40;
-            v25->shakeFX = &wproto->sndFXes[i].sndPrm_shk;
+            v25->SetPFx(true);
+            v25->PPFx = &wproto.sndFXes[i].sndPrm;
         }
         else
         {
-            v25->flags &= ~0x40;
+            v25->SetPFx(false);
         }
 
-        if ( wproto->sndFXes[i].extS.cnt )
+        if ( wproto.sndFXes[i].sndPrm_shk.slot )
         {
-            v25->flags |= 0x200;
-            v25->smplExt = &wproto->sndFXes[i].extS;
+            v25->SetShk(true);
+            v25->PShkFx = &wproto.sndFXes[i].sndPrm_shk;
         }
         else
         {
-            v25->flags &= ~0x200;
+            v25->SetShk(false);
+        }
+
+        if ( !wproto.sndFXes[i].extS.empty() )
+        {
+            v25->SetFragmented(true);
+            v25->PFragments = &wproto.sndFXes[i].extS;
+        }
+        else
+        {
+            v25->SetFragmented(false);
         }
     }
 
-    wobj->func2(wproto->initParams);
+    wobj->func2(wproto.initParams);
 
     bact_arg80 arg80;
 
@@ -2356,7 +2345,7 @@ void NC_STACK_ypaworld::DeleteLevel()
     }
 
     //ypaworld_func151__sub5(this); Free map events
-    ypaworld_func151__sub6(this);
+    _voiceMessage.Reset();
 
     SFXEngine::SFXe.setMasterVolume(audio_volume);
 
@@ -2404,7 +2393,7 @@ void NC_STACK_ypaworld::DeleteLevel()
     while ( !_deadCacheList.empty() )
         Nucleus::Delete(_deadCacheList.front());
 
-    ypaworld_func151__sub0(this);
+    ProtosFreeSounds();
 
     sb_0x44ac24(this);
 
@@ -2436,21 +2425,11 @@ void NC_STACK_ypaworld::DeleteLevel()
     }
 
     if ( GameShell )
-    {
-        GameShell->samples1_info.field_0 = vec3d(0.0, 0.0, 0.0);
-
-        GameShell->samples2_info.field_0 = vec3d(0.0, 0.0, 0.0);
-    }
+        GameShell->samples1_info.Position = vec3d();
 
     if ( field_727c )
     {
-        if ( VhclProtos )
-        {
-            if ( WeaponProtos )
-            {
-                sub_4DA354(initScriptLoc);
-            }
-        }
+        LoadProtosScript(initScriptLoc);
     }
 }
 
@@ -2510,23 +2489,14 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     usr->field_1612 = 0;
     usr->field_D36 = 1;   
 
-    usr->samples2_info.field_0 = vec3d(0.0, 0.0, 0.0);
-    usr->samples2_info.field_C = vec3d(0.0, 0.0, 0.0);
-
-    usr->samples1_info.field_0 = usr->samples2_info.field_0;
-    usr->samples1_info.field_C = usr->samples2_info.field_C;
-
-    for (int i = 0; i < 16; i++)
-    {
-        usr->samples2_info.samples_data[i].volume = 127;
-        usr->samples2_info.samples_data[i].pitch = 0;
-        usr->samples1_info.samples_data[i].volume = usr->samples2_info.samples_data[i].volume;
-        usr->samples1_info.samples_data[i].pitch = usr->samples2_info.samples_data[i].pitch;
-    }
-
-    SFXEngine::SFXe.sub_423DB0(&usr->samples1_info);
-    SFXEngine::SFXe.sub_423DB0(&usr->samples2_info);
-    SFXEngine::SFXe.sub_423DB0(&usr->field_782);
+    usr->samples1_info.Clear();    
+    usr->samples1_info.Resize(World::SOUND_ID_MAX);
+    
+//    for (TSoundSource &snd : usr->samples1_info.Sounds)
+//    {
+//        snd.Volume = 127;
+//        snd.Pitch = 0;
+//    }
 
     if ( !usr->ShellSoundsLoad() )
     {
@@ -2659,32 +2629,18 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
 
     usr->lang_dlls.clear();
 
-    SFXEngine::SFXe.sub_424CC8();
+    SFXEngine::SFXe.StopPlayingSounds();
 
-    for (int i = 0; i < 16; i++)
+    for (NC_STACK_sample * &smpl : usr->samples1)
     {
-        if (usr->samples1[i])
+        if (smpl)
         {
-            delete_class_obj(usr->samples1[i]);
-            usr->samples1[i] = NULL;
-        }
-
-        if (usr->samples2[i])
-        {
-            delete_class_obj(usr->samples2[i]);
-            usr->samples2[i] = NULL;
+            Nucleus::Delete(smpl);
+            smpl = NULL;
         }
     }
-
-    if ( usr->field_ADA )
-    {
-        delete_class_obj(usr->field_ADA);
-        usr->field_ADA = NULL;
-    }
-
-    SFXEngine::SFXe.sub_423DD8(&usr->samples1_info);
-    SFXEngine::SFXe.sub_423DD8(&usr->samples2_info);
-    SFXEngine::SFXe.sub_423DD8(&usr->field_782);
+    
+    SFXEngine::SFXe.StopCarrier(&usr->samples1_info);
 }
 
 
@@ -5648,7 +5604,7 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
             usr->network_button = NULL;
         }
 
-        SFXEngine::SFXe.sub_424CC8();
+        SFXEngine::SFXe.StopPlayingSounds();
 
         ypaworld_func157__sub0(this);
 
@@ -5803,9 +5759,7 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
         }
     }
 
-    SFXEngine::SFXe.sb_0x4242e0(&usr->samples1_info);
-    SFXEngine::SFXe.sb_0x4242e0(&usr->samples2_info);
-    SFXEngine::SFXe.sb_0x4242e0(&usr->field_782);
+    SFXEngine::SFXe.UpdateSoundCarrier(&usr->samples1_info);
 
     SFXEngine::SFXe.sb_0x424c74();
 
@@ -5849,7 +5803,123 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
 
 void NC_STACK_ypaworld::ypaworld_func159(yw_arg159 *arg)
 {
-    ypaworld_func159__real(this, arg);
+    if ( arg->MsgID )
+        VoiceMessagePlayMsg(arg->unit, arg->Priority, arg->MsgID);
+
+    if ( arg->unit )
+        info_log.field_255C = arg->unit->_gid;
+    else
+        info_log.field_255C = 0;
+
+    info_log.field_2560 = timeStamp;
+    info_log.field_2564 = arg->MsgID;
+
+    if ( !arg->txt.empty() )
+    {
+        inflog_msg *v6;
+
+        if ( info_log.field_250 >= 5 )
+        {
+            info_log.msg_count++;
+
+            if ( info_log.msg_count >= 64 )
+                info_log.msg_count = 0;
+
+            if ( info_log.field_254 == info_log.msg_count )
+            {
+                info_log.field_254++;
+
+                if ( info_log.field_254 >= 64 )
+                    info_log.field_254 = 0;
+            }
+
+            info_log.numEntries++;;
+
+            if ( info_log.numEntries > 64 )
+                info_log.numEntries = 64;
+
+            v6 = &info_log.msgs[info_log.msg_count];
+
+            info_log.field_24C = info_log.msg_count;
+        }
+        else
+        {
+            info_log.msg_count = info_log.field_24C;
+
+            v6 = &info_log.msgs[info_log.field_24C];
+        }
+
+        info_log.field_256C = 5000;
+        info_log.field_2568 = 1;
+        info_log.field_250 = arg->Priority;
+
+        if ( arg->unit )
+            v6->id = arg->unit->_gid;
+        else
+            v6->id = 0;
+
+        v6->field_8 = 7000;
+        v6->field_4 = timeStamp;
+
+        const char *v5 = arg->txt.c_str();
+
+        int v10 = 0;
+
+        while ( *v5 )
+        {
+            if ( *v5 == '\n' )
+            {
+                v6->txt[v10] = 0;
+
+                v10 = 0;
+
+                info_log.msg_count++;
+
+                if ( info_log.msg_count >= 64 )
+                    info_log.msg_count = 0;
+
+                if ( info_log.field_254 == info_log.msg_count )
+                {
+                    info_log.field_254++;
+
+                    if ( info_log.field_254 >= 64 )
+                        info_log.field_254 = 0;
+                }
+
+                info_log.numEntries++;
+
+                if ( info_log.numEntries > 64 )
+                    info_log.numEntries = 64;
+
+                info_log.field_256C += 5000;
+                info_log.field_2568++;
+
+                v6 = &info_log.msgs[ info_log.msg_count ];
+
+                if ( arg->unit )
+                    v6->id = arg->unit->_gid;
+                else
+                    v6->id = 0;
+
+                v6->field_8 = 7000;
+                v6->field_4 = 0;
+            }
+            else if ( v10 < 125 )
+            {
+                v6->txt[v10] = *v5;
+                v10++;
+            }
+
+            v5++;
+        }
+
+        v6->txt[v10] = 0;
+
+        info_log.firstShownEntries = info_log.numEntries - info_log.shownEntries;
+
+        if ( info_log.firstShownEntries < 0 )
+            info_log.firstShownEntries = 0;
+    }
 }
 
 
@@ -6039,11 +6109,11 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
         bct->_tForm.SclRot = bct->_rotation.Transpose();
 
-        bct->_soundcarrier.field_0 = bct->_position;
+        bct->_soundcarrier.Position = bct->_position;
 
-        bct->_soundcarrier.field_C = bct->_fly_dir * bct->_fly_dir_length;
+        bct->_soundcarrier.Vector = bct->_fly_dir * bct->_fly_dir_length;
 
-        SFXEngine::SFXe.sb_0x4242e0(&bct->_soundcarrier);
+        SFXEngine::SFXe.UpdateSoundCarrier(&bct->_soundcarrier);
     }
 
     const mat3x3 &v25 = SFXEngine::SFXe.sb_0x424c74();
@@ -6461,10 +6531,10 @@ void NC_STACK_ypaworld::LoadingUnitsRefresh()
     {
         NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(UserRobo);
 
-        if ( robo->_roboGuns[_extraViewNumber].gun_obj )
+        if ( robo->_roboGuns.at(_extraViewNumber).gun_obj )
         {
-            robo->_roboGuns[_extraViewNumber].gun_obj->setBACT_viewer(true);
-            robo->_roboGuns[_extraViewNumber].gun_obj->setBACT_inputting(true);
+            robo->_roboGuns.at(_extraViewNumber).gun_obj->setBACT_viewer(true);
+            robo->_roboGuns.at(_extraViewNumber).gun_obj->setBACT_inputting(true);
         }
     }
 }
@@ -7430,20 +7500,6 @@ NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userVehicle()
     return UserUnit;
 }
 
-WeapProto *NC_STACK_ypaworld::getYW_weaponProtos()
-{
-    return WeaponProtos;
-}
-
-TBuildingProto *NC_STACK_ypaworld::getYW_buildProtos()
-{
-    return BuildProtos.data();
-}
-
-VhclProto *NC_STACK_ypaworld::getYW_vhclProtos()
-{
-    return VhclProtos;
-}
 
 int NC_STACK_ypaworld::getYW_lvlFinished()
 {
@@ -7487,40 +7543,40 @@ int NC_STACK_ypaworld::getYW_invulnerable()
 
 int NC_STACK_ypaworld::TestVehicle(int protoID, int job)
 {
-    VhclProto &proto = VhclProtos[ protoID ];
+    const World::TVhclProto &proto = VhclProtos[ protoID ];
 
-    WeapProto *wpn;
+    World::TWeapProto *wpn;
 
     if ( proto.weapon == -1 )
         wpn = NULL;
     else
-        wpn = &WeaponProtos[ proto.weapon ];
+        wpn = &WeaponProtos.at( proto.weapon );
 
     switch ( job )
     {
     case 1:
-        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == BACT_TYPES_UFO )
             return -1;
 
         return proto.job_fightrobo;
         break;
 
     case 2:
-        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == BACT_TYPES_UFO )
             return -1;
 
         return proto.job_fighttank;
         break;
 
     case 4:
-        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == BACT_TYPES_UFO )
             return -1;
 
         return proto.job_fighthelicopter;
         break;
 
     case 3:
-        if ( (proto.mgun == -1 && !wpn) || proto.model_id == 7 )
+        if ( (proto.mgun == -1 && !wpn) || proto.model_id == BACT_TYPES_UFO )
             return -1;
 
         return proto.job_fightflyer;
@@ -7531,7 +7587,7 @@ int NC_STACK_ypaworld::TestVehicle(int protoID, int job)
         break;
 
     case 6:
-        if ( !wpn || proto.model_id == 7 )
+        if ( !wpn || proto.model_id == BACT_TYPES_UFO )
             return -1;
 
         return proto.job_conquer;
@@ -7705,3 +7761,4 @@ int32_t NC_STACK_ypaworld::GetLegoBld(const Common::Point &cell, int bldX, int b
 {
     return GetLegoBld(&SectorAt(cell), bldX, bldY);
 }
+

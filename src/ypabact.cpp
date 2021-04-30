@@ -20,24 +20,6 @@ const Nucleus::ClassDescr NC_STACK_ypabact::description("ypabact.class", &newins
 int ypabact_id = 1;
 
 
-uint8_t DestFX::ParseTypeName(const std::string &in)
-{
-    if ( !StriCmp(in, "death") )
-        return FX_DEATH;
-    
-    if ( !StriCmp(in, "megadeth") )
-        return FX_MEGADETH;
-    
-    if ( !StriCmp(in, "create") )
-        return FX_CREATE;
-    
-    if ( !StriCmp(in, "beam") )
-        return FX_BEAM;
-    
-    return FX_NONE;
-}
-
-
 NC_STACK_ypabact::NC_STACK_ypabact()
 : _kidList(this, GetKidRefNode, World::BLIST_KIDS)
 {
@@ -54,8 +36,6 @@ NC_STACK_ypabact::NC_STACK_ypabact()
     _host_station = NULL;
     _parent = NULL;
     
-    memset(&_soundcarrier, 0, sizeof(_soundcarrier) ); //FIX IT
-
     _soundFlags = 0;
     _volume = 0;
     _pitch = 0;
@@ -348,7 +328,7 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
 
 size_t NC_STACK_ypabact::Deinit()
 {
-    SFXEngine::SFXe.sub_423DD8(&_soundcarrier);
+    SFXEngine::SFXe.StopCarrier(&_soundcarrier);
 
     _status_flg |= BACT_STFLAG_CLEAN;
 
@@ -710,14 +690,14 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     arg->units_count = numbid;
 
-    _soundcarrier.field_0 = _position;
+    _soundcarrier.Position = _position;
 
     if ( _oflags & BACT_OFLAG_VIEWER )
-        _soundcarrier.field_0 += _rotation.AxisY() * 400.0;
+        _soundcarrier.Position += _rotation.AxisY() * 400.0;
 
-    _soundcarrier.field_C = _fly_dir * _fly_dir_length;
+    _soundcarrier.Vector = _fly_dir * _fly_dir_length;
 
-    SFXEngine::SFXe.sb_0x4242e0(&_soundcarrier);
+    SFXEngine::SFXe.UpdateSoundCarrier(&_soundcarrier);
 }
 
 void NC_STACK_ypabact::Render(baseRender_msg *arg)
@@ -997,8 +977,8 @@ void NC_STACK_ypabact::AI_layer1(update_msg *arg)
 
     _airconst = _airconst_static;
 
-    _soundcarrier.samples_data[0].pitch = _pitch;
-    _soundcarrier.samples_data[0].volume = _volume;
+    _soundcarrier.Sounds[0].Pitch = _pitch;
+    _soundcarrier.Sounds[0].Volume = _volume;
 
     if ( _clock - _AI_time1 < 250 || 
          _primTtype == BACT_TGT_TYPE_DRCT || 
@@ -2193,7 +2173,7 @@ void NC_STACK_ypabact::User_layer(update_msg *arg)
                     break;
                 }
 
-                if ( !(_soundcarrier.samples_data[5].flags & 2) )
+                if ( !_soundcarrier.Sounds[5].IsEnabled() )
                 {
                     if ( !(_status_flg & BACT_STFLAG_LCRASH) )
                     {
@@ -2296,8 +2276,8 @@ void NC_STACK_ypabact::Move(move_msg *arg)
 
     CorrectPositionInLevelBox(NULL);
 
-    _soundcarrier.samples_data[0].pitch = _pitch;
-    _soundcarrier.samples_data[0].volume = _volume;
+    _soundcarrier.Sounds[0].Pitch = _pitch;
+    _soundcarrier.Sounds[0].Volume = _volume;
 
     float v50;
     if ( _pitch_max <= -0.8 )
@@ -2313,8 +2293,8 @@ void NC_STACK_ypabact::Move(move_msg *arg)
     if ( v43 > v50 )
         v43 = v50;
 
-    if ( _soundcarrier.samples_data[0].psampl )
-        _soundcarrier.samples_data[0].pitch += (_soundcarrier.samples_data[0].psampl->SampleRate + _soundcarrier.samples_data[0].pitch) * v43;
+    if ( _soundcarrier.Sounds[0].PSample )
+        _soundcarrier.Sounds[0].Pitch += (_soundcarrier.Sounds[0].PSample->SampleRate + _soundcarrier.Sounds[0].Pitch) * v43;
 }
 
 void NC_STACK_ypabact::FightWithBact(bact_arg75 *arg)
@@ -3283,31 +3263,31 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 {
     NC_STACK_ypamissile *wobj = NULL;
 
-    WeapProto *wprotos = _world->getYW_weaponProtos();
-
     if ( arg->weapon == -1 )
         return 0;
+    
+    World::TWeapProto &wproto = _world->GetWeaponsProtos().at(arg->weapon);
 
     if ( _weapon_time )
     {
         int v4;
 
         if ( _oflags & BACT_OFLAG_USERINPT )
-            v4 = wprotos[arg->weapon].shot_time_user;
+            v4 = wproto.shot_time_user;
         else
-            v4 = wprotos[arg->weapon].shot_time;
+            v4 = wproto.shot_time;
 
-        if ( wprotos[arg->weapon].salve_shots )
+        if ( wproto.salve_shots )
         {
-            if ( wprotos[arg->weapon].salve_shots <= _salve_counter )
-                v4 = wprotos[arg->weapon].salve_delay;
+            if ( wproto.salve_shots <= _salve_counter )
+                v4 = wproto.salve_delay;
         }
 
         if ( arg->g_time - _weapon_time < v4 )
             return 0;
     }
 
-    if ( _salve_counter < wprotos[arg->weapon].salve_shots )
+    if ( _salve_counter < wproto.salve_shots )
         _salve_counter += 1;
     else
         _salve_counter = 1;
@@ -3316,9 +3296,9 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
     {
         yw_arg180 v26;
 
-        if ( wprotos[arg->weapon].model_id & 2 )
+        if ( wproto.model_id & 2 )
             v26.effects_type = 0;
-        else if ( wprotos[arg->weapon].model_id & 0x10 )
+        else if ( wproto.model_id & 0x10 )
             v26.effects_type = 1;
         else
             v26.effects_type = 2;
@@ -3372,9 +3352,9 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
             wobj->_fly_dir = _rotation.AxisZ();
         }
 
-        wobj->_fly_dir_length = _fly_dir_length + wprotos[ arg->weapon ].start_speed;
+        wobj->_fly_dir_length = _fly_dir_length + wproto.start_speed;
 
-        if ( !(wprotos[arg->weapon].model_id & 0x12) )
+        if ( !(wproto.model_id & 0x12) )
             wobj->_fly_dir_length *= 0.2;
 
         wobj->_rotation.SetZ( wobj->_fly_dir );
@@ -3481,7 +3461,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 
         if ( arg->tgType != BACT_TGT_TYPE_UNIT )
         {
-            int life_time_nt = wprotos[ arg->weapon ].life_time_nt;
+            int life_time_nt = wproto.life_time_nt;
 
             if ( life_time_nt )
                 wobj->setMISS_lifeTime(life_time_nt);
@@ -4187,7 +4167,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
     int v49 = 0;
 
-    rbcolls *v46 = getBACT_collNodes();
+    World::rbcolls *v46 = getBACT_collNodes();
 
     if ( _fly_dir_length == 0.0 )
         return 0;
@@ -4196,7 +4176,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
     int v45 = 0;
 
-    rbcolls *v55;
+    World::rbcolls *v55;
 
     for ( NC_STACK_ypabact* &bnode : _pSector->unitsList )
     {
@@ -4211,7 +4191,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
             if ( v55 )
             {
-                v9 = v55->robo_coll_num;
+                v9 = v55->roboColls.size();
                 v49 = 1;
             }
             else
@@ -4231,7 +4211,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
                 }
                 else
                 {
-                    roboColl *v10 = &v55->roboColls[i];
+                    World::TRoboColl *v10 = &v55->roboColls[i];
                     ttrad = v10->robo_coll_radius;
 
                     v41 = bnode->_position + bnode->_rotation.Transpose().Transform(v10->coll_pos);
@@ -4255,7 +4235,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
                         bnode->_scale_time = -1;
 
                         if ( _world->GameShell )
-                            SFXEngine::SFXe.startSound(&_world->GameShell->samples2_info, 4);
+                            SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_PLASMA);
 
                         if ( _world->isNetGame )
                         {
@@ -4383,11 +4363,9 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
 {
     NC_STACK_ypaworld *wrld = unit->getBACT_pWorld();
 
-    VhclProto *vhcl_protos = wrld->getYW_vhclProtos();
-
     NC_STACK_ypabact *v40 = NULL;
 
-    VhclProto *proto = &vhcl_protos[unit->_vehicleID];
+    const World::TVhclProto &proto = wrld->GetVhclProtos().at( unit->_vehicleID );
 
     for( NC_STACK_ypabact* cel_unit : cell.unitsList )
     {
@@ -4400,21 +4378,21 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
                 switch ( cel_unit->_bact_type )
                 {
                 case BACT_TYPES_BACT:
-                    job_id = proto->job_fighthelicopter;
+                    job_id = proto.job_fighthelicopter;
                     break;
 
                 case BACT_TYPES_TANK:
                 case BACT_TYPES_CAR:
-                    job_id = proto->job_fighttank;
+                    job_id = proto.job_fighttank;
                     break;
 
                 case BACT_TYPES_FLYER:
                 case BACT_TYPES_UFO:
-                    job_id = proto->job_fightflyer;
+                    job_id = proto.job_fightflyer;
                     break;
 
                 case BACT_TYPES_ROBO:
-                    job_id = proto->job_fightrobo;
+                    job_id = proto.job_fightrobo;
                     break;
 
                 default:
@@ -4953,15 +4931,15 @@ void NC_STACK_ypabact::Renew()
     Common::DeleteAndNull(&_current_vp);
 
     _vp_active = 0;
-    _volume = _soundcarrier.samples_data[0].volume;
-    _pitch = _soundcarrier.samples_data[0].pitch;
+    _volume = 0; //_soundcarrier.Sounds[0].Volume;
+    _pitch = 0; //_soundcarrier.Sounds[0].Pitch;
 
     _m_cmdID = 0;
     _gun_angle_user = _gun_angle;
     _oflags |= BACT_OFLAG_LANDONWAIT;
 
-    for (DestFX &x : _destroyFX)
-        x.Clear();
+    for (World::DestFX &x : _destroyFX)
+        x = World::DestFX();
     
     _extDestroyFX.clear();
 
@@ -5117,15 +5095,13 @@ size_t NC_STACK_ypabact::CheckFireAI(bact_arg101 *arg)
     if ( len == 0.0 )
         return 0;
 
-    WeapProto *a4 = _world->getYW_weaponProtos();
-
-    WeapProto *v8 = NULL;
+    World::TWeapProto *v8 = NULL;
 
     int v36;
 
     if ( _weapon != -1 )
     {
-        v8 = &a4[ _weapon ];
+        v8 = &_world->GetWeaponsProtos().at( _weapon );
 
 
         if ( v8->model_id & 1 )
@@ -5431,11 +5407,11 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                         if ( (_oflags & BACT_OFLAG_USERINPT || cellUnit->_owner != _owner) && (!v107 || cellUnit != _host_station) )
                         {
 
-                            rbcolls *v93 = cellUnit->getBACT_collNodes();
+                            World::rbcolls *v93 = cellUnit->getBACT_collNodes();
 
                             int v109;
                             if ( v93 )
-                                v109 = v93->robo_coll_num;
+                                v109 = v93->roboColls.size();
                             else
                                 v109 = 1;
 
@@ -5533,13 +5509,11 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
 
     if ( (v88 || _world->ypaworld_func145(this)) && !a5 )
     {
-        WeapProto *v90 = _world->getYW_weaponProtos();
-
         int v45;
 
         if ( v88 )
         {
-            int v43 = v90[_mgun].shot_time_user;
+            int v43 = _world->GetWeaponsProtos().at(_mgun).shot_time_user;
             float v42 = arg->field_C * 1000.0;
 
             if ( v43 <= v42 )
@@ -5549,7 +5523,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
         }
         else
         {
-            int v47 = v90[_mgun].shot_time;
+            int v47 = _world->GetWeaponsProtos().at(_mgun).shot_time;
             float v46 = arg->field_C * 1000.0;
 
             if ( v47 <= v46 )
@@ -5719,8 +5693,6 @@ void NC_STACK_ypabact::sub_4843BC(NC_STACK_ypabact *bact2, int a3)
 
 size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
 {
-    WeapProto *weaps = _world->getYW_weaponProtos();
-
     NC_STACK_ypabact *targeto = 0;
     float v56 = 0.0;
 
@@ -5729,7 +5701,7 @@ size_t NC_STACK_ypabact::UserTargeting(bact_arg106 *arg)
     if ( _weapon == -1 )
         v55 = 0.0;
     else
-        v55 = weaps[_weapon].radius;
+        v55 = _world->GetWeaponsProtos().at(_weapon).radius;
 
     int a3a = !(_weapon_flags & 2) && !(_weapon_flags & 0x10);
 
@@ -6566,7 +6538,7 @@ void NC_STACK_ypabact::BeamingTimeUpdate(update_msg *arg)
     }
 }
 
-void NC_STACK_ypabact::StartDestFX(const DestFX &fx)
+void NC_STACK_ypabact::StartDestFX(const World::DestFX &fx)
 {
     ypaworld_arg146 arg146;
 
@@ -6627,14 +6599,14 @@ void NC_STACK_ypabact::StartDestFXByType(uint8_t type)
         {
             if ( _destroyFX[i].ModelID )
             {
-                const DestFX &fx = _destroyFX[i];
+                const World::DestFX &fx = _destroyFX[i];
 
                 if ( fx.Type == type )
                     StartDestFX(fx);
             }
         }
         
-        for (const DestFX &x : _extDestroyFX)
+        for (const World::DestFX &x : _extDestroyFX)
         {
             if (x.ModelID != 0 && x.Type == type)
                 StartDestFX(x);
@@ -6911,10 +6883,10 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     upd->units_count = units_cnt;
 
-    _soundcarrier.field_0 = _position;
-    _soundcarrier.field_C = _fly_dir * _fly_dir_length;
+    _soundcarrier.Position = _position;
+    _soundcarrier.Vector = _fly_dir * _fly_dir_length;
 
-    SFXEngine::SFXe.sb_0x4242e0(&_soundcarrier);
+    SFXEngine::SFXe.UpdateSoundCarrier(&_soundcarrier);
 }
 
 void NC_STACK_ypabact::ypabact_func117(update_msg *upd)
@@ -7015,7 +6987,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
         _soundFlags |= 0x80;
 
-        StartDestFXByType(DestFX::FX_DEATH);
+        StartDestFXByType(World::DestFX::FX_DEATH);
 
         result = 1;
     }
@@ -7082,7 +7054,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             SFXEngine::SFXe.startSound(&_soundcarrier, 9);
         }
 
-        StartDestFXByType(DestFX::FX_BEAM);
+        StartDestFXByType(World::DestFX::FX_BEAM);
 
         result = 1;
     }
@@ -7162,7 +7134,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
             SFXEngine::SFXe.startSound(&_soundcarrier, 3);
         }
 
-        StartDestFXByType(DestFX::FX_CREATE);
+        StartDestFXByType(World::DestFX::FX_CREATE);
 
         result = 1;
     }
@@ -7265,7 +7237,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
             SFXEngine::SFXe.startSound(&_soundcarrier, 4);
 
-            StartDestFXByType(DestFX::FX_MEGADETH);
+            StartDestFXByType(World::DestFX::FX_MEGADETH);
 
             _fly_dir_length = 0;
 
@@ -8051,7 +8023,7 @@ int NC_STACK_ypabact::getBACT_aggression()
     return _aggr;
 }
 
-rbcolls *NC_STACK_ypabact::getBACT_collNodes()
+World::rbcolls *NC_STACK_ypabact::getBACT_collNodes()
 {
     return NULL;
 }

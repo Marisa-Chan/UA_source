@@ -1845,13 +1845,16 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
 
     if ( !lastVhcl && lastWeapon )
     {
-        for (int i = 0; i < 256; i++)
+        int i = 0;
+        for (const World::TVhclProto &vhcl : yw->VhclProtos)
         {
-            if (yw->VhclProtos[i].weapon == lastWeapon)
+            if (vhcl.weapon == lastWeapon)
             {
                 lastVhcl = i;
                 break;
             }
+            
+            i++;
         }
 
         if ( !lastVhcl )
@@ -1866,18 +1869,18 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
             lastWeapon = 0;
     }
 
-    VhclProto *vhcl = NULL;
-    WeapProto *wpn  = NULL;
-    TBuildingProto *bld = NULL;
+    World::TVhclProto *vhcl = NULL;
+    World::TWeapProto *wpn  = NULL;
+    World::TBuildingProto *bld = NULL;
 
     if ( lastVhcl )
-        vhcl = &yw->VhclProtos[lastVhcl];
+        vhcl = &yw->VhclProtos.at(lastVhcl);
 
     if ( lastBuild )
-        bld = &yw->BuildProtos[lastBuild];
+        bld = &yw->BuildProtos.at(lastBuild);
 
     if ( lastWeapon )
-        wpn = &yw->WeaponProtos[lastWeapon];
+        wpn = &yw->WeaponProtos.at(lastWeapon);
 
     std::string v13 = " ";
     std::string v14 = " ";

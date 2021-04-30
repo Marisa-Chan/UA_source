@@ -271,11 +271,11 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
                 if ( _mislType == MISL_BOMB && bct->_position.y < _mislStartHeight )
                     continue;
 
-                rbcolls *v82 = bct->getBACT_collNodes();
+                World::rbcolls *v82 = bct->getBACT_collNodes();
 
                 int v7;
                 if ( v82 )
-                    v7 = v82->robo_coll_num;
+                    v7 = v82->roboColls.size();
                 else
                     v7 = 1;
 
@@ -286,7 +286,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
 
                     if ( v82 )
                     {
-                        roboColl *v8 = &v82->roboColls[j];
+                        World::TRoboColl *v8 = &v82->roboColls[j];
                         radius = v8->robo_coll_radius;
 
                         ttmp = bct->_position + bct->_rotation.Transpose().Transform(v8->coll_pos);
@@ -743,7 +743,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
-        StartDestFXByType(DestFX::FX_DEATH);
+        StartDestFXByType(World::DestFX::FX_DEATH);
 
         _fly_dir_length = 0;
     }
@@ -770,7 +770,7 @@ size_t NC_STACK_ypamissile::SetStateInternal(setState_msg *arg)
 
         SFXEngine::SFXe.startSound(&_soundcarrier, 2);
 
-        StartDestFXByType(DestFX::FX_MEGADETH);
+        StartDestFXByType(World::DestFX::FX_MEGADETH);
 
         _fly_dir_length = 0;
     }

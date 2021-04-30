@@ -367,7 +367,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 }
 
 
-vhclSndFX *VhclProtoParser::GetSndFxByName(const std::string &sndname)
+TVhclSound *VhclProtoParser::GetSndFxByName(const std::string &sndname)
 {
     struct SoundType
     {
@@ -399,7 +399,7 @@ vhclSndFX *VhclProtoParser::GetSndFxByName(const std::string &sndname)
     return NULL;
 }
 
-bool FxParser::ParseExtSampleDef(vhclSndFX *sndfx, const std::string &p2)
+bool FxParser::ParseExtSampleDef(TVhclSound *sndfx, const std::string &p2)
 {
     Stok stok(p2, "_");
     std::string pp1, pp2, pp3, pp4, pp5, pname;
@@ -407,21 +407,19 @@ bool FxParser::ParseExtSampleDef(vhclSndFX *sndfx, const std::string &p2)
     if ( !stok.GetNext(&pp1) || !stok.GetNext(&pp2) || !stok.GetNext(&pp3) || !stok.GetNext(&pp4) || !stok.GetNext(&pp5) || !stok.GetNext(&pname) )
         return false;
 
-    if ( sndfx->extS.cnt < (int)sndfx->extS.sndExts.size() )
-    {
-        int curid = sndfx->extS.cnt;
+    sndfx->extS.emplace_back();
+    sndfx->ExtSamples.emplace_back();
+    
+    sndfx->ExtSamples.back().Name = pname;
 
-        sndfx->extS.cnt++;
-
-        sndExt *sndEx = &sndfx->extS.sndExts[ curid ];
-        sndEx->sample = NULL;
-        sndEx->loop = std::stol(pp1, NULL, 0);
-        sndEx->vol = std::stol(pp2, NULL, 0);
-        sndEx->smplRate = std::stol(pp3, NULL, 0);
-        sndEx->offset = std::stol(pp4, NULL, 0);
-        sndEx->smplCnt = std::stol(pp5, NULL, 0);
-        sndfx->extSampleNames[curid] = pname;
-    }
+    TSampleParams &sndEx = sndfx->extS.back();
+    sndEx.Sample = NULL;
+    sndEx.Loop = std::stol(pp1, NULL, 0);
+    sndEx.Vol = std::stol(pp2, NULL, 0);
+    sndEx.SampleRate = std::stol(pp3, NULL, 0);
+    sndEx.Offset = std::stol(pp4, NULL, 0);
+    sndEx.SampleCnt = std::stol(pp5, NULL, 0);
+    
     return true;
 }
 
@@ -443,7 +441,7 @@ int FxParser::ParseSndFX(const std::string &p1, const std::string &p2)
 
     stok.GetNext(&val);
 
-    vhclSndFX *sndfx = GetSndFxByName(val);
+    TVhclSound *sndfx = GetSndFxByName(val);
     if (!sndfx)
         return ScriptParser::RESULT_UNKNOWN;
 
@@ -454,7 +452,7 @@ int FxParser::ParseSndFX(const std::string &p1, const std::string &p2)
         case 0:
         {
             if ( !StriCmp(val, "sample") )
-                sndfx->sample_name = p2;
+                sndfx->MainSample.Name = p2;
             else if ( !StriCmp(val, "volume") )
                 sndfx->volume = std::stol(p2, NULL, 0);
             else if ( !StriCmp(val, "pitch") )
@@ -516,13 +514,19 @@ int FxParser::ParseSndFX(const std::string &p1, const std::string &p2)
 
 int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
-    roboProto &robo = _o.RoboProtos[_vhclID & 0xF];
+    TRoboProto *robo = _vhcl->RoboProto;
+    
+    if (!robo)
+        robo = &_roboTmp;    
 
     if ( !StriCmp(p1, "end") )
     {
         if ( _vhcl->model_id == BACT_TYPES_ROBO )
         {
-            _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_PROTO, &robo);
+            if (!_vhcl->RoboProto)
+                _vhcl->RoboProto = new TRoboProto(_roboTmp);
+            
+            _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_PROTO, _vhcl->RoboProto);
         }
 
         if ( _vhcl->model_id == BACT_TYPES_BACT )
@@ -549,8 +553,8 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         {
             _vhcl->model_id = BACT_TYPES_ROBO;
 
-            robo.clear();
-            robo.matrix = mat3x3::Ident();
+            *robo = TRoboProto();
+            robo->matrix = mat3x3::Ident();
         }
         else if ( !StriCmp(p2, "ufo") )
         {
@@ -713,7 +717,8 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
         if ( stok.GetNext(&fx_type) && stok.GetNext(&pp1) && stok.GetNext(&pp2) && stok.GetNext(&pp3) && stok.GetNext(&pp4) )
         {
-            DestFX &dfx = _vhcl->dest_fx[ _vhcl->destFxCount ];
+            _vhcl->dest_fx.emplace_back();
+            DestFX &dfx = _vhcl->dest_fx.back();
             dfx.Type = DestFX::ParseTypeName(fx_type);
 
             if (dfx.Type == DestFX::FX_NONE)
@@ -732,10 +737,6 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
                 else
                     dfx.Accel = false;
             }
-
-            _vhcl->destFxCount++;
-            if ( _vhcl->destFxCount >= _vhcl->dest_fx.size() )
-                _vhcl->destFxCount = _vhcl->dest_fx.size() - 1;
         }
         else
         {
@@ -944,7 +945,7 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "robo_num_guns") )
     {
-        robo.robo_num_guns = std::stol(p2, NULL, 0);
+        robo->guns.resize( std::stol(p2, NULL, 0) );
     }
     else if ( !StriCmp(p1, "robo_act_gun") )
     {
@@ -952,95 +953,95 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "robo_gun_pos_x") )
     {
-        robo.guns[ _gunID ].pos.x = std::stof(p2, 0);
+        robo->guns[ _gunID ].pos.x = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_pos_y") )
     {
-        robo.guns[ _gunID ].pos.y = std::stof(p2, 0);
+        robo->guns[ _gunID ].pos.y = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_pos_z") )
     {
-        robo.guns[ _gunID ].pos.z = std::stof(p2, 0);
+        robo->guns[ _gunID ].pos.z = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_dir_x") )
     {
-        robo.guns[ _gunID ].dir.x = std::stof(p2, 0);
+        robo->guns[ _gunID ].dir.x = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_dir_y") )
     {
-        robo.guns[ _gunID ].dir.y = std::stof(p2, 0);
+        robo->guns[ _gunID ].dir.y = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_dir_z") )
     {
-        robo.guns[ _gunID ].dir.z = std::stof(p2, 0);
+        robo->guns[ _gunID ].dir.z = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_type") )
     {
-        robo.guns[ _gunID ].robo_gun_type = std::stol(p2, NULL, 0);
+        robo->guns[ _gunID ].robo_gun_type = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "robo_gun_name") )
     {
-        robo.guns[ _gunID ].robo_gun_name = p2;
+        robo->guns[ _gunID ].robo_gun_name = p2;
     }
     else if ( !StriCmp(p1, "robo_dock_x") )
     {
-        robo.dock.x = std::stof(p2, 0);
+        robo->dock.x = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_dock_y") )
     {
-        robo.dock.y = std::stof(p2, 0);
+        robo->dock.y = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_dock_z") )
     {
-        robo.dock.z = std::stof(p2, 0);
+        robo->dock.z = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_coll_num") )
     {
-        robo.coll.robo_coll_num = std::stol(p2, NULL, 0);
+        robo->coll.roboColls.resize( std::stol(p2, NULL, 0) );
     }
     else if ( !StriCmp(p1, "robo_coll_act") )
     {
-        _collID = std::stol(p2, NULL, 0);
+        _collID = std::stol(p2, NULL, 0);         
     }
     else if ( !StriCmp(p1, "robo_coll_radius") )
     {
-        robo.coll.roboColls[ _collID ].robo_coll_radius = std::stof(p2, 0);
+        robo->coll.roboColls[ _collID ].robo_coll_radius = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_coll_x") )
     {
-        robo.coll.roboColls[ _collID ].coll_pos.x = std::stof(p2, 0);
+        robo->coll.roboColls[ _collID ].coll_pos.x = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_coll_y") )
     {
-        robo.coll.roboColls[ _collID ].coll_pos.y = std::stof(p2, 0);
+        robo->coll.roboColls[ _collID ].coll_pos.y = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_coll_z") )
     {
-        robo.coll.roboColls[ _collID ].coll_pos.z = std::stof(p2, 0);
+        robo->coll.roboColls[ _collID ].coll_pos.z = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_viewer_x") )
     {
-        robo.viewer.x = std::stof(p2, 0);
+        robo->viewer.x = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_viewer_y") )
     {
-        robo.viewer.y = std::stof(p2, 0);
+        robo->viewer.y = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_viewer_z") )
     {
-        robo.viewer.z = std::stof(p2, 0);
+        robo->viewer.z = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_viewer_max_up") )
     {
-        robo.robo_viewer_max_up = std::stof(p2, 0);
+        robo->robo_viewer_max_up = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_viewer_max_down") )
     {
-        robo.robo_viewer_max_down = std::stof(p2, 0);
+        robo->robo_viewer_max_down = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_viewer_max_side") )
     {
-        robo.robo_viewer_max_side = std::stof(p2, 0);
+        robo->robo_viewer_max_side = std::stof(p2, 0);
     }
     else if ( !StriCmp(p1, "robo_does_twist") )
     {
@@ -1061,42 +1062,13 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
 {
     if ( !StriCmp(word, "new_vehicle") )
     {
+        _roboTmp = TRoboProto();
         _vhclID = std::stol(opt, NULL, 0);
-        _vhcl = &_o.VhclProtos[_vhclID];
+        _vhcl = &_o.VhclProtos.at(_vhclID);
+        
+        *_vhcl = TVhclProto();
 
-        if ( _vhcl->wireframe )
-        {
-            Nucleus::Delete(_vhcl->wireframe);
-            _vhcl->wireframe = NULL;
-        }
-
-        if ( _vhcl->hud_wireframe )
-        {
-            Nucleus::Delete(_vhcl->hud_wireframe);
-            _vhcl->hud_wireframe = NULL;
-        }
-
-        if ( _vhcl->mg_wireframe )
-        {
-            Nucleus::Delete(_vhcl->mg_wireframe);
-            _vhcl->mg_wireframe = NULL;
-        }
-
-        if ( _vhcl->wpn_wireframe_1 )
-        {
-            Nucleus::Delete(_vhcl->wpn_wireframe_1);
-            _vhcl->wpn_wireframe_1 = NULL;
-        }
-
-        if ( _vhcl->wpn_wireframe_2 )
-        {
-            Nucleus::Delete(_vhcl->wpn_wireframe_2);
-            _vhcl->wpn_wireframe_2 = NULL;
-        }
-
-        _vhcl->clear();
-
-        _vhcl->model_id = 2;
+        _vhcl->model_id = BACT_TYPES_TANK;
         _vhcl->weapon = -1;
         _vhcl->mgun = -1;
         _vhcl->type_icon = 65;
@@ -1152,7 +1124,7 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     else if ( !StriCmp(word, "modify_vehicle") )
     {
         _vhclID = std::stol(opt, NULL, 0);
-        _vhcl = &_o.VhclProtos[_vhclID];
+        _vhcl = &_o.VhclProtos.at(_vhclID);
 
         _o.last_modify_vhcl = _vhclID;
         return true;
@@ -1161,14 +1133,14 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     return false;
 }
 
-vhclSndFX *WeaponProtoParser::GetSndFxByName(const std::string &sndname)
+TVhclSound *WeaponProtoParser::GetSndFxByName(const std::string &sndname)
 {
     if ( !StriCmp(sndname, "normal") )
-        return &_wpn->sndFXes[0];
+        return &_wpn->sndFXes[TWeapProto::SND_NORMAL];
     else if ( !StriCmp(sndname, "launch") )
-        return &_wpn->sndFXes[1];
+        return &_wpn->sndFXes[TWeapProto::SND_LAUNCH];
     else if ( !StriCmp(sndname, "hit") )
-        return &_wpn->sndFXes[2];
+        return &_wpn->sndFXes[TWeapProto::SND_HIT];
 
     return NULL;
 }
@@ -1180,13 +1152,8 @@ bool WeaponProtoParser::IsScope(ScriptParser::Parser &parser, const std::string 
         int wpnId = std::stol(opt, NULL, 0);
         _wpn = &_o.WeaponProtos[wpnId];
 
-        if ( _wpn->wireframe )
-        {
-            Nucleus::Delete(_wpn->wireframe);
-            _wpn->wireframe = NULL;
-        }
-
-        _wpn->clear();
+        *_wpn = TWeapProto();
+        
         _wpn->field_0 = 4;
         _wpn->name.clear();
         _wpn->energy = 10000;
@@ -1222,9 +1189,8 @@ bool WeaponProtoParser::IsScope(ScriptParser::Parser &parser, const std::string 
         _wpn->vp_genesis = 5;
         _wpn->type_icon = 65;
 
-        for (int i = 0; i < 3; i++)
+        for (TVhclSound &fx : _wpn->sndFXes)
         {
-            vhclSndFX &fx = _wpn->sndFXes[i];
             fx.sndPrm.mag0 = 1.0;
             fx.sndPrm_shk.mag0 = 1.0;
             fx.sndPrm_shk.mute = 0.02;
@@ -1456,7 +1422,8 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
 
         if ( stok.GetNext(&fx_type) && stok.GetNext(&pp1) && stok.GetNext(&pp2) && stok.GetNext(&pp3) && stok.GetNext(&pp4) )
         {
-            DestFX &dfx = _wpn->dfx[ _wpn->destFxCount ];
+            _wpn->dfx.emplace_back();
+            DestFX &dfx = _wpn->dfx.back();
             dfx.Type = DestFX::ParseTypeName(fx_type);
 
             if (dfx.Type == DestFX::FX_NONE)
@@ -1475,10 +1442,6 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
                 else
                     dfx.Accel = false;
             }
-
-            _wpn->destFxCount++;
-            if ( _wpn->destFxCount >= (int)_wpn->dfx.size() )
-                _wpn->destFxCount = _wpn->dfx.size() - 1;
         }
         else
             return ScriptParser::RESULT_BAD_DATA;
@@ -1606,7 +1569,7 @@ int BuildProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1
     }
     else if ( !StriCmp(p1, "snd_normal_sample") )
     {
-        _bld->SndFX.sample_name = p2;
+        _bld->SndFX.MainSample.Name = p2;
     }
     else if ( !StriCmp(p1, "snd_normal_volume") )
     {
@@ -2230,7 +2193,7 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "script") )
     {
-        if ( !_o.sub_4DA354(p2) )
+        if ( !_o.LoadProtosScript(p2) )
             return ScriptParser::RESULT_BAD_DATA;
         return ScriptParser::RESULT_OK;
     }
@@ -2487,11 +2450,7 @@ int ShellSoundParser::Handle(ScriptParser::Parser &parser, const std::string &p1
         {"sectorconquered", World::SOUND_ID_SECTCONQ},
         {"vhcldestroyed", World::SOUND_ID_VHCLDESTR},
         {"bldgconquered", World::SOUND_ID_BLDGCONQ},
-        {"timercount", World::SOUND_ID_TIMERCOUNT}
-    };
-
-    static const ShellSoundNames block2[] =
-    {
+        {"timercount", World::SOUND_ID_TIMERCOUNT},
         {"select", World::SOUND_ID_SELECT},
         {"error", World::SOUND_ID_ERROR},
         {"attention", World::SOUND_ID_ATTEN},
@@ -2515,28 +2474,11 @@ int ShellSoundParser::Handle(ScriptParser::Parser &parser, const std::string &p1
                 if ( !StriCmp(t.name, sm) )
                 {
                     if (!StriCmp("sample", tp))
-                        return ( _o.LoadSample(0, t.id, p2) ? ScriptParser::RESULT_OK : ScriptParser::RESULT_BAD_DATA );
+                        return ( _o.LoadSample(t.id, p2) ? ScriptParser::RESULT_OK : ScriptParser::RESULT_BAD_DATA );
                     else if (!StriCmp("volume", tp))
-                        _o.samples1_info.samples_data[t.id].volume = std::stoi(p2);
+                        _o.samples1_info.Sounds[t.id].Volume = std::stoi(p2);
                     else if (!StriCmp("pitch", tp))
-                        _o.samples1_info.samples_data[t.id].pitch = std::stoi(p2);
-                    else
-                        return ScriptParser::RESULT_UNKNOWN;
-
-                    return ScriptParser::RESULT_OK;
-                }
-            }
-
-            for (auto &t: block2)
-            {
-                if ( !StriCmp(t.name, sm) )
-                {
-                    if (!StriCmp("sample", tp))
-                        return ( _o.LoadSample(1, t.id, p2) ? ScriptParser::RESULT_OK : ScriptParser::RESULT_BAD_DATA );
-                    else if (!StriCmp("volume", tp))
-                        _o.samples2_info.samples_data[t.id].volume = std::stoi(p2);
-                    else if (!StriCmp("pitch", tp))
-                        _o.samples2_info.samples_data[t.id].pitch = std::stoi(p2);
+                        _o.samples1_info.Sounds[t.id].Pitch = std::stoi(p2);
                     else
                         return ScriptParser::RESULT_UNKNOWN;
 
@@ -2996,11 +2938,11 @@ bool LevelEnableParser::IsScope(ScriptParser::Parser &parser, const std::string 
 
     _fraction = std::stol(opt, NULL, 0);
 
-    for (int i = 0; i < 256; i++)
-        _o.VhclProtos[i].disable_enable_bitmask &= ~(1 << _fraction);
+    for (TVhclProto &vhcl : _o.VhclProtos)
+        vhcl.disable_enable_bitmask &= ~(1 << _fraction);
 
-    for (int i = 0; i < 128; i++)
-        _o.BuildProtos[i].EnableMask &= ~(1 << _fraction);
+    for (TBuildingProto &bld : _o.BuildProtos)
+        bld.EnableMask &= ~(1 << _fraction);
 
     return true;
 }
@@ -3012,16 +2954,16 @@ int LevelEnableParser::Handle(ScriptParser::Parser &parser, const std::string &p
 
     if ( !StriCmp(p1, "vehicle") )
     {
-        int id = std::stol(p2, NULL, 0);
-        if ( id >= 0 && id < 256 ) //_o.ypaworld.VhclProtos.size() )
+        size_t id = std::stol(p2, NULL, 0);
+        if ( id >= 0 && id < _o.VhclProtos.size() ) //_o.ypaworld.VhclProtos.size() )
             _o.VhclProtos[id].disable_enable_bitmask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
     else if ( !StriCmp(p1, "building") )
     {
-        int id = std::stol(p2, NULL, 0);
-        if ( id >= 0 && id < 128 )
+        size_t id = std::stol(p2, NULL, 0);
+        if ( id >= 0 && id < _o.BuildProtos.size() )
             _o.BuildProtos[id].EnableMask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
