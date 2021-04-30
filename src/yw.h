@@ -505,7 +505,7 @@ public:
     bool returnToTitle;
 
     TSndCarrier samples1_info;
-    std::array<NC_STACK_sample *, World::SOUND_ID_MAX> samples1 = {NULL};
+    std::array<NC_STACK_sample *, World::SOUND_ID_MAX> samples1 = {{NULL}};
     
     NC_STACK_button *sub_bar_button;
 
