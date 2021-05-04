@@ -14,61 +14,6 @@
 
 const Nucleus::ClassDescr NC_STACK_amesh::description("amesh.class", &newinstance);
 
-int sub_419E6C(__NC_STACK_amesh *amesh, tUtV **olpl)
-{
-    if ( amesh->texCoords )
-    {
-        delete[] amesh->texCoords;
-        amesh->texCoords = NULL;
-    }
-
-    if ( amesh->texCoordsData )
-    {
-        delete[] amesh->texCoordsData;
-        amesh->texCoordsData = NULL;
-    }
-
-    int olpl_cnt = 0;
-
-    for (int i = 0; i < amesh->polyCnt; i++)
-    {
-        tUtV * v6 = olpl[i];
-        while( v6->tu >= 0.0)
-        {
-            olpl_cnt++;
-            v6++;
-        }
-        olpl_cnt++;
-    }
-
-    amesh->texCoords = new tUtV *[amesh->polyCnt];
-    amesh->texCoordsData = new tUtV[olpl_cnt];
-
-    if ( !amesh->texCoords || !amesh->texCoordsData )
-        return 0;
-
-    tUtV *uv = amesh->texCoordsData;
-    //void *ed = ((char *)amesh->olpl + sizeof(tUtV *) * amesh->cnt + sizeof(tUtV) * olpl_cnt);
-
-    for (int i = 0; i < amesh->polyCnt; i++)
-    {
-        tUtV * inCoord = olpl[i];
-        amesh->texCoords[i] = uv;
-        while( 1 )
-        {
-            *uv = *inCoord;
-            inCoord++;
-            uv++;
-
-            if (inCoord->tu < 0.0)
-                break;
-        }
-        *uv = *inCoord;
-        uv++;
-    }
-    return 1;
-}
-
 size_t NC_STACK_amesh::Init(IDVList &stak)
 {
     if ( !NC_STACK_area::Init(stak) )
@@ -123,28 +68,11 @@ size_t NC_STACK_amesh::Init(IDVList &stak)
     return 1;
 }
 
-size_t NC_STACK_amesh::Deinit()
-{
-    __NC_STACK_amesh *amesh = &stack__amesh;
-
-    if ( amesh->atts )
-        delete[] amesh->atts;
-
-    if ( amesh->texCoords )
-        delete[] amesh->texCoords;
-
-    if ( amesh->texCoordsData )
-        delete[] amesh->texCoordsData;
-
-    return NC_STACK_area::Deinit();
-}
-
 
 size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
 {
     IFFile *mfile = *file;
     int obj_ok = 0;
-    __NC_STACK_amesh *amesh = NULL;
 
     while ( 1 )
     {
@@ -168,29 +96,23 @@ size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
 
             if ( !obj_ok )
                 return 0;
-
-            amesh = &stack__amesh;
         }
         else if ( chunk->TAG == TAG_ATTS )
         {
             if ( obj_ok )
             {
-                amesh->polyCnt = chunk->TAG_SIZE / 6;
-                amesh->atts = new ATTS[amesh->polyCnt];;
-
-                if ( !amesh->atts )
+                polyCnt = chunk->TAG_SIZE / 6;
+                
+                atts.resize(polyCnt);
+                
+                for (int i = 0; i < polyCnt; i++)
                 {
-                    Deinit();
-                    return 0;
-                }
-
-                for (int i = 0; i < amesh->polyCnt; i++)
-                {
-                    mfile->readS16B(amesh->atts[i].polyID);
-                    mfile->readU8(amesh->atts[i].colorVal);
-                    mfile->readU8(amesh->atts[i].shadeVal);
-                    mfile->readU8(amesh->atts[i].tracyVal);
-                    mfile->readU8(amesh->atts[i].pad);
+                    ATTS &att = atts.at(i);
+                    mfile->readS16B(att.polyID);
+                    mfile->readU8(att.colorVal);
+                    mfile->readU8(att.shadeVal);
+                    mfile->readU8(att.tracyVal);
+                    mfile->readU8(att.pad);
                 }
             }
             mfile->parse();
@@ -199,20 +121,14 @@ size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
         {
             if ( obj_ok )
             {
-                amesh->texCoords = new tUtV *[amesh->polyCnt];
-                amesh->texCoordsData = new tUtV[ chunk->TAG_SIZE / 2 ];
+                texCoords.resize(polyCnt);
+                texCoordsData.resize( chunk->TAG_SIZE / 2 );
 
-                if ( !amesh->texCoords || !amesh->texCoordsData)
+                tUtV *uv = texCoordsData.data();
+
+                for (int i = 0; i < polyCnt; i++)
                 {
-                    Deinit();
-                    return 0;
-                }
-
-                tUtV *uv = amesh->texCoordsData;
-
-                for (int i = 0; i < amesh->polyCnt; i++)
-                {
-                    amesh->texCoords[i] = uv;
+                    texCoords[i] = uv;
 
                     int16_t cnt;
                     mfile->readS16B(cnt);
@@ -248,7 +164,6 @@ size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
 size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
-    __NC_STACK_amesh *amesh = &stack__amesh;
 
     if ( mfile->pushChunk(TAG_AMSH, TAG_FORM, -1) )
         return 0;
@@ -258,25 +173,26 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 
     mfile->pushChunk(0, TAG_ATTS, -1);
 
-    for (int i = 0; i < amesh->polyCnt; i++)
+    for (int i = 0; i < polyCnt; i++)
     {
-        mfile->writeS16B(amesh->atts[i].polyID);
-        mfile->writeU8(amesh->atts[i].colorVal);
-        mfile->writeU8(amesh->atts[i].shadeVal);
-        mfile->writeU8(amesh->atts[i].tracyVal);
-        mfile->writeU8(amesh->atts[i].pad);
+        ATTS &att = atts.at(i);
+        mfile->writeS16B(att.polyID);
+        mfile->writeU8(att.colorVal);
+        mfile->writeU8(att.shadeVal);
+        mfile->writeU8(att.tracyVal);
+        mfile->writeU8(att.pad);
     }
 
     mfile->popChunk();
 
-    if ( amesh->texCoords )
+    if ( !texCoords.empty() )
     {
         mfile->pushChunk(0, TAG_OLPL, -1);
 
-        for (int i = 0; i < amesh->polyCnt; i++)
+        for (int i = 0; i < polyCnt; i++)
         {
 
-            tUtV *uv = amesh->texCoords[i];
+            tUtV *uv = texCoords[i];
             int16_t cnt = 0;
             while (uv->tu >= 0.0)
             {
@@ -286,7 +202,7 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 
             mfile->writeS16B(cnt);
 
-            uv = amesh->texCoords[i];
+            uv = texCoords[i];
 
             for (int j = 0; j < cnt; j++)
             {
@@ -308,8 +224,6 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 // Add amesh to list
 size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
 {
-    __NC_STACK_amesh *amesh = &stack__amesh;
-
     //v5 = *(_uint16_t *)(amesh->field_14 + 6) & 0xFEF6;
     int renderFlags = stack__area.polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
@@ -353,7 +267,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
         skel133.field_4 |= 1;
     if ( renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( amesh->flags & AMESH_FLAG_DPTHFADE )
+    if ( flags & AMESH_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.minZ = arg->minZ;
@@ -364,13 +278,13 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
 
     ResBitmap *v21;
 
-    if ( amesh->ilbm1 )
+    if ( ilbm1 )
     {
         bitmap_arg130 bitm130;
 
         bitm130.time_stmp = arg->timeStamp;
         bitm130.frame_time = arg->frameTime;
-        amesh->ilbm1->bitmap_func130(&bitm130);
+        ilbm1->bitmap_func130(&bitm130);
         v21 = bitm130.pbitm;
     }
     else
@@ -378,7 +292,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
         v21 = NULL;
     }
 
-    for (int i = 0; i < amesh->polyCnt; i++)
+    for (int i = 0; i < polyCnt; i++)
     {
         polysDat *data = arg->rndrStack->get();
         polysDatSub *datSub = &data->datSub;
@@ -390,14 +304,14 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
 
         datSub->pbitm = v21;
 
-        skel133.polyID = amesh->atts[i].polyID;
+        skel133.polyID = atts.at(i).polyID;
 
         skel133.rndrArg = datSub;
 
-        skel133.shadeVal = amesh->atts[i].shadeVal / 256.0;
+        skel133.shadeVal = atts.at(i).shadeVal / 256.0;
 
-        if ( amesh->texCoords )
-            skel133.texCoords = amesh->texCoords[i];
+        if ( !texCoords.empty() )
+            skel133.texCoords = texCoords[i];
         else
             skel133.texCoords = NULL;
 
@@ -466,59 +380,81 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
 void NC_STACK_amesh::setADE_depthFade(int arg)
 {
     if ( arg )
-        stack__amesh.flags |= AMESH_FLAG_DPTHFADE;
+        flags |= AMESH_FLAG_DPTHFADE;
     else
-        stack__amesh.flags &= ~ADE_FLAG_DPTHFADE;
+        flags &= ~ADE_FLAG_DPTHFADE;
 
     NC_STACK_area::setADE_depthFade(arg);
 }
 
 void NC_STACK_amesh::setAREA_bitm(NC_STACK_bitmap *bitm)
 {
-    stack__amesh.ilbm1 = bitm;
+    ilbm1 = bitm;
     bitm->PrepareTexture();
 
     NC_STACK_area::setAREA_bitm(bitm);
 }
 
-void NC_STACK_amesh::setAREA_tracybitm(NC_STACK_bitmap *bitm)
-{
-    stack__amesh.ilbm2 = bitm;
-    bitm->PrepareTexture();
-
-    NC_STACK_area::setAREA_tracybitm(bitm);
-}
-
 void NC_STACK_amesh::setAMESH_numpoly(int num)
 {
-    stack__amesh.polyCnt = num;
+    polyCnt = num;
 }
 
-int NC_STACK_amesh::setAMESH_polys(ATTS *atts)
+int NC_STACK_amesh::setAMESH_polys(ATTS *patts)
 {
-    if ( stack__amesh.atts )
-    {
-        delete[] stack__amesh.atts;
-        stack__amesh.atts = NULL;
-    }
-    stack__amesh.atts = new ATTS[stack__amesh.polyCnt];
+    atts.resize(polyCnt);
 
-    if ( !stack__amesh.atts )
-        return 0;
-
-    for (int i = 0; i < stack__amesh.polyCnt; i++)
-        stack__amesh.atts[i] = atts[i];
+    for (int i = 0; i < polyCnt; i++)
+        atts.at(i) = patts[i];
 
     return 1;
 }
 
 int NC_STACK_amesh::setAMESH_otls(tUtV **uv)
 {
-    return sub_419E6C(&stack__amesh, uv);
+    texCoords.clear();
+    texCoordsData.clear();
+
+    int olpl_cnt = 0;
+
+    for (int i = 0; i < polyCnt; i++)
+    {
+        tUtV * v6 = uv[i];
+        while( v6->tu >= 0.0)
+        {
+            olpl_cnt++;
+            v6++;
+        }
+        olpl_cnt++;
+    }
+
+    texCoords.resize(polyCnt);
+    texCoordsData.resize( olpl_cnt );
+
+    tUtV *uvv = texCoordsData.data();
+    //void *ed = ((char *)amesh->olpl + sizeof(tUtV *) * amesh->cnt + sizeof(tUtV) * olpl_cnt);
+
+    for (int i = 0; i < polyCnt; i++)
+    {
+        tUtV * inCoord = uv[i];
+        texCoords[i] = uvv;
+        while( 1 )
+        {
+            *uvv = *inCoord;
+            inCoord++;
+            uvv++;
+
+            if (inCoord->tu < 0.0)
+                break;
+        }
+        *uvv = *inCoord;
+        uvv++;
+    }
+    return 1;
 }
 
 
 int NC_STACK_amesh::getAMESH_numpoly()
 {
-    return stack__amesh.polyCnt;
+    return polyCnt;
 }

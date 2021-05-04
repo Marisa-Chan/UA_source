@@ -5,39 +5,27 @@
 #include "area.h"
 
 
-struct ATTS
-{
-    int16_t polyID;
-    uint8_t colorVal;
-    uint8_t shadeVal;
-    uint8_t tracyVal;
-    uint8_t pad;
-};
 
-struct __NC_STACK_amesh
-{
-    NC_STACK_bitmap *ilbm1;
-    NC_STACK_bitmap *ilbm2;
-    int16_t polyCnt;
-    int16_t flags;
-    ATTS *atts;       // ATTS heap
-    tUtV **texCoords; // Tex coords for polygons
-    tUtV *texCoordsData; // Tex coords heap
-//    int field_14;
-};
 
 class NC_STACK_amesh: public NC_STACK_area
 {
 public:
+    struct ATTS
+    {
+        int16_t polyID = 0;
+        uint8_t colorVal = 0;
+        uint8_t shadeVal = 0;
+        uint8_t tracyVal = 0;
+        uint8_t pad = 0;
+    };
+    
+public:
     virtual size_t Init(IDVList &stak);
-    virtual size_t Deinit();
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SaveIntoIFF(IFFile **file);
     virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
 
-    NC_STACK_amesh() {
-        memset(&stack__amesh, 0, sizeof(stack__amesh));
-    };
+    NC_STACK_amesh() {};
     virtual ~NC_STACK_amesh() {};
     
     virtual const std::string &ClassName() const {
@@ -63,7 +51,6 @@ public:
 
     virtual void setADE_depthFade(int);
     virtual void setAREA_bitm(NC_STACK_bitmap *);
-    virtual void setAREA_tracybitm(NC_STACK_bitmap *);
 
     virtual void setAMESH_numpoly(int);
     virtual int setAMESH_polys(ATTS *);
@@ -73,8 +60,14 @@ public:
 
     //Data
     static const Nucleus::ClassDescr description;
-
-    __NC_STACK_amesh stack__amesh;
+    
+public:
+    NC_STACK_bitmap *ilbm1 = NULL;
+    int16_t polyCnt = 0;
+    int16_t flags = 0;
+    std::vector<ATTS> atts;       // ATTS heap
+    std::vector<tUtV *> texCoords; // Tex coords for polygons
+    std::vector<tUtV> texCoordsData; // Tex coords heap
 };
 
 #endif // AMESH_H_INCLUDED
