@@ -35,9 +35,6 @@ Common::Point ViewPortal::GetPortalPos(Common::Point pos)
 
 Root::~Root()
 {
-    if (_hwTex)
-        glDeleteTextures(1 , &_hwTex);
-
     if (_dirtSurface)
         SDL_FreeSurface(_dirtSurface);
 }
@@ -834,19 +831,6 @@ void Root::HwCompose()
 
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //GL_ONE_MINUS_SRC_ALPHA
-
-        if ( !_hwTex )
-            glGenTextures(1, &_hwTex);
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, _hwTex);
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        
-        
         
         glPushAttrib(GL_VIEWPORT_BIT);
         for(auto it = _portals.rbegin(); it != _portals.rend(); it++)
@@ -895,7 +879,10 @@ void Root::HwRenderWidget(Widget *w)
         GFX::Engine.GLMapFormat(w->_hwSurface->format->format, &format, &fmtype);
         
         SDL_LockSurface(w->_hwSurface);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w->_hwSurface->w, w->_hwSurface->h, 0, format, fmtype, w->_hwSurface->pixels);
+        if (!w->_hwTex)
+            w->_hwTex = new StreamTex();
+        
+        w->_hwTex->Stream(Common::Point(w->_hwSurface->w, w->_hwSurface->h), format, fmtype, w->_hwSurface->pixels);
         SDL_UnlockSurface(w->_hwSurface);
         
         glColor4ub(255, 255, 255, w->_alpha);
@@ -1012,6 +999,46 @@ bool WidgetList::MoveToFirst(Widget *w)
     }
 
     return false;
+}
+
+
+StreamTex::StreamTex()
+{
+    glGenTextures(Texs.size(), Texs.data());
+}
+
+StreamTex::~StreamTex()
+{
+    glDeleteTextures(Texs.size(), Texs.data());
+}
+
+void StreamTex::Stream(Common::Point sz, int32_t fmt, int32_t type, const void *data)
+{
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+                
+    if (sz != Size)
+    {
+        Size = sz;
+        for (uint32_t t : Texs)
+        {
+            if ( t != 0 )
+            {
+                glBindTexture(GL_TEXTURE_2D, t);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Size.x, Size.y, 0, fmt, type, NULL);
+            }
+        }
+    }
+    
+    glBindTexture(GL_TEXTURE_2D, Texs[nextTex]);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Size.x, Size.y, fmt, type, data);
+    
+    nextTex = (nextTex + 1) % Texs.size();
 }
 
 }

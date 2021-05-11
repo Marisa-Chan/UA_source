@@ -22,6 +22,9 @@ Widget::~Widget()
     if (_hwSurface)
         SDL_FreeSurface(_hwSurface);
     
+    if (_hwTex)
+        delete _hwTex;
+    
     for ( auto x : _childs )
     {
         x->_parent = NULL;

@@ -46,6 +46,17 @@ struct ViewPortal
     ~ViewPortal();
 };
 
+struct StreamTex
+{
+    Common::Point Size;
+    std::array<uint32_t, 2> Texs {{0}};
+    int32_t nextTex = 0;
+    
+    StreamTex();
+    ~StreamTex();
+    void Stream(Common::Point sz, int32_t fmt, int32_t type, const void *data);
+};
+
 struct Timer
 {
     enum
@@ -192,7 +203,6 @@ protected:
     bool           _timersToNew = false;
     
     bool              _hwRender = false;
-    GLuint               _hwTex = 0;
 
     Common::Point      _screenSize;
 

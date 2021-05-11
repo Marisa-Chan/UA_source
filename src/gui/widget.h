@@ -198,7 +198,7 @@ protected:
     
     // Used only with HW compositing and if it's "paranted" to root
     SDL_Surface    *_hwSurface = NULL;
-
+    StreamTex      *_hwTex = NULL;
 private:
     int    _rooted = Root::LAYER_UNK;
     int  _portalid = 0;
