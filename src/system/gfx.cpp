@@ -19,6 +19,21 @@
 #include "../font.h"
 #include "inivals.h"
 
+#if !(SDL_VERSION_ATLEAST(2, 0, 9))
+SDL_bool
+SDL_HasColorKey(SDL_Surface * surface)
+{
+    if (!surface) {
+        return SDL_FALSE;
+    }
+
+    if (!(surface->map->info.flags & SDL_COPY_COLORKEY)) {
+        return SDL_FALSE;
+    }
+
+    return SDL_TRUE;
+}
+#endif
 
 namespace GFX
 {   
