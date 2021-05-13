@@ -1867,7 +1867,7 @@ void GFXEngine::ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool tr
         c = src[i];
         c.a = 255;
 
-        if (c.a == 255 && c.g == 255 && c.b == 0)
+        if (c.r == 255 && c.g == 255 && c.b == 0)
         {
             c.a = 0;
             c.r = 0;
