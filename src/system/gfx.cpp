@@ -1152,15 +1152,26 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
 
             int cpy_height = line_height - y_off;
 
-            SDL_Rect srcR, dstR;
-            dstR.x = x_out;
+            //SDL_Rect srcR, dstR;
+            Common::Rect dstR(x_out, y_out, x_out + cpy_width, y_out + cpy_height);            
+            /*dstR.x = x_out;
             dstR.y = y_out;
             dstR.w = cpy_width;
-            dstR.h = cpy_height;
+            dstR.h = cpy_height;*/
             
-            srcR.x = chrr.x + x_off;
-            srcR.y = chrr.y + y_off;
-            srcR.h = cpy_height;
+            Common::Rect srcR;
+            srcR.left = chrr.x + x_off;
+            srcR.top = chrr.y + y_off;
+            srcR.bottom = chrr.y + y_off + cpy_height;
+            
+            if (v11)
+                srcR.right = chrr.x + x_off + cpy_width;
+            else
+                srcR.right = chrr.x + x_off + 1;
+            
+            DrawFill(tile->img->GetSwTex(), srcR, Screen(), dstR);
+                    
+            /*srcR.h = cpy_height;
             
             if (v11)
                 srcR.w = cpy_width;
@@ -1171,7 +1182,7 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
             {
                 SDL_BlitSurface(tile->img->GetSwTex(), &srcR, Screen(), &dstR);
                 dstR.x += srcR.w;
-            }                
+            }*/     
 
             line_width = 0;
             x_off = 0;
@@ -3053,27 +3064,363 @@ void GFXEngine::BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surfac
     }
 }
 
+void GFXEngine::DrawFillIntCpy(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, const Common::Rect &dRect)
+{
+    const int32_t sh = sRect.Height();
+    const int32_t sw = sRect.Width();
+    const int32_t dh = dRect.Height();
+    const int32_t dw = dRect.Width();
+        
+    SDL_LockSurface(src);
+    SDL_LockSurface(dst);
+                    
+    if (dw > sw)
+    {
+        uint8_t *psrc = (uint8_t *)src->pixels + sRect.top * src->pitch + sRect.left * src->format->BytesPerPixel;
+        uint8_t *pdst = (uint8_t *)dst->pixels + dRect.top * dst->pitch + dRect.left * dst->format->BytesPerPixel;
+        
+        const int32_t nit = dw / sw;
+        const int32_t nit2 = (dw % sw) * dst->format->BytesPerPixel;
+        const int32_t cpsz = sw * dst->format->BytesPerPixel;
+        const int32_t skipdst = dst->pitch - dw * dst->format->BytesPerPixel + nit2;
+                
+        int sptch = src->pitch;
+        
+        int ln = 0;
+        uint8_t *psrcl = psrc;
+        for(int ih = dh; ih > 0; --ih)
+        {
+            for(int n = nit; n > 0; --n)
+            {
+                memcpy(pdst, psrcl, cpsz);
+                pdst += cpsz;
+            }
+            
+            memcpy(pdst, psrcl, nit2);
+            pdst += skipdst;
+            
+            ++ln;
+            if (ln >= sh)
+            {
+                ln = 0;
+                psrcl = psrc;
+            }
+            else
+                psrcl += sptch;
+        }        
+    }
+    else
+    {
+        uint8_t *psrc = (uint8_t *)src->pixels + sRect.top * src->pitch + sRect.left * src->format->BytesPerPixel;
+        uint8_t *pdst = (uint8_t *)dst->pixels + dRect.top * dst->pitch + dRect.left * dst->format->BytesPerPixel;
+        
+        const int32_t cpsz = dw * dst->format->BytesPerPixel;
+        const int32_t skipdst = dst->pitch;
+                
+        int sptch = src->pitch;
+        
+        int ln = 0;
+        uint8_t *psrcl = psrc;
+        for(int ih = dh; ih > 0; --ih)
+        {            
+            memcpy(pdst, psrcl, cpsz);
+            pdst += skipdst;
+            
+            ++ln;
+            if (ln >= sh)
+            {
+                ln = 0;
+                psrcl = psrc;
+            }
+            else
+                psrcl += sptch;
+        }        
+    }
+                
+    SDL_UnlockSurface(dst);
+    SDL_UnlockSurface(src);
+}
+    
+template <typename T>
+void GFXEngine::DrawFillIntCKey(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, const Common::Rect &dRect)
+{
+    const int32_t sh = sRect.Height();
+    const int32_t sw = sRect.Width();
+    const int32_t dh = dRect.Height();
+    const int32_t dw = dRect.Width();
+        
+    SDL_LockSurface(src);
+    SDL_LockSurface(dst);
+    
+    uint32_t clrKey = 0;
+    SDL_GetColorKey(src, &clrKey);
+                
+    if (dw > sw)
+    {
+        const int32_t skipdst = dst->pitch - dw * dst->format->BytesPerPixel;
+        uint8_t *psrc = (uint8_t *)src->pixels + sRect.top * src->pitch + sRect.left * src->format->BytesPerPixel;
+        uint8_t *pdst = (uint8_t *)dst->pixels + dRect.top * dst->pitch + dRect.left * dst->format->BytesPerPixel;
+        
+        const int32_t nit = dw / sw;
+        const int32_t nit2 = dw % sw;
+        
+        const int sz = dst->format->BytesPerPixel;
+        
+        int sptch = src->pitch;
+        
+        int ln = 0;
+        uint8_t *psrcl = psrc;
+        for(int ih = dh; ih > 0; --ih)
+        {
+            
+            for(int n = nit; n > 0; --n)
+            {
+                const uint8_t *lsrc = psrcl;
+                for (int iw = sw; iw > 0; --iw)
+                {
+                    if (*(T *)lsrc != clrKey)
+                        *(T *)pdst = *(T *)lsrc;
+                    
+                    lsrc += sz;
+                    pdst += sz;
+                }
+            }
+            
+            uint8_t *rsrc = psrcl;            
+            for(int iw = nit2; iw > 0; --iw)
+            {
+                if (*(T *)rsrc != clrKey)
+                    *(T *)pdst = *(T *)rsrc;
+
+                rsrc += sz;
+                pdst += sz;
+            }
+            
+            ++ln;
+            if (ln >= sh)
+            {
+                ln = 0;
+                psrcl = psrc;
+            }
+            else
+                psrcl += sptch;
+            
+            pdst += skipdst;
+        }        
+    }
+    else
+    {
+        const int32_t skipdst = dst->pitch - dw * dst->format->BytesPerPixel;
+        uint8_t *psrc = (uint8_t *)src->pixels + sRect.top * src->pitch + sRect.left * src->format->BytesPerPixel;
+        uint8_t *pdst = (uint8_t *)dst->pixels + dRect.top * dst->pitch + dRect.left * dst->format->BytesPerPixel;
+        
+        const int sz = dst->format->BytesPerPixel;
+        
+        int sptch = src->pitch;
+        
+        int ln = 0;
+        uint8_t *psrcl = psrc;
+        for(int ih = dh; ih > 0; --ih)
+        {            
+            uint8_t *rsrc = psrcl;            
+            for(int iw = dw; iw > 0; --iw)
+            {
+                if (*(T *)rsrc != clrKey)
+                    *(T *)pdst = *(T *)rsrc;
+
+                rsrc += sz;
+                pdst += sz;
+            }
+            
+            ++ln;
+            if (ln >= sh)
+            {
+                ln = 0;
+                psrcl = psrc;
+            }
+            else
+                psrcl += sptch;
+            
+            pdst += skipdst;
+        }        
+    }
+                
+    SDL_UnlockSurface(dst);
+    SDL_UnlockSurface(src);
+}
+
+template <typename T>
+void GFXEngine::DrawFillIntACpy(SDL_Surface* src, const Common::Rect& sRect, SDL_Surface* dst, const Common::Rect& dRect)
+{
+    const int32_t sh = sRect.Height();
+    const int32_t sw = sRect.Width();
+    const int32_t dh = dRect.Height();
+    const int32_t dw = dRect.Width();
+        
+    SDL_LockSurface(src);
+    SDL_LockSurface(dst);
+    
+    if (dw > sw)
+    {
+        const int32_t skipdst = dst->pitch - dw * dst->format->BytesPerPixel;
+        uint8_t *psrc = (uint8_t *)src->pixels + sRect.top * src->pitch + sRect.left * src->format->BytesPerPixel;
+        uint8_t *pdst = (uint8_t *)dst->pixels + dRect.top * dst->pitch + dRect.left * dst->format->BytesPerPixel;
+        
+        const int32_t nit = dw / sw;
+        const int32_t nit2 = dw % sw;
+        uint32_t amask = src->format->Amask;
+        
+        const int sz = dst->format->BytesPerPixel;
+        
+        int sptch = src->pitch;
+        
+        int ln = 0;
+        uint8_t *psrcl = psrc;
+        for(int ih = dh; ih > 0; --ih)
+        {
+            
+            for(int n = nit; n > 0; --n)
+            {
+                const uint8_t *lsrc = psrcl;
+                for (int iw = sw; iw > 0; --iw)
+                {
+                    if (*(T *)lsrc & amask)
+                        *(T *)pdst = *(T *)lsrc;
+                    
+                    lsrc += sz;
+                    pdst += sz;
+                }
+            }
+            
+            uint8_t *rsrc = psrcl;            
+            for(int iw = nit2; iw > 0; --iw)
+            {
+                if (*(T *)rsrc & amask)
+                    *(T *)pdst = *(T *)rsrc;
+
+                rsrc += sz;
+                pdst += sz;
+            }
+            
+            ++ln;
+            if (ln >= sh)
+            {
+                ln = 0;
+                psrcl = psrc;
+            }
+            else
+                psrcl += sptch;
+            
+            pdst += skipdst;
+        }        
+    }
+    else
+    {
+        const int32_t skipdst = dst->pitch - dw * dst->format->BytesPerPixel;
+        uint8_t *psrc = (uint8_t *)src->pixels + sRect.top * src->pitch + sRect.left * src->format->BytesPerPixel;
+        uint8_t *pdst = (uint8_t *)dst->pixels + dRect.top * dst->pitch + dRect.left * dst->format->BytesPerPixel;
+        
+        const int sz = dst->format->BytesPerPixel;
+        
+        int sptch = src->pitch;
+        uint32_t amask = src->format->Amask;
+        
+        int ln = 0;
+        uint8_t *psrcl = psrc;
+        for(int ih = dh; ih > 0; --ih)
+        {            
+            uint8_t *rsrc = psrcl;            
+            for(int iw = dw; iw > 0; --iw)
+            {
+                if (*(T *)rsrc & amask)
+                    *(T *)pdst = *(T *)rsrc;
+
+                rsrc += sz;
+                pdst += sz;
+            }
+            
+            ++ln;
+            if (ln >= sh)
+            {
+                ln = 0;
+                psrcl = psrc;
+            }
+            else
+                psrcl += sptch;
+            
+            pdst += skipdst;
+        }        
+    }
+                
+    SDL_UnlockSurface(dst);
+    SDL_UnlockSurface(src);
+}
+
 void GFXEngine::DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *dst, const Common::Rect &dRect)
 {
     if (sRect.IsEmpty() || dRect.IsEmpty())
         return;
     
-    SDL_Rect lsrc = sRect;
-    SDL_Rect ldst;
-    
-    for(ldst.y = dRect.top; ldst.y < dRect.bottom; ldst.y += lsrc.h)
-    {
-        if (dRect.bottom - ldst.y < lsrc.h)
-            lsrc.h = dRect.bottom - ldst.y;
-        
-        lsrc.w = sRect.Width();
-        
-        for(ldst.x = dRect.left; ldst.x < dRect.right; ldst.x += lsrc.w)
+    if (src->format->format == dst->format->format)
+    {     
+        if (SDL_HasColorKey(src))
         {
-            if (dRect.right - ldst.x < lsrc.w)
-                lsrc.w = dRect.right - ldst.x;
-            
-            SDL_BlitSurface(src, &lsrc, dst, &ldst);
+            switch(src->format->BytesPerPixel)
+            {
+
+                case 2:
+                    DrawFillIntCKey<uint16_t>(src, sRect, dst, dRect);
+                    break;
+
+                case 4:
+                    DrawFillIntCKey<uint32_t>(src, sRect, dst, dRect);
+                    break;
+
+                default:
+                break;
+            }
+        }
+        else
+        {
+            if (src->format->Amask)
+            {
+                switch(src->format->BytesPerPixel)
+                {
+
+                    case 2:
+                        DrawFillIntACpy<uint16_t>(src, sRect, dst, dRect);
+                        break;
+
+                    case 4:
+                        DrawFillIntACpy<uint32_t>(src, sRect, dst, dRect);
+                        break;
+
+                    default:
+                    break;
+                }
+            }
+            else
+                DrawFillIntCpy(src, sRect, dst, dRect);
+        }  
+    }
+    else
+    {
+        SDL_Rect lsrc = sRect;
+        SDL_Rect ldst;
+        for(ldst.y = dRect.top; ldst.y < dRect.bottom; ldst.y += lsrc.h)
+        {
+            if (dRect.bottom - ldst.y < lsrc.h)
+                lsrc.h = dRect.bottom - ldst.y;
+
+            lsrc.w = sRect.Width();
+
+            for(ldst.x = dRect.left; ldst.x < dRect.right; ldst.x += lsrc.w)
+            {
+                if (dRect.right - ldst.x < lsrc.w)
+                    lsrc.w = dRect.right - ldst.x;
+
+                SDL_BlitSurface(src, &lsrc, dst, &ldst);
+            }
         }
     }
 }
