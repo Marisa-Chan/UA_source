@@ -17,16 +17,14 @@ win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSD
 win32: LDFLAGS = -L$(MINGW)/lib/
 win32: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
-msys msysxp: MINGW = /usr/i686-w64-mingw32
-msys msysxp: CXX = i686-w64-mingw32-g++
-msys msysxp: CC = i686-w64-mingw32-gcc
-msys: CDEFS = -DWIN32
-msysxp: CDEFS = -DWIN32 -DNOLUAVERSION
-msys msysxp: TARGET := $(TARGET).exe
-msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3
-msysxp:  LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
-msys msysxp: LDFLAGS = -L$(MINGW)/lib/
-msys msysxp: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
+msys: MINGW = /usr/i686-w64-mingw32
+msys: CXX = i686-w64-mingw32-g++
+msys: CC = i686-w64-mingw32-gcc
+msys: CDEFS = -DWIN32 -DNOLUAVERSION
+msys: TARGET := $(TARGET).exe
+msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
+msys: LDFLAGS = -L$(MINGW)/lib/
+msys: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
 mac: CXX = clang++
 mac: CC = clang
@@ -150,7 +148,7 @@ $(DEPFILES):
 -include $(DEPFILES)
 
 
-win32 nix mac msys msysxp: $(OBJFILES)
+win32 nix mac msys: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 clean:
