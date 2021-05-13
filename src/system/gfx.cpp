@@ -1551,7 +1551,7 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
         if (bitm->swTex->format->format == _pixfmt->format)
         {
             SDL_LockSurface(bitm->swTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, bitm->swTex->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, bitm->swTex->pixels);
             SDL_UnlockSurface(bitm->swTex);
         }
         else
@@ -1559,7 +1559,7 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
             SDL_Surface *conv = ConvertSDLSurface(bitm->swTex, _pixfmt);
             
             SDL_LockSurface(conv);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, conv->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, conv->pixels);
             SDL_UnlockSurface(conv);
             
             SDL_FreeSurface(conv);
@@ -3164,7 +3164,7 @@ void GFXEngine::RecreateScreenSurface()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ScreenSurface->w, ScreenSurface->h, 0, pixfmt, pixtype, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, ScreenSurface->w, ScreenSurface->h, 0, pixfmt, pixtype, NULL);
 
     glPopAttrib();
 }
@@ -3335,7 +3335,7 @@ void GFXEngine::DrawFBO()
     glPopAttrib();
     GLUseProgram(0);
 }
-
+ 
 void GFXEngine::SetFBOBlending(int mode)
 {
     _fboBlend = mode;
