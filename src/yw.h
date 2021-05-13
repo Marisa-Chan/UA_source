@@ -2447,7 +2447,7 @@ public:
     int field_1b20; // saved mouse x
     int field_1b22; // saved mouse y
     update_msg field_1b24;
-    int16_t field_1b68; // debug info draw
+    int8_t _showDebugMode = 0; // debug info draw
     int16_t field_1B6A;
     int16_t field_1b6c;
     uint16_t field_1B6E;
@@ -2557,6 +2557,7 @@ public:
 
     int p_1_grp_cnt;
     int p_1_grp[4][8];
+    int _profile2DDraw;
     std::array<World::player_status, 8> playerstatus;
     std::array<World::player_status, 8> ingamePlayerStatus;
     int _maxRoboEnergy;

@@ -172,7 +172,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     field_1b20 = 0; // saved mouse x
     field_1b22 = 0; // saved mouse y
 //ypabact_arg65 field_1b24;
-    field_1b68 = 0; // debug info draw
     field_1B6A = 0;
     field_1b6c = 0;
     field_1B6E = 0;
@@ -902,6 +901,8 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
                     if ( isNetGame )
                         yw_NetDrawStats(this);
                 }
+                
+                debug_info_draw(arg->field_8);
 
                 GFX::Engine.EndFrame();
 

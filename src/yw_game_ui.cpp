@@ -629,7 +629,7 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
         }
     }
 
-    if ( yw->field_1b68 )
+    if ( yw->_showDebugMode )
         sb_0x4f8f64__sub1__sub0(yw);
 }
 
@@ -6069,7 +6069,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
 
         ClickBoxInf *winpt = &inpt->ClickInf;
 
-        if ( yw->field_1b68 )
+        if ( yw->_showDebugMode )
             robo_map.MapViewMask = -1;
 
         switch ( inpt->HotKeyID )

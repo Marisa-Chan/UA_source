@@ -1922,7 +1922,9 @@ void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
 
         if ( a2 )
         {
+            uint32_t tpm = profiler_begin();
             sb_0x4d7c08__sub0(yw);
+            yw->_profile2DDraw = profiler_end(tpm);
         }
     }
 }
@@ -4741,10 +4743,10 @@ void NC_STACK_ypaworld::debug_count_units()
 
 void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
 {
-    if ( field_1b68 == 0)
+    if ( _showDebugMode == 0)
     {
         if ( sub_449678(inpt, Input::KC_F9) )
-            field_1b68++;
+            _showDebugMode++;
     }
     else
     {
@@ -4760,7 +4762,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
 
         int v104 = 0;
 
-        if ( field_1b68 == 1 )
+        if ( _showDebugMode == 1 )
         {
             debug_count_units();
 
@@ -4806,6 +4808,9 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
             FontUA::next_line(&cmd);
 
             cmd = sub_445654(this, cmd, buf_sprintf, "prof rend: %d", p_1_grp[0][5]);
+            FontUA::next_line(&cmd);
+            
+            cmd = sub_445654(this, cmd, buf_sprintf, "prof 2d rend: %d", _profile2DDraw);
             FontUA::next_line(&cmd);
 
             cmd = sub_445654(this, cmd, buf_sprintf, "prof net: %d", p_1_grp[0][6]);
@@ -4871,7 +4876,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
                 cmd = sub_445654(this, cmd, buf_sprintf, "invulnerable: %s", "NO");
             FontUA::next_line(&cmd);
         }
-        else if ( field_1b68 == 2 )
+        else if ( _showDebugMode == 2 )
         {
             if ( GameShell && isNetGame )
             {
@@ -4988,7 +4993,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
                 FontUA::next_line(&cmd);
             }
         }
-        else if ( field_1b68 == 3 )
+        else if ( _showDebugMode == 3 )
         {
             for (int i = 0; i < 17; i++)
             {
@@ -5026,7 +5031,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
                 {
                     v110++;
 
-                    if ( field_1b68 - 3 <= v110 )
+                    if ( _showDebugMode - 3 <= v110 )
                     {
                         NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(bact);
 
@@ -5195,12 +5200,12 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
 
         if ( v104 )
         {
-            field_1b68 = 0;
+            _showDebugMode = 0;
         }
         else
         {
             if ( sub_449678(inpt, Input::KC_F9) )
-                field_1b68++;
+                _showDebugMode++;
         }
     }
 }
