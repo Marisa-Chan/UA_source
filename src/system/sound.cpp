@@ -147,9 +147,12 @@ int SFXEngine::getMasterVolume()
 }
 
 
-void SFXEngine::startSound(TSndCarrier *smpls, int a2)
+void SFXEngine::startSound(TSndCarrier *smpls, size_t id)
 {
-    TSoundSource *result = &smpls->Sounds.at(a2);
+    if (id >= smpls->Sounds.size())
+        return;
+    
+    TSoundSource *result = &smpls->Sounds.at(id);
 
     result->StartTime = currentTime;
 
@@ -173,11 +176,14 @@ void SFXEngine::startSound(TSndCarrier *smpls, int a2)
     }
 }
 
-void SFXEngine::sub_424000(TSndCarrier *smpls, int a2)
+void SFXEngine::sub_424000(TSndCarrier *smpls, size_t id)
 {
-    smpls->Sounds[a2].SetShkEnable(false);
-    smpls->Sounds[a2].SetPFxEnable(false);
-    smpls->Sounds[a2].SetEnabled(false);
+    if (id >= smpls->Sounds.size())
+        return;
+    
+    smpls->Sounds[id].SetShkEnable(false);
+    smpls->Sounds[id].SetPFxEnable(false);
+    smpls->Sounds[id].SetEnabled(false);
 }
 
 

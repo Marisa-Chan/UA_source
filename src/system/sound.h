@@ -252,15 +252,16 @@ public:
     int getMasterVolume();
 
 
-    void startSound(TSndCarrier *a1, int a2);
-    void sub_424000(TSndCarrier *smpls, int a2);
+    void startSound(TSndCarrier *a1, size_t);
+    void sub_424000(TSndCarrier *smpls, size_t);
     void StopCarrier(TSndCarrier *smpls);
     void StopSource(TSoundSource *snd);
     void StopPlayingSounds();
     
-    void ForceStopSource(TSndCarrier *smpls, int id)
+    void ForceStopSource(TSndCarrier *smpls, size_t id)
     {
-        StopSource(&smpls->Sounds.at(id));
+        if (id < smpls->Sounds.size())
+            StopSource(&smpls->Sounds.at(id));
     }
 
     void SetMusicVolume(int vol);
