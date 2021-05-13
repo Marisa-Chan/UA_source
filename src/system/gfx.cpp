@@ -27,7 +27,7 @@ SDL_HasColorKey(SDL_Surface * surface)
         return SDL_FALSE;
     }
 
-    if (!(surface->map->info.flags & SDL_COPY_COLORKEY)) {
+    if (!(surface->map->info.flags & 0x00000100)) {
         return SDL_FALSE;
     }
 
