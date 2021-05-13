@@ -121,8 +121,8 @@ struct TRect
             return (left >= right || top >= bottom);
     }
 
-    T Width() const { return right - left; }
-    T Height() const { return bottom - top; }
+    inline T Width() const { return right - left; }
+    inline T Height() const { return bottom - top; }
 
     void SetWidth(T Width) {
         right = left + Width;
