@@ -19,13 +19,13 @@ ParticleSystem::ParticleSystem()
 
     _skltData = _sklt->GetSkelet();
 
-    UAskeleton::Polygon *v3 = _skltData->polygons;
+    UAskeleton::Polygon &v3 = _skltData->polygons[0];
 
-    v3[0].num_vertices = 4;
-    v3[0].v[0] = 1;
-    v3[0].v[1] = 2;
-    v3[0].v[2] = 3;
-    v3[0].v[3] = 4;
+    v3.num_vertices = 4;
+    v3.v[0] = 1;
+    v3.v[1] = 2;
+    v3.v[2] = 3;
+    v3.v[3] = 4;
 }
     
 void ParticleSystem::AddParticle(NC_STACK_particle *base, const vec3d& pos, const vec3d& vec, int32_t age)
@@ -74,7 +74,6 @@ void ParticleSystem::UpdateRender(area_arg_65 *rndrParams, int32_t delta)
 void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
 {
     TF::TForm3D *view = rndrParams->view;
-    UAskeleton::Vertex *pVtx = _skltData->tformedVertex;
 
     int v27 = -1;
 
@@ -124,11 +123,9 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
         if ( -v30.z > v30.y )
             flags |= 4;
 
-        *pVtx = v30;
-        pVtx->flags = flags;
+        _skltData->tformedVertex[i] = UAskeleton::Vertex(v30, flags);
 
         v27 &= flags;
-        pVtx++;
     }
 
     if ( !v27 )

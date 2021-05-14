@@ -241,11 +241,7 @@ size_t NC_STACK_3ds::readChunkFaces(FSMgr::FileHandle *fil, size_t sz)
 
     UAskeleton::Data *dat = _skeleton->GetSkelet();
 
-    skeleton_130_arg arg;
-    arg.skeleton = dat;
-    arg.pol_count = numfaces;
-
-    _skeleton->skeleton_func130(&arg);
+    dat->polygons.resize(numfaces);
 
     if (faceMaterial)
         delete [] faceMaterial;

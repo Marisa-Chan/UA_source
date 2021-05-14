@@ -1229,8 +1229,8 @@ int sub_44D36C(const vec3d &v, int id, const UAskeleton::Data *sklt)
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
-            UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
+            const UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
+            const UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
 
             if ( ( (prv.z <= v.z && v.z < cur.z) ||
                     (cur.z <= v.z && v.z < prv.z) ) &&
@@ -1248,8 +1248,8 @@ int sub_44D36C(const vec3d &v, int id, const UAskeleton::Data *sklt)
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
-            UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
+            const UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
+            const UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
 
             if ( ( (prv.z <= v.z && v.z < cur.z) ||
                     (cur.z <= v.z && v.z < prv.z) ) &&
@@ -1267,8 +1267,8 @@ int sub_44D36C(const vec3d &v, int id, const UAskeleton::Data *sklt)
 
         for (int i = 0; i < sklt->polygons[id].num_vertices; i++)
         {
-            UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
-            UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
+            const UAskeleton::Vertex &cur = sklt->POO[ sklt->polygons[id].v[i] ];
+            const UAskeleton::Vertex &prv = sklt->POO[ sklt->polygons[id].v[prev] ];
 
             if ( ( (prv.y <= v.y && v.y < cur.y) ||
                     (cur.y <= v.y && v.y < prv.y) ) &&
@@ -1285,7 +1285,7 @@ int sub_44D36C(const vec3d &v, int id, const UAskeleton::Data *sklt)
 
 void NC_STACK_ypaworld::sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision &loc)
 {
-    for ( int i = 0; i < loc.sklt->polygonsCount; i++)
+    for ( size_t i = 0; i < loc.sklt->polygons.size(); i++)
     {
         UAskeleton::Polygon &tr = loc.sklt->polygons[i];
         vec3d norm = tr.Normal();
@@ -2213,18 +2213,16 @@ int NC_STACK_ypaworld::ypaworld_func148__sub1(int id, int a4, int x, int y, int 
 
 int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, const vec3d &v, float r, vec3d &out)
 {
-    int num = skl->polygons[id].num_vertices;
-    int16_t *vtx = skl->polygons[id].v;
-
+    UAskeleton::Polygon &pg = skl->polygons[id];
     vec3d tmp(0.0, 0.0, 0.0);
 
-    for (int i = 0; i < num; i++)
+    for (int i = 0; i < pg.num_vertices; i++)
     {
-        int16_t idd = vtx[i];
+        int16_t idd = pg.v[i];
         tmp += static_cast<vec3d> (skl->POO[ idd ]);
     }
 
-    vec3d tmp2 = tmp / num - v;
+    vec3d tmp2 = tmp / pg.num_vertices - v;
 
     float v26 = tmp2.length();
 
@@ -2238,7 +2236,7 @@ int ypaworld_func137__sub0__sub0(UAskeleton::Data *skl, int id, const vec3d &v, 
 
 void NC_STACK_ypaworld::ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2)
 {
-    for (int i = 0; i < a2.sklt->polygonsCount; i++)
+    for (size_t i = 0; i < a2.sklt->polygons.size(); i++)
     {
         const UAskeleton::Polygon &tria = a2.sklt->polygons[i];
 

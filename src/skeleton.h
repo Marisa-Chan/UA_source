@@ -9,19 +9,23 @@ namespace UAskeleton
 
 struct Vertex: public vec3d
 {
-    int flags;
+    uint8_t flags = 0;
 
     enum CLIP
     {
         CLIP_NONE = 0,
-        CLIP_LEFT = 1,
-        CLIP_RIGHT = 2,
-        CLIP_BOTTOM = 4,
-        CLIP_TOP = 8,
-        CLIP_NEAR = 0x10,
-        CLIP_FAR = 0x20,
+        CLIP_LEFT = (1 << 0),
+        CLIP_RIGHT = (1 << 1),
+        CLIP_BOTTOM = (1 << 2),
+        CLIP_TOP = (1 << 3),
+        CLIP_NEAR = (1 << 4),
+        CLIP_FAR = (1 << 5),
         CLIP_ANY = (CLIP_LEFT | CLIP_RIGHT | CLIP_BOTTOM | CLIP_TOP | CLIP_NEAR | CLIP_FAR)
     };
+    
+    Vertex() {};
+    Vertex(const vec3d& v) : vec3d(v) {};
+    Vertex(const vec3d& v, uint8_t f) : vec3d(v), flags(f) {};
 
     Vertex &operator=(vec3d b)
     {
@@ -31,19 +35,20 @@ struct Vertex: public vec3d
 
         return *this;
     }
+    
 };
 
 struct Polygon
 {
-    int16_t num_vertices;
-    int16_t v[GFX_MAX_VERTEX];
+    int16_t num_vertices = 0;
+    std::array<int16_t, GFX_MAX_VERTEX> v {{0}};
 
     // Geometry plane Ax + Bx + Cz + D = 0
     // A,B,C plane vector normal n
-    float A;
-    float B;
-    float C;
-    float D;
+    float A = 0.0;
+    float B = 0.0;
+    float C = 0.0;
+    float D = 0.0;
 
     const vec3d Normal() const
     {
@@ -53,64 +58,15 @@ struct Polygon
 
 struct Data
 {
-    Vertex *POO;
-    int16_t POO_NUM;
-
-    Vertex *SEN;
-    int16_t SEN_NUM;
-
-    Polygon *polygons;
-    int polygonsCount;
-
-    Vertex *tformedVertex;
-
-
-    Data()
-    {
-        POO = NULL;
-        SEN = NULL;
-        polygons = NULL;
-        tformedVertex = NULL;
-        POO_NUM = 0;
-        SEN_NUM = 0;
-        polygonsCount = 0;
-    };
-
-    ~Data()
-    {
-        if ( POO )
-            delete[] POO;
-
-        if ( polygons )
-            delete[] polygons;
-
-        if ( SEN )
-            delete[] SEN;
-
-        if ( tformedVertex )
-            delete[] tformedVertex;
-    };
+    std::vector<Vertex> POO;
+    std::vector<Vertex> SEN;
+    std::vector<Polygon> polygons;
+    std::vector<Vertex> tformedVertex;
 };
 
 }
 
-struct __NC_STACK_skeleton
-{
-    UAskeleton::Data *data;
-};
 
-struct skeleton_129_arg
-{
-    UAskeleton::Data *skeleton;
-    int sen_count;
-};
-
-struct skeleton_130_arg
-{
-    UAskeleton::Data *skeleton;
-    int pol_count;
-    int num_indexes;
-};
 
 struct skeleton_arg_132
 {
@@ -138,16 +94,11 @@ public:
     virtual size_t Init(IDVList &stak);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
-    virtual __NC_STACK_skeleton * skeleton_func128(IDVPair *);
-    virtual size_t skeleton_func129(skeleton_129_arg *arg);
-    virtual size_t skeleton_func130(skeleton_130_arg *arg);
     virtual size_t skeleton_func131(int *arg);
     virtual size_t skeleton_func132(skeleton_arg_132 *arg);
     virtual bool skeleton_func133(skeleton_arg133 *arg);
 
-    NC_STACK_skeleton() {
-        memset(&stack__skeleton, 0, sizeof(stack__skeleton));
-    };
+    NC_STACK_skeleton() {};
     virtual ~NC_STACK_skeleton() {};
     
     virtual const std::string &ClassName() const {
@@ -173,15 +124,15 @@ public:
     virtual int getSKEL_polyCount();
 
 protected:
-    bool PolygonCheckInvisible(UAskeleton::Vertex *in, vec3d *out, UAskeleton::Polygon *pol);
-    bool TransformVertexes(skeleton_arg_132 *arg, UAskeleton::Vertex *in, UAskeleton::Vertex *out, int num);
+    bool PolygonCheckInvisible(const std::vector<UAskeleton::Vertex> &in, const UAskeleton::Polygon &pol, std::vector<vec3d> *out);
+    bool TransformVertexes(skeleton_arg_132 *arg, const std::vector<UAskeleton::Vertex> &in, std::vector<UAskeleton::Vertex> *out);
 
 
 public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_skeleton stack__skeleton;
+    UAskeleton::Data *_resData = NULL;
 };
 
 #endif // SKELETON_H_INCLUDED

@@ -8273,7 +8273,7 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
     {
         GFX::Engine.raster_func217(coloooor);
 
-        for (int i = 0; i < wire->POO_NUM; i++)
+        for (size_t i = 0; i < wire->POO.size(); i++)
         {
             float tmpx = wire->POO[i].x * 0.001;
             float tmpz = -wire->POO[i].z * 0.001;
@@ -8282,7 +8282,7 @@ void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float posX
             wire->tformedVertex[i].y = (tmpx * m10 + tmpz * m11) * scaleY * CH + posY;
         }
 
-        for (int i = 0; i < wire->polygonsCount; i++)
+        for (size_t i = 0; i < wire->polygons.size(); i++)
         {
             UAskeleton::Polygon *poly = &wire->polygons[i];
 
