@@ -19,22 +19,6 @@
 #include "../font.h"
 #include "inivals.h"
 
-#if !(SDL_VERSION_ATLEAST(2, 0, 9))
-SDL_bool
-SDL_HasColorKey(SDL_Surface * surface)
-{
-    if (!surface) {
-        return SDL_FALSE;
-    }
-
-    if (!(surface->map->info.flags & 0x00000100)) {
-        return SDL_FALSE;
-    }
-
-    return SDL_TRUE;
-}
-#endif
-
 namespace GFX
 {   
 GFXEngine GFXEngine::Instance;
@@ -3378,7 +3362,12 @@ void GFXEngine::DrawFill(SDL_Surface *src, const Common::Rect &sRect, SDL_Surfac
     
     if (src->format->format == dst->format->format)
     {     
+#if SDL_VERSION_ATLEAST(2, 0, 9)
         if (SDL_HasColorKey(src))
+#else
+        uint32_t tmp;
+        if (SDL_GetColorKey(src, &tmp) == 0)
+#endif
         {
             switch(src->format->BytesPerPixel)
             {
