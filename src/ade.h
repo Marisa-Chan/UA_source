@@ -39,12 +39,7 @@ public:
     virtual size_t ade_func64(AdeList &lst);
     virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
 
-    NC_STACK_ade() {
-        flags = 0;
-        point = 0;
-        poly = 0;
-        AttachedTo = NULL;
-    };
+    NC_STACK_ade() {};
     virtual ~NC_STACK_ade() {};
     
     virtual const std::string &ClassName() const {
@@ -89,11 +84,11 @@ public:
 
 
 public:
-    char flags;
-    int16_t point;
-    int16_t poly;
+    char flags = 0;
+    int16_t point = 0;
+    int16_t poly = 0;
 
-    AdeList *AttachedTo;
+    AdeList *AttachedTo = NULL;
 };
 
 #endif // ADE_H_INCLUDED
