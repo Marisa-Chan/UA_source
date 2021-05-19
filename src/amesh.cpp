@@ -27,17 +27,6 @@ size_t NC_STACK_amesh::Init(IDVList &stak)
         {
             switch (val.ID)
             {
-            case ADE_ATT_DPTHFADE:
-                setADE_depthFade ( val.Get<int32_t>() );
-                break;
-            case AREA_ATT_TEXBITM:
-                setAREA_bitm(val.Get<NC_STACK_bitmap *>());
-                break;
-
-            case AREA_ATT_TRACYBITM:
-                setAREA_tracybitm(val.Get<NC_STACK_bitmap *>());
-                break;
-
             case AMESH_ATT_NUMPOLY:
                 setAMESH_numpoly(val.Get<int32_t>());
                 break;
