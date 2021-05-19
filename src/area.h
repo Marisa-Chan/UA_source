@@ -100,8 +100,6 @@ public:
     virtual void setAREA_tracybitm(NC_STACK_bitmap *);
     virtual void setAREA_shadeVal(int);
     virtual void setAREA_tracyVal(int);
-    virtual void setAREA_blob1(uint32_t);
-    virtual void setAREA_blob2(uint32_t);
 
     virtual NC_STACK_bitmap *getAREA_bitm();
     virtual int getAREA_colorVal();

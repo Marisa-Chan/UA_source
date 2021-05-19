@@ -499,20 +499,6 @@ void NC_STACK_area::setAREA_tracyVal(int val)
     _tracyVal = val;
 }
 
-void NC_STACK_area::setAREA_blob1(uint32_t val)
-{
-    _polflags = val & 0xFFFF;
-    _flags = val >> 16;
-}
-
-void NC_STACK_area::setAREA_blob2(uint32_t val)
-{
-    _shadeVal = val & 0xFF;
-    _colorVal = (val >> 16) & 0xFF;
-    _tracyVal = (val >> 8) & 0xFF;
-}
-
-
 NC_STACK_bitmap *NC_STACK_area::getAREA_bitm()
 {
     return _texImg;
