@@ -88,8 +88,6 @@ public:
 //        AREA_ATT_PolInfo = 0x8000200E
     };
 
-    virtual void setADE_depthFade(int);
-
     virtual void setAREA_bitm(NC_STACK_bitmap *);
     virtual void setAREA_colorVal(int);
     virtual void setAREA_map(int);
@@ -123,7 +121,6 @@ public:
 public:
     NC_STACK_bitmap *_texImg = NULL;
     NC_STACK_bitmap *_tracyImg = NULL;
-    int _flags = 0;
     char _colorVal = 0;
     char _tracyVal = 0;
     int32_t _shadeVal = 0;

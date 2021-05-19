@@ -118,10 +118,12 @@ int NC_STACK_area::area_func5__sub0(IFFile *mfile)
     if ( tmp.version >= 1 )
     {
         _polflags = tmp.polFlags;
-        _flags = tmp.flags;
         _colorVal = tmp.clrVal;
         _tracyVal = tmp.trcVal;
         _shadeVal = tmp.shdVal;
+        
+        setADE_bkCheck( (tmp.flags & AREA_FLAG_BKCHECK) != 0 );
+        setADE_depthFade( (tmp.flags & AREA_FLAG_DPTHFADE) != 0 );        
     }
 
     return 1;
@@ -231,9 +233,15 @@ size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
         return 0;
 
     mfile->pushChunk(0, TAG_STRC, -1);
+    
+    uint16_t tmpflg = 0;
+    if (flags & ADE_FLAG_BKCHECK)
+        tmpflg |= AREA_FLAG_BKCHECK;
+    if (flags & ADE_FLAG_DPTHFADE)
+        tmpflg |= AREA_FLAG_DPTHFADE;
 
     mfile->writeS16B(1); // version
-    mfile->writeU16B(_flags);
+    mfile->writeU16B(tmpflg);
     mfile->writeU16B(_polflags);
     mfile->writeU8(0);
     mfile->writeU8(_colorVal);
@@ -313,7 +321,7 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL
         skel133.field_4 |= 1;
     if ( datSub->renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( _flags & AREA_FLAG_DPTHFADE )
+    if ( flags & ADE_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.rndrArg = datSub;
@@ -398,17 +406,6 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL
     }
     return 1;
 }
-
-void NC_STACK_area::setADE_depthFade(int mode)
-{
-    if ( mode )
-        _flags |= AREA_FLAG_DPTHFADE;
-    else
-        _flags &= ~AREA_FLAG_DPTHFADE;
-
-    NC_STACK_ade::setADE_depthFade(mode);
-}
-
 
 void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
 {
