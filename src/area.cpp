@@ -31,12 +31,6 @@ size_t NC_STACK_area::Init(IDVList &stak)
         {
             switch (val.ID)
             {
-            case ADE_ATT_DPTHFADE:
-                setADE_depthFade ( val.Get<int32_t>() );
-                break;
-            case ADE_ATT_POLY:
-                setADE_bkCheck( val.Get<int32_t>() );
-                break;
             case AREA_ATT_TEXBITM:
                 setAREA_bitm ( val.Get<NC_STACK_bitmap *>() );
                 break;
