@@ -127,7 +127,7 @@ size_t NC_STACK_ade::SavingIntoIFF(IFFile **file)
     mfile->writeS8(0);
     mfile->writeS8( flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE) );
     mfile->writeS16B(point);
-    mfile->writeS16B(poly);
+    mfile->writeS16B(_polyID);
     mfile->writeS16B(0);
 
     mfile->popChunk();
@@ -177,7 +177,7 @@ int NC_STACK_ade::getADE_point()
 
 int NC_STACK_ade::getADE_poly()
 {
-    return poly;
+    return _polyID;
 }
 
 //__NC_STACK_ade *NC_STACK_ade::getADE_pAde()
@@ -210,7 +210,7 @@ void NC_STACK_ade::setADE_point(int arg)
 
 void NC_STACK_ade::setADE_poly(int arg)
 {
-    poly = arg;
+    _polyID = arg;
 }
 
 NC_STACK_ade::InstanceOpts *NC_STACK_ade::GenRenderInstance()

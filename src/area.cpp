@@ -306,7 +306,7 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL
 
     skeleton_arg133 skel133;
 
-    skel133.polyID = _polID;
+    skel133.polyID = _polyID;
     skel133.field_4 = 0;
 
     if ( datSub->renderFlags & (GFX::RFLAGS_LINMAP | GFX::RFLAGS_PERSPMAP ) )
@@ -409,12 +409,6 @@ void NC_STACK_area::setADE_depthFade(int mode)
     NC_STACK_ade::setADE_depthFade(mode);
 }
 
-void NC_STACK_area::setADE_poly(int num)
-{
-    _polID = num;
-
-    NC_STACK_ade::setADE_poly(num);
-}
 
 void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
 {

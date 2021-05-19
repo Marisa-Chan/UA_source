@@ -89,7 +89,6 @@ public:
     };
 
     virtual void setADE_depthFade(int);
-    virtual void setADE_poly(int);
 
     virtual void setAREA_bitm(NC_STACK_bitmap *);
     virtual void setAREA_colorVal(int);
@@ -130,7 +129,6 @@ public:
     char _colorVal = 0;
     char _tracyVal = 0;
     int32_t _shadeVal = 0;
-    int16_t _polID = 0;
     int16_t _polflags = 0;
 };
 
