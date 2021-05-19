@@ -8,37 +8,6 @@
 
 class NC_STACK_area;
 
-struct __NC_STACK_area
-{
-    NC_STACK_bitmap *texImg;
-    NC_STACK_bitmap *tracyImg;
-    int flags;
-    char colorVal;
-    char tracyVal;
-    int32_t shadeVal;
-//    char field_F;
-//    int field_10;
-    int16_t polnum;
-    int16_t polflags;
-//    int field_18;
-//    int field_1c;
-//    int field_20;
-//    int field_24;
-};
-
-
-struct AREA_STRC
-{
-    int16_t version;
-    uint16_t flags;
-    uint16_t polFlags;
-    uint8_t _un1;
-    uint8_t clrVal;
-    uint8_t trcVal;
-    uint8_t shdVal;
-};
-
-
 class NC_STACK_area: public NC_STACK_ade
 {
 public:
@@ -49,7 +18,6 @@ public:
     virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
 
     NC_STACK_area() {
-        memset(&stack__area, 0, sizeof(stack__area));
     };
     virtual ~NC_STACK_area() {};
     
@@ -155,7 +123,15 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_area stack__area;
+public:
+    NC_STACK_bitmap *_texImg = NULL;
+    NC_STACK_bitmap *_tracyImg = NULL;
+    int _flags = 0;
+    char _colorVal = 0;
+    char _tracyVal = 0;
+    int32_t _shadeVal = 0;
+    int16_t _polID = 0;
+    int16_t _polflags = 0;
 };
 
 #endif // AREA_H_INCLUDED

@@ -18,10 +18,10 @@ size_t NC_STACK_area::Init(IDVList &stak)
     if ( !NC_STACK_ade::Init(stak) )
         return 0;
 
-    stack__area.colorVal = 1;
-    stack__area.tracyVal = 0;
-    stack__area.shadeVal = 0;
-    stack__area.polflags = 0;
+    _colorVal = 1;
+    _tracyVal = 0;
+    _shadeVal = 0;
+    _polflags = 0;
 
     for( auto& it : stak )
     {
@@ -86,19 +86,26 @@ size_t NC_STACK_area::Init(IDVList &stak)
 
 size_t NC_STACK_area::Deinit()
 {
-    __NC_STACK_area *area = &stack__area;
-
-    if ( area->texImg )
-        delete_class_obj(area->texImg);
-    if ( area->tracyImg )
-        delete_class_obj(area->tracyImg);
+    if ( _texImg )
+        Nucleus::Delete(_texImg);
+    if ( _tracyImg )
+        Nucleus::Delete(_tracyImg);
     return NC_STACK_ade::Deinit();
 }
 
 
 int NC_STACK_area::area_func5__sub0(IFFile *mfile)
 {
-    AREA_STRC tmp;
+    struct AREA_STRC
+    {
+        int16_t version;
+        uint16_t flags;
+        uint16_t polFlags;
+        uint8_t _un1;
+        uint8_t clrVal;
+        uint8_t trcVal;
+        uint8_t shdVal;
+    } tmp;
 
     mfile->readS16B(tmp.version);
     mfile->readU16B(tmp.flags);
@@ -110,11 +117,11 @@ int NC_STACK_area::area_func5__sub0(IFFile *mfile)
 
     if ( tmp.version >= 1 )
     {
-        stack__area.polflags = tmp.polFlags;
-        stack__area.flags = tmp.flags;
-        stack__area.colorVal = tmp.clrVal;
-        stack__area.tracyVal = tmp.trcVal;
-        stack__area.shadeVal = tmp.shdVal;
+        _polflags = tmp.polFlags;
+        _flags = tmp.flags;
+        _colorVal = tmp.clrVal;
+        _tracyVal = tmp.trcVal;
+        _shadeVal = tmp.shdVal;
     }
 
     return 1;
@@ -124,9 +131,9 @@ int NC_STACK_area::area_func5__sub0(IFFile *mfile)
 
 int NC_STACK_area::area_func5__sub1(IFFile *mfile)
 {
-    int v8 = stack__area.polflags & AREA_POL_FLAG_TEXUTRED;
+    int v8 = _polflags & AREA_POL_FLAG_TEXUTRED;
 
-    if ( (stack__area.polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
+    if ( (_polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
         v8 |= AREA_POL_FLAG_TRACYMAPPED;
 
     NC_STACK_bitmap *objt = dynamic_cast<NC_STACK_bitmap *>( LoadObjectFromIFF(mfile) );
@@ -142,7 +149,7 @@ int NC_STACK_area::area_func5__sub1(IFFile *mfile)
         }
         else if ( v8 == (AREA_POL_FLAG_TRACYMAPPED | AREA_POL_FLAG_TEXUTRED) )
         {
-            if ( stack__area.texImg )
+            if ( _texImg )
             {
                 setAREA_tracybitm(objt);
             }
@@ -215,7 +222,6 @@ size_t NC_STACK_area::LoadingFromIFF(IFFile **file)
 size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
-    __NC_STACK_area *area = &stack__area;
 
     if ( mfile->pushChunk(TAG_AREA, TAG_FORM, -1) )
         return 0;
@@ -227,27 +233,27 @@ size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
     mfile->pushChunk(0, TAG_STRC, -1);
 
     mfile->writeS16B(1); // version
-    mfile->writeU16B(area->flags);
-    mfile->writeU16B(area->polflags);
+    mfile->writeU16B(_flags);
+    mfile->writeU16B(_polflags);
     mfile->writeU8(0);
-    mfile->writeU8(area->colorVal);
-    mfile->writeU8(area->tracyVal);
-    mfile->writeU8(area->shadeVal);
+    mfile->writeU8(_colorVal);
+    mfile->writeU8(_tracyVal);
+    mfile->writeU8(_shadeVal);
 
     mfile->popChunk();
 
-    if ( (area->polflags & AREA_POL_FLAG_TEXUTRED) )
+    if ( (_polflags & AREA_POL_FLAG_TEXUTRED) )
     {
-        if ( !area->texImg )
+        if ( !_texImg )
             return 0;
-        if ( !area->texImg->SaveObjectIntoIFF(mfile) )
+        if ( !_texImg->SaveObjectIntoIFF(mfile) )
             return 0;
     }
-    if ( (area->polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
+    if ( (_polflags & AREA_POL_FLAG_TRACYMAPPED) == AREA_POL_FLAG_TRACYMAPPED )
     {
-        if ( !area->tracyImg )
+        if ( !_tracyImg )
             return 0;
-        if ( !area->tracyImg->SaveObjectIntoIFF(mfile) )
+        if ( !_tracyImg->SaveObjectIntoIFF(mfile) )
             return 0;
     }
 
@@ -257,12 +263,10 @@ size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
 // Add area to list
 size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
 {
-    __NC_STACK_area *area = &stack__area;
-//    polysDatSub *datSub = &arg->argSTK_cur->datSub;
     polysDat *data = arg->rndrStack->get();
     polysDatSub *datSub = &data->datSub;
 
-    int renderFlags = area->polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
+    int renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (renderFlags == 0)
         renderFlags = 0;
@@ -302,31 +306,31 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL
 
     skeleton_arg133 skel133;
 
-    skel133.polyID = area->polnum;
+    skel133.polyID = _polID;
     skel133.field_4 = 0;
 
     if ( datSub->renderFlags & (GFX::RFLAGS_LINMAP | GFX::RFLAGS_PERSPMAP ) )
         skel133.field_4 |= 1;
     if ( datSub->renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( area->flags & AREA_FLAG_DPTHFADE )
+    if ( _flags & AREA_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.rndrArg = datSub;
     skel133.minZ = arg->minZ;
     skel133.maxZ = arg->maxZ;
-    skel133.shadeVal = area->shadeVal / 256.0;
+    skel133.shadeVal = _shadeVal / 256.0;
     skel133.fadeStart = arg->fadeStart;
     skel133.fadeLength = arg->fadeLength;
 
-    if ( area->texImg )
+    if ( _texImg )
     {
         bitmap_arg130 bitm130;
 
         bitm130.time_stmp = arg->timeStamp;
         bitm130.frame_time = arg->frameTime;
 
-        area->texImg->bitmap_func130(&bitm130);
+        _texImg->bitmap_func130(&bitm130);
 
         datSub->pbitm = bitm130.pbitm;
         skel133.texCoords = bitm130.outline;
@@ -398,16 +402,16 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL
 void NC_STACK_area::setADE_depthFade(int mode)
 {
     if ( mode )
-        stack__area.flags |= AREA_FLAG_DPTHFADE;
+        _flags |= AREA_FLAG_DPTHFADE;
     else
-        stack__area.flags &= ~AREA_FLAG_DPTHFADE;
+        _flags &= ~AREA_FLAG_DPTHFADE;
 
     NC_STACK_ade::setADE_depthFade(mode);
 }
 
 void NC_STACK_area::setADE_poly(int num)
 {
-    stack__area.polnum = num;
+    _polID = num;
 
     NC_STACK_ade::setADE_poly(num);
 }
@@ -416,118 +420,118 @@ void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
 {
     if ( bitm )
     {
-        if ( stack__area.texImg != NULL )
-            delete_class_obj(stack__area.texImg);
+        if ( _texImg != NULL )
+            delete_class_obj(_texImg);
 
-        stack__area.texImg = bitm;
+        _texImg = bitm;
         bitm->PrepareTexture();
     }
 }
 
 void NC_STACK_area::setAREA_colorVal(int val)
 {
-    stack__area.colorVal = val;
+    _colorVal = val;
 }
 
 void NC_STACK_area::setAREA_map(int mode)
 {
-    stack__area.polflags &= ~(AREA_POL_FLAG_MAPBIT1 | AREA_POL_FLAG_MAPBIT2);
+    _polflags &= ~(AREA_POL_FLAG_MAPBIT1 | AREA_POL_FLAG_MAPBIT2);
 
     if ( mode == 1 )
-        stack__area.polflags |= AREA_POL_FLAG_LINEARMAPPED;
+        _polflags |= AREA_POL_FLAG_LINEARMAPPED;
     else if ( mode == 2 )
-        stack__area.polflags |= AREA_POL_FLAG_DEPTHMAPPED;
+        _polflags |= AREA_POL_FLAG_DEPTHMAPPED;
 }
 
 void NC_STACK_area::setAREA_tex(int mode)
 {
-    stack__area.polflags &= ~(AREA_POL_FLAG_TEXBIT);
+    _polflags &= ~(AREA_POL_FLAG_TEXBIT);
 
     if ( mode == 1 )
-        stack__area.polflags |= AREA_POL_FLAG_TEXUTRED;
+        _polflags |= AREA_POL_FLAG_TEXUTRED;
 }
 
 void NC_STACK_area::setAREA_shade(int mode)
 {
-    stack__area.polflags &= ~(AREA_POL_FLAG_SHADEBIT1 | AREA_POL_FLAG_SHADEBIT2);
+    _polflags &= ~(AREA_POL_FLAG_SHADEBIT1 | AREA_POL_FLAG_SHADEBIT2);
 
     if ( mode == 1 )
-        stack__area.polflags |= AREA_POL_FLAG_FLATSHADE;
+        _polflags |= AREA_POL_FLAG_FLATSHADE;
     else if ( mode == 2 )
-        stack__area.polflags |= AREA_POL_FLAG_LINESHADE;
+        _polflags |= AREA_POL_FLAG_LINESHADE;
     else if ( mode == 3 )
-        stack__area.polflags |= AREA_POL_FLAG_GRADIENTSHADE;
+        _polflags |= AREA_POL_FLAG_GRADIENTSHADE;
 }
 
 void NC_STACK_area::setAREA_tracy(int mode)
 {
-    stack__area.polflags &= ~(AREA_POL_FLAG_TRACYBIT1 | AREA_POL_FLAG_TRACYBIT2);
+    _polflags &= ~(AREA_POL_FLAG_TRACYBIT1 | AREA_POL_FLAG_TRACYBIT2);
 
     if ( mode == 1 )
-        stack__area.polflags |= AREA_POL_FLAG_CLEARTRACY;
+        _polflags |= AREA_POL_FLAG_CLEARTRACY;
     else if ( mode == 2 )
-        stack__area.polflags |= AREA_POL_FLAG_FLATTRACY;
+        _polflags |= AREA_POL_FLAG_FLATTRACY;
     else if ( mode == 3 )
-        stack__area.polflags |= AREA_POL_FLAG_TRACYMAPPED;
+        _polflags |= AREA_POL_FLAG_TRACYMAPPED;
 }
 
 void NC_STACK_area::setAREA_tracymode(int mode)
 {
-    stack__area.polflags &= ~(AREA_POL_FLAG_TRACYBIT3);
+    _polflags &= ~(AREA_POL_FLAG_TRACYBIT3);
 
     if ( mode == 1 )
-        stack__area.polflags |= AREA_POL_FLAG_LIGHT;
+        _polflags |= AREA_POL_FLAG_LIGHT;
 }
 
 void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
 {
     if ( bitm )
     {
-        if ( stack__area.tracyImg != NULL )
-            delete_class_obj(stack__area.tracyImg);
+        if ( _tracyImg != NULL )
+            delete_class_obj(_tracyImg);
 
-        stack__area.tracyImg = bitm;
+        _tracyImg = bitm;
         bitm->PrepareTexture();
     }
 }
 
 void NC_STACK_area::setAREA_shadeVal(int val)
 {
-    stack__area.shadeVal = val;
+    _shadeVal = val;
 }
 
 void NC_STACK_area::setAREA_tracyVal(int val)
 {
-    stack__area.tracyVal = val;
+    _tracyVal = val;
 }
 
 void NC_STACK_area::setAREA_blob1(uint32_t val)
 {
-    stack__area.polflags = val & 0xFFFF;
-    stack__area.flags = val >> 16;
+    _polflags = val & 0xFFFF;
+    _flags = val >> 16;
 }
 
 void NC_STACK_area::setAREA_blob2(uint32_t val)
 {
-    stack__area.shadeVal = val & 0xFF;
-    stack__area.colorVal = (val >> 16) & 0xFF;
-    stack__area.tracyVal = (val >> 8) & 0xFF;
+    _shadeVal = val & 0xFF;
+    _colorVal = (val >> 16) & 0xFF;
+    _tracyVal = (val >> 8) & 0xFF;
 }
 
 
 NC_STACK_bitmap *NC_STACK_area::getAREA_bitm()
 {
-    return stack__area.texImg;
+    return _texImg;
 }
 
 int NC_STACK_area::getAREA_colorVal()
 {
-    return stack__area.colorVal;
+    return _colorVal;
 }
 
 int NC_STACK_area::getAREA_map()
 {
-    int v9 = stack__area.polflags & (AREA_POL_FLAG_MAPBIT1 | AREA_POL_FLAG_MAPBIT2);
+    int v9 = _polflags & (AREA_POL_FLAG_MAPBIT1 | AREA_POL_FLAG_MAPBIT2);
 
     if ( v9 == AREA_POL_FLAG_NONMAPPED )
         return 0;
@@ -541,7 +545,7 @@ int NC_STACK_area::getAREA_map()
 
 int NC_STACK_area::getAREA_tex()
 {
-    int v6 = stack__area.polflags & AREA_POL_FLAG_TEXBIT;
+    int v6 = _polflags & AREA_POL_FLAG_TEXBIT;
 
     if ( v6 == AREA_POL_FLAG_TEXUTRED )
         return 1;
@@ -551,7 +555,7 @@ int NC_STACK_area::getAREA_tex()
 
 int NC_STACK_area::getAREA_shade()
 {
-    int v4 = stack__area.polflags & (AREA_POL_FLAG_SHADEBIT1 | AREA_POL_FLAG_SHADEBIT2);
+    int v4 = _polflags & (AREA_POL_FLAG_SHADEBIT1 | AREA_POL_FLAG_SHADEBIT2);
 
     if ( v4 == AREA_POL_FLAG_NOSHADE )
         return 0;
@@ -566,7 +570,7 @@ int NC_STACK_area::getAREA_shade()
 
 int NC_STACK_area::getAREA_tracy()
 {
-    int v5 = stack__area.polflags & (AREA_POL_FLAG_TRACYBIT1 | AREA_POL_FLAG_TRACYBIT2);
+    int v5 = _polflags & (AREA_POL_FLAG_TRACYBIT1 | AREA_POL_FLAG_TRACYBIT2);
 
     if ( v5 == AREA_POL_FLAG_NOTRACY )
         return 0;
@@ -581,7 +585,7 @@ int NC_STACK_area::getAREA_tracy()
 
 int NC_STACK_area::getAREA_tracymode()
 {
-    int v10 = stack__area.polflags & AREA_POL_FLAG_TRACYBIT3;
+    int v10 = _polflags & AREA_POL_FLAG_TRACYBIT3;
 
     if ( v10 == AREA_POL_FLAG_DARK )
         return 0;
@@ -593,15 +597,15 @@ int NC_STACK_area::getAREA_tracymode()
 
 NC_STACK_bitmap *NC_STACK_area::getAREA_tracybitm()
 {
-    return stack__area.tracyImg;
+    return _tracyImg;
 }
 
 int NC_STACK_area::getAREA_shadeVal()
 {
-    return stack__area.shadeVal;
+    return _shadeVal;
 }
 
 int NC_STACK_area::getAREA_tracyVal()
 {
-    return stack__area.tracyVal;
+    return _tracyVal;
 }

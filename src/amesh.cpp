@@ -225,7 +225,7 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
 size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
 {
     //v5 = *(_uint16_t *)(amesh->field_14 + 6) & 0xFEF6;
-    int renderFlags = stack__area.polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
+    int renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (renderFlags == 0)
         renderFlags = 0;
