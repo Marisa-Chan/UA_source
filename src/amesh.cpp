@@ -267,7 +267,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
         skel133.field_4 |= 1;
     if ( renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( flags & AMESH_FLAG_DPTHFADE )
+    if ( flags & ADE_ATT_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.minZ = arg->minZ;
@@ -278,13 +278,13 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
 
     ResBitmap *v21;
 
-    if ( ilbm1 )
+    if ( _texImg )
     {
         bitmap_arg130 bitm130;
 
         bitm130.time_stmp = arg->timeStamp;
         bitm130.frame_time = arg->frameTime;
-        ilbm1->bitmap_func130(&bitm130);
+        _texImg->bitmap_func130(&bitm130);
         v21 = bitm130.pbitm;
     }
     else
@@ -373,26 +373,6 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
     }
 
     return 1;
-}
-
-
-
-void NC_STACK_amesh::setADE_depthFade(int arg)
-{
-    if ( arg )
-        flags |= AMESH_FLAG_DPTHFADE;
-    else
-        flags &= ~ADE_FLAG_DPTHFADE;
-
-    NC_STACK_area::setADE_depthFade(arg);
-}
-
-void NC_STACK_amesh::setAREA_bitm(NC_STACK_bitmap *bitm)
-{
-    ilbm1 = bitm;
-    bitm->PrepareTexture();
-
-    NC_STACK_area::setAREA_bitm(bitm);
 }
 
 void NC_STACK_amesh::setAMESH_numpoly(int num)

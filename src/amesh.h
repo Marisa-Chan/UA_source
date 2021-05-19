@@ -36,11 +36,6 @@ public:
         return new NC_STACK_amesh();
     };
 
-    enum AMESH_FLAG
-    {
-        AMESH_FLAG_DPTHFADE = 1
-    };
-
     enum AMESH_ATT
     {
         AMESH_ATT_NUMPOLY = 0x80003000,
@@ -48,9 +43,6 @@ public:
         AMESH_ATT_OTLPOOL = 0x80003002
     };
 
-
-    virtual void setADE_depthFade(int);
-    virtual void setAREA_bitm(NC_STACK_bitmap *);
 
     virtual void setAMESH_numpoly(int);
     virtual int setAMESH_polys(ATTS *);
@@ -62,9 +54,7 @@ public:
     static const Nucleus::ClassDescr description;
     
 public:
-    NC_STACK_bitmap *ilbm1 = NULL;
     int16_t polyCnt = 0;
-    int16_t flags = 0;
     std::vector<ATTS> atts;       // ATTS heap
     std::vector<tUtV *> texCoords; // Tex coords for polygons
     std::vector<tUtV> texCoordsData; // Tex coords heap

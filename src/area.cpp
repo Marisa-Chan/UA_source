@@ -421,7 +421,7 @@ void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
     if ( bitm )
     {
         if ( _texImg != NULL )
-            delete_class_obj(_texImg);
+            Nucleus::Delete(_texImg);
 
         _texImg = bitm;
         bitm->PrepareTexture();
@@ -488,7 +488,7 @@ void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
     if ( bitm )
     {
         if ( _tracyImg != NULL )
-            delete_class_obj(_tracyImg);
+            Nucleus::Delete(_tracyImg);
 
         _tracyImg = bitm;
         bitm->PrepareTexture();
