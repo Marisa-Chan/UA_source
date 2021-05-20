@@ -126,7 +126,7 @@ size_t NC_STACK_ade::SavingIntoIFF(IFFile **file)
     mfile->writeS16B(1);
     mfile->writeS8(0);
     mfile->writeS8( flags & (ADE_FLAG_BKCHECK | ADE_FLAG_DPTHFADE) );
-    mfile->writeS16B(point);
+    mfile->writeS16B(_pointID);
     mfile->writeS16B(_polyID);
     mfile->writeS16B(0);
 
@@ -172,7 +172,7 @@ int NC_STACK_ade::getADE_depthFade()
 
 int NC_STACK_ade::getADE_point()
 {
-    return point;
+    return _pointID;
 }
 
 int NC_STACK_ade::getADE_poly()
@@ -205,7 +205,7 @@ void NC_STACK_ade::setADE_depthFade(int arg)
 
 void NC_STACK_ade::setADE_point(int arg)
 {
-    point = arg;
+    _pointID = arg;
 }
 
 void NC_STACK_ade::setADE_poly(int arg)

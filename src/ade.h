@@ -85,7 +85,7 @@ public:
 
 public:
     char flags = 0;
-    int16_t point = 0;
+    int16_t _pointID = 0;
     int16_t _polyID = 0;
 
     AdeList *AttachedTo = NULL;

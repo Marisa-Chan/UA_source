@@ -69,7 +69,6 @@ public:
     };
 
     virtual void setADE_depthFade(int);
-    virtual void setADE_point(int);
 
     virtual void SetStartSpeed(int);
     virtual void SetNumContexts(int);

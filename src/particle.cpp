@@ -293,14 +293,6 @@ size_t NC_STACK_particle::Init(IDVList &stak)
         {
             switch (val.ID)
             {
-            case ADE_ATT_DPTHFADE:
-                setADE_bkCheck( val.Get<int32_t>() );
-                break;
-
-            case ADE_ATT_POINT:
-                setADE_point( val.Get<int32_t>() );
-                break;
-
             case PRTCL_ATT_STSPEED:
                 SetStartSpeed( val.Get<int32_t>() );
                 break;
@@ -570,7 +562,7 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg, InstanceOpts * uopts)
     {
         vec3d v44 = arg->owner->CalcSclRot.Transform( _magnifyStart + _magnifyDelta * opts->Age );
 
-        vec3d v45 = arg->owner->TForm * ( arg->sklt->POO[_onVerticeID] );
+        vec3d v45 = arg->owner->TForm * ( arg->sklt->POO[_pointID] );
 
         float timeDelta = 0.0;
         float delta = _genPause * 0.001;
@@ -640,13 +632,6 @@ void NC_STACK_particle::setADE_depthFade(int mode)
     UpdateLifeStages();
 
     NC_STACK_ade::setADE_depthFade(mode);
-}
-
-void NC_STACK_particle::setADE_point(int verticeID)
-{
-    _onVerticeID = verticeID;
-
-    NC_STACK_ade::setADE_point(verticeID);
 }
 
 void NC_STACK_particle::SetStartSpeed(int spd)
