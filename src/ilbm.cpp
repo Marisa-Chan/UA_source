@@ -12,8 +12,8 @@ size_t NC_STACK_ilbm::Init(IDVList &stak)
     if ( !NC_STACK_bitmap::Init(stak) )
         return 0;
 
-    if ( stak.Get<int32_t>(ILBM_ATT_FMT, 0) )
-        stack__ilbm.flags |= 1;
+    if ( stak.Get<bool>(ILBM_ATT_FMT, false) )
+        _saveAsIlbm = true;
 
     return 1;
 }
@@ -638,8 +638,6 @@ int VBMP__WRITE_TO_FILE(IFFile *mfile, ResBitmap *bitm)
 
 size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 {
-    __NC_STACK_ilbm *ilbm = &stack__ilbm;
-
     IFFile *mfile;
 
     if ( arg->OpenedStream == 1 )
@@ -666,7 +664,7 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 
     int res;
 
-    if ( ilbm->flags & 1 )
+    if ( _saveAsIlbm )
         res = ILBM__WRITE_TO_FILE(mfile, v6.pbitm);
     else
         res = VBMP__WRITE_TO_FILE(mfile, v6.pbitm);
@@ -685,13 +683,13 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
 void NC_STACK_ilbm::setILBM_saveFmt(int fmt)
 {
     if ( fmt )
-        stack__ilbm.flags |= 1;
+        _saveAsIlbm = true;
     else
-        stack__ilbm.flags &= ~1;
+        _saveAsIlbm = false;
 }
 
 int NC_STACK_ilbm::getILBM_saveFmt()
 {
-    return (stack__ilbm.flags & 1) != 0;
+    return _saveAsIlbm;
 }
 

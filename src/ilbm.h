@@ -3,12 +3,6 @@
 
 #include "bitmap.h"
 
-struct __NC_STACK_ilbm
-{
-    uint32_t flags;
-};
-
-
 struct BMHD_type
 {
     uint16_t width;
@@ -42,9 +36,7 @@ public:
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func66(rsrc_func66_arg *arg);
 
-    NC_STACK_ilbm() {
-        memset(&stack__ilbm, 0, sizeof(stack__ilbm));
-    };
+    NC_STACK_ilbm() {};
     virtual ~NC_STACK_ilbm() {};
     
     virtual const std::string &ClassName() const {
@@ -71,7 +63,8 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_ilbm stack__ilbm;
+public:
+    bool _saveAsIlbm = false;
 };
 
 #endif // ILBM_H_INCLUDED
