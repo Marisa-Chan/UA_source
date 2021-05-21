@@ -15,15 +15,6 @@ struct pixel_2d
     int16_t flags;
 };
 
-struct __NC_STACK_bitmap
-{
-    ResBitmap *bitm_intern;
-    tUtV * outline_coords;
-    int flags;
-};
-
-
-
 struct bitmap_arg130
 {
     int time_stmp;
@@ -44,9 +35,7 @@ public:
     virtual size_t bitmap_func129(IDVPair *);
     virtual void bitmap_func130(bitmap_arg130 *out);
 
-    NC_STACK_bitmap() {
-        memset(&stack__bitmap, 0, sizeof(stack__bitmap));
-    };
+    NC_STACK_bitmap() {};
     virtual ~NC_STACK_bitmap() {};
     
     virtual const std::string &ClassName() const {
@@ -89,7 +78,9 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_bitmap stack__bitmap;
+public:
+    ResBitmap *bitm_intern = NULL;
+    tUtV * outline_coords = NULL;
 };
 
 #endif // BITMAP_H_INCLUDED

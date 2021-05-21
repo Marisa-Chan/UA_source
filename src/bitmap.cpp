@@ -9,20 +9,18 @@ const Nucleus::ClassDescr NC_STACK_bitmap::description("bitmap.class", &newinsta
 
 int NC_STACK_bitmap::sub_416704(pixel_2d *src)
 {
-    __NC_STACK_bitmap *a2 = &stack__bitmap;
-
     //// WHAT IT THIS !?
     int a4 = getRsrc_dontCopy();
 
-    if ( a2->outline_coords )
+    if ( outline_coords )
     {
         if ( !a4 )
-            nc_FreeMem(a2->outline_coords);
+            nc_FreeMem(outline_coords);
     }
 
     if ( a4 )
     {
-        a2->outline_coords = (tUtV *)src;
+        outline_coords = (tUtV *)src;
         return 1;
     }
 
@@ -52,7 +50,7 @@ int NC_STACK_bitmap::sub_416704(pixel_2d *src)
         tmp[opl_count - 1].tu = -1;
         tmp[opl_count - 1].tv = -1;
 
-        a2->outline_coords = unk;
+        outline_coords = unk;
 
         return 1;
     }
@@ -65,28 +63,24 @@ size_t NC_STACK_bitmap::Init(IDVList &stak)
     if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
-    __NC_STACK_bitmap *internal = &stack__bitmap;
-
     pixel_2d *v9 = stak.Get<pixel_2d *>(BMD_ATT_OUTLINE, NULL);
 
     if ( v9 )
         sub_416704(v9);
 
-    internal->bitm_intern = (ResBitmap *)getRsrc_pData();
+    bitm_intern = (ResBitmap *)getRsrc_pData();
 
     return 1;
 }
 
 size_t NC_STACK_bitmap::Deinit()
 {
-    __NC_STACK_bitmap *internal = &stack__bitmap;
-
-    if ( internal->outline_coords )
+    if ( outline_coords )
     {
         size_t a4 = getRsrc_dontCopy();
 
         if ( !a4 )
-            nc_FreeMem(internal->outline_coords);
+            nc_FreeMem(outline_coords);
     }
 
     return NC_STACK_rsrc::Deinit();
@@ -179,9 +173,8 @@ size_t NC_STACK_bitmap::bitmap_func129(IDVPair *)
 
 void NC_STACK_bitmap::bitmap_func130(bitmap_arg130 *out)
 {
-    __NC_STACK_bitmap *bitm = &stack__bitmap;
-    out->pbitm = bitm->bitm_intern;
-    out->outline = bitm->outline_coords;
+    out->pbitm = bitm_intern;
+    out->outline = outline_coords;
 }
 
 
@@ -193,68 +186,68 @@ void NC_STACK_bitmap::setBMD_outline(pixel_2d *otl)
 
 void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 {
-    if ( stack__bitmap.bitm_intern->palette )
-        *stack__bitmap.bitm_intern->palette = *newPal;
+    if ( bitm_intern->palette )
+        *bitm_intern->palette = *newPal;
 }
 
 
 
 ResBitmap * NC_STACK_bitmap::GetResBmp()
 {
-    return stack__bitmap.bitm_intern;
+    return bitm_intern;
 }
 
 int NC_STACK_bitmap::getBMD_width()
 {
-    if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->width;
+    if (bitm_intern)
+        return bitm_intern->width;
 
     return 0;
 }
 
 int NC_STACK_bitmap::getBMD_height()
 {
-    if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->height;
+    if (bitm_intern)
+        return bitm_intern->height;
 
     return 0;
 }
 
 int NC_STACK_bitmap::getBMD_hasPalette()
 {
-    if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->palette != NULL;
+    if (bitm_intern)
+        return bitm_intern->palette != NULL;
 
     return 0;
 }
 
 UA_PALETTE *NC_STACK_bitmap::getBMD_palette()
 {
-    if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->palette;
+    if (bitm_intern)
+        return bitm_intern->palette;
 
     return NULL;
 }
 
 SDL_Surface * NC_STACK_bitmap::GetSwTex()
 {
-    if (stack__bitmap.bitm_intern)
-        return stack__bitmap.bitm_intern->swTex;
+    if (bitm_intern)
+        return bitm_intern->swTex;
 
     return NULL;
 }
 
 void NC_STACK_bitmap::PrepareTexture( bool force )
 {
-    if (!stack__bitmap.bitm_intern)
+    if (!bitm_intern)
         return;
     
-    if (stack__bitmap.bitm_intern->hwTex && !force)
+    if (bitm_intern->hwTex && !force)
         return;
     
-    if (stack__bitmap.bitm_intern->hwTex)
-        GFX::Engine.FreeTexture(stack__bitmap.bitm_intern);
+    if (bitm_intern->hwTex)
+        GFX::Engine.FreeTexture(bitm_intern);
         
-    GFX::Engine.AllocTexture(stack__bitmap.bitm_intern);
+    GFX::Engine.AllocTexture(bitm_intern);
 }
 
