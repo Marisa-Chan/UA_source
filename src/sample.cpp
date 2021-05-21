@@ -12,7 +12,7 @@ size_t NC_STACK_sample::Init(IDVList &stak)
     if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
-    stack__sample.p_sampl = (TSampleData *)getRsrc_pData();
+    p_sampl = (TSampleData *)getRsrc_pData();
 
     return 1;
 }
@@ -83,36 +83,35 @@ size_t NC_STACK_sample::rsrc_func65(rsrc *res)
 void * NC_STACK_sample::sample_func128(void **arg)
 {
     printf("%s - NOT RECOGINZED ARGUMENT\n","sample_func128");
-    TSampleData *smpl = stack__sample.p_sampl;
-    arg[2] = smpl;
-    return smpl;
+    arg[2] = p_sampl;
+    return p_sampl;
 }
 
 
 
 TSampleData *NC_STACK_sample::GetSampleData()
 {
-    return stack__sample.p_sampl;
+    return p_sampl;
 }
 
 int NC_STACK_sample::getSMPL_type()
 {
-    if (stack__sample.p_sampl)
-        return stack__sample.p_sampl->field_8;
+    if (p_sampl)
+        return p_sampl->field_8;
     return 0;
 }
 
 int NC_STACK_sample::getSMPL_len()
 {
-    if (stack__sample.p_sampl)
-        return stack__sample.p_sampl->bufsz;
+    if (p_sampl)
+        return p_sampl->bufsz;
     return 0;
 }
 
 void *NC_STACK_sample::getSMPL_buffer()
 {
-    if (stack__sample.p_sampl)
-        return stack__sample.p_sampl->Data;
+    if (p_sampl)
+        return p_sampl->Data;
     return 0;
 }
 

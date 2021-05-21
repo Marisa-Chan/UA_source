@@ -4,11 +4,6 @@
 #include "rsrc.h"
 #include "system/sound.h"
 
-struct __NC_STACK_sample
-{
-    TSampleData * p_sampl;
-};
-
 class NC_STACK_sample: public NC_STACK_rsrc
 {
 public:
@@ -17,9 +12,7 @@ public:
     virtual size_t rsrc_func65(rsrc *pres);
     virtual void * sample_func128(void **arg);
 
-    NC_STACK_sample() {
-        memset(&stack__sample, 0, sizeof(stack__sample));
-    };
+    NC_STACK_sample() {};
     virtual ~NC_STACK_sample() {};
     
     virtual const std::string &ClassName() const {
@@ -46,7 +39,8 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_sample stack__sample;
+public:
+    TSampleData * p_sampl = NULL;
 };
 
 #endif // SAMPLE_H_INCLUDED
