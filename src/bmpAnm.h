@@ -35,16 +35,6 @@ struct bmpAnim_t1
     int16_t bitm_buff_cnt;
 };
 
-struct __NC_STACK_bmpanim
-{
-    bmpAnim_t1 *bmpanm_intern;
-    bmpAnim_t2 *current_frame;
-    int time_stmp;
-    int time_ovr;
-    int16_t anim_type;
-    int16_t frm_adds;
-};
-
 struct __attribute__((packed)) bmpanm_loc
 {
     int32_t frm_time;
@@ -64,9 +54,7 @@ public:
     virtual size_t rsrc_func66(rsrc_func66_arg *sv);
     virtual void bitmap_func130(bitmap_arg130 *arg);
 
-    NC_STACK_bmpanim() {
-        memset(&stack__bmpanim, 0, sizeof(stack__bmpanim));
-    };
+    NC_STACK_bmpanim() {};
     virtual ~NC_STACK_bmpanim() {};
     
     virtual const std::string &ClassName() const {
@@ -107,7 +95,13 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_bmpanim stack__bmpanim;
+public:
+    bmpAnim_t1 *bmpanm_intern = NULL;
+    bmpAnim_t2 *current_frame = NULL;
+    int time_stmp = 0;
+    int time_ovr = 0;
+    int16_t anim_type = 0;
+    int16_t frm_adds = 0;
 };
 
 #endif // BITMAP_H_INCLUDED

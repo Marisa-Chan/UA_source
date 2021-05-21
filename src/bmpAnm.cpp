@@ -27,13 +27,13 @@ size_t NC_STACK_bmpanim::Init(IDVList &stak)
     if ( !NC_STACK_bitmap::Init(stak) )
         return 0;
 
-    stack__bmpanim.bmpanm_intern = (bmpAnim_t1 *)getRsrc_pData();
-    stack__bmpanim.frm_adds = 1;
-    stack__bmpanim.anim_type = 0;
-    stack__bmpanim.time_ovr = 0;
-    stack__bmpanim.current_frame = stack__bmpanim.bmpanm_intern->start_frame;
+    bmpanm_intern = (bmpAnim_t1 *)getRsrc_pData();
+    frm_adds = 1;
+    anim_type = 0;
+    time_ovr = 0;
+    current_frame = bmpanm_intern->start_frame;
 
-    stack__bmpanim.anim_type = stak.Get<int32_t>(BANM_ATT_ANIMTYPE, 0);
+    anim_type = stak.Get<int32_t>(BANM_ATT_ANIMTYPE, 0);
 
     return 1;
 }
@@ -95,8 +95,6 @@ size_t NC_STACK_bmpanim::LoadingFromIFF(IFFile **file)
 
 size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
 {
-    __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
-
     IFFile *mfile = *file;
 
     const char *a3 = getRsrc_name();
@@ -126,7 +124,7 @@ size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
 
     mfile->writeS16B(1); //version
     mfile->writeS16B(6); //offset of name
-    mfile->writeS16B(bmpAnm->anim_type);
+    mfile->writeS16B(anim_type);
 
     mfile->write(a3, strlen(a3) + 1);
     mfile->popChunk();
@@ -887,9 +885,7 @@ int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, IFFile *a3)
 
 size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
 {
-    __NC_STACK_bmpanim *bmpanm = &stack__bmpanim;
-
-    if ( !bmpanm->bmpanm_intern )
+    if ( !bmpanm_intern )
         return 0;
 
     IFFile *mfile = NULL;
@@ -908,84 +904,82 @@ size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
         if ( !mfile )
             return 0;
     }
-    if ( bmpanim_func66__sub0(bmpanm->bmpanm_intern, resName, mfile) )
+    if ( bmpanim_func66__sub0(bmpanm_intern, resName, mfile) )
         return sv->OpenedStream;
     return 0;
 }
 
 void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
 {
-    __NC_STACK_bmpanim *bmpAnm = &stack__bmpanim;
-
     if ( arg->frame_time == -1 )
     {
-        bmpAnim_t2 *t2 = &bmpAnm->current_frame[ bmpAnm->frm_adds ];
+        bmpAnim_t2 *t2 = &current_frame[ frm_adds ];
 
-        if ( t2 == bmpAnm->bmpanm_intern->end_frame )
+        if ( t2 == bmpanm_intern->end_frame )
         {
-            if ( bmpAnm->anim_type )
+            if ( anim_type )
             {
                 t2--;
-                bmpAnm->frm_adds = -1;
+                frm_adds = -1;
             }
             else
             {
-                t2 = bmpAnm->bmpanm_intern->start_frame;
+                t2 = bmpanm_intern->start_frame;
             }
         }
-        else if ( t2 < bmpAnm->bmpanm_intern->start_frame )
+        else if ( t2 < bmpanm_intern->start_frame )
         {
             t2++;
-            bmpAnm->frm_adds = 1;
+            frm_adds = 1;
         }
 
-        bmpAnm->current_frame = t2;
+        current_frame = t2;
         arg->pbitm = t2->bitm;
         arg->outline = t2->outline;
     }
     else
     {
-        if ( arg->time_stmp != bmpAnm->time_stmp )
+        if ( arg->time_stmp != time_stmp )
         {
-            bmpAnm->time_stmp = arg->time_stmp;
+            time_stmp = arg->time_stmp;
 
-            bmpAnim_t2 *t2 = bmpAnm->current_frame;
-            int v8 = arg->frame_time + bmpAnm->time_ovr;
+            bmpAnim_t2 *t2 = current_frame;
+            int v8 = arg->frame_time + time_ovr;
 
             while ( v8 - t2->frm_time >= 0 )
             {
                 v8 = v8 - t2->frm_time;
 
-                t2 += bmpAnm->frm_adds;
+                t2 += frm_adds;
 
-                if ( t2 == bmpAnm->bmpanm_intern->end_frame )
+                if ( t2 == bmpanm_intern->end_frame )
                 {
-                    if ( bmpAnm->anim_type )
+                    if ( anim_type )
                     {
                         t2--;
-                        bmpAnm->frm_adds = -1;
+                        frm_adds = -1;
                     }
                     else
                     {
-                        t2 = bmpAnm->bmpanm_intern->start_frame;
+                        t2 = bmpanm_intern->start_frame;
                     }
                 }
-                else if ( t2 < bmpAnm->bmpanm_intern->start_frame )
+                else if ( t2 < bmpanm_intern->start_frame )
                 {
                     t2++;
-                    bmpAnm->frm_adds = 1;
+                    frm_adds = 1;
                 }
             }
 
-            bmpAnm->time_ovr = v8;
-            bmpAnm->current_frame = t2;
+            time_ovr = v8;
+            current_frame = t2;
             arg->pbitm = t2->bitm;
             arg->outline = t2->outline;
         }
         else
         {
-            arg->pbitm = bmpAnm->current_frame->bitm;
-            arg->outline = bmpAnm->current_frame->outline;
+            arg->pbitm = current_frame->bitm;
+            arg->outline = current_frame->outline;
         }
     }
 }
@@ -994,12 +988,12 @@ void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
 
 void NC_STACK_bmpanim::setBANM_animType(int newType)
 {
-    stack__bmpanim.anim_type = newType;
+    anim_type = newType;
 }
 
 ResBitmap * NC_STACK_bmpanim::GetResBmp()
 {
-    return stack__bmpanim.current_frame->bitm;
+    return current_frame->bitm;
 }
 
 int NC_STACK_bmpanim::getBMD_width()
@@ -1024,24 +1018,24 @@ const char *NC_STACK_bmpanim::getBANM_name()
 
 const char *NC_STACK_bmpanim::getBANM_classname()
 {
-    return stack__bmpanim.bmpanm_intern->className;
+    return bmpanm_intern->className;
 }
 
 int NC_STACK_bmpanim::getBANM_framecnt()
 {
-    return stack__bmpanim.bmpanm_intern->frame_cnt;
+    return bmpanm_intern->frame_cnt;
 }
 
 int NC_STACK_bmpanim::getBANM_animtype()
 {
-    return stack__bmpanim.anim_type;
+    return anim_type;
 }
 
 void NC_STACK_bmpanim::PrepareTexture( bool force )
 {
-    if (!stack__bmpanim.bmpanm_intern)
+    if (!bmpanm_intern)
         return;
     
-    for(int i = 0; i < stack__bmpanim.bmpanm_intern->bitm_buff_cnt; i++)
-        stack__bmpanim.bmpanm_intern->bitm_buff[i].bitmObj->PrepareTexture(force);
+    for(int i = 0; i < bmpanm_intern->bitm_buff_cnt; i++)
+        bmpanm_intern->bitm_buff[i].bitmObj->PrepareTexture(force);
 }
