@@ -4,11 +4,6 @@
 #include "nucleas.h"
 
 
-struct __NC_STACK_itimer
-{
-
-};
-
 class NC_STACK_itimer: public NC_STACK_nucleus
 {
 public:
@@ -16,9 +11,7 @@ public:
         return 1;
     };
 
-    NC_STACK_itimer() {
-        memset(&stack__itimer, 0, sizeof(stack__itimer));
-    };
+    NC_STACK_itimer() {};
     virtual ~NC_STACK_itimer() {};
     
     virtual const std::string &ClassName() const {
@@ -31,8 +24,6 @@ public:
 
     //Data
     static const Nucleus::ClassDescr description;
-
-    __NC_STACK_itimer stack__itimer;
 };
 
 #endif // ITIMER_H_INCLUDED
