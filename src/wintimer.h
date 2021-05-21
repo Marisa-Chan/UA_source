@@ -3,19 +3,12 @@
 
 #include "itimer.h"
 
-struct __NC_STACK_wintimer
-{
-    uint32_t ticks;
-};
-
 class NC_STACK_wintimer: public NC_STACK_itimer
 {
 public:
     virtual int itimer_func64();
 
-    NC_STACK_wintimer() {
-        memset(&stack__wintimer, 0, sizeof(stack__wintimer));
-    };
+    NC_STACK_wintimer() {};
     virtual ~NC_STACK_wintimer() {};
     
     virtual const std::string &ClassName() const {
@@ -29,7 +22,8 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    __NC_STACK_wintimer stack__wintimer;
+public:
+    uint32_t ticks = 0;
 };
 
 #endif // WINTIMER_H_INCLUDED

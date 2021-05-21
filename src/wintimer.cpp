@@ -19,13 +19,11 @@ uint32_t wintimer_func64__sub0()
 
 int NC_STACK_wintimer::itimer_func64()
 {
-    __NC_STACK_wintimer *tmr = &stack__wintimer;
-
     uint32_t tik = wintimer_func64__sub0();
 
-    int period = tik - tmr->ticks;
+    int period = tik - ticks;
 
-    tmr->ticks = tik;
+    ticks = tik;
 
     if ( period < 0 || period > 2000 )
         period = 1;
