@@ -256,7 +256,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
         skel133.field_4 |= 1;
     if ( renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
         skel133.field_4 |= 2;
-    if ( flags & ADE_ATT_DPTHFADE )
+    if ( flags & ADE_FLAG_DPTHFADE )
         skel133.field_4 |= 4;
 
     skel133.minZ = arg->minZ;
