@@ -15,7 +15,6 @@
 #include "../bitmap.h"
 #include "../ilbm.h"
 #include "../log.h"
-#include "../gui/oldcompat.h"
 #include "../font.h"
 #include "inivals.h"
 
@@ -504,16 +503,15 @@ size_t GFXEngine::windd_func0(IDVList &stak)
 
 bool GFXEngine::SetResolution(Common::Point res)
 {
-    _width = res.x;   //stak.Get<int32_t>(ATT_WIDTH, 0);
-    _height = res.y; //stak.Get<int32_t>(ATT_HEIGHT, 0);
+    _resolution = res;   //stak.Get<int32_t>(ATT_WIDTH, 0);
     
-    _clip = Common::Rect(_width - 1, _height - 1);
+    _clip = _resolution - Common::Point(1, 1);
 
-    _field_54c = _width / 2;
-    _field_550 = _height / 2;
+    _field_54c = _resolution.x / 2;
+    _field_550 = _resolution.y / 2;
 
-    _field_554 = _width / 2;
-    _field_558 = _height / 2;
+    _field_554 = _resolution.x / 2;
+    _field_558 = _resolution.y / 2;
     
     return true;
 }
@@ -545,11 +543,11 @@ size_t GFXEngine::func0(IDVList &stak)
 
 void GFXEngine::ApplyResolution()
 {        
-    if ( (float)_width / (float)_height >= 1.4 )
+    if ( (float)_resolution.x / (float)_resolution.y >= 1.4 )
     {
-        int half = (_width + _height) / 2;
-        _corrW = (float)half * 1.1429 / (float)_width;
-        _corrH = (float)half * 0.85715 / (float)_height;
+        int half = (_resolution.x + _resolution.y) / 2;
+        _corrW = (float)half * 1.1429 / (float)_resolution.x;
+        _corrH = (float)half * 0.85715 / (float)_resolution.y;
         _corrIW = 1.0 / _corrW;
         _corrIH = 1.0 / _corrH;
     }
@@ -1113,8 +1111,8 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
     int y_pos_line = 0;
     int x_pos_line = 0;
 
-    int halfWidth = _width / 2;
-    int halfHeight = _height / 2;
+    int halfWidth = _resolution.x / 2;
+    int halfHeight = _resolution.y / 2;
 
     int line_width = 0;
     int line_height = 0;
@@ -1239,7 +1237,7 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
             case 4: //ypos
                 y_out = FontUA::get_s16(&curpos);
                 if ( y_out < 0 )
-                    y_out += _height;
+                    y_out += _resolution.y;
 
                 x_pos_line = x_out;
                 y_pos_line = y_out;
@@ -1495,7 +1493,7 @@ void GFXEngine::EndFrame()
         DrawFBO();
     }    
     
-    Gui::Root::Instance.Draw(RealScreen());
+    Gui::Root::Instance.Draw(Screen());
     DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
     
@@ -1777,12 +1775,12 @@ UA_PALETTE *GFXEngine::GetPalette()
 
 int16_t GFXEngine::GetWidth()
 {
-    return _width;
+    return _resolution.x;
 }
 
 int16_t GFXEngine::GetHeight()
 {
-    return _height;
+    return _resolution.y;
 }
 
 
@@ -1791,7 +1789,7 @@ void GFXEngine::draw2DandFlush()
     if (_colorEffects)
         GLBindFramebuffer(GL_FRAMEBUFFER, 0);
     
-    Gui::Root::Instance.Draw(RealScreen());
+    Gui::Root::Instance.Draw(Screen());
     DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
 
@@ -2362,9 +2360,6 @@ void GFXEngine::Init()
     func0( stak );
 
     Gui::Instance.SetScreenSize(GetSize());
-    portalID = Gui::Instance.AddPortal(Common::Point(640, 480), Common::Rect(0, 0, 640, 480));
-    scrCompat = new Gui::OldCompat(Common::Point(640, 480));
-    Gui::Instance.AddWidgetPortal(portalID, scrCompat);
     
     LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
     
@@ -2465,9 +2460,6 @@ void GFXEngine::Deinit()
     if (ScreenSurface)
         SDL_FreeSurface(ScreenSurface);
     
-    if (scrCompat)
-        delete scrCompat;
-    
     ScreenSurface = NULL;
 }
 
@@ -2481,10 +2473,7 @@ int GFXEngine::EventsWatcher(void *, SDL_Event *event)
         {
         case SDL_WINDOWEVENT_RESIZED:
         case SDL_WINDOWEVENT_SIZE_CHANGED:
-            Instance.RecreateScreenSurface();
             Instance.UpdateFBOSizes();
-            Gui::Instance.SetScreenSize(System::GetResolution());
-            Gui::Instance.SetPortal(Instance.portalID, Common::Rect(System::GetResolution()));
             break;
         default:
             break;
@@ -2638,9 +2627,7 @@ void GFXEngine::SetResolution(int res)
         delete fil;
     }
     
-    Gui::Instance.ResizePortal(portalID, Common::Point(picked.w, picked.h));
     Gui::Instance.SetScreenSize(System::GetResolution());
-    Gui::Instance.SetPortal(portalID, Common::Rect(Common::Point(picked.w, picked.h)));
     
     UpdateFBOSizes();
 }
@@ -2778,17 +2765,9 @@ uint8_t *GFXEngine::MakeDepthScreenCopy(int *ow, int *oh)
 
 
 
-
-
-
-SDL_Surface *GFXEngine::RealScreen()
-{
-    return ScreenSurface;
-}
-
 SDL_Surface *GFXEngine::Screen()
 {
-    return scrCompat->GetSurface();
+    return ScreenSurface;
 }
 
 
@@ -3770,6 +3749,29 @@ float GFXEngine::GetColorEffectPower(int id)
         pwr = 100;
     
     return (float)pwr / 100.0;
+}
+
+Common::Point GFXEngine::ConvertPosTo2DStuff(const Common::Point &pos)
+{
+    Common::Point real = System::GetResolution();
+
+    if (real == _resolution)
+        return pos;
+    
+    Common::Point t( pos.x * _resolution.x / real.x,
+                     pos.y * _resolution.y / real.y );
+
+    if (t.x < 0)
+        t.x = 0;
+    if (t.x >= _resolution.x)
+        t.x = _resolution.x - 1;
+
+    if (t.y < 0)
+        t.y = 0;
+    if (t.y >= _resolution.y)
+        t.y = _resolution.y - 1;
+
+    return t;
 }
 
 

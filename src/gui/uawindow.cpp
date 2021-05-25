@@ -107,7 +107,7 @@ void UAWindow::Draw(SDL_Surface *surface, const Common::Rect &dirt)
     SDL_FillRect(surface, &tmp, SDL_MapRGB(surface->format, 255, 0, 0));*/
 }
 
-void UAWindow::MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum)
+void UAWindow::MouseDown(Common::Point pos, Common::Point scrPos, int button)
 {   
     if (button == MICE_LEFT)
     {
@@ -124,7 +124,7 @@ void UAWindow::MouseDown(Common::Point pos, Common::Point scrPos, int button, in
         
 }
 
-void UAWindow::MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum)
+void UAWindow::MouseUp(Common::Point pos, Common::Point scrPos, int button)
 {
     if (button == MICE_LEFT)
     {
@@ -132,7 +132,7 @@ void UAWindow::MouseUp(Common::Point pos, Common::Point scrPos, int button, int 
     }
 }
 
-void UAWindow::MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int button)
+void UAWindow::MouseMove(Common::Point pos, Common::Point scrPos, int button)
 {
     if (_inResizing && (button & MICE_LEFT))
         Resize(pos + _rszPnt);

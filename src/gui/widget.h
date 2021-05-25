@@ -97,9 +97,9 @@ public:
     
     void ToFront();
 
-    virtual void MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int buttons);
-    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
-    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum = 1);
+    virtual void MouseMove(Common::Point pos, Common::Point scrPos, int buttons);
+    virtual void MouseDown(Common::Point pos, Common::Point scrPos, int button);
+    virtual void MouseUp(Common::Point pos, Common::Point scrPos, int button);
     virtual void MouseEnter();
     virtual void MouseLeave();
     virtual void Draw(SDL_Surface *surface, const Common::Rect &dirt) {};
@@ -201,7 +201,6 @@ protected:
     StreamTex      *_hwTex = NULL;
 private:
     int    _rooted = Root::LAYER_UNK;
-    int  _portalid = 0;
 };
 
 }

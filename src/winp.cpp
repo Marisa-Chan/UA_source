@@ -272,21 +272,23 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
     case SDL_MOUSEBUTTONDOWN:
     {
-        Common::Point pos = Common::Point(event->button.x, event->button.y);
-        Gui::Root::Instance.MouseDown(pos, event->button.button, event->button.clicks);
+        Common::Point pos = GFX::GFXEngine::Instance.ConvertPosTo2DStuff( Common::Point(event->button.x, event->button.y) );
+        if ( !Gui::Root::Instance.MouseDown(pos, event->button.button, event->button.clicks) )
+            OnMouseDown(pos, event->button.button, event->button.clicks);
     }
     break;
 
     case SDL_MOUSEBUTTONUP:
     {
-        Common::Point pos = Common::Point(event->button.x, event->button.y);
-        Gui::Root::Instance.MouseUp(pos, event->button.button, event->button.clicks);
+        Common::Point pos = GFX::GFXEngine::Instance.ConvertPosTo2DStuff( Common::Point(event->button.x, event->button.y) );
+        if ( !Gui::Root::Instance.MouseUp(pos, event->button.button, event->button.clicks) )
+            OnMouseUp(pos, event->button.button, event->button.clicks);
     }
     break;
 
     case SDL_MOUSEMOTION:
     {
-        Common::Point pos = Common::Point(event->button.x, event->button.y);
+        Common::Point pos = GFX::GFXEngine::Instance.ConvertPosTo2DStuff( Common::Point(event->button.x, event->button.y) );
         Common::Point rel = Common::Point(event->motion.xrel, event->motion.yrel);
         if ( !Gui::Root::Instance.MouseMove(pos, rel) )
             OnMouseMove(pos, rel);

@@ -415,19 +415,19 @@ void Widget::Resize(Common::Point sz)
         w->OnParentResize(sz);
 }
 
-void Widget::MouseDown(Common::Point pos, Common::Point scrPos, int button, int clkNum)
+void Widget::MouseDown(Common::Point pos, Common::Point scrPos, int button)
 {
     if (_fOnMouseDown)
         _fOnMouseDown(this, _fOnMouseDownData, pos, scrPos, button);
 }
 
-void Widget::MouseUp(Common::Point pos, Common::Point scrPos, int button, int clkNum)
+void Widget::MouseUp(Common::Point pos, Common::Point scrPos, int button)
 {
     if (_fOnMouseUp)
         _fOnMouseUp(this, _fOnMouseUpData, pos, scrPos, button);
 }
 
-void Widget::MouseMove(Common::Point pos, Common::Point scrPos, Common::Point relMove, int buttons)
+void Widget::MouseMove(Common::Point pos, Common::Point scrPos, int buttons)
 {
     if (_fOnMouseMove)
         _fOnMouseMove(this, _fOnMouseMoveData, pos, scrPos, buttons);
@@ -461,11 +461,7 @@ int Widget::GetHeight() const
 Common::Point Widget::GetSpace() const
 {
     if (IsRooted())
-    {
-        if (_rooted == Root::LAYER_PORTAL)
-            return Root::Instance.GetScreenSize(_portalid);
         return Root::Instance.GetScreenSize();
-    }
     else if (_parent)
         return _parent->GetSize();
     return Common::Point();        

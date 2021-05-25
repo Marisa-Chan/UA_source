@@ -31,21 +31,6 @@ public:
     bool MoveToFirst(Widget *w);
 };
 
-struct ViewPortal
-{
-    bool          Used = false;
-    Common::Point Size; //Internal resolution
-    Common::Rect  Portal;
-    WidgetList    Widgets;
-    
-    // Only used with software rendering
-    SDL_Surface  *SoftSurface = NULL;
-    
-    Common::Point GetPortalPos(Common::Point pos);
-    
-    ~ViewPortal();
-};
-
 struct StreamTex
 {
     Common::Point Size;
@@ -94,7 +79,6 @@ public:
         LAYER_NORMAL = 1,
         LAYER_FRONT  = 2,
         LAYER_BACK   = 3,
-        LAYER_PORTAL = 4,
     };
 public:
     uint32_t GetNextId();
@@ -118,7 +102,7 @@ public:
     void StopHoldingMouse();
 
     void SetScreenSize(Common::Point sz);
-    Common::Point GetScreenSize(int32_t portalID = -1);
+    Common::Point GetScreenSize();
 
     Widget *FindByPos(const Common::Point &pos);
     
@@ -136,16 +120,6 @@ public:
     
     void HwCompose();
     
-    static SDL_Surface *CreateScreenFmtSurface(uint32_t w, uint32_t h);
-    static void ModAlpha(SDL_Surface *surf, Common::Rect space, uint8_t alpha);
-
-    // Portals
-    int32_t AddPortal(Common::Point size, Common::Rect portal);
-    bool DeletePortal(int32_t id);
-    bool ResizePortal(int32_t id, Common::Point size);
-    bool SetPortal(int32_t id, Common::Rect portal);
-    void AddWidgetPortal(int32_t id, Widget *w, bool top = true);
-    
 protected:
     Root() {};
     ~Root();
@@ -154,10 +128,8 @@ protected:
     Widget *_FindByMouse(WidgetList &lst, const Common::Point& pos);
     Widget *_FindByID(WidgetList &lst, uint32_t id, bool enabled = true);
     void DrawWidget(SDL_Surface *screen, Common::Rect space, Common::Point parentOffset, Widget *w, uint32_t alph = 255);
-    
-    void DrawPortal(SDL_Surface *screen, ViewPortal &p);
         
-    WidgetList& GetLayerList(Widget *w);
+    WidgetList& GetLayerList(int l);
     
     bool CheckEnable(Widget *w);
     void ValidateWidgets();
@@ -167,15 +139,13 @@ protected:
     int32_t _TimerGet(std::list<Timer> &list, uint32_t id);
     bool _TimerDelete(std::list<Timer> &list, uint32_t id); // By timer ID
     int _TimerDeleteByWidget(std::list<Timer> &list, uint32_t wID, uint32_t code); // By widget ID
-
+    
+    void ModAlpha(SDL_Surface *surf, Common::Rect space, uint8_t alpha);
+    
     void HwPrepareWidget(Widget *w);
     void HwRenderWidget(Widget *w);
     
-    /***
-     * Check if this widget is in portal
-     * When convert position into portal coordinate
-     ***/
-    Common::Point CorrectPosForWidget(Widget *w, Common::Point pos);
+    SDL_Surface *CreateScreenFmtSurface(uint32_t w, uint32_t h);
 
 public:
     static Root Instance;
@@ -192,8 +162,6 @@ protected:
     Common::Point      _dragPos;
     Common::Point      _micePos;
     int                _buttons = 0;
-    
-    std::vector<ViewPortal> _portals;
     
     /** Timer things **/
     uint32_t       _nextTimerID = 1;

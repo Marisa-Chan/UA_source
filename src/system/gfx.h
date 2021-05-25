@@ -14,9 +14,6 @@
 #include "../nucleas.h"
 
 
-
-namespace Gui{ class OldCompat; };
-
 #define GFX_MAX_VERTEX 12
 
 class NC_STACK_bitmap;
@@ -301,7 +298,6 @@ public:
     
     
     SDL_Surface *Screen();
-    SDL_Surface *RealScreen();
     
 
     uint8_t *MakeScreenCopy(int *ow, int *oh);
@@ -422,7 +418,7 @@ public:
     virtual int16_t GetWidth();
     virtual int16_t GetHeight();
 
-    Common::Point GetSize() const { return Common::Point(_width, _height); };
+    Common::Point GetSize() const { return _resolution; };
     
     
     
@@ -454,6 +450,8 @@ public:
     void fpsLimitter(int value);
     
     float GetColorEffectPower(int id);
+    
+    Common::Point ConvertPosTo2DStuff(const Common::Point &pos);
 
 protected:
     void initPolyEngine();
@@ -493,8 +491,6 @@ private:
     std::array<SDL_Cursor *, 11> cursors;
     int CurrentCursorID = -1;
     int32_t GfxSelectedMode = 0;
-    Gui::OldCompat *scrCompat = NULL;
-    int32_t portalID = -1;
     
     SDL_Surface *ScreenSurface = NULL;
     GLuint screenTex = 0;
@@ -549,8 +545,7 @@ public:
     
 protected:
     // Display class
-    int16_t _width  = 0;
-    int16_t _height = 0;
+    Common::Point _resolution;
 
     // Win3d
     GLdouble _frustum[16];

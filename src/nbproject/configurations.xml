@@ -6,7 +6,6 @@
         <in>format.cc</in>
       </df>
       <df name="gui">
-        <in>oldcompat.cpp</in>
         <in>root.cpp</in>
         <in>uabutton.cpp</in>
         <in>uacommon.cpp</in>
@@ -255,10 +254,6 @@
       <item path="glob_funcs.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
-      </item>
-      <item path="gui/oldcompat.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="gui/oldcompat.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="gui/root.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
