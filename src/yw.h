@@ -2593,7 +2593,7 @@ public:
     int beam_energy_start;
     int beam_energy_add;
     int beamenergy;
-    int field_8283;
+    int _currentBeamLoad;
     int easy_cheat_keys;
 
     std::string initScriptLoc;

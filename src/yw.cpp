@@ -326,7 +326,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     beam_energy_start = 0;
     beam_energy_add = 0;
     beamenergy = 0;
-    field_8283 = 0;
+    _currentBeamLoad = 0;
     easy_cheat_keys = 0;
 
     playerOwner = 0;
@@ -6472,9 +6472,9 @@ size_t NC_STACK_ypaworld::ypaworld_func168(NC_STACK_ypabact *bact)
             }
             else
             {
-                field_8283 += (bact->_energy_max + 99) / 100;
+                _currentBeamLoad += (bact->_energy_max + 99) / 100;
 
-                if ( field_8283 < beamenergy )
+                if ( _currentBeamLoad <= beamenergy )
                     _levelInfo->Buddies.push_back( MapBuddy( bact->_commandID, bact->_vehicleID, bact->_energy ) );
                 else
                     return 0;

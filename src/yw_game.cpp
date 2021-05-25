@@ -191,7 +191,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     field_162A = 0;
     field_1624 = 0;
     vehicle_sector_ratio_1 = 0;
-    field_8283 = 0;
+    _currentBeamLoad = 0;
     field_1a20 = 0;
 
     _levelInfo->Gates.clear();
