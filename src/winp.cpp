@@ -305,7 +305,7 @@ int NC_STACK_winp::InputWatch(void *, SDL_Event *event)
 
 void NC_STACK_winp::OnMouseDown(Common::Point pos, int btn, int clkNum)
 {
-    if (btn == Gui::MICE_LEFT)
+    if (btn == SDL_BUTTON_LEFT)
     {
         _mLstate = true;
         _mLDpos = pos;
@@ -314,7 +314,7 @@ void NC_STACK_winp::OnMouseDown(Common::Point pos, int btn, int clkNum)
 
         KeyDown(Input::KC_LMB);
     }
-    else if (btn == Gui::MICE_RIGHT)
+    else if (btn == SDL_BUTTON_RIGHT)
     {
         _mRstate = true;
         _mRDpos = pos;
@@ -323,7 +323,7 @@ void NC_STACK_winp::OnMouseDown(Common::Point pos, int btn, int clkNum)
 
         KeyDown(Input::KC_RMB);
     }
-    else if (btn == Gui::MICE_MIDDLE)
+    else if (btn == SDL_BUTTON_MIDDLE)
     {
         _mMstate = true;
         _mMDpos = pos;
@@ -337,7 +337,7 @@ void NC_STACK_winp::OnMouseDown(Common::Point pos, int btn, int clkNum)
 
 void NC_STACK_winp::OnMouseUp(Common::Point pos, int btn, int clkNum)
 {
-    if (btn == Gui::MICE_LEFT)
+    if (btn == SDL_BUTTON_LEFT)
     {
         _mLstate = false;
         _mLUpos = pos;
@@ -349,7 +349,7 @@ void NC_STACK_winp::OnMouseUp(Common::Point pos, int btn, int clkNum)
         if ((clkNum & 1) == 0)
             _mDBLstate = true;
     }
-    else if (btn == Gui::MICE_RIGHT)
+    else if (btn == SDL_BUTTON_RIGHT)
     {
         _mRstate = false;
         _mRUpos = pos;
@@ -358,7 +358,7 @@ void NC_STACK_winp::OnMouseUp(Common::Point pos, int btn, int clkNum)
 
         KeyUp(Input::KC_RMB);
     }
-    else if (btn == Gui::MICE_MIDDLE)
+    else if (btn == SDL_BUTTON_MIDDLE)
     {
         _mMstate = false;
         _mMUpos = pos;
