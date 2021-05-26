@@ -187,27 +187,27 @@ int yw_write_video(FSMgr::FileHandle *fil, UserData *usr)
     fil->printf("new_video\n");
     fil->printf("    videomode = %d\n", usr->p_ypaworld->game_default_res);
 
-    if ( usr->GFX_flags & 1 )
+    if ( usr->GFX_flags & World::GFX_FLAG_FARVIEW )
         fil->printf("    farview = yes\n");
     else
         fil->printf("    farview = no\n");
 
-    if ( usr->GFX_flags & 0x10 )
+    if ( usr->GFX_flags & World::GFX_FLAG_16BITTEXTURE )
         fil->printf("    16bittexture = yes\n");
     else
         fil->printf("    16bittexture = no\n");
 
-    if ( usr->GFX_flags & 8 )
+    if ( usr->GFX_flags & World::GFX_FLAG_DRAWPRIMITIVES )
         fil->printf("    drawprimitive = yes\n");
     else
         fil->printf("    drawprimitive = no\n");
 
-    if ( usr->GFX_flags & 2 )
+    if ( usr->GFX_flags & World::GFX_FLAG_SKYRENDER )
         fil->printf("    heaven = yes\n");
     else
         fil->printf("    heaven = no\n");
 
-    if ( usr->GFX_flags & 4 )
+    if ( usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE )
         fil->printf("    softmouse = yes\n");
     else
         fil->printf("    softmouse = no\n");

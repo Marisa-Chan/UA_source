@@ -3014,7 +3014,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         }
     }
 
-    if ( usr->GFX_flags & 4 )
+    if ( usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE )
     {
         GFX::Engine.setWDD_cursor(1);
     }
@@ -6398,7 +6398,7 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
 
 
     v16.butID = 1150;
-    v16.field_4 = ((usr->GFX_flags & 0x10) == 0) + 1;
+    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
     usr->video_button->button_func73(&v16);
 
     v16.field_4 = ((usr->snd__flags2 & 0x10) == 0) + 1;
@@ -6420,19 +6420,19 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
     usr->video_button->button_func73(&v16);
 
     v16.butID = 1157;
-    v16.field_4 = ((usr->GFX_flags & 1) == 0) + 1;
+    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_FARVIEW) == 0) + 1;
     usr->video_button->button_func73(&v16);
 
-    v16.field_4 = ((usr->GFX_flags & 2) == 0) + 1;
+    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
     v16.butID = 1160;
     usr->video_button->button_func73(&v16);
 
     v16.butID = 1165;
-    v16.field_4 = ((usr->GFX_flags & 4) == 0) + 1;
+    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
     usr->video_button->button_func73(&v16);
 
     v16.butID = 1166;
-    v16.field_4 = ((usr->GFX_flags & 8) == 0) + 1;
+    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_DRAWPRIMITIVES) == 0) + 1;
     usr->video_button->button_func73(&v16);
 
     std::string name;
@@ -7042,7 +7042,7 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         }
     }
 
-    if ( usr->GFX_flags & 4 )
+    if ( usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE )
     {
         GFX::Engine.setWDD_cursor(1);
     }

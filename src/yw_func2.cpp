@@ -1026,12 +1026,12 @@ void UserData::sb_0x46aa8c()
     {
         if ( field_0x13a8 & 1 )
         {
-            GFX_flags |= 1;
+            GFX_flags |= World::GFX_FLAG_FARVIEW;
             p_YW->SetFarView(true);
         }
         else
         {
-            GFX_flags &= 0xFE;
+            GFX_flags &= ~World::GFX_FLAG_FARVIEW;
             p_YW->SetFarView(false);
         }
     }
@@ -1040,12 +1040,12 @@ void UserData::sb_0x46aa8c()
     {
         if ( field_0x13a8 & 2 )
         {
-            GFX_flags |= 2;
+            GFX_flags |= World::GFX_FLAG_SKYRENDER;
             yw->setYW_skyRender(1);
         }
         else
         {
-            GFX_flags &= ~2;
+            GFX_flags &= ~World::GFX_FLAG_SKYRENDER;
             yw->setYW_skyRender(0);
         }
 
@@ -1055,13 +1055,13 @@ void UserData::sb_0x46aa8c()
     {
         if ( field_0x13a8 & 4 )
         {
-            GFX_flags |= 4;
+            GFX_flags |= World::GFX_FLAG_SOFTMOUSE;
             yw->field_73CE |= 0x40;
             GFX::Engine.setWDD_cursor(1);
         }
         else
         {
-            GFX_flags &= 0xFB;
+            GFX_flags &= ~World::GFX_FLAG_SOFTMOUSE;
             yw->field_73CE &= 0xBF;
             GFX::Engine.setWDD_cursor(0);
         }
@@ -1138,12 +1138,12 @@ void UserData::sb_0x46aa8c()
     {
         if ( field_0x13a8 & 0x10 )
         {
-            GFX_flags |= 0x10;
+            GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
             GFX::Engine.setWDD_16bitTex(1);
         }
         else
         {
-            GFX_flags &= 0xEF;
+            GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
             GFX::Engine.setWDD_16bitTex(0);
         }
 
@@ -1156,12 +1156,12 @@ void UserData::sb_0x46aa8c()
     {
         if ( field_0x13a8 & 8 )
         {
-            GFX_flags |= 8;
+            GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
             GFX::Engine.setWDD_drawPrim(1);
         }
         else
         {
-            GFX_flags &= 0xF7;
+            GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
             GFX::Engine.setWDD_drawPrim(0);
         }
 
@@ -2008,23 +2008,23 @@ void UserData::sub_46A3C0()
     video_button->button_func73(&v10);
 
     v10.butID = 1157;
-    v10.field_4 = ((GFX_flags & 1) == 0) + 1;
+    v10.field_4 = ((GFX_flags & World::GFX_FLAG_FARVIEW) == 0) + 1;
     video_button->button_func73(&v10);
 
-    v10.field_4 = ((GFX_flags & 2) == 0) + 1;
+    v10.field_4 = ((GFX_flags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
     v10.butID = 1160;
     video_button->button_func73(&v10);
 
     v10.butID = 1150;
-    v10.field_4 = ((GFX_flags & 0x10) == 0) + 1;
+    v10.field_4 = ((GFX_flags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
     video_button->button_func73(&v10);
 
     v10.butID = 1166;
-    v10.field_4 = ((GFX_flags & 8) == 0) + 1;
+    v10.field_4 = ((GFX_flags & World::GFX_FLAG_DRAWPRIMITIVES) == 0) + 1;
     video_button->button_func73(&v10);
 
     v10.butID = 1165;
-    v10.field_4 = ((GFX_flags & 4) == 0) + 1;
+    v10.field_4 = ((GFX_flags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
     video_button->button_func73(&v10);
 
     v10.field_4 = (enemyindicator == 0) + 1;
