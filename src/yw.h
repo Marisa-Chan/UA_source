@@ -632,7 +632,7 @@ public:
     int kickTime;
     int32_t latencyCheck;
     int32_t netProblemCount;
-    uint32_t netAllOkCount;
+    int32_t netAllOkCount;
     uint32_t deadCheck;
     int32_t sendScore;
     netType2 players[8];
