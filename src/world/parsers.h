@@ -103,6 +103,8 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
+    bool shellGfxMode = false;
+    bool gfxMode = false;
 };
 
 

@@ -1947,11 +1947,15 @@ bool MiscParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
         return false;
 
     _o.beam_energy_start = 500;
-	_o.beam_energy_add = 100;
-	_o.unit_limit = 512;
-	_o.unit_limit_type = 0;
-	_o.unit_limit_arg = 0;
-	_o.easy_cheat_keys = 0;
+    _o.beam_energy_add = 100;
+    _o.unit_limit = 512;
+    _o.unit_limit_type = 0;
+    _o.unit_limit_arg = 0;
+    _o.easy_cheat_keys = 0;
+        
+    shellGfxMode = false;
+    gfxMode = false;
+    
     return true;
 }
 
@@ -1972,6 +1976,8 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         if ( stok.GetNext(&pp1) && stok.GetNext(&pp2) )
         {
             _o.shell_default_res = std::stol(pp2, NULL, 0) | (std::stol(pp1, NULL, 0) << 12);
+            if (!shellGfxMode)
+                _o._shellGfxMode = Common::Point(std::stol(pp1, NULL, 0), std::stol(pp2, NULL, 0));
         }
     }
     else if ( !StriCmp(p1, "game_default_res") )
@@ -1981,6 +1987,8 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         if ( stok.GetNext(&pp1) && stok.GetNext(&pp2) )
         {
             _o.game_default_res = std::stol(pp2, NULL, 0) | (std::stol(pp1, NULL, 0) << 12);
+            if (!gfxMode)
+                _o._gfxMode = Common::Point(std::stol(pp1, NULL, 0), std::stol(pp2, NULL, 0));
         }
     }
     else if ( !StriCmp(p1, "max_impulse") )
@@ -3241,15 +3249,12 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 {
     if ( !StriCmp(p1, "end") )
     {
-        int txt16bit = GFX::Engine.getWDD_16bitTex();
-        int simple_d3d = GFX::Engine.getWDD_drawPrim();
-
-        if ( simple_d3d )
+        if ( GFX::Engine.getWDD_drawPrim() )
             _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
         else
             _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
 
-        if ( txt16bit )
+        if ( GFX::Engine.getWDD_16bitTex() )
             _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
         else
             _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
@@ -3262,41 +3267,8 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     if ( !StriCmp(p1, "videomode") )
     {
         int modeid = std::stoi(p2);
-        const video_mode_node *vdmd = NULL;
-        int index = 0;
-
-        for (const auto &nod : _o.GameShell->video_mode_list)
-        {
-            if (modeid == nod.sort_id)
-            {
-                vdmd = &nod;
-                break;
-            }
-            index++;
-        }
-
-        if ( !vdmd )
-        {
-            ypa_log_out("Warning: This machine doesn't support mode %d\n", modeid);
-
-            index = 0;
-            for (const auto &nod : _o.GameShell->video_mode_list)
-            {
-                if (nod.width == 640 && nod.height == 480)
-                {
-                    vdmd = &nod;
-                    break;
-                }
-                index++;
-            }
-        }
-
-        if ( !vdmd )
-            printf("vdmd is NULL %s:%d\n", __FILE__, __LINE__);
-
-        _o.GameShell->field_FBE = index;
-        _o.game_default_res = vdmd->sort_id;
-        _o.GameShell->game_default_res = vdmd->sort_id;
+        _o.game_default_res = modeid;
+        _o.GameShell->game_default_res = modeid;
     }
     else if ( !StriCmp(p1, "farview") )
     {
@@ -3377,6 +3349,32 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
         {
             _o.field_73CE &= ~World::PREF_ENEMYINDICATOR;
             _o.GameShell->enemyindicator = false;
+        }
+    }
+    else if ( !StriCmp(p1, "gfxmode") )
+    {
+        Stok stok(p2, " _");
+        std::string resW, resH, resWin;
+        
+        if ( stok.GetNext(&resW) && stok.GetNext(&resH) && stok.GetNext(&resWin))
+        {
+            int w = std::stoi(resW);
+            int h = std::stoi(resH);
+            int win = std::stoi(resWin);
+            
+            const std::vector<GFX::GfxMode> &pModes = GFX::GFXEngine::Instance.GetAvailableModes();
+            for (size_t i = 0; i < pModes.size(); ++i)
+            {
+                const GFX::GfxMode &mode = pModes.at(i);
+                if (mode.w == w && mode.h == h)
+                {
+                    _o.GameShell->field_FBE = i;
+                    _o._gfxMode = mode;
+                    _o._gfxWindowed = win;
+                    _o.GameShell->_gfxMode = mode;
+                    break;
+                }
+            }
         }
     }
     else

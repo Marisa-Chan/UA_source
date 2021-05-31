@@ -218,6 +218,12 @@ int yw_write_video(FSMgr::FileHandle *fil, UserData *usr)
         fil->printf("    enemyindicator = no\n");
 
     fil->printf("    fxnumber = %d\n", usr->fxnumber);
+    
+    if (usr->p_ypaworld->_gfxWindowed)
+        fil->printf("    ;#!gfxmode = %d_%d_1\n", usr->p_ypaworld->_gfxMode.w, usr->p_ypaworld->_gfxMode.h);
+    else
+        fil->printf("    ;#!gfxmode = %d_%d_0\n", usr->p_ypaworld->_gfxMode.w, usr->p_ypaworld->_gfxMode.h);
+    
     fil->printf("end\n\n");
 
     return 1;

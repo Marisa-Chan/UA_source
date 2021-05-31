@@ -56,18 +56,23 @@ ResRatio::ResRatio(int32_t w, int32_t h)
     R = (float)W / (float)H;
 }
 
-bool ResRatio::operator==(const ResRatio &b)
+bool ResRatio::operator==(const ResRatio &b) const
 {
     if (W != b.W || H != b.H)
         return false;
     return true;
 }
 
-bool ResRatio::operator!=(const ResRatio &b)
+bool ResRatio::operator!=(const ResRatio &b) const
 {
     if (W == b.W || H == b.H)
         return false;
     return true;
+}
+
+ResRatio::operator Common::Point() const
+{
+    return Common::Point(W, H);
 }
 
 void ResRatio::Set(int32_t w, int32_t h)
@@ -327,19 +332,26 @@ void SetVideoMode(const Common::Point &sz, uint32_t full, SDL_DisplayMode *mode)
         }
         else
         {
-            if (winRes != ResRatio(sz))
+            if (winRes != sz)
             {
                 if (SDL_GetWindowFlags(window) & SDL_WINDOW_MAXIMIZED)
                 {
                     SDL_RestoreWindow(window);
                     SDL_Delay(250);
+                    
+                    SDL_SetWindowSize(window, sz.x, sz.y);
+                    
+                    SDL_MaximizeWindow(window);
+                    SDL_Delay(250);
                 }
-
-                SDL_SetWindowSize(window, sz.x, sz.y);
+                else
+                    SDL_SetWindowSize(window, sz.x, sz.y);
             }
         }
         
-        winRes = ResRatio(sz);
+        int w, h;
+        SDL_GL_GetDrawableSize(window, &w, &h);
+        winRes = ResRatio(w, h);
     }
 }
 

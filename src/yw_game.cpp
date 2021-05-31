@@ -208,27 +208,24 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     dbg_num_wpn_max = 0;
     dbg_num_robo_max = 0;
 
-    if ( !one_game_res )
+    if ( _gfxMode != GFX::Engine.GetGfxMode() || _gfxWindowed != GFX::Engine.GetGfxMode().windowed )
     {
-        if ( game_default_res != shell_default_res )
+        GFX::Engine.SetResolution(_gfxMode, _gfxWindowed);
+
+        screen_width = GFX::Engine.GetScreenW();
+        screen_height = GFX::Engine.GetScreenH();
+
+        GFX::Engine.setWDD_cursor( (field_73CE & 0x40) != 0 );
+
+        if ( screen_width >= 512 )
         {
-            GFX::Engine.SetResolution(game_default_res);
-
-            screen_width = GFX::Engine.GetScreenW();
-            screen_height = GFX::Engine.GetScreenH();
-
-            GFX::Engine.setWDD_cursor( (field_73CE & 0x40) != 0 );
-
-            if ( screen_width >= 512 )
-            {
-                GFX::Engine.LoadFontByDescr( GetLocaleString(15, "MS Sans Serif,12,400,0") );
-                Gui::UA::LoadFont( GetLocaleString(15, "MS Sans Serif,12,400,0") );
-            }
-            else
-            {
-                GFX::Engine.LoadFontByDescr( GetLocaleString(16, "Arial,8,400,0") );
-                Gui::UA::LoadFont( GetLocaleString(16, "Arial,8,400,0") );
-            }
+            GFX::Engine.LoadFontByDescr( GetLocaleString(15, "MS Sans Serif,12,400,0") );
+            Gui::UA::LoadFont( GetLocaleString(15, "MS Sans Serif,12,400,0") );
+        }
+        else
+        {
+            GFX::Engine.LoadFontByDescr( GetLocaleString(16, "Arial,8,400,0") );
+            Gui::UA::LoadFont( GetLocaleString(16, "Arial,8,400,0") );
         }
     }
 

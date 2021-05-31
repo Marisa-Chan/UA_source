@@ -82,7 +82,9 @@ struct TPoint
     
     operator bool() const
     {
-        return x == 0 && y == 0;
+        if (x != 0 && y != 0)
+            return true;
+        return false;
     }
     
     operator SDL_Rect() const

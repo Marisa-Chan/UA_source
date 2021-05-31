@@ -306,7 +306,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 
     field_81AB = 0;
 
-    one_game_res = 0;
+    one_game_res = false;
     shell_default_res = 0;
     game_default_res = 0;
 
@@ -336,7 +336,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     _extraViewEnable = false;
     _extraViewNumber = -1;
     
-    _localeStrings.resize(2600);
+    _localeStrings.resize(World::LocaleStringsNumber);
 }
 
 namespace World
@@ -591,7 +591,11 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
         return 0;
     }
 
-    one_game_res = 1;
+    _shellGfxMode = Common::Point( GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT );
+    _gfxMode = Common::Point( GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT );
+    
+    
+            
     shell_default_res = (640 << 12) | 480;
     game_default_res = (640 << 12) | 480;
 
@@ -2473,12 +2477,10 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     netgame_exclusivegem = System::IniConf::NetGameExclusiveGem.Get<bool>();
 
     usr->profiles.clear();
-    usr->video_mode_list.clear();
     usr->lang_dlls.clear();
 
     LoadKeyNames();
 
-    fill_videmodes_list(usr);
     listSaveDir("save:");
     listLocaleDir(usr, "locale");
 
@@ -2504,8 +2506,12 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
         ypa_log_out("Error: Unable to load from Shell.ini\n");
         return 0;
     }
-
-    usr->field_FBE = 0;
+    
+    usr->_gfxMode = _gfxMode;
+    usr->field_FBE = GFX::GFXEngine::Instance.GetGfxModeIndex(_gfxMode);
+    
+    if (usr->field_FBE < 0)
+        usr->field_FBE = 0;
 
     usr->InputConfig[World::INPUT_BIND_DRIVE_DIR]   = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 3,  Input::KC_RIGHT, Input::KC_LEFT);
     usr->InputConfig[World::INPUT_BIND_DRIVE_SPEED] = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 4,  Input::KC_UP, Input::KC_DOWN);
@@ -2625,8 +2631,6 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
     usr->yw_netcleanup();
 
     usr->profiles.clear();
-
-    usr->video_mode_list.clear();
 
     usr->lang_dlls.clear();
 
@@ -2929,13 +2933,7 @@ bool NC_STACK_ypaworld::GameShellInitBkg()
 
 size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 {
-    if ( !one_game_res )
-    {
-        yw_174arg v247;
-        v247.resolution = shell_default_res;
-        v247.make_changes = 0;
-        ypaworld_func174(&v247);
-    }
+    ChangeResolutionForMenu(_gfxWindowed);
 
     if ( !yw_LoadSet(46) )
     {
@@ -2975,8 +2973,6 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     v233.pointer_id = 1;
 
     GFX::Engine.SetCursor(v233.pointer_id, 0);
-
-    fill_videmodes_list(usr);
 
     GFX::wdd_func324arg v227;
     v227.name = NULL;
@@ -3748,7 +3744,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     args.Init();
     args.resizeable = false;
-    args.numEntries = usr->video_mode_list.size();
+    args.numEntries = GFX::GFXEngine::Instance.GetAvailableModes().size();
     args.shownEntries = 4;
     args.firstShownEntry = 0;
     args.selectedEntry = 0;
@@ -3884,20 +3880,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
                     if ( usr->video_button->button_func64(&btn_64arg) )
                     {
-                        std::string name;
-                        for (const auto &nod : usr->video_mode_list)
-                        {
-                            if (nod.sort_id == game_default_res)
-                            {
-                                name = nod.name;
-                                break;
-                            }
-                        }
-
                         btn_64arg.tileset_down = 19;
                         btn_64arg.field_3A = 30;
                         btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                        btn_64arg.caption = name.c_str();
+                        btn_64arg.caption = _gfxMode.name;
                         btn_64arg.caption2.clear();
                         btn_64arg.pressed_id = 0;
                         btn_64arg.tileset_up = 18;
@@ -4079,7 +4065,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
                                                                 btn_64arg.width = v120;
-                                                                btn_64arg.caption = GetLocaleString(2432, "OPENGL LIKE (:-)");
+                                                                btn_64arg.caption = GetLocaleString(2445, "Windowed Mode");
                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                                                 btn_64arg.caption2.clear();
                                                                 btn_64arg.down_id = 0;
@@ -5468,7 +5454,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     SFXEngine::SFXe.startSound(&usr->samples1_info, 6);
 
-    usr->field_0x0 = 1;
+    usr->_gameShellInited = 1;
 
     usr->field_0x4 = 1;
     if ( usr->remoteMode )
@@ -5516,7 +5502,7 @@ void ypaworld_func157__sub0(NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 {
-    if ( usr->field_0x0 )
+    if ( usr->_gameShellInited )
     {       
         if ( usr->confirm_button )
         {
@@ -5613,7 +5599,7 @@ void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
 
         //nullsub_7();
 
-        usr->field_0x0 = 0;
+        usr->_gameShellInited = 0;
     }
 }
 
@@ -6432,20 +6418,10 @@ void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
     usr->video_button->button_func73(&v16);
 
     v16.butID = 1166;
-    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_DRAWPRIMITIVES) == 0) + 1;
+    v16.field_4 = (!usr->p_ypaworld->_gfxWindowed) + 1;
     usr->video_button->button_func73(&v16);
 
-    std::string name;
-    for (const auto &nod : usr->video_mode_list)
-    {
-        if (usr->p_ypaworld->game_default_res == nod.sort_id )
-        {
-            name = nod.name;
-            break;
-        }
-    }
-
-    usr->video_button->button_func71(1156, name);
+    usr->video_button->button_func71(1156, usr->p_ypaworld->_gfxMode.name);
 
     tmp = usr->video_button->button_func74(1159);
     tmp->value = usr->fxnumber;
@@ -6917,13 +6893,17 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg, bool playIntro)
     }
     
     if (playIntro && !GameShell->remoteMode)
+    {
+        ChangeResolutionForMenu(_gfxWindowed);
         PlayIntroMovie();
+    }
 
-    if ( (arg->field_10 & 1) && !usr->field_0x0 && !ypaworld_func156(usr) ) // Init menus
+    if ( (arg->field_10 & 1) && !usr->_gameShellInited && !ypaworld_func156(usr) ) // Init menus
     {
         ypa_log_out("Unable to open GameShell\n");
         return 0;
     }
+    
 
     if ( arg->field_8 & 0x10 && usr->_saveDataFlags & 0x10 )
     {
@@ -6999,20 +6979,19 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
+size_t NC_STACK_ypaworld::ChangeResolutionForMenu(bool windowed)
 {
     UserData *usr = GameShell;
+    
+    if (System::IniConf::MenuWindowed.Get<bool>())
+        windowed = true;
 
-    int current_resolution;
-
-    current_resolution = GFX::Engine.GetGfxMode();
-
-    if ( arg->resolution == current_resolution && !arg->make_changes )
+    if ( _shellGfxMode == GFX::Engine.GetGfxMode() && windowed == GFX::Engine.GetGfxMode().windowed )
         return 1;
 
     int v6;
 
-    if ( usr->field_0x0 )
+    if ( usr->_gameShellInited )
     {
         ypaworld_func157(usr);
         v6 = 1;
@@ -7022,24 +7001,16 @@ size_t NC_STACK_ypaworld::ypaworld_func174(yw_174arg *arg)
         v6 = 0;
     }
 
-    GFX::Engine.SetResolution( arg->resolution );
+    GFX::Engine.SetResolution( _shellGfxMode, windowed );
 
     screen_width = GFX::Engine.GetScreenW();
     screen_height = GFX::Engine.GetScreenH();
 
     if ( v6 && !ypaworld_func156(usr))
     {
-        ypa_log_out("Warning: Unable to open GameShell with mode %d\n", arg->resolution);
+        ypa_log_out("Error: Unable to open GameShell with mode %d x %d\n", _shellGfxMode.x, _shellGfxMode.y);
 
-        GFX::Engine.SetResolution( usr->p_ypaworld->shell_default_res );
-
-        screen_width = GFX::Engine.GetScreenW();
-        screen_height = GFX::Engine.GetScreenH();
-
-        if ( !ypaworld_func156(usr) )
-        {
-            return 0;
-        }
+        return 0;
     }
 
     if ( usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE )
@@ -7076,7 +7047,7 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
 
     int v6;
 
-    if ( usr->field_0x0 )
+    if ( usr->_gameShellInited )
     {
         ypaworld_func157(usr);
         v6 = 1;

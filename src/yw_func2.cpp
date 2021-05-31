@@ -477,32 +477,6 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
     return 1;
 }
 
-void fill_videmodes_list(UserData *usr)
-{
-    usr->video_mode_list.clear();
-
-    windd_arg256 warg_256;
-    warg_256.sort_id = 0;
-
-    int id = -1;
-
-    while( id )
-    {
-        id = GFX::Engine.display_func256(&warg_256);
-
-        usr->video_mode_list.emplace_back();
-        video_mode_node &vnode = usr->video_mode_list.back();
-
-        vnode.sort_id = warg_256.sort_id;
-        vnode.width = warg_256.width;
-        vnode.height = warg_256.height;
-        vnode.name = warg_256.name;
-
-        warg_256.sort_id = id;
-    }
-}
-
-
 void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
 {
     auto savedStatuses = playerstatus;
@@ -976,14 +950,10 @@ void UserData::sb_0x46aa8c()
 {
     NC_STACK_ypaworld *yw = p_ypaworld;
 
-    int v3 = 0;
+    bool forceChange = false;
+    Common::Point resolution;
 
-    yw_174arg v40;
-    v40.make_changes = 0;
-    int v5 = 0;
-    int resolution;
-
-    if ( field_13C2 & 0x200 )
+    if ( _settingsChangeOptions & 0x200 )
     {
         if ( field_0x13b0 & 0x10 )
         {
@@ -1008,7 +978,7 @@ void UserData::sb_0x46aa8c()
 
     }
 
-    if ( field_13C2 & 2 )
+    if ( _settingsChangeOptions & 2 )
     {
         if ( field_0x13b0 & 1 )
         {
@@ -1022,7 +992,7 @@ void UserData::sb_0x46aa8c()
         }
     }
 
-    if ( field_13C2 & 0x10 )
+    if ( _settingsChangeOptions & 0x10 )
     {
         if ( field_0x13a8 & 1 )
         {
@@ -1036,7 +1006,7 @@ void UserData::sb_0x46aa8c()
         }
     }
 
-    if ( field_13C2 & 8 )
+    if ( _settingsChangeOptions & 8 )
     {
         if ( field_0x13a8 & 2 )
         {
@@ -1051,7 +1021,7 @@ void UserData::sb_0x46aa8c()
 
     }
 
-    if ( field_13C2 & 0x800 )
+    if ( _settingsChangeOptions & 0x800 )
     {
         if ( field_0x13a8 & 4 )
         {
@@ -1068,7 +1038,7 @@ void UserData::sb_0x46aa8c()
 
     }
 
-    if ( field_13C2 & 0x20 )
+    if ( _settingsChangeOptions & 0x20 )
     {
         enemyindicator = field_13BE;
 
@@ -1078,37 +1048,32 @@ void UserData::sb_0x46aa8c()
             p_ypaworld->field_73CE &= 0xDF;
     }
 
-    if ( field_13C2 & 0x40 )
+    if ( _settingsChangeOptions & 0x40 )
     {
         fxnumber = field_0x13a4;
         yw->fxnumber = fxnumber;
     }
 
-    if ( field_13C2 & 0x100 )
+    if ( _settingsChangeOptions & 0x100 )
     {
         snd__cdvolume = field_0x13b8;
 
         SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
     }
 
-    if ( field_13C2 & 0x80 )
+    if ( _settingsChangeOptions & 0x80 )
     {
         snd__volume = field_0x13b4;
         SFXEngine::SFXe.setMasterVolume(snd__volume);
     }
 
-    if ( field_13C2 & 1 )
+    if ( _settingsChangeOptions & 1 )
     {
-        if ( game_default_res != yw->game_default_res && game_default_res )
-        {
-            v3 = 1;
-            resolution = yw->game_default_res;
-
-            yw->game_default_res = game_default_res;
-        }
+        if ( _gfxMode != p_ypaworld->_gfxMode && _gfxMode)
+            p_ypaworld->_gfxMode = _gfxMode;
     }
 
-    if ( field_13C2 & 0x1000 )
+    if ( _settingsChangeOptions & 0x1000 )
     {
         if ( field_139A )
         {
@@ -1126,15 +1091,13 @@ void UserData::sb_0x46aa8c()
 
                 GFX::Engine.windd_func325(&v37); //Save to file new resolution
 
-                yw->game_default_res = 0x2801E0; //640 x 480
-                resolution = 0x2801E0; //640 x 480
-                v5 = 1;
-                v40.make_changes = 1;
+                p_ypaworld->_gfxMode = Common::Point(GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT);
+                forceChange = true;
             }
         }
     }
 
-    if ( field_13C2 & 4 )
+    if ( _settingsChangeOptions & 4 )
     {
         if ( field_0x13a8 & 0x10 )
         {
@@ -1147,43 +1110,27 @@ void UserData::sb_0x46aa8c()
             GFX::Engine.setWDD_16bitTex(0);
         }
 
-        resolution = yw->game_default_res;
-        v5 = 1;
-        v40.make_changes = 1;
+        forceChange = true;
     }
 
-    if ( field_13C2 & 0x400 )
+    if ( _settingsChangeOptions & 0x400 )
     {
         if ( field_0x13a8 & 8 )
-        {
-            GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
-            GFX::Engine.setWDD_drawPrim(1);
-        }
+            p_ypaworld->_gfxWindowed = true;
         else
-        {
-            GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
-            GFX::Engine.setWDD_drawPrim(0);
-        }
+            p_ypaworld->_gfxWindowed = false;
 
-
-        resolution = yw->game_default_res;
-        v5 = 1;
-        v40.make_changes = 1;
+        forceChange = true;
     }
 
-    if ( (v3 && p_ypaworld->one_game_res) || v5 )
+    if ( forceChange )
     {
-        if ( p_ypaworld->one_game_res || !v3 )
-            v40.resolution = p_ypaworld->game_default_res;
-        else
-            v40.resolution = resolution;
-
-        yw->ypaworld_func174(&v40);
+        yw->ChangeResolutionForMenu(p_ypaworld->_gfxWindowed);
 
         int v24 = 0;
-        for (auto const &nod : video_mode_list)
+        for (const GFX::GfxMode &nod : GFX::GFXEngine::Instance.GetAvailableModes())
         {
-            if (yw->game_default_res == nod.sort_id)
+            if ( yw->_gfxMode == nod )
             {
                 field_FBE = v24;
                 video_button->button_func71(1156, nod.name);
@@ -1195,7 +1142,7 @@ void UserData::sb_0x46aa8c()
         }
     }
 
-    field_13C2 = 0;
+    _settingsChangeOptions = 0;
     envMode = ENVMODE_TITLE;
 
     video_button->Hide();
@@ -1509,7 +1456,7 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1166:
-        p_ypaworld->sub_4811E8(0x4F);
+        p_ypaworld->sub_4811E8(85); // windowed
         break;
 
     case 1172:
@@ -1955,43 +1902,33 @@ void UserData::InputConfigRestoreDefault()
     }
 }
 
-void UserData::sub_46C5F0(int a2)
+void UserData::sub_46C5F0()
 {
-    if ( video_listvw.selectedEntry != field_FBE && !a2 )
+    if ( video_listvw.selectedEntry != field_FBE)
     {
-
         field_FBE = video_listvw.selectedEntry;
 
-        VideoModesList::const_iterator it = std::next(video_mode_list.cbegin(), video_listvw.selectedEntry);
-
-        game_default_res = it->sort_id;
-        video_button->button_func71(1156, it->name);
+        _gfxMode = GFX::GFXEngine::Instance.GetAvailableModes().at(field_FBE);
+        video_button->button_func71(1156, _gfxMode.name);
     }
 }
 
 //Options Cancel
 void UserData::sub_46A3C0()
 {
-    field_13C2 = 0;
+    _settingsChangeOptions = 0;
     envMode = ENVMODE_TITLE;
 
-    std::string name;
-    int i = 0;
-    for( auto const &nod: video_mode_list)
-    {
-        if (nod.sort_id == p_ypaworld->game_default_res )
-        {
-            name = nod.name;
-            break;
-        }
-        i++;
-    }
+    int gfxId = GFX::GFXEngine::Instance.GetGfxModeIndex(p_ypaworld->_gfxMode);
+    
+    if (gfxId < 0)
+        gfxId = 0;
 
-    video_listvw.selectedEntry = i;
-    field_FBE = i;
-    game_default_res = p_ypaworld->game_default_res;
+    video_listvw.selectedEntry = gfxId;
+    field_FBE = gfxId;
+    _gfxMode = p_ypaworld->_gfxMode;
 
-    video_button->button_func71(1156, name);
+    video_button->button_func71(1156, _gfxMode.name);
 
     video_button->button_func71(1172, win3d_name);
 
@@ -2020,7 +1957,7 @@ void UserData::sub_46A3C0()
     video_button->button_func73(&v10);
 
     v10.butID = 1166;
-    v10.field_4 = ((GFX_flags & World::GFX_FLAG_DRAWPRIMITIVES) == 0) + 1;
+    v10.field_4 = (!p_ypaworld->_gfxWindowed) + 1;
     video_button->button_func73(&v10);
 
     v10.butID = 1165;
@@ -2962,7 +2899,7 @@ void UserData::GameShellUiHandleInput()
         {
             if ( video_listvw.IsClosed() && d3d_listvw.IsClosed() )
             {
-                if ( field_13C2 & 1 && game_default_res != p_ypaworld->game_default_res && game_default_res )
+                if ( _settingsChangeOptions & 1 && _gfxMode != p_ypaworld->_gfxMode && _gfxMode )
                 {
                     sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
                                 , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
@@ -2985,8 +2922,8 @@ void UserData::GameShellUiHandleInput()
                     video_button->button_func73(&v408);
                 }
 
-                field_13C2 |= 1;
-                sub_46C5F0(0);
+                _settingsChangeOptions |= 1;
+                sub_46C5F0();
             }
 
         }
@@ -3020,52 +2957,52 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1102 )
         {
-            field_13C2 |= 0x10;
+            _settingsChangeOptions |= 0x10;
             field_0x13a8 |= 1;
         }
         else if ( r.code == 1103 )
         {
             field_0x13a8 &= 0xFFFE;
-            field_13C2 |= 0x10;
+            _settingsChangeOptions |= 0x10;
         }
         else if ( r.code == 1106 )
         {
-            field_13C2 |= 8;
+            _settingsChangeOptions |= 8;
             field_0x13a8 |= 2;
         }
         else if ( r.code == 1107 )
         {
             field_0x13a8 &= 0xFFFD;
-            field_13C2 |= 8;
+            _settingsChangeOptions |= 8;
         }
         else if ( r.code == 1108 )
         {
-            field_13C2 |= 0x40;
+            _settingsChangeOptions |= 0x40;
         }
         else if ( r.code == 1111 )
         {
-            field_13C2 |= 2;
+            _settingsChangeOptions |= 2;
             field_0x13b0 &= 0xFFFE;
         }
         else if ( r.code == 1112 )
         {
             field_0x13b0 |= 1;
-            field_13C2 |= 2;
+            _settingsChangeOptions |= 2;
         }
         else if ( r.code == 1113 )
         {
             field_0x13a8 |= 0x10;
-            field_13C2 |= 4;
+            _settingsChangeOptions |= 4;
         }
         else if ( r.code == 1114 )
         {
             field_0x13a8 &= 0xEF;
-            field_13C2 |= 4;
+            _settingsChangeOptions |= 4;
         }
         else if ( r.code == 1115 )
         {
             SFXEngine::SFXe.startSound(&samples1_info, 0);
-            field_13C2 |= 0x80;
+            _settingsChangeOptions |= 0x80;
         }
         else if ( r.code == 1117 )
         {
@@ -3073,11 +3010,11 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1118 )
         {
-            field_13C2 |= 0x100;
+            _settingsChangeOptions |= 0x100;
         }
         else if ( r.code == 1124 )
         {
-            if ( (field_13C2 & 1) &&  game_default_res != p_ypaworld->game_default_res && game_default_res )
+            if ( (_settingsChangeOptions & 1) &&  _gfxMode != p_ypaworld->_gfxMode && _gfxMode )
             {
                 sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
                             , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
@@ -3094,42 +3031,42 @@ void UserData::GameShellUiHandleInput()
         else if ( r.code == 1126 )
         {
             field_13BE = 1;
-            field_13C2 |= 0x20;
+            _settingsChangeOptions |= 0x20;
         }
         else if ( r.code == 1127 )
         {
             field_13BE = 0;
-            field_13C2 |= 0x20;
+            _settingsChangeOptions |= 0x20;
         }
         else if ( r.code == 1128 )
         {
-            field_13C2 |= 0x200;
+            _settingsChangeOptions |= 0x200;
             field_0x13b0 |= 0x10;
         }
         else if ( r.code == 1129 )
         {
             field_0x13b0 &= 0xFFEF;
-            field_13C2 |= 0x200;
+            _settingsChangeOptions |= 0x200;
         }
         else if ( r.code == 1130 )
         {
-            field_13C2 |= 0x400;
+            _settingsChangeOptions |= 0x400;
             field_0x13a8 |= 8;
         }
         else if ( r.code == 1131 )
         {
-            field_0x13a8 &= 0xFFF7;
-            field_13C2 |= 0x400;
+            field_0x13a8 &= ~8;
+            _settingsChangeOptions |= 0x400;
         }
         else if ( r.code == 1132 )
         {
-            field_13C2 |= 0x800;
+            _settingsChangeOptions |= 0x800;
             field_0x13a8 |= 4;
         }
         else if ( r.code == 1133 )
         {
             field_0x13a8 &= 0xFFFB;
-            field_13C2 |= 0x800;
+            _settingsChangeOptions |= 0x800;
         }
         else if ( r.code == 1134 )
         {
@@ -3152,13 +3089,10 @@ void UserData::GameShellUiHandleInput()
 
         if ( video_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
-            int v65 = 0;
-
-            if ( remoteMode )
-                v65 = 1;
-
-            field_13C2 |= 1;
-            sub_46C5F0(v65);
+            _settingsChangeOptions |= 1;
+            
+            if (!remoteMode)
+                sub_46C5F0();
         }
 
         if ( video_listvw.IsClosed() )
@@ -3183,7 +3117,7 @@ void UserData::GameShellUiHandleInput()
             if ( remoteMode )
                 v66 = 1;
 
-            field_13C2 |= 0x1000;
+            _settingsChangeOptions |= 0x1000;
             ypaworld_func158__sub0__sub5(v66);
         }
 

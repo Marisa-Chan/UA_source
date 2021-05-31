@@ -754,7 +754,7 @@ int WinMain__sub0__sub1()
         return 0;
     }
 
-    if ( !userdata.field_0x0 && !ypaworld->ypaworld_func156(&userdata))
+    if ( !userdata._gameShellInited && !ypaworld->ypaworld_func156(&userdata))
     {
         ypa_log_out("Error: Unable to open Gameshell\n");
         return 0;

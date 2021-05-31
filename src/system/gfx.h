@@ -118,6 +118,12 @@ struct windd_arg256
 namespace GFX
 {
     
+enum
+{
+    DEFAULT_WIDTH = 640,
+    DEFAULT_HEIGHT = 480,
+};
+    
 
 #define MSK(X) (1 << (X))
 
@@ -214,19 +220,36 @@ struct GfxMode
     int w = 0;
     int h = 0;
     int bpp = 0;
-    SDL_DisplayMode mode = {0};
     bool windowed = false;
-    int32_t sortid = 0;
+    SDL_DisplayMode mode = {0};
     std::string name;
     
-    GfxMode();
+    GfxMode() {};
     GfxMode(GfxMode &&g);
     GfxMode(const GfxMode &g);
+    GfxMode(const Common::Point &sz);
 
     GfxMode& operator=(const GfxMode &g);    
-    operator bool() const;    
+    operator bool() const;
     
-    static bool Compare(const GfxMode &a, const GfxMode &b);
+    bool operator==(const GfxMode &g) const;
+    bool operator==(const Common::Point &g) const;
+    bool operator!=(const GfxMode &g) const;
+    bool operator!=(const Common::Point &g) const;
+        
+    GfxMode WithWindowed(bool state) const
+    {
+        GfxMode t = *this;
+        t.windowed = state;
+        return t;
+    }
+    
+    operator Common::Point() const { return Common::Point(w, h); };
+    
+    static bool SortCompare(const GfxMode &a, const GfxMode &b);
+    
+    static std::string GenName(int w, int h);
+    
 };
 
 enum WDD_ATT
@@ -268,13 +291,6 @@ enum RFLAGS
     
 class GFXEngine
 {
-protected:
-    enum
-    {
-        DEFAULT_WIDTH = 640,
-        DEFAULT_HEIGHT = 480,
-    };
-    
 public:
     static const std::array<vec3d, 8> _clrEff;
     
@@ -310,15 +326,16 @@ public:
     
     GfxMode windd_func0__sub0(const std::string &file);
     GfxMode sub_41F68C();
+    
+    int  GetGfxModeIndex(const Common::Point &res);
 
-    void SetResolution(int res);
+    void SetResolution(const Common::Point &res, bool windowed);
     void SetTracyRmp(ResBitmap *rmp);
     void SetShadeRmp(ResBitmap *rmp);
 
     void SetCursor(int curID, int force);
-    int32_t GetGfxMode();
-
-    size_t display_func256(windd_arg256 *inout);
+    GfxMode GetGfxMode();
+    const std::vector<GfxMode> &GetAvailableModes();
 
     void SetTileset(TileMap *tileset, int id);
     TileMap * GetTileset(int id);
@@ -444,9 +461,7 @@ public:
     virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src);
     
     static SDL_Surface *ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt);
-    
-    virtual bool ChangeResolution(Common::Point res, bool windowed = false);
-    
+        
     void fpsLimitter(int value);
     
     float GetColorEffectPower(int id);
@@ -475,7 +490,7 @@ protected:
     
     void ApplyResolution();
 
-    bool SetResolution(Common::Point res);
+    bool SetResVariables(Common::Point res);
     
 
 public:
@@ -487,10 +502,10 @@ public:
     static GFXEngine Instance;
     
 private:
-    std::list<GfxMode> graphicsModes;
+    std::vector<GfxMode> graphicsModes;
     std::array<SDL_Cursor *, 11> cursors;
     int CurrentCursorID = -1;
-    int32_t GfxSelectedMode = 0;
+    GfxMode GfxSelectedMode;
     
     SDL_Surface *ScreenSurface = NULL;
     GLuint screenTex = 0;

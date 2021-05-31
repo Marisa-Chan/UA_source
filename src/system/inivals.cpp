@@ -196,6 +196,8 @@ Common::Ini::Key IniConf::TuneWeaponRadius("tune.weapon_radius", Common::Ini::KT
 // Particles
 Common::Ini::Key IniConf::ParticlesLimit("particles.limit", Common::Ini::KT_DIGIT, (int32_t)5000);
 
+Common::Ini::Key IniConf::MenuWindowed("menu.windowed", Common::Ini::KT_BOOL, false);
+
 
 void IniConf::Init()
 {
@@ -379,6 +381,8 @@ void IniConf::Init()
         , &GfxColorEffPower7
         
         , &ParticlesLimit
+                  
+        , &MenuWindowed
     };
 }
     

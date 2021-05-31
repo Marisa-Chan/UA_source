@@ -345,19 +345,6 @@ inline uint32_t GetUpgradeLogID(uint8_t upg)
 #include "world/history.h"
 
 
-
-
-struct video_mode_node
-{
-    std::string name;
-    int sort_id;
-    int16_t width;
-    int16_t height;
-};
-
-typedef std::list<video_mode_node> VideoModesList;
-
-
 struct usr_str
 {
     int id = 0;
@@ -486,7 +473,7 @@ public:
     };
 
 public:
-    int field_0x0;
+    int _gameShellInited;
     int field_0x4;
     int field_0x8;
     int field_0xc;
@@ -528,7 +515,9 @@ public:
     NC_STACK_button *video_button;
     GuiList video_listvw;
     int game_default_res;
-    VideoModesList video_mode_list;
+
+    GFX::GfxMode _gfxMode;
+    
     int field_FBE;
     GuiList d3d_listvw;
     char win3d_guid[100];
@@ -551,7 +540,7 @@ public:
     int16_t field_0x13b8;
     bool enemyindicator;
     int field_13BE;
-    int field_13C2;
+    int _settingsChangeOptions;
     NC_STACK_button *disk_button;
     GuiList disk_listvw;
     int field_1612;
@@ -722,7 +711,7 @@ public:
     void sub_46D2B4();
     void InputConfCopyToBackup();
     void InputConfigRestoreDefault();
-    void sub_46C5F0(int a2);
+    void sub_46C5F0();
     void  ypaworld_func158__sub0__sub5(int a2);
     void sub_46A7F8();
     void ypaworld_func158__sub0__sub4();
@@ -1763,12 +1752,6 @@ struct yw_arg161
     int field_4;
 };
 
-struct yw_174arg
-{
-    int resolution;
-    int make_changes;
-};
-
 struct ypaworld_arg146
 {
     size_t vehicle_id;
@@ -1971,7 +1954,7 @@ public:
     virtual size_t ypaworld_func171(yw_arg172 *arg);
     virtual size_t ypaworld_func172(yw_arg172 *arg, bool playIntro = false);
     virtual size_t ypaworld_func173(UserData *usr);
-    virtual size_t ypaworld_func174(yw_174arg *arg);
+    virtual size_t ChangeResolutionForMenu(bool windowed);
     virtual size_t ypaworld_func175(UserData *usr);
     virtual void ypaworld_func176(yw_arg176 *arg);
     virtual void ypaworld_func177(yw_arg177 *arg);
@@ -2575,9 +2558,13 @@ public:
     int field_81AB;
     std::string field_81AF;
     std::string field_81B3;
-    int one_game_res;
+    bool one_game_res = false;
     int shell_default_res;
     int game_default_res;
+    
+    GFX::GfxMode _gfxMode;
+    Common::Point _shellGfxMode;
+    bool _gfxWindowed = false;
 
     float max_impulse;
     yw_81cb field_81CB;

@@ -40,7 +40,6 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr);
 int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname);
 //void yw_renderSky_test(_NC_STACK_ypaworld *yw, base77Func *rndr_params);
 
-void fill_videmodes_list(UserData *usr);
 
 
 void listLocaleDir(UserData *usr, const char *dirname);

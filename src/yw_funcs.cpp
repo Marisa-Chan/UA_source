@@ -651,6 +651,7 @@ int yw_InitTooltips(NC_STACK_ypaworld *yw)
         tips[79] = "USE DRAW PRIMITIVE D3D MODEL";
         tips[80] = "880 == MOUSE CONTROL MODE ACTIVE (PRESS RMB TO DEACTIVATE)";
         tips[81] = "881 == UNIT LIMIT REACHED";
+        tips[85] = "SWITCH TO WINDOWED MODE";
         tips[96] = "ERROR: NO VALID TARGET GIVEN!";
         tips[97] = "ERROR: NOT ENOUGH ROOM HERE!";
         tips[98] = "ERROR: CURRENTLY NOT ENOUGH ENERGY!";
@@ -2327,7 +2328,7 @@ void ypaworld_func158__video_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     v3 = usr->video_listvw.ItemsPreLayout(yw, v3, 0, "uvw");
 
     int index = 0;
-    for (const auto &nod : usr->video_mode_list)
+    for (const GFX::GfxMode &nod : GFX::GFXEngine::Instance.GetAvailableModes())
     {
         if ( index >= usr->video_listvw.firstShownEntries && index < usr->video_listvw.firstShownEntries + usr->video_listvw.shownEntries)
         {
@@ -3168,7 +3169,7 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
 
 void UserData::clear()
 {
-    field_0x0 = 0;
+    _gameShellInited = 0;
     field_0x4 = 0;
     field_0x8 = 0;
     field_0xc = 0;
@@ -3234,7 +3235,7 @@ void UserData::clear()
     field_0x13b8 = 0;
     enemyindicator = 0;
     field_13BE = 0;
-    field_13C2 = 0;
+    _settingsChangeOptions = 0;
     disk_button = NULL;
     //GuiList disk_listvw;
     field_1612 = 0;

@@ -26,9 +26,11 @@ namespace System
         ResRatio();
         ResRatio(const Common::Point &p);
         ResRatio(int32_t w, int32_t h);
-        bool operator==(const ResRatio &b);
-        bool operator!=(const ResRatio &b);
+        bool operator==(const ResRatio &b) const;
+        bool operator!=(const ResRatio &b) const;
         void Set(int32_t w, int32_t h);
+        
+        operator Common::Point() const;
     };
     
     void Init();

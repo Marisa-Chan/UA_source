@@ -3463,7 +3463,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
                     log_netlog(">>> Received a destroy player for %s at %d\n", recvMsg.senderName.c_str(), yw->timeStamp / 1000);
 
-                    if ( usr->field_0x0 == 0 && plFound)
+                    if ( usr->_gameShellInited == 0 && plFound)
                     {
                         for (int i = 0; i < 8; i++)
                         {
