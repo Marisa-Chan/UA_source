@@ -669,15 +669,12 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
 
     if ( nrgmap )
     {
-        for (int y = 0; y < _o._mapSize.y * 3; y++)
+        for (size_t i = 0; i < _o._cells.size(); ++i)
         {
-            for (int x = 0; x < _o._mapSize.x; x++)
-            {
-                cellArea &cell = _o._cells(x, y / 3);
-                
-                for(int i = 0; i < 3; i++)
-                    cell.buildings_health.At(i, y % 3) = nrgmap->At(x * 3 + i, y);
-            }
+            cellArea &cell = _o._cells.At(i);
+
+            for(size_t j = 0; j < 9; j++)
+                cell.buildings_health.At(j / 3, j % 3) = nrgmap->At( i * 9 + j );
         }
 
         delete nrgmap;

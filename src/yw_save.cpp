@@ -468,15 +468,12 @@ void yw_write_energymap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
     if ( energymap )
     {
-        for (int y = 0; y < yw->_mapSize.y * 3; y++)
+        for (size_t i = 0; i < yw->_cells.size(); ++i)
         {
-            for (int x = 0; x < yw->_mapSize.x; x++)
-            {
-                cellArea &cell = yw->_cells(x, y / 3);
-                
-                for(int i = 0; i < 3; i++)
-                    energymap->At(x * 3 + i, y) = cell.buildings_health.At(i, y % 3);
-            }
+            cellArea &cell = yw->_cells.At(i);
+
+            for(size_t j = 0; j < 9; j++)
+                energymap->At( i * 9  + j ) = cell.buildings_health.At(j / 3, j % 3);
         }
 
         fil->printf("\nbegin_energymap\n");
