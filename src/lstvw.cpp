@@ -33,7 +33,7 @@ char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, co
 
     FontUA::store_s8(&tmp, 98);
 
-    FontUA::set_txtColor(&tmp, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
+    FontUA::set_txtColor(&tmp, yw->_iniColors[60].r, yw->_iniColors[60].g, yw->_iniColors[60].b);
 
     tmp = FontUA::FormateClippedText(yw->tiles[6], tmp, buf, w - v27 - v26 - v29 - yw->font_default_w__b, 99);
 

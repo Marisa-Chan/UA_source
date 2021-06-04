@@ -14,20 +14,11 @@ typedef Tvec3d<int32_t> vec3i;
 template <typename T>
 struct Tvec2d
 {
-    T x;
-    T y;
+    T x = 0.0;
+    T y = 0.0;
 
-    Tvec2d()
-    {
-        x = 0.0;
-        y = 0.0;
-    }
-    
-    Tvec2d( const Tvec2d<T> &b)
-    {
-        x = b.x;
-        y = b.y;
-    }
+    Tvec2d() = default;    
+    Tvec2d( const Tvec2d<T> &b) = default;
 
     Tvec2d(T _x, T _y)
     {
@@ -82,12 +73,7 @@ struct Tvec2d
         return tmp;
     }
 
-    Tvec2d &operator=(const Tvec2d &b)
-    {
-        x = b.x;
-        y = b.y;
-        return *this;
-    }
+    Tvec2d &operator=(const Tvec2d &b) = default;
 
     Tvec2d &operator=(T b)
     {
@@ -224,23 +210,12 @@ struct Tvec2d
 template <typename T>
 struct Tvec3d
 {
-    T x;
-    T y;
-    T z;
+    T x = 0.0;
+    T y = 0.0;
+    T z = 0.0;
 
-    Tvec3d()
-    {
-        x = 0.0;
-        y = 0.0;
-        z = 0.0;
-    }
-    
-    Tvec3d(const Tvec3d<T> &b)
-    {
-        x = b.x;
-        y = b.y;
-        z = b.z;
-    }
+    Tvec3d() = default;    
+    Tvec3d(const Tvec3d<T> &b) = default;
 
     Tvec3d(T _x, T _y, T _z)
     {
@@ -293,14 +268,7 @@ struct Tvec3d
     }
 
     // xyz = another xyz
-    Tvec3d &operator=(const Tvec3d &b)
-    {
-        x = b.x;
-        y = b.y;
-        z = b.z;
-
-        return *this;
-    }
+    Tvec3d &operator=(const Tvec3d &b) = default;
 
     // xyz = float
     Tvec3d &operator=(T b)

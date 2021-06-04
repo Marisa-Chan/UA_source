@@ -127,7 +127,7 @@ void sb_0x44ca90__sub5(NC_STACK_ypaworld *yw)
     memset(yw->field_80, 0, sizeof(yw_f80) * 8);
 }
 
-void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
+void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, TLevelDescription *mapp)
 {
     if (!mapp->Palettes.empty())
     {
@@ -150,14 +150,13 @@ void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, LevelDesc *mapp)
     }
 }
 
-int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
+int NC_STACK_ypaworld::LevelCommonLoader(TLevelDescription *mapp, int levelID, int a5)
 {
     int ok = 0;
 
-    mapp->clear();
+    *mapp = TLevelDescription();
 
-    for (auto &p : ingamePlayerStatus)
-        p.clear();
+    ingamePlayerStatus.fill( World::TPlayerStatus() );
 
     timeStamp = 0;
     field_1a04 = 0;
@@ -166,11 +165,11 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     field_1a1c = 0;
     field_161c = 0;
 
-    _levelInfo->LevelID = levelID;
-    _levelInfo->Mode = a5;
-    _levelInfo->State = 0;
-    _levelInfo->OwnerMask = 0;
-    _levelInfo->UserMask = 0;
+    _levelInfo.LevelID = levelID;
+    _levelInfo.Mode = a5;
+    _levelInfo.State = TLevelInfo::STATE_PLAYING;
+    _levelInfo.OwnerMask = 0;
+    _levelInfo.UserMask = 0;
 
     field_1a60 = 0;
     field_1a98 = NULL;
@@ -194,8 +193,8 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
     _currentBeamLoad = 0;
     field_1a20 = 0;
 
-    _levelInfo->Gates.clear();
-    _levelInfo->SuperItems.clear();
+    _levelInfo.Gates.clear();
+    _levelInfo.SuperItems.clear();
 
     _Gems.clear();
     
@@ -277,7 +276,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(LevelDesc *mapp, int levelID, int a5)
 
     Common::Env.SetPrefix("rsrc", "data:");
 
-    if ( sub_4DA41C(mapp, LevelNet->mapInfos[_levelInfo->LevelID].mapPath) && (mapp->Flags & 0x7F) == 0x7F )
+    if ( sub_4DA41C(mapp, _mapRegions.MapRegions[_levelInfo.LevelID].MapDirectory) && mapp->IsOk() )
     {       
         Common::DeleteAndNull(&_script);
         
@@ -430,10 +429,10 @@ bool NC_STACK_ypaworld::LoadHightMap(const std::string &mapName)
 
 bool NC_STACK_ypaworld::yw_createRobos(const std::vector<MapRobo> &Robos)
 {
-    if ( _levelInfo->Mode != 1 )
+    if ( _levelInfo.Mode != 1 )
     {
-        _levelInfo->OwnerMask = 0;
-        _levelInfo->UserMask = 2;
+        _levelInfo.OwnerMask = 0;
+        _levelInfo.UserMask = 2;
         
         bool first = true;
 
@@ -498,7 +497,7 @@ bool NC_STACK_ypaworld::yw_createRobos(const std::vector<MapRobo> &Robos)
                 robo->setROBO_battVehicle(v12);
                 robo->setROBO_battBeam(v12);
 
-                _levelInfo->OwnerMask |= 1 << roboInf.Owner;
+                _levelInfo.OwnerMask |= 1 << roboInf.Owner;
 
                 robo->setROBO_epConquer(roboInf.ConBudget);
                 robo->setROBO_epDefense(roboInf.DefBudget);
@@ -573,7 +572,7 @@ bool NC_STACK_ypaworld::LoadBlgMap(const std::string &mapName)
 
 void NC_STACK_ypaworld::yw_InitSquads(const std::vector<MapSquad> &squads)
 {
-    if ( _levelInfo->Mode != 1 )
+    if ( _levelInfo.Mode != 1 )
     {
         size_t i = 0;
         for ( const MapSquad &squad : squads )
@@ -634,16 +633,16 @@ void NC_STACK_ypaworld::yw_InitSquads(const std::vector<MapSquad> &squads)
 
 void NC_STACK_ypaworld::InitBuddies()
 {
-    if ( !_levelInfo->Buddies.empty() )
+    if ( !_levelInfo.Buddies.empty() )
     {
         int squad_sn = 0;
         
-        std::vector<MapBuddy> buds = _levelInfo->Buddies;
+        std::vector<TMapBuddy> buds = _levelInfo.Buddies;
         while ( 1 )
         {
             std::vector<int> VhclIDS;
             int wrkID = -1;
-            for (std::vector<MapBuddy>::iterator it = buds.begin(); it != buds.end(); )
+            for (std::vector<TMapBuddy>::iterator it = buds.begin(); it != buds.end(); )
             {
                 if (wrkID == -1 || wrkID == it->CommandID )
                 {
@@ -719,9 +718,9 @@ void NC_STACK_ypaworld::yw_InitTechUpgradeBuildings()
 
 void NC_STACK_ypaworld::InitGates()
 {
-    for (size_t i = 0; i < _levelInfo->Gates.size(); i++)
+    for (size_t i = 0; i < _levelInfo.Gates.size(); i++)
     {
-        MapGate &gate = _levelInfo->Gates[i];
+        MapGate &gate = _levelInfo.Gates[i];
 
         gate.PCell = &_cells(gate.SecX, gate.SecY);
 
@@ -751,19 +750,19 @@ void NC_STACK_ypaworld::InitGates()
 
 void NC_STACK_ypaworld::InitSuperItems()
 {
-    for ( size_t i = 0; i < _levelInfo->SuperItems.size(); i++ )
+    for ( size_t i = 0; i < _levelInfo.SuperItems.size(); i++ )
     {
-        MapSuperItem &sitem = _levelInfo->SuperItems[i];
+        TMapSuperItem &sitem = _levelInfo.SuperItems[i];
         
-        sitem.PCell = &_cells(sitem.SecX, sitem.SecY);
+        sitem.PCell = &_cells(sitem.Sector);
 
         ypaworld_arg148 arg148;
         arg148.ownerID = sitem.PCell->owner;
         arg148.ownerID2 = sitem.PCell->owner;
         arg148.blg_ID = sitem.InactiveBldID;
         arg148.field_C = 1;
-        arg148.x = sitem.SecX;
-        arg148.y = sitem.SecY;
+        arg148.x = sitem.Sector.x;
+        arg148.y = sitem.Sector.y;
         arg148.field_18 = 0;
 
         ypaworld_func148(&arg148);
@@ -781,7 +780,7 @@ void NC_STACK_ypaworld::InitSuperItems()
         sitem.ActiveTime = 0;
         sitem.TriggerTime = 0;
         sitem.ActivateOwner = 0;
-        sitem.State = 0;
+        sitem.State = TMapSuperItem::STATE_INACTIVE;
     }
 }
 
@@ -873,7 +872,7 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
         }
         else
         {
-            for ( const MapGate &gate : _levelInfo->Gates )
+            for ( const MapGate &gate : _levelInfo.Gates )
             {
                 for ( const MapKeySector &ks : gate.KeySectors )
                 {
@@ -1021,17 +1020,17 @@ TSectorCollision NC_STACK_ypaworld::sub_44DBF8(int _dx, int _dz, int _dxx, int _
 
             if ( _dxx % 4 == 0 && _dzz % 4 == 0)
             {
-                tmp.sklt = ColCross.skeleton_internal;
+                tmp.sklt = FillerCross->GetSkelet();
                 tmp.CollisionType = 4;
             }
             else if ( _dxx % 4 == 0 && _dzz % 4 != 0 )
             {
-                tmp.sklt = ColSide.skeleton_internal;
+                tmp.sklt = FillerSide->GetSkelet();
                 tmp.CollisionType = 2;
             }
             else if ( _dxx % 4 != 0 && _dzz % 4 == 0 )
             {
-                tmp.sklt = ColSide.skeleton_internal;
+                tmp.sklt = FillerSide->GetSkelet();
                 tmp.CollisionType = 3;
             }
         }
@@ -1481,34 +1480,34 @@ NC_STACK_ypabact *NC_STACK_ypaworld::yw_createUnit( int model_id)
 
 
 
-void sub_4D7F60(NC_STACK_ypaworld *yw, int x, int y, stru_a3 *sct, baseRender_msg *bs77)
+void NC_STACK_ypaworld::RenderAdditionalBeeBox(Common::Point sect, TRenderingSector *sct, baseRender_msg *bs77)
 {
     sct->dword8 = 0;
     sct->dword4 = 0;
 
-    if ( yw->IsSector( {x, y} ) )
+    if ( IsSector( sect ) )
     {
         sct->dword4 = 1;
-        sct->p_cell = &yw->_cells(x, y);
+        sct->p_cell = &_cells( sect );
         sct->smooth_height = sct->p_cell->averg_height;
 
-        vec3d pos = World::SectorIDToCenterPos3( {x, y} );
+        vec3d pos = World::SectorIDToCenterPos3( sect );
         pos.y = sct->p_cell->height;
 
         sct->x = pos.x;
         sct->y = pos.y;
         sct->z = pos.z;
 
-        yw->additionalBeeBox->SetPosition(pos);
+        additionalBeeBox->SetPosition(pos);
 
-        if ( yw->additionalBeeBox->Render(bs77, NULL) )
+        if ( additionalBeeBox->Render(bs77, NULL) )
         {
             sct->dword8 = 1;
         }
     }
 }
 
-void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
+void NC_STACK_ypaworld::RenderSector(TRenderingSector *sct, baseRender_msg *bs77)
 {
     if ( sct->dword8 )
     {
@@ -1519,12 +1518,12 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
         vec3d scel;
         if ( pcell->w_type == 1 )
         {
-            yw_f80 *v5 = &yw->field_80[ pcell->w_id ];
+            yw_f80 *v5 = &field_80[ pcell->w_id ];
 
             scel = vec3d::OY((float)v5->field_4 / (float)v5->field_8);
 
-            pcell->type_id = yw->BuildProtos[ v5->blg_ID ].SecType;
-            pcell->comp_type = yw->secTypes[ pcell->type_id ].field_0;
+            pcell->type_id = BuildProtos[ v5->blg_ID ].SecType;
+            pcell->comp_type = secTypes[ pcell->type_id ].field_0;
 
             v22 = 1;
         }
@@ -1552,7 +1551,7 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
 
                 if ( v22 )
                 {
-                    NC_STACK_base *bld = yw->legos[ yw->secTypes[ pcell->type_id ].buildings.At(xx, zz)->health_models[0] ].base;
+                    NC_STACK_base *bld = legos[ secTypes[ pcell->type_id ].buildings.At(xx, zz)->health_models[0] ].base;
 
                     bld->SetStatic(false);
 
@@ -1567,7 +1566,7 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
                 }
                 else
                 {
-                    NC_STACK_base *bld = yw->legos[ yw->GetLegoBld(pcell, xx, zz) ].base;
+                    NC_STACK_base *bld = legos[ GetLegoBld(pcell, xx, zz) ].base;
 
                     bld->SetPosition(pos);
                     
@@ -1586,20 +1585,20 @@ void sub_4D806C(NC_STACK_ypaworld *yw, stru_a3 *sct, baseRender_msg *bs77)
     }
 }
 
-void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
+void NC_STACK_ypaworld::yw_renderSky(baseRender_msg *rndr_params)
 {
-    if ( yw->sky_loaded_base )
+    if ( sky_loaded_base )
     {
         float v6 = rndr_params->maxZ;
         uint32_t flags = rndr_params->flags;
 
-        yw->sky_loaded_base->SetPosition( yw->current_bact->_position + vec3d::OY(yw->field_15f4) );
+        sky_loaded_base->SetPosition( current_bact->_position + vec3d::OY(field_15f4) );
 
         rndr_params->maxZ = 32000.0;
         if (System::IniConf::GfxNewSky.Get<bool>())
             rndr_params->flags = GFX::RFLAGS_SKY;
 
-        yw->sky_loaded_base->Render(rndr_params, NULL);
+        sky_loaded_base->Render(rndr_params, NULL);
 
         rndr_params->maxZ = v6;
         rndr_params->flags = flags;
@@ -1607,97 +1606,90 @@ void yw_renderSky(NC_STACK_ypaworld *yw, baseRender_msg *rndr_params)
 }
 
 
-int sb_0x4d7c08__sub1__sub0__sub0(NC_STACK_ypaworld *yw, float xx, float yy)
+bool NC_STACK_ypaworld::IsVisibleMapPos(vec2d pos)
 {
-    int v7 = ((xx + 150) / 300) / 4;
-    int v8 = ((-yy + 150) / 300) / 4;
+    int v7 = ((pos.x + 150) / 300) / 4;
+    int v8 = ((-pos.y + 150) / 300) / 4;
 
-    if ( !yw->IsGamePlaySector( {v7, v8} ) || !yw->current_bact )
-        return 0;
+    if ( !IsGamePlaySector( {v7, v8} ) || !current_bact )
+        return false;
 
-    int v11 = abs(yw->current_bact->_sectX - v7);
-    int v12 = abs(yw->current_bact->_sectY - v8);
+    int v11 = abs(current_bact->_sectX - v7);
+    int v12 = abs(current_bact->_sectY - v8);
 
-    if ( v11 + v12 <= (yw->field_1368 - 1) / 2 )
-        return 1;
+    if ( v11 + v12 <= (field_1368 - 1) / 2 )
+        return true;
 
-    return 0;
+    return false;
 }
 
-void sb_0x4d7c08__sub1__sub0(NC_STACK_ypaworld *yw, float xx, float yy, float posx, float posy, baseRender_msg *arg)
+void NC_STACK_ypaworld::RenderSuperWave(vec2d pos, vec2d fromPos, baseRender_msg *arg)
 {
-    if ( yw->superbomb_wall_vproto )
+    if ( !superbomb_wall_vproto )
+        return;
+    
+    if ( pos.x > 0.0 && pos.y < 0.0 && pos.x < _mapLength.x && -_mapLength.y < pos.y )
     {
-        if ( xx > 0.0 && yy < 0.0 && xx < yw->_mapLength.x && -yw->_mapLength.y < yy )
+        if ( IsVisibleMapPos(pos) )
         {
-            if ( sb_0x4d7c08__sub1__sub0__sub0(yw, xx, yy) )
+            int v10 = VhclProtos[superbomb_wall_vproto].vp_normal;
+
+            NC_STACK_base *wall_base = vhcls_models.at(v10);
+
+            if ( wall_base )
             {
-                int v10 = yw->VhclProtos[yw->superbomb_wall_vproto].vp_normal;
+                float v28 = 0.0;
 
-                NC_STACK_base *wall_base = yw->vhcls_models.at(v10);
+                int v23 = (pos.x + 150) / 300;
+                int v26 = (-pos.y + 150) / 300;
 
-                if ( wall_base )
+                if ( (v23 & 3) && (v26 & 3) )
                 {
-                    float v28 = 0.0;
-
-                    int v23 = (xx + 150) / 300;
-                    int v26 = (-yy + 150) / 300;
-
-                    if ( (v23 & 3) && (v26 & 3) )
-                    {
-                        v28 = yw->_cells((v23 / 4), (v26 / 4)).height;
-                    }
-                    else
-                    {
-                        ypaworld_arg136 v22;
-                        v22.vect = vec3d::OY(50000.0);
-                        v22.stPos.x = xx;
-                        v22.stPos.y = -25000.0;
-                        v22.stPos.z = yy;
-                        v22.flags = 0;
-
-                        yw->ypaworld_func136(&v22);
-
-                        if ( v22.isect )
-                        {
-                            v28 = v22.isectPos.y;
-                        }
-                    }
-
-
-                    wall_base->TForm().Pos = vec3d(xx, v28, yy);
-
-                    float v29 = xx - posx;
-                    float v30 = yy - posy;
-
-                    float v27 = sqrt( POW2(v29) + POW2(v30) );
-                    if ( v27 > 0.0 )
-                    {
-                        v29 /= v27;
-                        v30 /= v27;
-                    }
-
-                    wall_base->TForm().SclRot =  mat3x3(v30,   0, -v29,
-                                                          0, 1.0,    0,
-                                                        v29, 0.0,  v30);
-
-                    wall_base->Render(arg, NULL);
+                    v28 = _cells((v23 / 4), (v26 / 4)).height;
                 }
+                else
+                {
+                    ypaworld_arg136 v22;
+                    v22.vect = vec3d::OY(50000.0);
+                    v22.stPos.x = pos.x;
+                    v22.stPos.y = -25000.0;
+                    v22.stPos.z = pos.y;
+                    v22.flags = 0;
+
+                    ypaworld_func136(&v22);
+
+                    if ( v22.isect )
+                    {
+                        v28 = v22.isectPos.y;
+                    }
+                }
+
+
+                wall_base->TForm().Pos = vec3d(pos.x, v28, pos.y);
+
+                vec2d delt = pos - fromPos;
+                delt.normalise();
+
+                wall_base->TForm().SclRot =  mat3x3(delt.y,   0, -delt.x,
+                                                      0, 1.0,    0,
+                                                    delt.x, 0.0,  delt.y);
+
+                wall_base->Render(arg, NULL);
             }
         }
     }
 }
 
-void sb_0x4d7c08__sub1(NC_STACK_ypaworld *yw, baseRender_msg *arg)
+void NC_STACK_ypaworld::RenderSuperItems(baseRender_msg *arg)
 {
     // Render super items
-    for ( const MapSuperItem &sitem : yw->_levelInfo->SuperItems )
+    for ( const TMapSuperItem &sitem : _levelInfo.SuperItems )
     {
-        if ( sitem.State == 3 )
+        if ( sitem.State == TMapSuperItem::STATE_TRIGGED )
         {
-            vec2d pos = World::SectorIDToCenterPos2( {sitem.SecX, sitem.SecY} );
+            vec2d pos = World::SectorIDToCenterPos2( sitem.Sector );
 
-            float v14 = sqrt( POW2(yw->_mapLength.x) + POW2(yw->_mapLength.y) );
+            float v14 = sqrt( POW2(_mapLength.x) + POW2(_mapLength.y) );
 
             if ( sitem.CurrentRadius > 300 && sitem.CurrentRadius < v14 )
             {
@@ -1709,11 +1701,8 @@ void sb_0x4d7c08__sub1(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 
                     for (float j = 0.0; j < 6.283; j = j + v9 )
                     {
-                        float v10 = sitem.CurrentRadius;
-                        float a3 = v10 * sin(j) + pos.y;
-                        float a2 = v10 * cos(j) + pos.x;
-
-                        sb_0x4d7c08__sub1__sub0(yw, a2, a3, pos.x, pos.y, arg);
+                        vec2d wallpos = vec2d(cos(j), sin(j)) * sitem.CurrentRadius + pos;
+                        RenderSuperWave(wallpos, pos, arg);
                     }
                 }
             }
@@ -1722,16 +1711,16 @@ void sb_0x4d7c08__sub1(NC_STACK_ypaworld *yw, baseRender_msg *arg)
 }
 
 
-NC_STACK_base * sb_0x4d7c08__sub3__sub0(NC_STACK_ypaworld *yw, stru_a3 *sct, stru_a3 *sct2, float a4, float a5)
+NC_STACK_base * NC_STACK_ypaworld::PrepareVFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5)
 {
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return 0;
 
-    int x = yw->secTypes[ sct->p_cell->type_id ].field_1;
-    int y = yw->secTypes[ sct2->p_cell->type_id ].field_1;
+    int x = secTypes[ sct->p_cell->type_id ].field_1;
+    int y = secTypes[ sct2->p_cell->type_id ].field_1;
 
-    NC_STACK_base *bs = yw->slurps2[x][y].skeletons_bas;
-    UAskeleton::Data *skel = yw->slurps2[x][y].skeleton_internal;
+    NC_STACK_base *bs = FillersVertical(x, y);
+    UAskeleton::Data *skel = bs->GetSkeleton()->GetSkelet();
 
     bs->SetPosition( vec3d(sct2->x, 0, sct2->z), NC_STACK_base::UF_XZ);
 
@@ -1747,16 +1736,16 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub0(NC_STACK_ypaworld *yw, stru_a3 *sct, str
     return bs;
 }
 
-NC_STACK_base * sb_0x4d7c08__sub3__sub1(NC_STACK_ypaworld *yw, stru_a3 *sct, stru_a3 *sct2, float a4, float a5)
+NC_STACK_base * NC_STACK_ypaworld::PrepareHFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5)
 {
     if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
         return NULL;
 
-    int x = yw->secTypes[ sct->p_cell->type_id ].field_1;
-    int y = yw->secTypes[ sct2->p_cell->type_id ].field_1;
+    int x = secTypes[ sct->p_cell->type_id ].field_1;
+    int y = secTypes[ sct2->p_cell->type_id ].field_1;
 
-    NC_STACK_base *bs = yw->slurps1[x][y].skeletons_bas;
-    UAskeleton::Data *skel = yw->slurps1[x][y].skeleton_internal;
+    NC_STACK_base *bs = FillersHorizontal(x, y);
+    UAskeleton::Data *skel = bs->GetSkeleton()->GetSkelet();
 
     bs->SetPosition( vec3d(sct2->x, 0, sct2->z), NC_STACK_base::UF_XZ );
 
@@ -1775,38 +1764,38 @@ NC_STACK_base * sb_0x4d7c08__sub3__sub1(NC_STACK_ypaworld *yw, stru_a3 *sct, str
 
 
 
-stru_a3 rendering_sectors[YW_RENDER_SECTORS_DEF * 2][ YW_RENDER_SECTORS_DEF * 2];
+TRenderingSector rendering_sectors[YW_RENDER_SECTORS_DEF * 2][ YW_RENDER_SECTORS_DEF * 2];
 
-void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
+void NC_STACK_ypaworld::RenderFillers(baseRender_msg *arg)
 {
     //Render empty sectors and modify landscape linking parts
-    for (int i = 0; i < yw->field_1368; i++)
+    for (int i = 0; i < field_1368; i++)
     {
-        for (int j = 0; j < yw->field_1368 - 1; j++)
+        for (int j = 0; j < field_1368 - 1; j++)
         {
-            stru_a3 *sct = &rendering_sectors[j][i];
-            stru_a3 *sct2 = &rendering_sectors[j + 1][i];
+            TRenderingSector *sct = &rendering_sectors[j][i];
+            TRenderingSector *sct2 = &rendering_sectors[j + 1][i];
 
             float h = rendering_sectors[j + 1][i].smooth_height;
             float h2 = rendering_sectors[j + 1][i + 1].smooth_height;
 
-            NC_STACK_base *bs = sb_0x4d7c08__sub3__sub0(yw, sct, sct2, h, h2);
+            NC_STACK_base *bs = PrepareVFiller(sct, sct2, h, h2);
             if ( bs )
                 bs->Render(arg, NULL);
         }
     }
 
-    for (int i = 0; i < yw->field_1368 - 1; i++)
+    for (int i = 0; i < field_1368 - 1; i++)
     {
-        for (int j = 0; j < yw->field_1368; j++)
+        for (int j = 0; j < field_1368; j++)
         {
-            stru_a3 *sct = &rendering_sectors[j][i];
-            stru_a3 *sct2 = &rendering_sectors[j][i + 1];
+            TRenderingSector *sct = &rendering_sectors[j][i];
+            TRenderingSector *sct2 = &rendering_sectors[j][i + 1];
 
             float h = rendering_sectors[j][i + 1].smooth_height;
             float h2 = rendering_sectors[j + 1][i + 1].smooth_height;
 
-            NC_STACK_base *bs = sb_0x4d7c08__sub3__sub1(yw, sct, sct2, h, h2);
+            NC_STACK_base *bs = PrepareHFiller(sct, sct2, h, h2);
             if ( bs )
                 bs->Render(arg, NULL);
 
@@ -1814,115 +1803,117 @@ void sb_0x4d7c08__sub3(NC_STACK_ypaworld *yw, baseRender_msg *arg)
     }
 }
 
-void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2)
+void NC_STACK_ypaworld::RenderGame(base_64arg *bs64, int a2)
 {
-    if ( yw->current_bact )
+    if ( !current_bact )
+        return;
+
+    TF::TForm3D *v5 = TF::Engine.GetViewPoint();
+
+    if ( v5 )
+        v5->CalcGlobal();
+
+    baseRender_msg rndrs;
+
+    rndrs.flags = 0;
+    rndrs.frameTime = bs64->DTime;
+    rndrs.globTime = bs64->TimeStamp;
+    rndrs.adeCount = 0;
+    rndrs.ownerID = 1;
+    rndrs.rndrStack = &NC_STACK_base::renderStack;
+
+    rndrs.minZ = 1.0;
+
+    if ( field_1368 == 5 )
+        rndrs.maxZ = 1500.0;
+    else
+        rndrs.maxZ = 3500.0;
+
+    int v6 = field_1368 - 1;
+
+    for (int j = 0; j < v6; j++)
     {
-        TF::TForm3D *v5 = TF::Engine.GetViewPoint();
-
-        if ( v5 )
-            v5->CalcGlobal();
-
-        baseRender_msg rndrs;
-
-        rndrs.flags = 0;
-        rndrs.frameTime = bs64->DTime;
-        rndrs.globTime = bs64->TimeStamp;
-        rndrs.adeCount = 0;
-        rndrs.ownerID = 1;
-        rndrs.rndrStack = &NC_STACK_base::renderStack;
-
-        rndrs.minZ = 1.0;
-
-        if ( yw->field_1368 == 5 )
-            rndrs.maxZ = 1500.0;
-        else
-            rndrs.maxZ = 3500.0;
-
-        int v6 = yw->field_1368 - 1;
-
-        for (int j = 0; j < v6; j++)
+        for (int i = 0; i < v6; i++)
         {
-            for (int i = 0; i < v6; i++)
-            {
-                rendering_sectors[j][i].dword4 = 0;
-                rendering_sectors[j][i].dword8 = 0;
-            }
+            rendering_sectors[j][i].dword4 = 0;
+            rendering_sectors[j][i].dword8 = 0;
+        }
+    }
+
+    int v29 = v6 / 2;
+    for (int i = 0; i <= v29; i++)
+    {
+        int v28 = v29 - i;
+
+        for (int j = -i; j <= i; j++)
+        {
+            TRenderingSector *sct = &rendering_sectors[v29 + j][v29 - v28];
+
+            RenderAdditionalBeeBox( Common::Point(j + current_bact->_sectX, -v28 + current_bact->_sectY), 
+                                    sct, &rndrs);
+
+            if ( sct->dword4 )
+                RenderSector(sct, &rndrs);
+
         }
 
-        int v29 = v6 / 2;
-        for (int i = 0; i <= v29; i++)
+        if ( -v28 != v28 )
         {
-            int v28 = v29 - i;
-
             for (int j = -i; j <= i; j++)
             {
-                stru_a3 *sct = &rendering_sectors[v29 + j][v29 - v28];
+                TRenderingSector *sct = &rendering_sectors[v29 + j][v29 + v28];
 
-                sub_4D7F60(yw, j + yw->current_bact->_sectX, -v28 + yw->current_bact->_sectY, sct, &rndrs);
+                RenderAdditionalBeeBox( Common::Point(j + current_bact->_sectX, v28 + current_bact->_sectY), 
+                                        sct, &rndrs);
 
                 if ( sct->dword4 )
-                    sub_4D806C(yw, sct, &rndrs);
-
-            }
-
-            if ( -v28 != v28 )
-            {
-                for (int j = -i; j <= i; j++)
-                {
-                    stru_a3 *sct = &rendering_sectors[v29 + j][v29 + v28];
-
-                    sub_4D7F60(yw, j + yw->current_bact->_sectX, v28 + yw->current_bact->_sectY, sct, &rndrs);
-
-                    if ( sct->dword4 )
-                        sub_4D806C(yw, sct, &rndrs);
-                }
+                    RenderSector(sct, &rndrs);
             }
         }
+    }
 
-        sb_0x4d7c08__sub3(yw, &rndrs);
-        sb_0x4d7c08__sub1(yw, &rndrs);
+    RenderFillers(&rndrs);
+    RenderSuperItems(&rndrs);
 
-        if ( yw->field_15f8 )
-            yw_renderSky(yw, &rndrs);
+    if ( field_15f8 )
+        yw_renderSky(&rndrs);
 
-        bs64->field_C = rndrs.adeCount;
+    bs64->field_C = rndrs.adeCount;
 
-        yw->field_1B6A = rndrs.adeCount;
-        yw->field_1b6c = rndrs.rndrStack->getSize();
-        
-        
-        area_arg_65 rrg;
-        rrg.ownerID = 0;
-        rrg.timeStamp = bs64->TimeStamp;
-        rrg.frameTime = bs64->DTime;
-        rrg.minZ = 1.0;
-        rrg.maxZ = rndrs.maxZ;
-        rrg.rndrStack = &NC_STACK_base::renderStack;
-        rrg.view = TF::Engine.GetViewPoint();
-        rrg.owner = NULL;
-        rrg.flags = 0;
+    field_1B6A = rndrs.adeCount;
+    field_1b6c = rndrs.rndrStack->getSize();
 
-        rrg.OBJ_SKELETON = NULL;
-        rrg.adeCount = 0;
-        
-        yw->ParticleSystem().UpdateRender(&rrg, bs64->DTime);
-        
-        GFX::Engine.BeginScene();
 
-        if (System::IniConf::GfxNewSky.Get<bool>())
-            rndrs.rndrStack->render(true, RenderStack::comparePrio);
-        else
-            rndrs.rndrStack->render(false);
+    area_arg_65 rrg;
+    rrg.ownerID = 0;
+    rrg.timeStamp = bs64->TimeStamp;
+    rrg.frameTime = bs64->DTime;
+    rrg.minZ = 1.0;
+    rrg.maxZ = rndrs.maxZ;
+    rrg.rndrStack = &NC_STACK_base::renderStack;
+    rrg.view = TF::Engine.GetViewPoint();
+    rrg.owner = NULL;
+    rrg.flags = 0;
 
-        GFX::Engine.EndScene();
+    rrg.OBJ_SKELETON = NULL;
+    rrg.adeCount = 0;
 
-        if ( a2 )
-        {
-            uint32_t tpm = profiler_begin();
-            sb_0x4d7c08__sub0(yw);
-            yw->_profile2DDraw = profiler_end(tpm);
-        }
+    ParticleSystem().UpdateRender(&rrg, bs64->DTime);
+
+    GFX::Engine.BeginScene();
+
+    if (System::IniConf::GfxNewSky.Get<bool>())
+        rndrs.rndrStack->render(true, RenderStack::comparePrio);
+    else
+        rndrs.rndrStack->render(false);
+
+    GFX::Engine.EndScene();
+
+    if ( a2 )
+    {
+        uint32_t tpm = profiler_begin();
+        sb_0x4d7c08__sub0(this);
+        _profile2DDraw = profiler_end(tpm);
     }
 }
 
@@ -2549,9 +2540,9 @@ void ypaworld_func64__sub5(NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 {
-    MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
-    sitem.State = 1;
+    sitem.State = TMapSuperItem::STATE_ACTIVE;
     sitem.TriggerTime = 0;
     sitem.ActivateOwner = sitem.PCell->owner;
 
@@ -2568,8 +2559,8 @@ void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
     arg148.ownerID2 = sitem.PCell->owner;
     arg148.blg_ID = sitem.ActiveBldID;
     arg148.field_C = 1;
-    arg148.x = sitem.SecX;
-    arg148.y = sitem.SecY;
+    arg148.x = sitem.Sector.x;
+    arg148.y = sitem.Sector.y;
     arg148.field_18 = 0;
 
     ypaworld_func148(&arg148);
@@ -2581,12 +2572,12 @@ void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
     arg159.unit = 0;
     arg159.Priority = 94;
 
-    if ( sitem.Type == 1 )
+    if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
         arg159.txt = GetLocaleString(250, "Superbomb activated.");
         arg159.MsgID = 70;
     }
-    else if ( sitem.Type == 2 )
+    else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
         arg159.txt = GetLocaleString(254, "Superwave activated.");
         arg159.MsgID = 74;
@@ -2602,17 +2593,17 @@ void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 
 void NC_STACK_ypaworld::sub_4D1594(int id)
 {
-    MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
-    sitem.State = 2;
+    sitem.State = TMapSuperItem::STATE_STOPPED;
 
     ypaworld_arg148 arg148;
     arg148.ownerID = sitem.PCell->owner;
     arg148.ownerID2 = sitem.PCell->owner;
     arg148.blg_ID = sitem.InactiveBldID;
     arg148.field_C = 1;
-    arg148.x = sitem.SecX;
-    arg148.y = sitem.SecY;
+    arg148.x = sitem.Sector.x;
+    arg148.y = sitem.Sector.y;
     arg148.field_18 = 0;
 
     ypaworld_func148(&arg148);
@@ -2624,12 +2615,12 @@ void NC_STACK_ypaworld::sub_4D1594(int id)
     arg159.unit = 0;
     arg159.Priority = 93;
 
-    if ( sitem.Type == 1 )
+    if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
         arg159.txt = GetLocaleString(252, "Superbomb frozen.");
         arg159.MsgID = 72;
     }
-    else if ( sitem.Type == 2 )
+    else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
         arg159.txt = GetLocaleString(256, "Superwave frozen.");
         arg159.MsgID = 76;
@@ -2645,8 +2636,8 @@ void NC_STACK_ypaworld::sub_4D1594(int id)
 
 void NC_STACK_ypaworld::sub_4D1444(int id)
 {
-    MapSuperItem &sitem = _levelInfo->SuperItems[id];
-    sitem.State = 3;
+    TMapSuperItem &sitem = _levelInfo.SuperItems[id];
+    sitem.State = TMapSuperItem::STATE_TRIGGED;
     sitem.TriggerTime = timeStamp;
 
     ypaworld_arg148 arg148;
@@ -2654,8 +2645,8 @@ void NC_STACK_ypaworld::sub_4D1444(int id)
     arg148.ownerID2 = sitem.PCell->owner;
     arg148.blg_ID = sitem.TriggerBldID;
     arg148.field_C = 1;
-    arg148.x = sitem.SecX;
-    arg148.y = sitem.SecY;
+    arg148.x = sitem.Sector.x;
+    arg148.y = sitem.Sector.y;
     arg148.field_18 = 0;
 
     ypaworld_func148(&arg148);
@@ -2669,12 +2660,12 @@ void NC_STACK_ypaworld::sub_4D1444(int id)
     arg159.Priority = 95;
     arg159.unit = 0;
 
-    if ( sitem.Type == 1 )
+    if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
         arg159.txt = GetLocaleString(251, "Superbomb triggered.");
         arg159.MsgID = 71;
     }
-    else if ( sitem.Type == 2 )
+    else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
         arg159.txt = GetLocaleString(255, "Superwave triggered.");
         arg159.MsgID = 75;
@@ -2866,9 +2857,9 @@ void ypaworld_func64__sub2(NC_STACK_ypaworld *yw)
 
 void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
 {
-    for ( size_t i = 0; i < yw->_levelInfo->Gates.size(); i++ )
+    for ( size_t i = 0; i < yw->_levelInfo.Gates.size(); i++ )
     {
-        const MapGate &gate = yw->_levelInfo->Gates[i];
+        const MapGate &gate = yw->_levelInfo.Gates[i];
         int v21 = 6;
 
         if ( gate.PCell->owner == yw->UserRobo->_owner )
@@ -2971,7 +2962,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
 
 bool NC_STACK_ypaworld::sub_4D11C0(int id, int owner)
 {
-    const MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    const TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
     if ( sitem.PCell->owner != owner )
         return false;
@@ -3000,9 +2991,9 @@ bool NC_STACK_ypaworld::sub_4D12A0(int owner)
 
 void NC_STACK_ypaworld::sub_4D16C4(int id)
 {
-    MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
-    sitem.State = 0;
+    sitem.State = TMapSuperItem::STATE_INACTIVE;
     sitem.ActiveTime = 0;
     sitem.TriggerTime = 0;
     sitem.ActivateOwner = 0;
@@ -3013,8 +3004,8 @@ void NC_STACK_ypaworld::sub_4D16C4(int id)
     arg148.ownerID2 = sitem.PCell->owner;
     arg148.blg_ID = sitem.InactiveBldID;
     arg148.field_C = 1;
-    arg148.x = sitem.SecX;
-    arg148.y = sitem.SecY;
+    arg148.x = sitem.Sector.x;
+    arg148.y = sitem.Sector.y;
     arg148.field_18 = 0;
 
     ypaworld_func148(&arg148);
@@ -3026,12 +3017,12 @@ void NC_STACK_ypaworld::sub_4D16C4(int id)
     arg159.unit = NULL;
     arg159.Priority = 92;
 
-    if ( sitem.Type == 1 )
+    if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
         arg159.txt = GetLocaleString(253, "Superbomb deactivated.");
         arg159.MsgID = 73;
     }
-    else if ( sitem.Type == 2 )
+    else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
         arg159.txt = GetLocaleString(257, "Superwave deactivated.");
         arg159.MsgID = 77;
@@ -3047,7 +3038,7 @@ void NC_STACK_ypaworld::sub_4D16C4(int id)
 
 void NC_STACK_ypaworld::ypaworld_func64__sub19__sub0(int id)
 {
-    MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
     for( NC_STACK_ypabact * &unit : _unitsList )
     {
@@ -3080,7 +3071,7 @@ void ypaworld_func64__sub19__sub3(NC_STACK_ypaworld *yw, int id)
 {
     if ( yw->GameShell )
     {
-        MapSuperItem &sitem = yw->_levelInfo->SuperItems[id];
+        TMapSuperItem &sitem = yw->_levelInfo.SuperItems[id];
 
         int v4 = sitem.CountDown / 1024;
 
@@ -3101,7 +3092,7 @@ void ypaworld_func64__sub19__sub3(NC_STACK_ypaworld *yw, int id)
 
 bool NC_STACK_ypaworld::sub_4D1230(int id, int a3)
 {
-    const MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    const TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
     if ( sitem.PCell->owner == a3 )
         return false;
@@ -3120,7 +3111,7 @@ bool NC_STACK_ypaworld::sub_4D1230(int id, int a3)
 
 void NC_STACK_ypaworld::ypaworld_func64__sub19__sub1(int id)
 {
-    const MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    const TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
     for ( NC_STACK_ypabact * &unit : _unitsList )
     {
@@ -3176,11 +3167,11 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0__sub0(uint8_t activat
 
 void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
 {
-    MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
     sitem.CurrentRadius = (timeStamp - sitem.TriggerTime) * World::SectorLength / 2400.0;
 
-    vec2d tmp = World::SectorIDToCenterPos2( {sitem.SecX, sitem.SecY} );
+    vec2d tmp = World::SectorIDToCenterPos2( sitem.Sector );
 
     float v19 = sqrt(POW2(_mapLength.x) + POW2(_mapLength.y));
 
@@ -3225,11 +3216,11 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
 
 void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2(int id)
 {
-    const MapSuperItem &sitem = _levelInfo->SuperItems[id];
+    const TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
     if ( !sub_4D1230(id, sitem.ActivateOwner) && sub_4D12A0(sitem.ActivateOwner) )
     {
-        if ( sitem.Type == 1 )
+        if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
             ypaworld_func64__sub19__sub2__sub0(id);
     }
     else
@@ -3240,15 +3231,15 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2(int id)
 
 void NC_STACK_ypaworld::ypaworld_func64__sub19()
 {
-    for (size_t i = 0; i < _levelInfo->SuperItems.size(); i++)
+    for (size_t i = 0; i < _levelInfo.SuperItems.size(); i++)
     {
-        const MapSuperItem &sitem = _levelInfo->SuperItems[i];
+        const TMapSuperItem &sitem = _levelInfo.SuperItems[i];
 
-        if ( sitem.Type )
+        if ( sitem.Type != 0 )
         {
             switch ( sitem.State )
             {
-            case 0:
+            case TMapSuperItem::STATE_INACTIVE:
                 if ( sub_4D11C0(i, sitem.PCell->owner) )
                 {
                     if ( sub_4D12A0(sitem.PCell->owner) )
@@ -3256,16 +3247,16 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19()
                 }
                 break;
 
-            case 1:
+            case TMapSuperItem::STATE_ACTIVE:
                 ypaworld_func64__sub19__sub0(i);
                 ypaworld_func64__sub19__sub3(this, i);
                 break;
 
-            case 2:
+            case TMapSuperItem::STATE_STOPPED:
                 ypaworld_func64__sub19__sub1(i);
                 break;
 
-            case 3:
+            case TMapSuperItem::STATE_TRIGGED:
                 ypaworld_func64__sub19__sub2(i);
                 break;
 
@@ -3367,7 +3358,7 @@ void sub_44A094(NC_STACK_ypaworld *yw)
 
 int NC_STACK_ypaworld::yw_RestoreVehicleData()
 {
-    std::string buf = fmt::sprintf("save:%s/%d.rst", GameShell->user_name, _levelInfo->LevelID);
+    std::string buf = fmt::sprintf("save:%s/%d.rst", GameShell->UserName, _levelInfo.LevelID);
 
     ScriptParser::HandlersList parsers {
         new World::Parsers::VhclProtoParser(this),
@@ -3378,21 +3369,21 @@ int NC_STACK_ypaworld::yw_RestoreVehicleData()
     return ScriptParser::ParseFile(buf, parsers, 0);
 }
 
-void NC_STACK_ypaworld::sub_471AB8()
+void NC_STACK_ypaworld::EnableLevelPasses()
 {
-    if ( _levelInfo->State == 1 )
+    if ( _levelInfo.State == TLevelInfo::STATE_COMPLETED )
     {
-        MapGate &gate = _levelInfo->Gates[ _levelInfo->GateCompleteID ];
+        MapGate &gate = _levelInfo.Gates[ _levelInfo.GateCompleteID ];
 
-        LevelNet->mapInfos[ _levelInfo->LevelID ].field_0 = 3;
+        _mapRegions.MapRegions[ _levelInfo.LevelID ].Status = TMapRegionInfo::STATUS_COMPLETED;
 
         for (int lvl : gate.PassToLevels)
         {
-            if ( LevelNet->mapInfos[ lvl ].field_0 == 1 )
-                LevelNet->mapInfos[ lvl ].field_0 = 2;
+            if ( _mapRegions.MapRegions[ lvl ].Status == TMapRegionInfo::STATUS_DISABLED )
+                _mapRegions.MapRegions[ lvl ].Status = TMapRegionInfo::STATUS_ENABLED;
         }
     }
-    else if ( _levelInfo->State == 2 && !yw_RestoreVehicleData() )
+    else if ( _levelInfo.State == TLevelInfo::STATE_ABORTED && !yw_RestoreVehicleData() )
     {
         ypa_log_out("yw_RestoreVehicleData() failed.\n");
     }
@@ -3586,14 +3577,14 @@ int recorder_startrec(NC_STACK_ypaworld *yw)
     rcrd->do_record = 0;
     rcrd->field_40 = 0;
     rcrd->seqn++;
-    rcrd->level_id = yw->_levelInfo->LevelID;
+    rcrd->level_id = yw->_levelInfo.LevelID;
     rcrd->frame_id = 0;
     rcrd->time = 0;
     rcrd->bacts_count = 0;
     rcrd->field_34 = 0;
     rcrd->ainf_size = 0;
 
-    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("env:snaps/m%02d%04d.raw", yw->_levelInfo->LevelID, rcrd->seqn), "wb");
+    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("env:snaps/m%02d%04d.raw", yw->_levelInfo.LevelID, rcrd->seqn), "wb");
     if ( !fil )
     {
         rcrd->mfile = NULL;
@@ -4774,7 +4765,7 @@ void NC_STACK_ypaworld::debug_info_draw(InputState *inpt)
             if ( isNetGame )
                 all_time = 0;
             else
-                all_time = (timeStamp + playerstatus[1].elapsedTime) / 1024;
+                all_time = (timeStamp + playerstatus[1].ElapsedTime) / 1024;
 
             cmd = sub_445654(
                       this,

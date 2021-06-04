@@ -342,71 +342,25 @@ int NC_STACK_ypaworld::yw_ParseWorldIni(const std::string &filename)
 	return ScriptParser::ParseFile(filename, hndls, 0);
 }
 
-int NC_STACK_ypaworld::yw_InitLevelNet()
+bool NC_STACK_ypaworld::InitMapRegionsNet()
 {
-    _levelInfo = new LevelInfo;
-    if ( !_levelInfo )
-    {
-        if ( LevelNet )
-            delete LevelNet;
-
-        if ( _levelInfo )
-            delete _levelInfo;
-
-        _levelInfo = NULL;
-        LevelNet = NULL;
-        return 0;
-    }
-
-    LevelNet = new stru_LevelNet;
-    if ( !LevelNet )
-    {
-        if ( LevelNet )
-            delete LevelNet;
-
-        if ( _levelInfo )
-            delete _levelInfo;
-
-        _levelInfo = NULL;
-        LevelNet = NULL;
-        return 0;
-    }
-
-    for(auto &x : iniColors)
-        x = GFX::Engine.Color(255, 255, 0);
+    _iniColors.fill( GFX::Engine.Color(255, 255, 0) );
 
     if ( !yw_ParseWorldIni("env:world.ini") && !yw_ParseWorldIni("data:world.ini"))
     {
         ypa_log_out("yw_ParseWorldIni() failed.\n");
-        if ( LevelNet )
-            delete LevelNet;
-
-        if ( _levelInfo )
-            delete _levelInfo;
-
-        _levelInfo = NULL;
-        LevelNet = NULL;
-        return 0;
+        return false;
     }
 
     if ( !yw_ScanLevels() )
     {
         ypa_log_out("yw_ScanLevels() failed.\n");
-        if ( LevelNet )
-            delete LevelNet;
-
-        if ( _levelInfo )
-            delete _levelInfo;
-
-        _levelInfo = NULL;
-        LevelNet = NULL;
-        return 0;
+        return false;
     }
 
-    for(auto &x : _levelInfo->JodieFoster)
-		x = 0;
+    _levelInfo.JodieFoster.fill(0);
 
-    return 1;
+    return true;
 }
 
 int yw_InitNetwork(NC_STACK_ypaworld *yw)
@@ -446,7 +400,7 @@ bool NC_STACK_ypaworld::ParseColorString(int color_id, const std::string &color_
         int g = std::stoi(sg);
         int b = std::stoi(sb);
         //int i = std::stoi(si);
-        iniColors.at(color_id) = GFX::Engine.Color(r, g, b);
+        _iniColors.at(color_id) = GFX::Engine.Color(r, g, b);
         return true;
     }
 
@@ -479,9 +433,9 @@ int get_level_numb(const std::string &filename)
 
 
 
-bool NC_STACK_ypaworld::sb_0x4e1a88__sub0__sub0(LevelDesc *mapp, const std::string &fname)
+bool NC_STACK_ypaworld::sb_0x4e1a88__sub0__sub0(TLevelDescription *mapp, const std::string &fname)
 {
-    mapp->clear();
+    *mapp = TLevelDescription();
     ScriptParser::HandlersList handlers {
         new World::Parsers::LevelDataParser(this, mapp),
         new World::Parsers::MapRobosParser(mapp),
@@ -505,31 +459,30 @@ bool NC_STACK_ypaworld::sb_0x4e1a88__sub0(const std::string &fname, bool multipl
     else
         buf = std::string("levels:single/") + fname;
 
-    LevelDesc mapp;
+    TLevelDescription mapp;
     sb_0x4e1a88__sub0__sub0(&mapp, buf);
 
-    mapINFO &minf = LevelNet->mapInfos[levelnmb];
+    TMapRegionInfo &minf = _mapRegions.MapRegions[levelnmb];
 
     if ( multiplayer )
-        minf.field_0 = 4;
+        minf.Status = TMapRegionInfo::STATUS_NETWORK;
     else
-        minf.field_0 = 2;
+        minf.Status = TMapRegionInfo::STATUS_ENABLED;
 
-    minf.mapPath = buf;
+    minf.MapDirectory = buf;
 
-    minf.map_name = _levelInfo->MapName;
+    minf.MapName = _levelInfo.MapName;
 
-    minf.field_9C = Common::FRect();
+    minf.Rect = Common::FRect();
 
-    minf.fractions_mask = 0;
-    minf.robos_count = mapp.Robos.size();
+    minf.FractionsBits = 0;
+    minf.RoboCount = mapp.Robos.size();
 
     for ( const MapRobo &robo : mapp.Robos )
-        minf.fractions_mask |= 1 << robo.Owner;
+        minf.FractionsBits |= 1 << robo.Owner;
 
-    minf.secXsize = mapp.MapXSize & 0xFF;
-    minf.secYsize = mapp.MapYSize & 0xFF;
-    minf.slow_connection = mapp.SlowConnection;
+    minf.MapSize = mapp.MapSize;
+    minf.SlowConnection = mapp.SlowConnection;
     return true;
 }
 
@@ -1129,19 +1082,10 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
                 (*it)->SetFadeLength(yw->field_15e8);
                 (*it)->SetStatic(true);
 
-                NC_STACK_skeleton *skeleton = (*it)->GetSkeleton();
-
-                UAskeleton::Data *skeleton_internal = skeleton->GetSkelet();
                 if (i == 0)
-                {
-                    yw->slurps1[j][k].skeletons_bas = *it;
-                    yw->slurps1[j][k].skeleton_internal = skeleton_internal;
-                }
+                    yw->FillersHorizontal(j, k) = *it;
                 else if (i == 1)
-                {
-                    yw->slurps2[j][k].skeletons_bas = *it;
-                    yw->slurps2[j][k].skeleton_internal = skeleton_internal;
-                }
+                    yw->FillersVertical(j, k) = *it;
 
                 it++;
             }
@@ -1150,15 +1094,14 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
 
     std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
-    NC_STACK_sklt *tmp_skel = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Skeleton/ColSide.sklt")}} );
+    NC_STACK_skeleton *tmp_skel = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Skeleton/ColSide.sklt")}} );
     if ( !tmp_skel )
     {
         ypa_log_out("Couldn't create side collision sklt.\n");
         return 0;
     }
 
-    yw->ColSide.skeleton = tmp_skel;
-    yw->ColSide.skeleton_internal = yw->ColSide.skeleton->GetSkelet();
+    yw->FillerSide = tmp_skel;
 
     tmp_skel = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Skeleton/ColCross.sklt")}} );
     if ( !tmp_skel )
@@ -1167,8 +1110,7 @@ int sub_44A97C(NC_STACK_ypaworld *yw, NC_STACK_base *base)
         return 0;
     }
 
-    yw->ColCross.skeleton = tmp_skel;
-    yw->ColCross.skeleton_internal = yw->ColCross.skeleton->GetSkelet();
+    yw->FillerCross = tmp_skel;
 
     Common::Env.SetPrefix("rsrc", oldRsrc);
 
@@ -1374,7 +1316,7 @@ int loadTOD(NC_STACK_ypaworld *yw, const char *fname)
     int tod = 0;
     if ( yw->GameShell )
     {
-        FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", yw->GameShell->user_name, fname), "r");
+        FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", yw->GameShell->UserName, fname), "r");
 
         if ( fil )
         {
@@ -1398,7 +1340,7 @@ int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod)
     int v6 = 0;
     if ( yw->GameShell )
     {
-        FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", yw->GameShell->user_name, fname), "w");
+        FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", yw->GameShell->UserName, fname), "w");
 
         if ( fil )
         {
@@ -1440,27 +1382,27 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
     input_states.HotKeyID = -1;
 }
 
-void sub_44A908(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FreeFillers()
 {
-    memset(yw->slurps1, 0, sizeof(slurp) * 6 * 6);
-    memset(yw->slurps2, 0, sizeof(slurp) * 6 * 6);
+    FillersHorizontal.fill(NULL);
+    FillersVertical.fill(NULL);
 
-    if ( yw->ColSide.skeleton )
+    if ( FillerSide )
     {
-        delete_class_obj(yw->ColSide.skeleton);
-        memset(&yw->ColSide, 0, sizeof(slurp2));
+        Nucleus::Delete(FillerSide);
+        FillerSide = NULL;
     }
 
-    if ( yw->ColCross.skeleton )
+    if ( FillerCross )
     {
-        delete_class_obj(yw->ColCross.skeleton);
-        memset(&yw->ColCross, 0, sizeof(slurp2));
+        Nucleus::Delete(FillerCross);
+        FillerCross = NULL;
     }
 }
 
-void LegosClear(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FreeLegos()
 {
-    for (cityBases &lego : yw->legos)
+    for (cityBases &lego : legos)
     {
         if (lego.sklt_obj)
             Nucleus::Delete(lego.sklt_obj);
@@ -1469,88 +1411,45 @@ void LegosClear(NC_STACK_ypaworld *yw)
     }
 }
 
-void sb_0x4ea37c(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FreeBriefDataSet()
 {
-    yw->vhcls_models.clear();
-    LegosClear(yw);
-    sub_44A908(yw);
+    vhcls_models.clear();
+    FreeLegos();
+    FreeFillers();
     
-    for (subSec &ssec : yw->subSectors)
+    for (subSec &ssec : subSectors)
         ssec = subSec();
     
-    for (secType &styp : yw->secTypes)
+    for (secType &styp : secTypes)
         styp = secType();
 
-    if ( yw->additionalSet )
+    if ( additionalSet )
     {
-        delete_class_obj(yw->additionalSet);
-        yw->additionalSet = NULL;
-        yw->set_number = 0;
+        Nucleus::Delete(additionalSet);
+        additionalSet = NULL;
+        set_number = 0;
     }
-
-    GFX::Engine.display_func272(NULL);
 }
 
-void sub_4EAC80(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FreeBriefing()
 {
-    BriefengScreen *brf = &yw->brief;
+    FreeBriefDataSet();
 
-    sb_0x4ea37c(yw);
+    Common::DeleteAndNull( &typ_map );
 
-    if ( yw->typ_map )
-    {
-        delete yw->typ_map;
-        yw->typ_map = NULL;
-    }
-
-    if ( brf->MbmapImg )
-    {
-        delete brf->MbmapImg;
-        brf->MbmapImg = NULL;
-    }
-
-    if ( brf->BriefingMapImg )
-    {
-        delete brf->BriefingMapImg;
-        brf->BriefingMapImg = NULL;
-    }
-
-    brf->Stage = 0;
-    yw->GuiWinClose(&stru_5C91D0);
+    brief.UnloadRes();
+    brief.Stage = TBriefengScreen::STAGE_NONE;
+    
+    GuiWinClose(&stru_5C91D0);
     stru_5C91D0.Free();
 }
 
-void yw_freeDebrief(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::FreeDebrief()
 {
-    BriefengScreen *brf = &yw->brief;
+    brief.Clear();
+    brief.Stage = TBriefengScreen::STAGE_NONE;
 
-    brf->OwnMap.Clear();
-
-    brf->TypMap.Clear();
-
-    if ( brf->MbmapImg )
-    {
-        delete_class_obj(brf->MbmapImg);
-        brf->MbmapImg = 0;
-    }
-
-    if ( brf->BriefingMapImg )
-    {
-        delete_class_obj(brf->BriefingMapImg);
-        brf->BriefingMapImg = NULL;
-    }
-
-    for ( NC_STACK_sklt* &gfx : brf->VectorGfx )
-    {
-        if (gfx)
-        {
-            Nucleus::Delete(gfx);
-            gfx = NULL;
-        }
-    }
-    brf->Stage = 0;
-
-    yw->_levelInfo->State = 8;
+    _levelInfo.State = TLevelInfo::STATE_MENU;
 }
 
 // Select map
@@ -1570,13 +1469,13 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
         v4 = 1.0;
 
     int v6 = 0;
-    int v7 = 0;
+    size_t v7 = 0;
 
-    if ( yw->LevelNet->ilbm_mask_map )
+    if ( yw->_mapRegions.MaskImage )
     {
         if ( inpt->ClickInf.selected_btnID == -1 )
         {
-            ResBitmap *a4 = yw->LevelNet->ilbm_mask_map->GetResBmp();
+            ResBitmap *a4 = yw->_mapRegions.MaskImage->GetResBmp();
 
             int xpos = a4->width * v3;
             int ypos = a4->height * v4;
@@ -1587,8 +1486,8 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
             
             if ( v7 > 0 && v7 < 256 )
             {
-                int v15 = yw->LevelNet->mapInfos[v7].field_0;
-                if ( v15 != 0 && v15 != 1 && v15 != 4 )
+                int v15 = yw->_mapRegions.MapRegions[v7].Status;
+                if ( v15 != TMapRegionInfo::STATUS_NONE && v15 != TMapRegionInfo::STATUS_DISABLED && v15 != TMapRegionInfo::STATUS_NETWORK )
                     v6 = 1;
             }
         }
@@ -1596,16 +1495,16 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 
     if ( v6 )
     {
-        if ( v7 != yw->LevelNet->field_BE38 )
+        if ( v7 != yw->_mapRegions.SelectedRegion )
         {
             if ( yw->GameShell )
                 SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 8);
         }
-        yw->LevelNet->field_BE38 = v7;
+        yw->_mapRegions.SelectedRegion = v7;
     }
     else
     {
-        yw->LevelNet->field_BE38 = 0;
+        yw->_mapRegions.SelectedRegion = 0;
     }
 }
 
@@ -1622,7 +1521,7 @@ void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, 
         FontUA::set_xpos(&cur, x);
         FontUA::set_ypos(&cur, y);
 
-        FontUA::set_txtColor(&cur, yw->iniColors[13].r, yw->iniColors[13].g, yw->iniColors[13].b);
+        FontUA::set_txtColor(&cur, yw->_iniColors[13].r, yw->_iniColors[13].g, yw->_iniColors[13].b);
 
         Stok parse(txt, "\n\r");
         std::string line;
@@ -1643,33 +1542,31 @@ void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, 
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::DrawMapRegionsTutorial()
 {
-    stru_LevelNet *lvlnet = yw->LevelNet;
-
-    if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map )
+    if ( _mapRegions.MenuImage && _mapRegions.MaskImage && _mapRegions.RolloverImage )
     {
         GFX::rstr_arg204 a4;
-        a4.pbitm = yw->LevelNet->ilbm_menu_map->GetResBmp();
+        a4.pbitm = _mapRegions.MenuImage->GetResBmp();
 
         a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
 
         GFX::Engine.raster_func202(&a4);
 
-        for (int i = 0; i < 256; i++)
+        for (size_t i = 0; i < _mapRegions.MapRegions.size(); i++)
         {
-            mapINFO *v5 = &yw->LevelNet->mapInfos[i];
+            TMapRegionInfo &region = _mapRegions.MapRegions[i];
 
-            if ( !v5->field_9C.IsEmpty() )
+            if ( !region.Rect.IsEmpty() )
             {
                 ResBitmap *v20 = NULL;
 
-                if ( v5->field_0 == 2 ||  v5->field_0 == 3)
+                if ( region.Status == TMapRegionInfo::STATUS_ENABLED ||  region.Status == TMapRegionInfo::STATUS_COMPLETED)
                 {
-                    if ( i == yw->LevelNet->field_BE38 )
+                    if ( i == _mapRegions.SelectedRegion )
                     {
-                        v20 = yw->LevelNet->ilbm_rollover_map->GetResBmp();
+                        v20 = _mapRegions.RolloverImage->GetResBmp();
                     }
                 }
 
@@ -1677,10 +1574,10 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
                 {
                     GFX::rstr_218_arg v17;
                     v17.bitm_intern = v20;
-                    v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->GetResBmp();
+                    v17.bitm_intern2 = _mapRegions.MaskImage->GetResBmp();
 
                     v17.flg = i;
-                    v17.rect2 = v5->field_9C;
+                    v17.rect2 = region.Rect;
                     v17.rect1 = v17.rect2;
 
                     GFX::Engine.raster_func218(&v17);
@@ -1688,23 +1585,23 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
             }
         }
 
-        if ( yw->LevelNet->field_BE38 )
+        if ( _mapRegions.SelectedRegion )
         {
             char cmdBuff[256];
             char *v11 = cmdBuff;
 
-            if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 )
+            if ( _mapRegions.MapRegions[ _mapRegions.SelectedRegion ].Status != TMapRegionInfo::STATUS_NONE )
             {
-                if ( !yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.empty() )
+                if ( !_mapRegions.MapRegions[ _mapRegions.SelectedRegion ].MapName.empty() )
                 {
-                    const std::string &v12 = yw->GetLocaleString(yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
+                    const std::string &v12 = GetLocaleString(_mapRegions.SelectedRegion + 1800, _mapRegions.MapRegions[ _mapRegions.SelectedRegion ].MapName);
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
-                    FontUA::set_ypos(&v11, -(yw->font_default_h + yw->icon_order__h + 4) );
-                    FontUA::set_txtColor(&v11, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+                    FontUA::set_ypos(&v11, -(font_default_h + icon_order__h + 4) );
+                    FontUA::set_txtColor(&v11, _iniColors[63].r, _iniColors[63].g, _iniColors[63].b);
 
-                    v11 = FontUA::FormateCenteredSkipableItem(yw->tiles[15], v11, v12, yw->screen_width);
+                    v11 = FontUA::FormateCenteredSkipableItem(tiles[15], v11, v12, screen_width);
                 }
             }
             FontUA::set_end(&v11);
@@ -1720,14 +1617,12 @@ void ypaworld_func158__sub4__sub1__sub2(NC_STACK_ypaworld *yw)
 
 }
 
-void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::DrawMapRegions()
 {
-    stru_LevelNet *lvlnet = yw->LevelNet;
-
-    if ( lvlnet->ilbm_menu_map && lvlnet->ilbm_mask_map && lvlnet->ilbm_rollover_map && lvlnet->ilbm_finished_map && lvlnet->ilbm_enabled_map )
+    if ( _mapRegions.MenuImage && _mapRegions.MaskImage && _mapRegions.RolloverImage && _mapRegions.FinishedImage && _mapRegions.EnabledImage )
     {
         GFX::rstr_arg204 a4;
-        a4.pbitm = yw->LevelNet->ilbm_menu_map->GetResBmp();
+        a4.pbitm = _mapRegions.MenuImage->GetResBmp();
 
         a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
@@ -1735,38 +1630,38 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
         GFX::Engine.raster_func202(&a4);
         //printf("field_BE38 %d \n",yw->LevelNet->field_BE38);
 
-        for (int i = 0; i < 256; i++)
+        for (size_t i = 0; i < _mapRegions.MapRegions.size(); i++)
         {
-            mapINFO *v5 = &yw->LevelNet->mapInfos[i];
+            TMapRegionInfo &region = _mapRegions.MapRegions[i];
 
-            if ( !v5->field_9C.IsEmpty() )
+            if ( !region.Rect.IsEmpty() )
             {
                 ResBitmap *v20 = NULL;
 
-                if ( v5->field_0 == 2 )
+                if ( region.Status == TMapRegionInfo::STATUS_ENABLED )
                 {
-                    if ( i == yw->LevelNet->field_BE38 )
+                    if ( i == _mapRegions.SelectedRegion )
                     {
-                        v20 = yw->LevelNet->ilbm_rollover_map->GetResBmp();
+                        v20 = _mapRegions.RolloverImage->GetResBmp();
                     }
                     else
                     {
-                        v20 = yw->LevelNet->ilbm_enabled_map->GetResBmp();
+                        v20 = _mapRegions.EnabledImage->GetResBmp();
                     }
                 }
-                else if ( v5->field_0 == 3 )
+                else if ( region.Status == TMapRegionInfo::STATUS_COMPLETED )
                 {
-                    v20 = yw->LevelNet->ilbm_finished_map->GetResBmp();
+                    v20 = _mapRegions.FinishedImage->GetResBmp();
                 }
 
                 if ( v20 )
                 {
                     GFX::rstr_218_arg v17;
                     v17.bitm_intern = v20;
-                    v17.bitm_intern2 = yw->LevelNet->ilbm_mask_map->GetResBmp();
+                    v17.bitm_intern2 = _mapRegions.MaskImage->GetResBmp();
 
                     v17.flg = i;
-                    v17.rect2 = v5->field_9C;
+                    v17.rect2 = region.Rect;
                     v17.rect1 = v17.rect2;
 
                     GFX::Engine.raster_func218(&v17);
@@ -1774,23 +1669,23 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
             }
         }
 
-        if ( yw->LevelNet->field_BE38 )
+        if ( _mapRegions.SelectedRegion )
         {
             char cmdBuff[256];
             char *v11 = cmdBuff;
 
-            if ( yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].field_0 )
+            if ( _mapRegions.MapRegions[ _mapRegions.SelectedRegion ].Status != TMapRegionInfo::STATUS_NONE )
             {
-                if ( !yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name.empty() )
+                if ( !_mapRegions.MapRegions[ _mapRegions.SelectedRegion ].MapName.empty() )
                 {
-                    const std::string &v12 = yw->GetLocaleString(yw->LevelNet->field_BE38 + 1800, yw->LevelNet->mapInfos[ yw->LevelNet->field_BE38 ].map_name);
+                    const std::string &v12 = GetLocaleString(_mapRegions.SelectedRegion + 1800, _mapRegions.MapRegions[ _mapRegions.SelectedRegion ].MapName);
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
-                    FontUA::set_ypos(&v11, -(yw->font_default_h + yw->icon_order__h + 4) );
-                    FontUA::set_txtColor(&v11, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+                    FontUA::set_ypos(&v11, -(font_default_h + icon_order__h + 4) );
+                    FontUA::set_txtColor(&v11, _iniColors[63].r, _iniColors[63].g, _iniColors[63].b);
 
-                    v11 = FontUA::FormateCenteredSkipableItem(yw->tiles[15], v11, v12, yw->screen_width);
+                    v11 = FontUA::FormateCenteredSkipableItem(tiles[15], v11, v12, screen_width);
                 }
             }
             FontUA::set_end(&v11);
@@ -1802,8 +1697,8 @@ void ypaworld_func158__sub4__sub1__sub1(NC_STACK_ypaworld *yw)
 
             GFX::Engine.raster_func209(&v19);
         }
-        const std::string &v13 = yw->GetLocaleString(yw->TOD_ID + 2490, " ");
-        splashScreen_OutText(yw, v13, yw->screen_width / 20, yw->screen_width / 20);
+        const std::string &v13 = GetLocaleString(TOD_ID + 2490, " ");
+        splashScreen_OutText(this, v13, screen_width / 20, screen_width / 20);
     }
 }
 
@@ -1817,7 +1712,7 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3__sub0()
 
     int v5 = (bottom - top) / font_default_h;
 
-    memset(&stru_5C91D0, 0, sizeof(GuiList));
+    stru_5C91D0 = GuiList();
 
     GuiList::tInit args;
     args.numEntries = 1;
@@ -1841,9 +1736,9 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3__sub0()
     return 1;
 }
 
-int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
+bool NC_STACK_ypaworld::InitBriefing(int lvlid)
 {
-    brief.clear();
+    brief.Clear();
 
     brief.SelectedObjID = -1;
     
@@ -1852,136 +1747,135 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub3(int lvlid)
     SFXEngine::SFXe.StopMusicTrack();
 
     if ( !ypaworld_func158__sub4__sub1__sub3__sub0() )
-        return 0; // May be HACK
+        return false;
 
     GFX::Engine.display_func271(NULL);
     //_win3d->raster_func192(NULL);
 
-    LevelInfo *backup = new LevelInfo();
-    *backup = *_levelInfo;
+    TLevelInfo backup = _levelInfo;
 
-    brief.Stage = 0;
-    brief.TimerStatus = 0;
+    brief.Stage = TBriefengScreen::STAGE_NONE;
+    brief.TimerStatus = TBriefengScreen::TIMER_NORMAL;
     brief.CurrTime = 0;
     brief.TextTime = 0;
 
-    _levelInfo->LevelID = lvlid;
-    _levelInfo->State = 5;
+    _levelInfo.LevelID = lvlid;
+    _levelInfo.State = TLevelInfo::STATE_BRIEFING;
 
     _Gems.clear();
 
-    _levelInfo->Gates.clear();
+    _levelInfo.Gates.clear();
 
     Common::Env.SetPrefix("rsrc", "data:");
 
-    LevelDesc *mproto = &brief.Desc;
+    TLevelDescription *mproto = &brief.Desc;
 
-    if ( sub_4DA41C(mproto, LevelNet->mapInfos[ lvlid ].mapPath) )
+    if ( !sub_4DA41C(mproto, _mapRegions.MapRegions[ lvlid ].MapDirectory) )
+        goto ON_ERR;
+
+    if ( !brief.Desc.IsOk() )
+        goto ON_ERR;
+
+    brief.BriefingText = GetLocaleString(_levelInfo.LevelID + 2100, "<NO INFO AVAILABLE>");
+
+    if ( mproto->Mbmaps.empty() )
+        goto ON_ERR;
+
+    if ( _levelInfo.MovieStr.empty() || brief.Stage != TBriefengScreen::STAGE_NONE )
     {
-        if ( (brief.Desc.Flags & 0x7F) == 127 )
+        for ( const MapRobo &robo : mproto->Robos)
         {
-            brief.BriefingText = GetLocaleString(_levelInfo->LevelID + 2100, "<NO INFO AVAILABLE>");
-
-            if ( !mproto->Mbmaps.empty() )
+            if ( !_levelInfo.JodieFoster[ robo.Owner ] )
             {
-                if ( !_levelInfo->MovieStr[0] || brief.Stage )
+                int v19;
+
+                switch ( robo.Owner )
                 {
-                    for ( const MapRobo &robo : mproto->Robos)
-                    {
-                        if ( !_levelInfo->JodieFoster[ robo.Owner ] )
-                        {
-                            int v19;
-
-                            switch ( robo.Owner )
-                            {
-                            case 2:
-                                v19 = 7;
-                                break;
-                            case 3:
-                                v19 = 6;
-                                break;
-                            case 4:
-                                v19 = 5;
-                                break;
-                            case 5:
-                                v19 = 8;
-                                break;
-                            case 6:
-                                v19 = 4;
-                                break;
-                            default:
-                                v19 = -1;
-                                break;
-                            }
-
-                            if ( v19 != -1 && !movies[v19].empty() )
-                            {
-                                brief.MovieStr = movies[v19];
-
-                                field_81AB = robo.Owner;
-                                brief.Stage = 28;
-                                break;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    brief.MovieStr = _levelInfo->MovieStr;
-                    brief.Stage = 28;
+                case 2:
+                    v19 = 7;
+                    break;
+                case 3:
+                    v19 = 6;
+                    break;
+                case 4:
+                    v19 = 5;
+                    break;
+                case 5:
+                    v19 = 8;
+                    break;
+                case 6:
+                    v19 = 4;
+                    break;
+                default:
+                    v19 = -1;
+                    break;
                 }
 
-                Common::Env.SetPrefix("rsrc", "levels:");
-
-                if ( LevelNet->brief_map[0].map_name[0] )
-                    brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
-                        {NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->brief_map[0].map_name},
-                        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
-
-                Common::Env.SetPrefix("rsrc", "mbpix:");
-
-                brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
-                    {NC_STACK_rsrc::RSRC_ATT_NAME, mproto->Mbmaps[0].Name},
-                    {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
-
-                if ( brief.MbmapImg )
+                if ( v19 != -1 && !movies[v19].empty() )
                 {
-                    if ( !typ_map )
-                        typ_map = new Common::PlaneBytes;
+                    brief.MovieStr = movies[v19];
 
-                    if ( typ_map )
-                    {
-                        SetMapSize(typ_map->Size());
-
-                        //Set transitions
-                        brief.ViewingObjectRect = Common::FRect(-0.98750001, 0.34999999, -0.003125, 0.85416669);
-
-                        if ( !brief.Stage )
-                            brief.Stage = 4;
-
-                        sb_0x4ea37c(this);
-                        return 1;
-                    }
-
-                    delete_class_obj(brief.MbmapImg);
-                    brief.MbmapImg = NULL;
+                    field_81AB = robo.Owner;
+                    brief.Stage = TBriefengScreen::STAGE_MOVIE;
+                    break;
                 }
             }
         }
     }
+    else
+    {
+        brief.MovieStr = _levelInfo.MovieStr;
+        brief.Stage = TBriefengScreen::STAGE_MOVIE;
+    }
 
+    Common::Env.SetPrefix("rsrc", "levels:");
+
+    if ( _mapRegions.brief_map[0].PicName[0] )
+        brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+            {NC_STACK_rsrc::RSRC_ATT_NAME, _mapRegions.brief_map[0].PicName},
+            {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
+
+    Common::Env.SetPrefix("rsrc", "mbpix:");
+
+    brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+        {NC_STACK_rsrc::RSRC_ATT_NAME, mproto->Mbmaps[0].PicName},
+        {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
+
+    if ( !brief.MbmapImg )
+        goto ON_ERR;
+
+    if ( !typ_map )
+        typ_map = new Common::PlaneBytes;
+
+    if ( !typ_map )
+    {
+        Common::DeleteAndNull( &brief.MbmapImg );
+        goto ON_ERR;
+    }
+
+    SetMapSize(typ_map->Size());
+
+    //Set transitions
+    brief.ViewingObjectRect = Common::FRect(-0.98750001, 0.34999999, -0.003125, 0.85416669);
+
+    if ( brief.Stage == TBriefengScreen::STAGE_NONE )
+        brief.Stage = TBriefengScreen::STAGE_LOADED;
+
+    FreeBriefDataSet();
+    return true;
+
+ON_ERR:
     GuiWinClose( &stru_5C91D0 );
     stru_5C91D0.Free();
 
-    *_levelInfo = *backup;
-    delete backup;
+    _levelInfo = backup;
 
-    return 0;
+    return false;
 }
 
-int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5__sub0(LevelDesc *mapproto, const std::string &filename)
+int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5__sub0(TLevelDescription *mapproto, const std::string &filename)
 {
-    mapproto->clear();
+    *mapproto = TLevelDescription();
 
     ScriptParser::HandlersList parsers
     {
@@ -1998,29 +1892,6 @@ int NC_STACK_ypaworld::ypaworld_func158__sub4__sub1__sub5__sub0(LevelDesc *mappr
 
 bool NC_STACK_ypaworld::InitDebrief()
 {
-    brief.clear();
-    
-    _particles.Clear();
-
-    if ( !copyof_ownermap || !copyof_typemap )
-    {
-        yw_freeDebrief(this);
-        return false;
-    }
-
-    brief.ZoomFromGate = _levelInfo->State == 1;
-
-    GFX::Engine.raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
-
-    brief.Stage = 0;
-    brief.TimerStatus = 0;
-    brief.CurrTime = 0;
-    //brief._owner = playerOwner;
-
-    _levelInfo->State = 9;
-
-    Common::Env.SetPrefix("rsrc", "data:");
-
     const std::array<std::string, 4> vGfxName
     {
         "wireless/db_genes.sklt",
@@ -2028,6 +1899,27 @@ bool NC_STACK_ypaworld::InitDebrief()
         "wireless/db_death.sklt",
         "wireless/db_sec.sklt"
     };
+    TBkgPicInfo *mapImg;
+    
+    brief.Clear();
+    
+    _particles.Clear();
+
+    if ( !copyof_ownermap || !copyof_typemap )
+        goto ON_ERR;
+
+    brief.ZoomFromGate = _levelInfo.State == TLevelInfo::STATE_COMPLETED;
+
+    GFX::Engine.raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
+
+    brief.Stage = TBriefengScreen::STAGE_NONE;
+    brief.TimerStatus = TBriefengScreen::TIMER_NORMAL;
+    brief.CurrTime = 0;
+    //brief._owner = playerOwner;
+
+    _levelInfo.State = TLevelInfo::STATE_DEBRIEFING;
+
+    Common::Env.SetPrefix("rsrc", "data:");
 
     for (size_t i = 0; i < vGfxName.size(); i++)
         brief.VectorGfx[i] = Nucleus::CInit<NC_STACK_sklt>({{NC_STACK_rsrc::RSRC_ATT_NAME, vGfxName[i]}});
@@ -2038,43 +1930,41 @@ bool NC_STACK_ypaworld::InitDebrief()
     if ( copyof_typemap )
         brief.TypMap = *copyof_typemap;
 
-    if ( !ypaworld_func158__sub4__sub1__sub5__sub0(&brief.Desc, LevelNet->mapInfos[_levelInfo->LevelID].mapPath) )
-    {
-        yw_freeDebrief(this);
-        return false;
-    }
+    if ( !ypaworld_func158__sub4__sub1__sub5__sub0(&brief.Desc, _mapRegions.MapRegions[_levelInfo.LevelID].MapDirectory) )
+        goto ON_ERR;
 
-    dbmapProto &v8 = !brief.Desc.Dbmaps.empty() ? brief.Desc.Dbmaps[0] : brief.Desc.Mbmaps[0];
+    if (brief.Desc.Dbmaps.empty())
+        mapImg = &brief.Desc.Mbmaps[0];
+    else
+        mapImg = &brief.Desc.Dbmaps[0];
 
-    if ( v8.Name.empty() )
-    {
-        yw_freeDebrief(this);
-        return false;
-    }
+    if ( mapImg->PicName.empty() )
+        goto ON_ERR;
 
     Common::Env.SetPrefix("rsrc", "levels:");
 
-    if ( LevelNet->debrief_map[0].map_name[0] )
+    if ( _mapRegions.debrief_map[0].PicName[0] )
         brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
-            {NC_STACK_rsrc::RSRC_ATT_NAME, LevelNet->debrief_map[0].map_name},
+            {NC_STACK_rsrc::RSRC_ATT_NAME, _mapRegions.debrief_map[0].PicName},
             {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
     Common::Env.SetPrefix("rsrc", "mbpix:");
 
     brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
-        {NC_STACK_rsrc::RSRC_ATT_NAME, v8.Name},
+        {NC_STACK_rsrc::RSRC_ATT_NAME, mapImg->PicName},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
     if ( !brief.MbmapImg )
-    {
-        yw_freeDebrief(this);
-        return false;
-    }
+        goto ON_ERR;
 
     SetMapSize(typ_map->Size());
 
-    brief.Stage = 4;
+    brief.Stage = TBriefengScreen::STAGE_LOADED;
 
     return true;
+    
+ON_ERR:
+    FreeDebrief();
+    return false;
 }
 
 
@@ -2129,75 +2019,75 @@ void yw_calcPlayerScore(NC_STACK_ypaworld *yw)
         }
 
         for (int i = 0; i < 8; i++)
-            yw->playerstatus[i].elapsedTime += last_time;
+            yw->playerstatus[i].ElapsedTime += last_time;
 
     }
 }
 
 void NC_STACK_ypaworld::ypaworld_func158__sub4__sub1()
 {
-    if ( _levelInfo->State != 1 && _levelInfo->State != 2 )
+    if ( _levelInfo.State != TLevelInfo::STATE_COMPLETED && _levelInfo.State != TLevelInfo::STATE_ABORTED )
     {
         if ( brief.Stage )
         {
-            if ( _levelInfo->State == 5 )
+            if ( _levelInfo.State == TLevelInfo::STATE_BRIEFING )
             {
-                if ( GameShell->_input->KbdLastHit == Input::KC_RETURN )
-                    brief.Stage = 1;
+                if ( GameShell->Input->KbdLastHit == Input::KC_RETURN )
+                    brief.Stage = TBriefengScreen::STAGE_PLAYLEVEL;
 
-                if ( brief.Stage == 1 )
+                if ( brief.Stage == TBriefengScreen::STAGE_PLAYLEVEL )
                 {
                     GameShell->envAction.action = EnvAction::ACTION_PLAY;
-                    GameShell->envAction.params[0] = _levelInfo->LevelID;
-                    GameShell->envAction.params[1] = _levelInfo->LevelID;
-                    sub_4EAC80(this);
+                    GameShell->envAction.params[0] = _levelInfo.LevelID;
+                    GameShell->envAction.params[1] = _levelInfo.LevelID;
+                    FreeBriefing();
                 }
-                else if ( brief.Stage == 2 )
+                else if ( brief.Stage == TBriefengScreen::STAGE_CANCEL )
                 {
-                    sub_4EAC80(this);
-                    _levelInfo->State = 8;
+                    FreeBriefing();
+                    _levelInfo.State = TLevelInfo::STATE_MENU;
                 }
                 else
                 {
-                    ypaworld_func158__sub4__sub1__sub4(this, GameShell, GameShell->_input);
+                    ypaworld_func158__sub4__sub1__sub4(this, GameShell, GameShell->Input);
                 }
             }
-            else if ( _levelInfo->State == 9 )
+            else if ( _levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
             {
-                if ( brief.Stage == 2 )
+                if ( brief.Stage == TBriefengScreen::STAGE_CANCEL )
                 {
                     yw_calcPlayerScore(this);
-                    yw_freeDebrief(this);
+                    FreeDebrief();
                 }
                 else
                 {
-                    yw_debriefUpdate(this, GameShell->_input);
+                    yw_debriefUpdate(this, GameShell->Input);
                 }
             }
         }
         else
         {
-            ypaworld_func158__sub4__sub1__sub0(this, GameShell->_input);
+            ypaworld_func158__sub4__sub1__sub0(this, GameShell->Input);
 
-            if ( GameShell->envMode == ENVMODE_TUTORIAL )
-                ypaworld_func158__sub4__sub1__sub2(this);
+            if ( GameShell->EnvMode == ENVMODE_TUTORIAL )
+                DrawMapRegionsTutorial();
             else
-                ypaworld_func158__sub4__sub1__sub1(this);
+                DrawMapRegions();
 
 
-            if ( LevelNet->field_BE38 )
+            if ( _mapRegions.SelectedRegion )
             {
-                if ( GameShell->_input->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+                if ( GameShell->Input->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
                 {
-                    if ( LevelNet->mapInfos[ LevelNet->field_BE38 ].field_0 == 3 )
+                    if ( _mapRegions.MapRegions[ _mapRegions.SelectedRegion ].Status == TMapRegionInfo::STATUS_COMPLETED )
                     {
 //            v14 = get_lang_string(ypaworld.string_pointers_p2, 2466, "2466 == THE YPA CD IS REQUIRED.");
 //            v15 = get_lang_string(ypaworld.string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
 //            if ( make_CD_CHECK(0, 1, v15, v14) )
 //            {
                         GameShell->envAction.action = EnvAction::ACTION_PLAY;
-                        GameShell->envAction.params[0] = LevelNet->field_BE38;
-                        GameShell->envAction.params[1] = LevelNet->field_BE38;
+                        GameShell->envAction.params[0] = _mapRegions.SelectedRegion;
+                        GameShell->envAction.params[1] = _mapRegions.SelectedRegion;
 //            }
                     }
                     else
@@ -2206,24 +2096,24 @@ void NC_STACK_ypaworld::ypaworld_func158__sub4__sub1()
 //            v17 = get_lang_string(ypaworld.string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
 //            if ( make_CD_CHECK(0, 1, v17, v16) )
 //            {
-                        if ( !ypaworld_func158__sub4__sub1__sub3(LevelNet->field_BE38) )// LOAD LEVEL INFO
+                        if ( !InitBriefing(_mapRegions.SelectedRegion) )// LOAD LEVEL INFO
                         {
                             GameShell->envAction.action = EnvAction::ACTION_PLAY;
-                            GameShell->envAction.params[0] = LevelNet->field_BE38;
-                            GameShell->envAction.params[1] = LevelNet->field_BE38;
+                            GameShell->envAction.params[0] = _mapRegions.SelectedRegion;
+                            GameShell->envAction.params[1] = _mapRegions.SelectedRegion;
                         }
 //            }
                     }
                 }
-                else if ( GameShell->_input->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN )
+                else if ( GameShell->Input->ClickInf.flag & ClickBoxInf::FLAG_RM_DOWN )
                 {
 //          v18 = get_lang_string(ypaworld.string_pointers_p2, 2466, "2466 == THE YPA CD IS REQUIRED.");
 //          v19 = get_lang_string(ypaworld.string_pointers_p2, 21, "21 == YOUR PERSONAL AMOK");
 //          if ( make_CD_CHECK(0, 1, v19, v18) )
 //          {
                     GameShell->envAction.action = EnvAction::ACTION_PLAY;
-                    GameShell->envAction.params[0] = LevelNet->field_BE38;
-                    GameShell->envAction.params[1] = LevelNet->field_BE38;
+                    GameShell->envAction.params[0] = _mapRegions.SelectedRegion;
+                    GameShell->envAction.params[1] = _mapRegions.SelectedRegion;
 //          }
                 }
             }
@@ -2231,23 +2121,23 @@ void NC_STACK_ypaworld::ypaworld_func158__sub4__sub1()
     }
     else
     {
-        if ( _levelInfo->State == 1 )
+        if ( _levelInfo.State == TLevelInfo::STATE_COMPLETED )
         {
-            if ( _levelInfo->MovieWinStr[0] )
-                sub_4491A0(_levelInfo->MovieWinStr);
+            if ( _levelInfo.MovieWinStr[0] )
+                sub_4491A0(_levelInfo.MovieWinStr);
         }
 
-        if ( _levelInfo->State == 2 )
+        if ( _levelInfo.State == TLevelInfo::STATE_ABORTED )
         {
-            if ( _levelInfo->MovieLoseStr[0] )
+            if ( _levelInfo.MovieLoseStr[0] )
             {
                 if ( field_1624 )
-                    sub_4491A0(_levelInfo->MovieLoseStr);
+                    sub_4491A0(_levelInfo.MovieLoseStr);
             }
         }
 
-        brief.Stage = 0;
-        _levelInfo->State = 8;
+        brief.Stage = TBriefengScreen::STAGE_NONE;
+        _levelInfo.State = TLevelInfo::STATE_MENU;
 
         if ( field_7278 )
             InitDebrief();
@@ -2255,9 +2145,9 @@ void NC_STACK_ypaworld::ypaworld_func158__sub4__sub1()
 }
 
 
-int NC_STACK_ypaworld::sub_4DA41C(LevelDesc *mapp, const std::string &fname)
+int NC_STACK_ypaworld::sub_4DA41C(TLevelDescription *mapp, const std::string &fname)
 {
-    mapp->clear();
+    *mapp = TLevelDescription();
     ScriptParser::HandlersList parsers
     {
         new World::Parsers::LevelDataParser(this, mapp),
@@ -2288,7 +2178,7 @@ char * sub_4C4284(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const std::s
 
     FontUA::store_u8(&tmp, 98);
 
-    FontUA::set_txtColor(&tmp, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
+    FontUA::set_txtColor(&tmp, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
 
     tmp = FontUA::FormateClippedText(yw->tiles[9], tmp, txt, lstvw->entryWidth - 4 * yw->font_default_w__b, 99);
 
@@ -2309,7 +2199,7 @@ char * sub_4C41DC(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const std::s
 
     FontUA::store_u8(&tmp, 123);
 
-    FontUA::set_txtColor(&tmp, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+    FontUA::set_txtColor(&tmp, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
 
     tmp = FontUA::FormateClippedText(yw->tiles[0], tmp, txt, lstvw->entryWidth - 2 * yw->font_default_w__b, 32);
 
@@ -2485,7 +2375,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                 int lvlid = std::stoi(str1);
 
-                str1 = yw->GetLocaleString(lvlid + 1800, yw->LevelNet->mapInfos[ lvlid ].map_name);
+                str1 = yw->GetLocaleString(lvlid + 1800, yw->_mapRegions.MapRegions[ lvlid ].MapName);
 
                 if (msg.name[j] == 0)
                     str4 = "";
@@ -2512,7 +2402,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                     lvlid = std::stoi(str1);
 
-                    usr->netName = yw->LevelNet->mapInfos[ lvlid ].map_name;
+                    usr->netName = yw->_mapRegions.MapRegions[ lvlid ].MapName;
 
                     usr->network_button->button_func71(1200, usr->netName);
 
@@ -2527,16 +2417,16 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         case UserData::NETSCREEN_CHOOSE_MAP: //level
             if ( i < usr->map_descriptions_count )
             {
-                mapINFO *lvl = &yw->LevelNet->mapInfos[ usr->map_descriptions[i].id ];
+                TMapRegionInfo &lvl = yw->_mapRegions.MapRegions[ usr->map_descriptions[i].id ];
 
-                if ( lvl->robos_count < (int)yw->windp->CountPlayers(NULL) )
+                if ( lvl.RoboCount < yw->windp->CountPlayers() )
                     continue;
 
                 str1 = usr->map_descriptions[i].pstring;
 
                 brk = false;
 
-                str2 = fmt::sprintf("%d X %d", lvl->secXsize, lvl->secYsize);
+                str2 = fmt::sprintf("%d X %d", lvl.MapSize.x, lvl.MapSize.y);
 
                 cnt++;
 
@@ -2544,19 +2434,19 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     slct = true;
 
-                    if ( lvl->fractions_mask & 2 )
+                    if ( lvl.FractionsBits & 2 )
                         str3 = "1";
 
-                    if ( lvl->fractions_mask & 0x40 )
+                    if ( lvl.FractionsBits & 0x40 )
                         str3 += "2";
 
-                    if ( lvl->fractions_mask & 8 )
+                    if ( lvl.FractionsBits & 8 )
                         str3 += "3";
 
-                    if ( lvl->fractions_mask & 0x10 )
+                    if ( lvl.FractionsBits & 0x10 )
                         str3 += "4";
 
-                    if ( lvl->slow_connection )
+                    if ( lvl.SlowConnection )
                         connTp = "Y";
                     else
                         connTp = "j";
@@ -2565,19 +2455,19 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     slct = false;
 
-                    if ( lvl->fractions_mask & 2 )
+                    if ( lvl.FractionsBits & 2 )
                         str3 = "5";
 
-                    if ( lvl->fractions_mask & 0x40 )
+                    if ( lvl.FractionsBits & 0x40 )
                         str3 += "6";
 
-                    if ( lvl->fractions_mask & 8 )
+                    if ( lvl.FractionsBits & 8 )
                         str3 += "7";
 
-                    if ( lvl->fractions_mask & 0x10 )
+                    if ( lvl.FractionsBits & 0x10 )
                         str3 += "8";
 
-                    if ( lvl->slow_connection )
+                    if ( lvl.SlowConnection )
                         connTp = "X";
                     else
                         connTp = "k";
@@ -2742,7 +2632,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
             case UserData::NETSCREEN_ENTER_NAME:
             case UserData::NETSCREEN_INSESSION:
-                items[0].width = usr->network_listvw.entryWidth - 2 * usr->p_ypaworld->font_default_w__b;
+                items[0].width = usr->network_listvw.entryWidth - 2 * usr->p_YW->font_default_w__b;
                 items[0].fontID = fontID;
                 items[0].spaceChar = spaceChar;
                 items[0].prefixChar = prefixChar;
@@ -2760,9 +2650,9 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             FontUA::store_u8(&cmd, 123);
 
             if ( usr->netSel != i || usr->netSelMode == UserData::NETSCREEN_INSESSION || usr->netSelMode == UserData::NETSCREEN_ENTER_NAME )
-                FontUA::set_txtColor(&cmd, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b );
+                FontUA::set_txtColor(&cmd, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b );
             else
-                FontUA::set_txtColor(&cmd, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b );
+                FontUA::set_txtColor(&cmd, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b );
 
             cmd = FontUA::FormateColumnItem(yw, cmd, itemsCount, items);
 
@@ -2874,7 +2764,7 @@ void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 v44 = 102;
             }
 
-            int v37 = usr->disk_listvw.entryWidth - 2 * usr->p_ypaworld->font_default_w__b;
+            int v37 = usr->disk_listvw.entryWidth - 2 * usr->p_YW->font_default_w__b;
 
             v31[0].fontID = v8;
             v31[0].spaceChar = v9;
@@ -2896,19 +2786,19 @@ void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
             FontUA::store_u8(&v4, 123);
 
-            if ( !StriCmp(it->name, usr->user_name) )
+            if ( !StriCmp(it->name, usr->UserName) )
             {
-                FontUA::set_txtColor(&v4, yw->iniColors[2].r, yw->iniColors[2].g, yw->iniColors[2].b);
+                FontUA::set_txtColor(&v4, yw->_iniColors[2].r, yw->_iniColors[2].g, yw->_iniColors[2].b);
             }
             else
             {
                 if ( v54 + 1 == usr->field_1612 )
                 {
-                    FontUA::set_txtColor(&v4, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
+                    FontUA::set_txtColor(&v4, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
                 }
                 else
                 {
-                    FontUA::set_txtColor(&v4, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+                    FontUA::set_txtColor(&v4, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
                 }
             }
 
@@ -2953,8 +2843,8 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
 
     FontUA::select_tileset(&tmp, 0);
 
-    FontUA::set_center_xpos(&tmp, x1 - usr->p_ypaworld->screen_width / 2);
-    FontUA::set_center_ypos(&tmp, y1 - usr->p_ypaworld->screen_height / 2);
+    FontUA::set_center_xpos(&tmp, x1 - usr->p_YW->screen_width / 2);
+    FontUA::set_center_ypos(&tmp, y1 - usr->p_YW->screen_height / 2);
 
     int v9 = 1;
 
@@ -3008,7 +2898,7 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
 
 void ypaworld_func158__confirm_draw(UserData *usr)
 {
-    NC_STACK_ypaworld *yw = usr->p_ypaworld;
+    NC_STACK_ypaworld *yw = usr->p_YW;
 
     if ( usr->field_0x2fb4 )
     {
@@ -3025,7 +2915,7 @@ void ypaworld_func158__confirm_draw(UserData *usr)
 
 void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr)
 {
-    switch ( usr->envMode )
+    switch ( usr->EnvMode )
     {
     case ENVMODE_TITLE:
         usr->titel_button->button_func70(0);
@@ -3110,9 +3000,9 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
 {
     yw->vhcls_models.clear();
 
-    LegosClear(yw);
+    yw->FreeLegos();
 
-    sub_44A908(yw);
+    yw->FreeFillers();
 
     for (subSec &ssec : yw->subSectors)
         ssec = subSec();
@@ -3162,29 +3052,11 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
         yw->set_number = 0;
     }
 
-    GFX::Engine.display_func272(NULL);
-
     sb_0x44ac24__sub0(yw);
 }
 
 void UserData::clear()
 {
-    _gameShellInited = 0;
-    field_0x4 = 0;
-    field_0x8 = 0;
-    field_0xc = 0;
-    field_0x10 = 0;
-
-    user_name.clear();
-
-    p_YW = NULL;
-    p_ypaworld = NULL;
-    _input = NULL;
-    frameTime = 0;
-    glblTime = 0;
-
-    envMode = 0;
-    envModeChanged = false;
 
     returnToTitle = false;
 
@@ -3213,7 +3085,7 @@ void UserData::clear()
     //GuiList video_listvw;
     game_default_res = 0;
     //nlist video_mode_list;
-    field_FBE = 0;
+    _gfxModeIndex = 0;
     //GuiList d3d_listvw;
     memset(win3d_guid, 0, sizeof(win3d_guid));
     memset(win3d_name, 0, sizeof(win3d_name));
@@ -3363,4 +3235,3 @@ void UserData::clear()
     net_packet_cnt = 0;
     net_packet_avr = 0;
 }
-

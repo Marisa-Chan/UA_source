@@ -80,7 +80,7 @@ rsrc * NC_STACK_rsrc::rsrc_func64(IDVList &stak)
 {
     const std::string resname = stak.Get<std::string>(RSRC_ATT_NAME, "");
     int shared = stak.Get<int32_t>(RSRC_ATT_TRYSHARED, 1);
-    int toTail = stak.Get<int32_t>(RSRC_ATT_LISTYPE, 0);
+    int toTail = stak.Get<int32_t>(RSRC_ATT_TOTAIL, 0);
 
     if ( resname.empty() )
         return NULL;

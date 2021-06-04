@@ -14,10 +14,10 @@ int yw_write_callSign(NC_STACK_ypaworld *yw, const char *filename, const char *c
     if ( !usr )
         return 0;
 
-    if ( usr->user_name.empty() )
+    if ( usr->UserName.empty() )
         return 0;
 
-    FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", usr->user_name, filename), "w");
+    FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", usr->UserName, filename), "w");
 
     if ( !fil )
         return 0;
@@ -31,7 +31,7 @@ int yw_write_callSign(NC_STACK_ypaworld *yw, const char *filename, const char *c
 
 int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
 {
-    NC_STACK_ypaworld *yw = usr->p_ypaworld;
+    NC_STACK_ypaworld *yw = usr->p_YW;
 
     if ( usr->callSIGN[0] >= ' ' )
         yw_write_callSign(yw, "callsign.def", usr->callSIGN.c_str());
@@ -42,25 +42,25 @@ int yw_write_user(FSMgr::FileHandle *fil, UserData *usr)
     {
         fil->printf("    playerstatus = %d_%d_%d_%d_%d_%d_%d_%d\n",
                 i,
-                yw->playerstatus[i].destroyed,
-                yw->playerstatus[i].destroyedByUser,
-                yw->playerstatus[i].elapsedTime,
-                yw->playerstatus[i].sectorsTaked,
-                yw->playerstatus[i].score,
-                yw->playerstatus[i].power,
-                yw->playerstatus[i].upgrades);
+                yw->playerstatus[i].DestroyedUnits,
+                yw->playerstatus[i].DestroyedByUser,
+                yw->playerstatus[i].ElapsedTime,
+                yw->playerstatus[i].SectorsTaked,
+                yw->playerstatus[i].Score,
+                yw->playerstatus[i].Power,
+                yw->playerstatus[i].Upgrades);
     }
 
-    fil->printf("    maxroboenergy = %d\n", usr->p_ypaworld->_maxRoboEnergy);
-    fil->printf("    maxreloadconst = %d\n", usr->p_ypaworld->_maxReloadConst);
+    fil->printf("    maxroboenergy = %d\n", usr->p_YW->_maxRoboEnergy);
+    fil->printf("    maxreloadconst = %d\n", usr->p_YW->_maxReloadConst);
     fil->printf("    numbuddies    = %d\n", 128);
-    fil->printf("    beamenergy    = %d\n", usr->p_ypaworld->beamenergy);
+    fil->printf("    beamenergy    = %d\n", usr->p_YW->beamenergy);
 
     std::string jodie = "    jodiefoster   = ";
 
     for (int i = 0; i < 8; i++)
     {
-        jodie += fmt::sprintf("%d", usr->p_ypaworld->_levelInfo->JodieFoster[i]);
+        jodie += fmt::sprintf("%d", usr->p_YW->_levelInfo.JodieFoster[i]);
 
         if ( i < 7 )
             jodie += "_";
@@ -78,7 +78,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 {
     fil->printf("new_input\n");
 
-    if ( usr->p_ypaworld->field_73CE & 4 )
+    if ( usr->p_YW->field_73CE & 4 )
         fil->printf("    joystick = no\n");
     else
         fil->printf("    joystick = yes\n");
@@ -88,7 +88,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
     else
         fil->printf("    altjoystick = no\n");
 
-    if ( usr->p_ypaworld->field_73CE & 8 )
+    if ( usr->p_YW->field_73CE & 8 )
         fil->printf("    forcefeedback = no\n");
     else
         fil->printf("    forcefeedback = yes\n");
@@ -185,7 +185,7 @@ int yw_write_sound(FSMgr::FileHandle *fil, UserData *usr)
 int yw_write_video(FSMgr::FileHandle *fil, UserData *usr)
 {
     fil->printf("new_video\n");
-    fil->printf("    videomode = %d\n", usr->p_ypaworld->game_default_res);
+    fil->printf("    videomode = %d\n", usr->p_YW->game_default_res);
 
     if ( usr->GFX_flags & World::GFX_FLAG_FARVIEW )
         fil->printf("    farview = yes\n");
@@ -219,10 +219,10 @@ int yw_write_video(FSMgr::FileHandle *fil, UserData *usr)
 
     fil->printf("    fxnumber = %d\n", usr->fxnumber);
     
-    if (usr->p_ypaworld->_gfxWindowed)
-        fil->printf("    ;#!gfxmode = %d_%d_1\n", usr->p_ypaworld->_gfxMode.w, usr->p_ypaworld->_gfxMode.h);
+    if (usr->p_YW->_gfxWindowed)
+        fil->printf("    ;#!gfxmode = %d_%d_1\n", usr->p_YW->_gfxMode.w, usr->p_YW->_gfxMode.h);
     else
-        fil->printf("    ;#!gfxmode = %d_%d_0\n", usr->p_ypaworld->_gfxMode.w, usr->p_ypaworld->_gfxMode.h);
+        fil->printf("    ;#!gfxmode = %d_%d_0\n", usr->p_YW->_gfxMode.w, usr->p_YW->_gfxMode.h);
     
     fil->printf("end\n\n");
 
@@ -235,7 +235,7 @@ int yw_write_level_status(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw, int lvl
     fil->printf("\nbegin_levelstatus %d\n", lvlid);
 
     //sprintf(buf, "    status = %ld\n", yw->LevelNet->mapInfos[lvlid].field_0);
-    fil->printf("    status = %d\n", yw->LevelNet->mapInfos[lvlid].field_0);
+    fil->printf("    status = %d\n", yw->_mapRegions.MapRegions[lvlid].Status);
 
     fil->printf("end\n\n");
 
@@ -244,9 +244,9 @@ int yw_write_level_status(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw, int lvl
 
 int yw_write_levels_statuses(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw)
 {
-    for (int i = 0; i < 256; i++)
+    for (size_t i = 0; i < yw->_mapRegions.MapRegions.size(); i++)
     {
-        if ( yw->LevelNet->mapInfos[ i ].field_0 )
+        if ( yw->_mapRegions.MapRegions[ i ].Status != TMapRegionInfo::STATUS_NONE )
         {
             if ( !yw_write_level_status(fil, yw, i))
                 return 0;
@@ -257,7 +257,7 @@ int yw_write_levels_statuses(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw)
 
 int yw_write_buddies(FSMgr::FileHandle *fil, NC_STACK_ypaworld *yw)
 {
-    for (const MapBuddy &buddy : yw->_levelInfo->Buddies )
+    for (const TMapBuddy &buddy : yw->_levelInfo.Buddies )
     {
         fil->printf("\nbegin_buddy\n");
 
@@ -299,7 +299,7 @@ int yw_write_status(save_status *status, const char *field, FSMgr::FileHandle *f
 
 int yw_write_shell(FSMgr::FileHandle *fil, UserData *usr)
 {
-    NC_STACK_ypaworld *yw = usr->p_ypaworld;
+    NC_STACK_ypaworld *yw = usr->p_YW;
 
     fil->printf("new_shell\n");
 
@@ -405,7 +405,7 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 int yw_write_levelnum(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     fil->printf("\nbegin_levelnum\n");
-    fil->printf("    levelnum = %d\n", yw->_levelInfo->LevelID);
+    fil->printf("    levelnum = %d\n", yw->_levelInfo.LevelID);
     fil->printf("end\n");
 
     return 1;
@@ -807,7 +807,7 @@ int yw_write_globals(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 int yw_write_superbomb(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     int i = 0;
-    for ( const MapSuperItem &sitem : yw->_levelInfo->SuperItems)
+    for ( const TMapSuperItem &sitem : yw->_levelInfo.SuperItems)
     {
         fil->printf("\nbegin_superbomb\n");
         fil->printf("    num               = %d\n", i);
@@ -910,8 +910,8 @@ int yw_write_history(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 int yw_write_masks(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
     fil->printf("\nbegin_masks\n");
-    fil->printf("    ownermask = %d\n", yw->_levelInfo->OwnerMask);
-    fil->printf("    usermask  = %d\n", yw->_levelInfo->UserMask);
+    fil->printf("    ownermask = %d\n", yw->_levelInfo.OwnerMask);
+    fil->printf("    usermask  = %d\n", yw->_levelInfo.UserMask);
     fil->printf("end\n");
     return 1;
 }

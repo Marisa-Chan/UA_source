@@ -52,32 +52,32 @@ protected:
 class GuiList : public GuiBase
 {
 public:
-    int scrollTimer;
-    int listFlags;
-    int closeChar;
-    int16_t numEntries;
-    int16_t shownEntries;
-    int16_t firstShownEntries;
-    int16_t selectedEntry;
-    int16_t maxShownEntries;
-    int16_t minShownEntries;
-    int16_t mouseItem;
-    int16_t entryHeight;
-    int16_t upperVborder;
-    int16_t lowerVborder;
-    int16_t entryWidth;
-    int16_t minEntryWidth;
-    int16_t maxEntryWidth;
-    char title[64];
-    char *scrollbar;
-    char *itemBlock;
-    int16_t rszX;
-    int16_t rszY;
-    int16_t scrlX;
-    int16_t scrlY;
-    int16_t scrlSize;
-    int16_t btnSize;
-    int16_t btnStart;
+    int scrollTimer = 0;
+    int listFlags = 0;
+    int closeChar = 0;
+    int16_t numEntries = 0;
+    int16_t shownEntries = 0;
+    int16_t firstShownEntries = 0;
+    int16_t selectedEntry = 0;
+    int16_t maxShownEntries = 0;
+    int16_t minShownEntries = 0;
+    int16_t mouseItem = 0;
+    int16_t entryHeight = 0;
+    int16_t upperVborder = 0;
+    int16_t lowerVborder = 0;
+    int16_t entryWidth = 0;
+    int16_t minEntryWidth = 0;
+    int16_t maxEntryWidth = 0;
+    char title[64] = {{0}};
+    char *scrollbar = NULL;
+    char *itemBlock = NULL;
+    int16_t rszX = 0;
+    int16_t rszY = 0;
+    int16_t scrlX = 0;
+    int16_t scrlY = 0;
+    int16_t scrlSize = 0;
+    int16_t btnSize = 0;
+    int16_t btnStart = 0;
 
     enum GLIST_FLAG
     {
@@ -98,61 +98,29 @@ public:
     struct tInit
     {
         std::string title; //1
-        bool resizeable; //2
-        int numEntries; //3
-        int shownEntries; //4
-        int firstShownEntry; //5
-        int selectedEntry; //6
-        int maxShownEntries; //7
-        bool withIcon; //8
-        int iconPos; //9
-        int iconChar; // A
-        int entryHeight; // B
-        int entryWidth; // C
-        int minEntryWidth; // D
-        int maxEntryWidth; //E
-        int enabled;//F
-        int vborder;//10
-        bool instantInput;//11
-        int minShownEntries;//12
-        bool staticItems;//13
-        int closeChar;//14
-        int upperVborder;//15
-        int lowerVborder;//16
-        bool keyboardInput;//17
-        bool withHelp;//18
-
-        tInit()
-        {
-            Init();
-        }
-
-        void Init()
-        {
-            resizeable = false;
-            numEntries = 0;
-            shownEntries = 0;
-            firstShownEntry = 0;
-            selectedEntry = 0;
-            maxShownEntries = 0;
-            withIcon = false;
-            iconPos = 0;
-            iconChar = 0;
-            entryHeight = 16;
-            entryWidth = 80;
-            minEntryWidth = 60;
-            maxEntryWidth = 1024;
-            enabled = false;
-            vborder = 0;
-            instantInput = false;
-            minShownEntries = 0;
-            staticItems = false;
-            closeChar = 65;
-            upperVborder = 0;
-            lowerVborder = 0;
-            keyboardInput = false;
-            withHelp = true;
-        }
+        bool resizeable = false; //2
+        int numEntries = 0; //3
+        int shownEntries = 0; //4
+        int firstShownEntry = 0; //5
+        int selectedEntry = 0; //6
+        int maxShownEntries = 0; //7
+        bool withIcon = false; //8
+        int iconPos = 0; //9
+        int iconChar = 0; // A
+        int entryHeight = 16; // B
+        int entryWidth = 80; // C
+        int minEntryWidth = 60; // D
+        int maxEntryWidth = 1024; //E
+        int enabled = false;//F
+        int vborder = 0;//10
+        bool instantInput = false;//11
+        int minShownEntries = 0;//12
+        bool staticItems = false;//13
+        int closeChar = 65;//14
+        int upperVborder = 0;//15
+        int lowerVborder = 0;//16
+        bool keyboardInput = false;//17
+        bool withHelp = true;//18
     };
 
 

@@ -705,7 +705,7 @@ bmpAnim_t1 * bmpanim_func64__sub0(const std::string &className, char **a2, pixel
 // Create bmpanim resource node and fill rsrc field data
 rsrc * NC_STACK_bmpanim::rsrc_func64(IDVList &stak)
 {
-    stak.Add(RSRC_ATT_LISTYPE, (int32_t)1);
+    stak.Add(RSRC_ATT_TOTAIL, (int32_t)1);
 
     rsrc *res = NC_STACK_bitmap::rsrc_func64(stak);// rsrc_func64
     if ( res )

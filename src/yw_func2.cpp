@@ -124,7 +124,7 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
     }
 }
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, int a5)
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc, int a5)
 {
     brf->ObjRenderParams.frameTime = struc->Period;
     brf->ObjRenderParams.globTime = brf->CurrTime;
@@ -150,12 +150,12 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, 
         float v18;
         int rot;
 
-        if ( brf->ViewingObject.ObjType == BriefObject::TYPE_SECTOR )
+        if ( brf->ViewingObject.ObjType == TBriefObject::TYPE_SECTOR )
         {
             v16 = 9600.0;
             v17 = 3600.0;
         }
-        else if ( brf->ViewingObject.ObjType == BriefObject::TYPE_VEHICLE )
+        else if ( brf->ViewingObject.ObjType == TBriefObject::TYPE_VEHICLE )
         {
             float radius = yw->VhclProtos[brf->ViewingObject.ID].radius;
 
@@ -178,18 +178,18 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, 
         pos.y = pos.y * v18;
         pos.x = pos.x * v18;
 
-        if ( brf->ViewingObject.ObjType == BriefObject::TYPE_SECTOR )
+        if ( brf->ViewingObject.ObjType == TBriefObject::TYPE_SECTOR )
         {
             sb_0x4eb94c__sub1(yw, true, rot, &pos, &brf->ObjRenderParams);
         }
-        else if ( brf->ViewingObject.ObjType == BriefObject::TYPE_VEHICLE )
+        else if ( brf->ViewingObject.ObjType == TBriefObject::TYPE_VEHICLE )
         {
             sb_0x4eb94c__sub0(yw, true, rot, &pos, &brf->ObjRenderParams);
         }
     }
 }
 
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc)
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc)
 {
     GFX::Engine.SetFBOBlending(1);
     GFX::Engine.BeginScene();
@@ -252,7 +252,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                 v33 = 102;
             }
 
-            int v34 = usr->input_listview.entryWidth - 2 * usr->p_ypaworld->font_default_w__b + 1;
+            int v34 = usr->input_listview.entryWidth - 2 * usr->p_YW->font_default_w__b + 1;
 
             std::string v19;
 
@@ -309,11 +309,11 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
 
             if ( (size_t)v24 == usr->field_D36 )
             {
-                FontUA::set_txtColor(&v4, usr->p_ypaworld->iniColors[62].r, usr->p_ypaworld->iniColors[62].g, usr->p_ypaworld->iniColors[62].b);
+                FontUA::set_txtColor(&v4, usr->p_YW->_iniColors[62].r, usr->p_YW->_iniColors[62].g, usr->p_YW->_iniColors[62].b);
             }
             else
             {
-                FontUA::set_txtColor(&v4, usr->p_ypaworld->iniColors[61].r, usr->p_ypaworld->iniColors[61].g, usr->p_ypaworld->iniColors[61].b);
+                FontUA::set_txtColor(&v4, usr->p_YW->_iniColors[61].r, usr->p_YW->_iniColors[61].g, usr->p_YW->_iniColors[61].b);
             }
 
             v4 = FormateColumnItem(yw, v4, 2, a1a);
@@ -509,7 +509,7 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
                         ypa_log_out("Warning, cannot parse %s for time scanning\n", buf.c_str());
 
                     profile.fraction = 1;
-                    profile.totalElapsedTime = playerstatus[1].elapsedTime;
+                    profile.totalElapsedTime = playerstatus[1].ElapsedTime;
                 }
             }
         }
@@ -596,12 +596,12 @@ void UserData::sub_46A7F8()
 
     if ( field_0x1760 )
     {
-        envMode = ENVMODE_SINGLEPLAY;
+        EnvMode = ENVMODE_SINGLEPLAY;
         sub_bar_button->Show();
     }
     else
     {
-        envMode = ENVMODE_TITLE;
+        EnvMode = ENVMODE_TITLE;
         titel_button->Show();
     }
 
@@ -643,12 +643,12 @@ bool sub_4DE9F4(const usr_str &a1, const usr_str &a2)
 void ypaworld_func156__sub1(UserData *usr)
 {
     int v2 = 0;
-    for (int i = 0; i < 256; i++)
+    for (size_t i = 0; i < usr->p_YW->_mapRegions.MapRegions.size(); i++)
     {
-        if (usr->p_ypaworld->LevelNet->mapInfos[i].field_0 == 4)
+        if (usr->p_YW->_mapRegions.MapRegions[i].Status == TMapRegionInfo::STATUS_NETWORK)
         {
             usr->map_descriptions[v2].id = i;
-            usr->map_descriptions[v2].pstring = usr->p_ypaworld->GetLocaleString(i + 1800, usr->p_ypaworld->LevelNet->mapInfos[i].map_name);
+            usr->map_descriptions[v2].pstring = usr->p_YW->GetLocaleString(i + 1800, usr->p_YW->_mapRegions.MapRegions[i].MapName);
             v2++;
         }
     }
@@ -665,7 +665,7 @@ void UserData::GameShellUiOpenNetwork()
 
     network_button->Show();
 
-    envMode = ENVMODE_NETPLAY;
+    EnvMode = ENVMODE_NETPLAY;
 
     p_YW->GuiWinClose( &network_listvw );
     p_YW->GuiWinOpen( &network_listvw );
@@ -700,7 +700,7 @@ void  UserData::sb_0x46ca74()
 
     if ( field_1612 )
     {
-        if ( StriCmp(usernamedir, user_name) )
+        if ( StriCmp(usernamedir, UserName) )
             sub_46D0F8(fmt::sprintf("save:%s", usernamedir));
     }
     else
@@ -733,9 +733,9 @@ void  UserData::sb_0x46ca74()
     if ( ! p_YW->ypaworld_func171(&v15) )
         ypa_log_out("Warning! Error while saving user data for %s\n", usernamedir.c_str());
 
-    oldsave = fmt::sprintf("save:%s", user_name);
+    oldsave = fmt::sprintf("save:%s", UserName);
 
-    if ( StriCmp(usernamedir, user_name) )
+    if ( StriCmp(usernamedir, UserName) )
     {
         FSMgr::DirIter dir = uaOpenDir(oldsave);
         if ( dir )
@@ -763,7 +763,7 @@ void  UserData::sb_0x46ca74()
     }
 
     field_0x1744 = 0;
-    user_name = usernamedir;
+    UserName = usernamedir;
 
     disk_button->Hide();
 
@@ -771,13 +771,13 @@ void  UserData::sb_0x46ca74()
 
     if ( field_0x1760 )
     {
-        envMode = ENVMODE_SINGLEPLAY;
+        EnvMode = ENVMODE_SINGLEPLAY;
 
         sub_bar_button->Show();
     }
     else
     {
-        envMode = ENVMODE_TITLE;
+        EnvMode = ENVMODE_TITLE;
 
         titel_button->Show();
     }
@@ -813,7 +813,7 @@ void sub_44A1FC(NC_STACK_ypaworld *yw)
                     uint32_t tmp = std::stol(token, 0, 10);
 
                     if (tmp < 256)
-                        yw->LevelNet->mapInfos[tmp].field_0 = 2;
+                        yw->_mapRegions.MapRegions[tmp].Status = TMapRegionInfo::STATUS_ENABLED;
                 }
             }
 
@@ -824,26 +824,26 @@ void sub_44A1FC(NC_STACK_ypaworld *yw)
 
     if ( !v2 )
     {
-        yw->LevelNet->mapInfos[1].field_0 = 2;
-        yw->LevelNet->mapInfos[25].field_0 = 2;
-        yw->LevelNet->mapInfos[26].field_0 = 2;
-        yw->LevelNet->mapInfos[27].field_0 = 2;
+        yw->_mapRegions.MapRegions[1].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_mapRegions.MapRegions[25].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_mapRegions.MapRegions[26].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_mapRegions.MapRegions[27].Status = TMapRegionInfo::STATUS_ENABLED;
     }
 }
 
 void UserData::sb_0x46cdf8()
 {
-    std::string a1a = fmt::sprintf("%s/user.txt", user_name);
+    std::string a1a = fmt::sprintf("%s/user.txt", UserName);
 
     yw_arg172 v12;
     v12.usertxt = a1a.c_str();
-    v12.field_4 = user_name.c_str();
+    v12.field_4 = UserName.c_str();
     v12.usr = this;
     v12.field_8 = 255;
     v12.field_10 = 0;
 
     if ( ! p_YW->ypaworld_func171(&v12) )
-        ypa_log_out("Warning! Error while saving user data for %s\n", user_name.c_str());
+        ypa_log_out("Warning! Error while saving user data for %s\n", UserName.c_str());
 
     if ( field_1612 )
     {
@@ -864,40 +864,37 @@ void UserData::sb_0x46cdf8()
             return;
         }
 
-        user_name = usernamedir;
+        UserName = usernamedir;
         disk_listvw.numEntries++;
         field_1612 = disk_listvw.numEntries;
     }
 
-    p_ypaworld->_levelInfo->Buddies.clear();
+    p_YW->_levelInfo.Buddies.clear();
 
-    sb_0x47f810(p_ypaworld);
+    sb_0x47f810(p_YW);
     
-    Common::DeleteAndNull(&p_ypaworld->_script);
+    Common::DeleteAndNull(&p_YW->_script);
 
-    if ( p_ypaworld->ProtosInit() )
+    if ( p_YW->ProtosInit() )
     {
-        for (int i = 0; i < 256; i++)
+        for (TMapRegionInfo &mp : p_YW->_mapRegions.MapRegions)
         {
-            mapINFO *mp = &p_ypaworld->LevelNet->mapInfos[i];
-            if ( mp->field_0 && mp->field_0 != 4 )
-                mp->field_0 = 1;
+            if ( mp.Status != TMapRegionInfo::STATUS_NONE && mp.Status != TMapRegionInfo::STATUS_NETWORK )
+                mp.Status = TMapRegionInfo::STATUS_DISABLED;
         }
 
-        sub_44A1FC(p_ypaworld);
+        sub_44A1FC(p_YW);
 
-        p_ypaworld->_maxRoboEnergy = 0;
-        p_ypaworld->_maxReloadConst = 0;
+        p_YW->_maxRoboEnergy = 0;
+        p_YW->_maxReloadConst = 0;
 
-        for(auto &x : p_ypaworld->playerstatus)
-			x.clear();
+        p_YW->playerstatus.fill(World::TPlayerStatus());
 
         field_0x1744 = 0;
 
-        p_ypaworld->beamenergy = p_ypaworld->beam_energy_start;
+        p_YW->beamenergy = p_YW->beam_energy_start;
 
-        for(auto &x : p_ypaworld->_levelInfo->JodieFoster)
-			x = 0;
+        p_YW->_levelInfo.JodieFoster.fill(0);
 
         field_3426 = 0;
 
@@ -905,7 +902,7 @@ void UserData::sb_0x46cdf8()
 
         p_YW->GuiWinClose( &disk_listvw );
 
-        envMode = ENVMODE_SINGLEPLAY;
+        EnvMode = ENVMODE_SINGLEPLAY;
 
         sub_bar_button->Show();
     }
@@ -948,7 +945,7 @@ void NC_STACK_ypaworld::SetFarView(bool farvw)
 //Options OK
 void UserData::sb_0x46aa8c()
 {
-    NC_STACK_ypaworld *yw = p_ypaworld;
+    NC_STACK_ypaworld *yw = p_YW;
 
     bool forceChange = false;
     Common::Point resolution;
@@ -1043,9 +1040,9 @@ void UserData::sb_0x46aa8c()
         enemyindicator = field_13BE;
 
         if ( enemyindicator )
-            p_ypaworld->field_73CE |= 0x20;
+            p_YW->field_73CE |= 0x20;
         else
-            p_ypaworld->field_73CE &= 0xDF;
+            p_YW->field_73CE &= 0xDF;
     }
 
     if ( _settingsChangeOptions & 0x40 )
@@ -1069,8 +1066,8 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 1 )
     {
-        if ( _gfxMode != p_ypaworld->_gfxMode && _gfxMode)
-            p_ypaworld->_gfxMode = _gfxMode;
+        if ( _gfxMode != p_YW->_gfxMode && _gfxMode)
+            p_YW->_gfxMode = _gfxMode;
     }
 
     if ( _settingsChangeOptions & 0x1000 )
@@ -1091,7 +1088,7 @@ void UserData::sb_0x46aa8c()
 
                 GFX::Engine.windd_func325(&v37); //Save to file new resolution
 
-                p_ypaworld->_gfxMode = Common::Point(GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT);
+                p_YW->_gfxMode = Common::Point(GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT);
                 forceChange = true;
             }
         }
@@ -1116,23 +1113,23 @@ void UserData::sb_0x46aa8c()
     if ( _settingsChangeOptions & 0x400 )
     {
         if ( field_0x13a8 & 8 )
-            p_ypaworld->_gfxWindowed = true;
+            p_YW->_gfxWindowed = true;
         else
-            p_ypaworld->_gfxWindowed = false;
+            p_YW->_gfxWindowed = false;
 
         forceChange = true;
     }
 
     if ( forceChange )
     {
-        yw->ChangeResolutionForMenu(p_ypaworld->_gfxWindowed);
+        yw->SetGameShellVideoMode(p_YW->_gfxWindowed);
 
         int v24 = 0;
         for (const GFX::GfxMode &nod : GFX::GFXEngine::Instance.GetAvailableModes())
         {
             if ( yw->_gfxMode == nod )
             {
-                field_FBE = v24;
+                _gfxModeIndex = v24;
                 video_button->button_func71(1156, nod.name);
 
                 break;
@@ -1143,7 +1140,7 @@ void UserData::sb_0x46aa8c()
     }
 
     _settingsChangeOptions = 0;
-    envMode = ENVMODE_TITLE;
+    EnvMode = ENVMODE_TITLE;
 
     video_button->Hide();
 
@@ -1189,7 +1186,7 @@ void UserData::sub_46DC1C()
     v6.receiverFlags = 2;
     v6.guarant = 1;
 
-    p_ypaworld->windp->FlushBuffer(v6);
+    p_YW->windp->FlushBuffer(v6);
 
     envAction.action = EnvAction::ACTION_NETPLAY;
     envAction.params[0] = netLevelID;
@@ -1197,14 +1194,9 @@ void UserData::sub_46DC1C()
     envAction.params[1] = netLevelID;
 
     int v12 = 1;
-    p_ypaworld->windp->LockSession(&v12);
+    p_YW->windp->LockSession(&v12);
 
     yw_NetPrintStartInfo();
-}
-
-int sub_4EDCC4(NC_STACK_ypaworld *yw)
-{
-    return yw->_levelInfo->State != 8;
 }
 
 int sub_47B388(int a1, const std::string &a2)
@@ -1219,7 +1211,7 @@ int sub_47B388(int a1, const std::string &a2)
 
 int UserData::ypaworld_func158__sub0__sub7()
 {
-    FSMgr::FileHandle *fl = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt",user_name), "r");
+    FSMgr::FileHandle *fl = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt",UserName), "r");
     if ( !fl )
         return 0;
 
@@ -1244,47 +1236,47 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1001:
-        p_ypaworld->sub_4811E8(0x7B);
+        p_YW->sub_4811E8(0x7B);
         break;
 
     case 1003:
-        p_ypaworld->sub_4811E8(0x78);
+        p_YW->sub_4811E8(0x78);
         break;
 
     case 1004:
-        p_ypaworld->sub_4811E8(0x79);
+        p_YW->sub_4811E8(0x79);
         break;
 
     case 1005:
-        p_ypaworld->sub_4811E8(0x7A);
+        p_YW->sub_4811E8(0x7A);
         break;
 
     case 1007:
-        p_ypaworld->sub_4811E8(0x83);
+        p_YW->sub_4811E8(0x83);
         break;
 
     case 1008:
-        p_ypaworld->sub_4811E8(0x7C);
+        p_YW->sub_4811E8(0x7C);
         break;
 
     case 1011:
-        p_ypaworld->sub_4811E8(0x81);
+        p_YW->sub_4811E8(0x81);
         break;
 
     case 1013:
-        p_ypaworld->sub_4811E8(0x80);
+        p_YW->sub_4811E8(0x80);
         break;
 
     case 1014:
-        p_ypaworld->sub_4811E8(0x82);
+        p_YW->sub_4811E8(0x82);
         break;
 
     case 1015:
-        p_ypaworld->sub_4811E8(0x7F);
+        p_YW->sub_4811E8(0x7F);
         break;
 
     case 1016:
-        p_ypaworld->sub_4811E8(0x88);
+        p_YW->sub_4811E8(0x88);
         break;
 
     case 1017:
@@ -1292,89 +1284,84 @@ void UserData::sub_4DE248(int id)
     case 1107:
     case 1167:
     case 1218:
-        p_ypaworld->sub_4811E8(0x89);
+        p_YW->sub_4811E8(0x89);
         break;
 
     case 1018:
-        p_ypaworld->sub_4811E8(0x6A);
+        p_YW->sub_4811E8(0x6A);
         break;
 
     case 1019:
-        if ( sub_4EDCC4(p_ypaworld) )
-        {
-            if ( p_ypaworld->_levelInfo->State == 9 )
-                p_ypaworld->sub_4811E8(0x49);
-            else
-                p_ypaworld->sub_4811E8(0x8B);
-        }
+        if ( p_YW->_levelInfo.State == TLevelInfo::STATE_MENU )
+            p_YW->sub_4811E8(0x8A);
+        else if ( p_YW->_levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
+            p_YW->sub_4811E8(0x49);
         else
-        {
-            p_ypaworld->sub_4811E8(0x8A);
-        }
+            p_YW->sub_4811E8(0x8B);
         break;
 
     case 1020:
-        p_ypaworld->sub_4811E8(0x4A);
+        p_YW->sub_4811E8(0x4A);
         break;
 
     case 1050:
-        p_ypaworld->sub_4811E8(0xC4);
+        p_YW->sub_4811E8(0xC4);
         break;
 
     case 1051:
-        p_ypaworld->sub_4811E8(0xC1);
+        p_YW->sub_4811E8(0xC1);
         break;
 
     case 1053:
-        p_ypaworld->sub_4811E8(0xC3);
+        p_YW->sub_4811E8(0xC3);
         break;
 
     case 1054:
-        p_ypaworld->sub_4811E8(0xC2);
+        p_YW->sub_4811E8(0xC2);
         break;
 
     case 1055:
-        p_ypaworld->sub_4811E8(0xC5);
+        p_YW->sub_4811E8(0xC5);
         break;
 
     case 1056:
-        p_ypaworld->sub_4811E8(0xC6);
+        p_YW->sub_4811E8(0xC6);
         break;
 
     case 1061:
-        p_ypaworld->sub_4811E8(0x4D);
+        p_YW->sub_4811E8(0x4D);
         break;
 
     case 1101:
-        p_ypaworld->sub_4811E8(0x76);
+        p_YW->sub_4811E8(0x76);
         break;
 
     case 1102:
-        p_ypaworld->sub_4811E8(0xA8);
+        p_YW->sub_4811E8(0xA8);
         break;
 
     case 1103:
-        p_ypaworld->sub_4811E8(0xA9);
+        p_YW->sub_4811E8(0xA9);
         break;
 
     case 1104:
-        p_ypaworld->sub_4811E8(0x77);
+        p_YW->sub_4811E8(0x77);
         break;
 
     case 1105:
         switch ( field_0x1744 )
         {
         case 1:
-            p_ypaworld->sub_4811E8(0xAB);
+            p_YW->sub_4811E8(0xAB);
             break;
         case 2:
-            p_ypaworld->sub_4811E8(0xAA);
+            p_YW->sub_4811E8(0xAA);
             break;
         case 3:
-            p_ypaworld->sub_4811E8(0xAD);
+            p_YW->sub_4811E8(0xAD);
             break;
         case 4:
-            p_ypaworld->sub_4811E8(0xAC);
+            p_YW->sub_4811E8(0xAC);
             break;
         default:
             break;
@@ -1385,101 +1372,101 @@ void UserData::sub_4DE248(int id)
         switch ( field_0x1744 )
         {
         case 0:
-            p_ypaworld->sub_4811E8(0xAE);
+            p_YW->sub_4811E8(0xAE);
             break;
         case 1:
-            p_ypaworld->sub_4811E8(0xB0);
+            p_YW->sub_4811E8(0xB0);
             break;
         case 2:
-            p_ypaworld->sub_4811E8(0xAF);
+            p_YW->sub_4811E8(0xAF);
             break;
         case 3:
-            p_ypaworld->sub_4811E8(0xB2);
+            p_YW->sub_4811E8(0xB2);
             break;
         case 4:
-            p_ypaworld->sub_4811E8(0xB1);
+            p_YW->sub_4811E8(0xB1);
             break;
         default:
             break;
         }
         break;
     case 1150:
-        p_ypaworld->sub_4811E8(0x4E);
+        p_YW->sub_4811E8(0x4E);
         break;
 
     case 1151:
-        p_ypaworld->sub_4811E8(0xB7);
+        p_YW->sub_4811E8(0xB7);
         break;
 
     case 1152:
-        p_ypaworld->sub_4811E8(0xBE);
+        p_YW->sub_4811E8(0xBE);
         break;
 
     case 1154:
-        p_ypaworld->sub_4811E8(0xBF);
+        p_YW->sub_4811E8(0xBF);
         break;
 
     case 1156:
-        p_ypaworld->sub_4811E8(0xB5);
+        p_YW->sub_4811E8(0xB5);
         break;
 
     case 1157:
-        p_ypaworld->sub_4811E8(0xB8);
+        p_YW->sub_4811E8(0xB8);
         break;
 
     case 1159:
-        p_ypaworld->sub_4811E8(0xC0);
+        p_YW->sub_4811E8(0xC0);
         break;
 
     case 1160:
-        p_ypaworld->sub_4811E8(0xB9);
+        p_YW->sub_4811E8(0xB9);
         break;
 
     case 1161:
-        p_ypaworld->sub_4811E8(0xB4);
+        p_YW->sub_4811E8(0xB4);
         break;
 
     case 1162:
-        p_ypaworld->sub_4811E8(0xB3);
+        p_YW->sub_4811E8(0xB3);
         break;
 
     case 1163:
-        p_ypaworld->sub_4811E8(0xBD);
+        p_YW->sub_4811E8(0xBD);
         break;
 
     case 1164:
-        p_ypaworld->sub_4811E8(0xBB);
+        p_YW->sub_4811E8(0xBB);
         break;
 
     case 1165:
-        p_ypaworld->sub_4811E8(0xBC);
+        p_YW->sub_4811E8(0xBC);
         break;
 
     case 1166:
-        p_ypaworld->sub_4811E8(85); // windowed
+        p_YW->sub_4811E8(85); // windowed
         break;
 
     case 1172:
-        p_ypaworld->sub_4811E8(0x4B);
+        p_YW->sub_4811E8(0x4B);
         break;
 
     case 1201:
         switch ( netSelMode )
         {
         case NETSCREEN_MODE_SELECT:
-            p_ypaworld->sub_4811E8(0x8E);
+            p_YW->sub_4811E8(0x8E);
             break;
         case NETSCREEN_SESSION_SELECT:
-            p_ypaworld->sub_4811E8(0x91);
+            p_YW->sub_4811E8(0x91);
             break;
         case NETSCREEN_ENTER_NAME:
-            p_ypaworld->sub_4811E8(0x8F);
+            p_YW->sub_4811E8(0x8F);
             break;
         case NETSCREEN_CHOOSE_MAP:
-            p_ypaworld->sub_4811E8(0x90);
+            p_YW->sub_4811E8(0x90);
             break;
         case NETSCREEN_INSESSION:
-            p_ypaworld->sub_4811E8(0x92);
+            p_YW->sub_4811E8(0x92);
             break;
         default:
             break;
@@ -1489,30 +1476,30 @@ void UserData::sub_4DE248(int id)
     case 1202:
         if ( netSelMode == NETSCREEN_SESSION_SELECT )
         {
-            p_ypaworld->sub_4811E8(0x6E);
+            p_YW->sub_4811E8(0x6E);
         }
         else if ( netSelMode == NETSCREEN_INSESSION )
         {
-            p_ypaworld->sub_4811E8(0x6F);
+            p_YW->sub_4811E8(0x6F);
         }
         break;
 
     case 1203:
-        p_ypaworld->sub_4811E8(0x8C);
+        p_YW->sub_4811E8(0x8C);
         break;
 
     case 1205:
         switch ( netSelMode )
         {
         case NETSCREEN_SESSION_SELECT:
-            p_ypaworld->sub_4811E8(0x94);
+            p_YW->sub_4811E8(0x94);
             break;
         case NETSCREEN_ENTER_NAME:
-            p_ypaworld->sub_4811E8(0x93);
+            p_YW->sub_4811E8(0x93);
             break;
         case NETSCREEN_CHOOSE_MAP:
         case NETSCREEN_INSESSION:
-            p_ypaworld->sub_4811E8(0x95);
+            p_YW->sub_4811E8(0x95);
             break;
         default:
             break;
@@ -1520,42 +1507,42 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1206:
-        p_ypaworld->sub_4811E8(0x70);
+        p_YW->sub_4811E8(0x70);
         break;
 
     case 1207:
-        p_ypaworld->sub_4811E8(0x71);
+        p_YW->sub_4811E8(0x71);
         break;
 
     case 1208:
-        p_ypaworld->sub_4811E8(0x72);
+        p_YW->sub_4811E8(0x72);
         break;
 
     case 1209:
-        p_ypaworld->sub_4811E8(0x73);
+        p_YW->sub_4811E8(0x73);
         break;
 
     case 1219:
         if ( rdyStart )
-            p_ypaworld->sub_4811E8(0x75);
+            p_YW->sub_4811E8(0x75);
         else
-            p_ypaworld->sub_4811E8(0x74);
+            p_YW->sub_4811E8(0x74);
         break;
 
     case 1225:
-        p_ypaworld->sub_4811E8(0x4C);
+        p_YW->sub_4811E8(0x4C);
         break;
 
     case 1250:
-        p_ypaworld->sub_4811E8(0x6C);
+        p_YW->sub_4811E8(0x6C);
         break;
 
     case 1251:
-        p_ypaworld->sub_4811E8(0x6D);
+        p_YW->sub_4811E8(0x6D);
         break;
 
     case 1252:
-        p_ypaworld->sub_4811E8(0x89);
+        p_YW->sub_4811E8(0x89);
         break;
     }
 }
@@ -1567,7 +1554,7 @@ void UserData::ypaworld_func158__sub0__sub2()
 
     video_button->Show();
 
-    envMode = ENVMODE_SETTINGS;
+    EnvMode = ENVMODE_SETTINGS;
 
     if ( video_listvw.IsOpen() )
     {
@@ -1575,7 +1562,7 @@ void UserData::ypaworld_func158__sub0__sub2()
         p_YW->GuiWinOpen( &video_listvw );
     }
 
-    video_listvw.selectedEntry = field_FBE;
+    video_listvw.selectedEntry = _gfxModeIndex;
 }
 
 void UserData::sub_46C3E4()
@@ -1584,13 +1571,13 @@ void UserData::sub_46C3E4()
 
     disk_button->Show();
 
-    envMode = ENVMODE_SELPLAYER;
+    EnvMode = ENVMODE_SELPLAYER;
 
     for( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++ )
     {
-        if ( !StriCmp(it->name.c_str(), user_name))
+        if ( !StriCmp(it->name.c_str(), UserName))
         {
-            it->totalElapsedTime = p_ypaworld->playerstatus[1].elapsedTime;
+            it->totalElapsedTime = p_YW->playerstatus[1].ElapsedTime;
             break;
         }
     }
@@ -1604,7 +1591,7 @@ void UserData::ypaworld_func158__sub0__sub1()
 
     button_input_button->Show();
 
-    envMode = ENVMODE_INPUT;
+    EnvMode = ENVMODE_INPUT;
     p_YW->GuiWinClose( &input_listview );
     p_YW->GuiWinOpen( &input_listview );
 }
@@ -1709,14 +1696,14 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string 
 
 void UserData::yw_returnToTitle()
 {
-    yw_calcPlayerScore(p_ypaworld);
-    yw_freeDebrief(p_ypaworld);
+    yw_calcPlayerScore(p_YW);
+    p_YW->FreeDebrief();
 
     sub_bar_button->Hide();
 
     titel_button->Show();
 
-    envMode = ENVMODE_TITLE;
+    EnvMode = ENVMODE_TITLE;
     returnToTitle = false;
 }
 
@@ -1726,7 +1713,7 @@ void UserData::ypaworld_func158__sub0__sub3()
 
     locale_button->Show();
 
-    envMode = ENVMODE_SELLOCALE;
+    EnvMode = ENVMODE_SELLOCALE;
     p_YW->GuiWinClose( &local_listvw );
     p_YW->GuiWinOpen( &local_listvw );
 
@@ -1744,7 +1731,7 @@ void UserData::ypaworld_func158__sub0__sub3()
 
 void sub_4EDCD8(NC_STACK_ypaworld *yw)
 {
-    yw->brief.Stage = 2;
+    yw->brief.Stage = TBriefengScreen::STAGE_CANCEL;
 }
 
 void UserData::ShowMenuMsgBox(int code, const std::string &txt1, const std::string &txt2, bool okOnly)
@@ -1775,7 +1762,7 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
     if ( a5 )
     {
         v10.butID = 1300;
-        v10.xpos = p_ypaworld->screen_width * 0.4375;
+        v10.xpos = p_YW->screen_width * 0.4375;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
@@ -1787,14 +1774,14 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
         confirm_button->button_func66(&v12);
 
         v10.butID = 1300;
-        v10.xpos = p_ypaworld->screen_width * 0.25;
+        v10.xpos = p_YW->screen_width * 0.25;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
         confirm_button->button_func76(&v10);
 
         v10.butID = 1301;
-        v10.xpos = p_ypaworld->screen_width * 0.625;
+        v10.xpos = p_YW->screen_width * 0.625;
         confirm_button->button_func76(&v10);
     }
 
@@ -1810,17 +1797,17 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
 
 void ypaworld_func158__sub0__sub9(NC_STACK_ypaworld *yw)
 {
-    yw->brief.Stage = 1;
+    yw->brief.Stage = TBriefengScreen::STAGE_PLAYLEVEL;
 }
 
 void ypaworld_func158__sub0__sub12(NC_STACK_ypaworld *yw)
 {
-    yw->brief.TimerStatus = 3;
+    yw->brief.TimerStatus = TBriefengScreen::TIMER_RESTART;
 }
 
 void ypaworld_func158__sub0__sub11(NC_STACK_ypaworld *yw)
 {
-    yw->brief.TimerStatus = 2;
+    yw->brief.TimerStatus = TBriefengScreen::TIMER_FAST;
 }
 
 
@@ -1835,7 +1822,7 @@ void UserData::InputConfCancel()
 
 void UserData::InputPageCancel()
 {
-    envMode = ENVMODE_TITLE;
+    EnvMode = ENVMODE_TITLE;
     InputConfCancel();
 
     NC_STACK_button::button_66arg v6;
@@ -1854,7 +1841,7 @@ void UserData::InputPageCancel()
     button_input_button->button_func73(&v6);
 
     v6.butID = 1055;
-    v6.field_4 = ((p_ypaworld->field_73CE & 8) != 0) + 1;
+    v6.field_4 = ((p_YW->field_73CE & 8) != 0) + 1;
     button_input_button->button_func73(&v6);
 
     button_input_button->Hide();
@@ -1904,11 +1891,11 @@ void UserData::InputConfigRestoreDefault()
 
 void UserData::sub_46C5F0()
 {
-    if ( video_listvw.selectedEntry != field_FBE)
+    if ( video_listvw.selectedEntry != _gfxModeIndex)
     {
-        field_FBE = video_listvw.selectedEntry;
+        _gfxModeIndex = video_listvw.selectedEntry;
 
-        _gfxMode = GFX::GFXEngine::Instance.GetAvailableModes().at(field_FBE);
+        _gfxMode = GFX::GFXEngine::Instance.GetAvailableModes().at(_gfxModeIndex);
         video_button->button_func71(1156, _gfxMode.name);
     }
 }
@@ -1917,16 +1904,16 @@ void UserData::sub_46C5F0()
 void UserData::sub_46A3C0()
 {
     _settingsChangeOptions = 0;
-    envMode = ENVMODE_TITLE;
+    EnvMode = ENVMODE_TITLE;
 
-    int gfxId = GFX::GFXEngine::Instance.GetGfxModeIndex(p_ypaworld->_gfxMode);
+    int gfxId = GFX::GFXEngine::Instance.GetGfxModeIndex(p_YW->_gfxMode);
     
     if (gfxId < 0)
         gfxId = 0;
 
     video_listvw.selectedEntry = gfxId;
-    field_FBE = gfxId;
-    _gfxMode = p_ypaworld->_gfxMode;
+    _gfxModeIndex = gfxId;
+    _gfxMode = p_YW->_gfxMode;
 
     video_button->button_func71(1156, _gfxMode.name);
 
@@ -1957,7 +1944,7 @@ void UserData::sub_46A3C0()
     video_button->button_func73(&v10);
 
     v10.butID = 1166;
-    v10.field_4 = (!p_ypaworld->_gfxWindowed) + 1;
+    v10.field_4 = (!p_YW->_gfxWindowed) + 1;
     video_button->button_func73(&v10);
 
     v10.butID = 1165;
@@ -2018,7 +2005,7 @@ void  UserData::ypaworld_func158__sub0__sub5(int a2)
             if ( v4 == d3d_listvw.selectedEntry )
             {
                 if ( !strcmp(a1.name, "software") )
-                    v2 = p_ypaworld->GetLocaleString(2472, "2472 = Software");
+                    v2 = p_YW->GetLocaleString(2472, "2472 = Software");
                 else
                     v2 = a1.name;
 
@@ -2058,7 +2045,7 @@ void UserData::sub_46C914()
 
         p_YW->ypaworld_func172(&arg172);
 
-        user_name = it->name;
+        UserName = it->name;
         usernamedir = it->name;
 
 
@@ -2069,7 +2056,7 @@ void UserData::sub_46C914()
 
         p_YW->GuiWinClose( &disk_listvw );
 
-        envMode = ENVMODE_SINGLEPLAY;
+        EnvMode = ENVMODE_SINGLEPLAY;
 
         sub_bar_button->Show();
     }
@@ -2094,7 +2081,7 @@ void UserData::sub_46C748()
 {
     if ( field_1612 )
     {
-        if ( StriCmp(usernamedir, user_name) )
+        if ( StriCmp(usernamedir, UserName) )
         {
 
             ProfileList::iterator it = profiles.begin();
@@ -2149,12 +2136,12 @@ void UserData::sub_46C748()
 
             if ( field_0x1760 )
             {
-                envMode = ENVMODE_SINGLEPLAY;
+                EnvMode = ENVMODE_SINGLEPLAY;
                 sub_bar_button->Show();
             }
             else
             {
-                envMode = ENVMODE_TITLE;
+                EnvMode = ENVMODE_TITLE;
                 titel_button->Show();
             }
         }
@@ -2172,12 +2159,12 @@ void UserData::sub_46B0E0()
         if ( prev_lang )
         {
             default_lang_dll = prev_lang;
-            p_YW->ypaworld_func175( this );
+            p_YW->ReloadLanguage();
         }
     }
 
     field_19CA = 0;
-    envMode = ENVMODE_TITLE;
+    EnvMode = ENVMODE_TITLE;
     field_19CA = 0;
     prev_lang = default_lang_dll;
 
@@ -2190,7 +2177,7 @@ void UserData::sub_46B0E0()
 
 void UserData::sub_46AA0C()
 {
-    envMode = ENVMODE_TITLE;
+    EnvMode = ENVMODE_TITLE;
     field_19CA = 0;
     prev_lang = default_lang_dll;
 
@@ -2213,7 +2200,7 @@ void UserData::ypaworld_func158__sub0__sub4()
 
     about_button->Show();
 
-    envMode = ENVMODE_ABOUT;
+    EnvMode = ENVMODE_ABOUT;
 }
 
 
@@ -2235,29 +2222,29 @@ void UserData::GameShellUiHandleInput()
 {
     int v3 = 0;
 
-    if ( _input->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+    if ( Input->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
         SFXEngine::SFXe.startSound(&samples1_info, 3);
 
     if ( netSelMode != NETSCREEN_MODE_SELECT )
-        yw_HandleNetMsg(p_ypaworld);
+        yw_HandleNetMsg(p_YW);
 
     if ( netSelMode == NETSCREEN_SESSION_SELECT )
     {
-        if ( p_ypaworld->windp->GetProvType() == 4 )
+        if ( p_YW->windp->GetProvType() == 4 )
         {
             if ( modemAskSession )
             {
-                if ( _input->KbdLastHit == Input::KC_SPACE )
+                if ( Input->KbdLastHit == Input::KC_SPACE )
                 {
                     GFX::Engine.windd_func320(NULL);
-                    p_ypaworld->windp->EnumSessions(NULL);
+                    p_YW->windp->EnumSessions(NULL);
                     GFX::Engine.windd_func321(NULL);
                 }
             }
         }
-        else if ( p_ypaworld->windp->GetProvType() != 3 || _input->KbdLastHit == Input::KC_SPACE )
+        else if ( p_YW->windp->GetProvType() != 3 || Input->KbdLastHit == Input::KC_SPACE )
         {
-            p_ypaworld->windp->EnumSessions(NULL);
+            p_YW->windp->EnumSessions(NULL);
         }
     }
 
@@ -2304,34 +2291,34 @@ void UserData::GameShellUiHandleInput()
     sub_bar_button->button_func76(&v393);
 
     v393.butID = 1019;
-    v393.xpos = p_ypaworld->screen_width - dword_5A50B6_h;
+    v393.xpos = p_YW->screen_width - dword_5A50B6_h;
     sub_bar_button->button_func76(&v393);
 
     v393.butID = 1011;
     v393.xpos = word_5A50C0 + dword_5A50B6_h;
     sub_bar_button->button_func76(&v393);
 
-    sub_bar_button->button_func71(1019,  p_ypaworld->GetLocaleString(644, "GO BACK"));
+    sub_bar_button->button_func71(1019,  p_YW->GetLocaleString(644, "GO BACK"));
 
-    if ( sub_4EDCC4(p_ypaworld) )
+    if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
     {
-        if ( p_ypaworld->_levelInfo->State != 9 && !field_0xc )
+        if ( p_YW->_levelInfo.State != TLevelInfo::STATE_DEBRIEFING && !GameIsOver )
         {
             v410.butID = 1014;
             sub_bar_button->button_func66(&v410);
 
             v393.butID = 1014;
-            v393.xpos = p_ypaworld->screen_width - dword_5A50B6_h;
+            v393.xpos = p_YW->screen_width - dword_5A50B6_h;
             sub_bar_button->button_func76(&v393);
 
             v393.butID = 1019;
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            sub_bar_button->button_func71(1019, p_ypaworld->GetLocaleString(2438, "2438 == BACK"));
+            sub_bar_button->button_func71(1019, p_YW->GetLocaleString(2438, "2438 == BACK"));
         }
 
-        if ( p_ypaworld->_levelInfo->State == 9 )
+        if ( p_YW->_levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
         {
             v410.butID = 1011;
             sub_bar_button->button_func66(&v410);
@@ -2340,7 +2327,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            sub_bar_button->button_func71(1019, p_ypaworld->GetLocaleString(2420, "CONTINUE"));
+            sub_bar_button->button_func71(1019, p_YW->GetLocaleString(2420, "CONTINUE"));
         }
 
         v410.butID = 1019;
@@ -2358,7 +2345,7 @@ void UserData::GameShellUiHandleInput()
         p_YW->GuiWinClose( &local_listvw );
         p_YW->GuiWinClose( &network_listvw );
     }
-    else if ( envMode == ENVMODE_TITLE )
+    else if ( EnvMode == ENVMODE_TITLE )
     {
         v410.butID = 1003;
         titel_button->button_func66(&v410);
@@ -2387,11 +2374,11 @@ void UserData::GameShellUiHandleInput()
         v410.butID = 1016;
         titel_button->button_func66(&v410);
     }
-    else if ( envMode == ENVMODE_SINGLEPLAY || envMode == ENVMODE_TUTORIAL )
+    else if ( EnvMode == ENVMODE_SINGLEPLAY || EnvMode == ENVMODE_TUTORIAL )
     {
         if ( !field_3426 )
         {
-            if ( sub_47B388(0, user_name) )
+            if ( sub_47B388(0, UserName) )
                 field_3426 = 1;
             else
                 field_3426 = 2;
@@ -2413,7 +2400,7 @@ void UserData::GameShellUiHandleInput()
     if ( field_0x2fb4 )
         v3 = 1;
 
-    NC_STACK_button::ResCode r = confirm_button->button_func69(_input);
+    NC_STACK_button::ResCode r = confirm_button->button_func69(Input);
 
     if ( r )
     {
@@ -2427,7 +2414,7 @@ void UserData::GameShellUiHandleInput()
             case 1:
             {
                 field_3426 = 0;
-                p_ypaworld->isNetGame = 0;
+                p_YW->isNetGame = 0;
 
                 sub_bar_button->Hide();
 
@@ -2467,20 +2454,20 @@ void UserData::GameShellUiHandleInput()
 
     if ( field_0x2fb4 )
     {
-        if ( _input->HotKeyID == 24 )
+        if ( Input->HotKeyID == 24 )
         {
             if ( field_0x2fb4 == 3 || field_0x2fb4 == 6 )
                 field_0x1744 = 0;
             sub_46D960();
         }
-        if ( _input->KbdLastHit == Input::KC_RETURN )
+        if ( Input->KbdLastHit == Input::KC_RETURN )
         {
             switch ( field_0x2fb4 )
             {
             case 1:
             {
                 field_3426 = 0;
-                p_ypaworld->isNetGame = 0;
+                p_YW->isNetGame = 0;
                 sub_bar_button->Hide();
                 envAction.action = EnvAction::ACTION_LOAD;
                 envAction.params[0] = 0;
@@ -2510,11 +2497,11 @@ void UserData::GameShellUiHandleInput()
 
     if ( v3 )
     {
-        _input->ClickInf.flag = 0;
-        _input->KbdLastHit = Input::KC_NONE;
-        _input->KbdLastDown = Input::KC_NONE;
-        _input->chr = 0;
-        _input->HotKeyID = -1;
+        Input->ClickInf.flag = 0;
+        Input->KbdLastHit = Input::KC_NONE;
+        Input->KbdLastDown = Input::KC_NONE;
+        Input->chr = 0;
+        Input->HotKeyID = -1;
     }
     
     
@@ -2559,10 +2546,10 @@ void UserData::GameShellUiHandleInput()
     }
     
 
-    if ( envMode == ENVMODE_TITLE && _input->HotKeyID == 43 )
-        p_ypaworld->field_81AF = p_ypaworld->GetLocaleString(750, "help\\start.html");
+    if ( EnvMode == ENVMODE_TITLE && Input->HotKeyID == 43 )
+        p_YW->field_81AF = p_YW->GetLocaleString(750, "help\\start.html");
 
-    r = titel_button->button_func69(_input);
+    r = titel_button->button_func69(Input);
 
     if ( r )
     {
@@ -2603,20 +2590,20 @@ void UserData::GameShellUiHandleInput()
 
             titel_button->Hide();
 
-            envMode = ENVMODE_SINGLEPLAY;
+            EnvMode = ENVMODE_SINGLEPLAY;
         }
         else if ( r.code == 1025 )
         {
-            p_ypaworld->field_81AF = p_ypaworld->GetLocaleString(750, "help\\start.html");
+            p_YW->field_81AF = p_YW->GetLocaleString(750, "help\\start.html");
         }
     }
 
-    if ( (envMode == ENVMODE_SINGLEPLAY || envMode == ENVMODE_TUTORIAL) && _input->HotKeyID == 24 )
+    if ( (EnvMode == ENVMODE_SINGLEPLAY || EnvMode == ENVMODE_TUTORIAL) && Input->HotKeyID == 24 )
     {
-        if ( sub_4EDCC4(p_ypaworld) )
+        if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
         {
-            sub_4EDCD8(p_ypaworld);
-            if ( p_ypaworld->field_73CE & World::PREF_CDMUSICDISABLE )
+            sub_4EDCD8(p_YW);
+            if ( p_YW->field_73CE & World::PREF_CDMUSICDISABLE )
             {
                 SFXEngine::SFXe.StopMusicTrack();
                 if ( shelltrack )
@@ -2634,11 +2621,11 @@ void UserData::GameShellUiHandleInput()
 
             titel_button->Show();
 
-            envMode = ENVMODE_TITLE;
+            EnvMode = ENVMODE_TITLE;
         }
     }
 
-    r = sub_bar_button->button_func69(_input);
+    r = sub_bar_button->button_func69(Input);
 
     if ( r )
     {
@@ -2647,10 +2634,10 @@ void UserData::GameShellUiHandleInput()
         switch ( r.code )
         {
         case 1013:
-            if ( sub_4EDCC4(p_ypaworld) )
+            if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
             {
-                sub_4EDCD8(p_ypaworld);
-                if ( p_ypaworld->field_73CE & World::PREF_CDMUSICDISABLE )
+                sub_4EDCD8(p_YW);
+                if ( p_YW->field_73CE & World::PREF_CDMUSICDISABLE )
                 {
                     SFXEngine::SFXe.StopMusicTrack();
                     if ( shelltrack )
@@ -2668,40 +2655,40 @@ void UserData::GameShellUiHandleInput()
 
                 titel_button->Show();
 
-                envMode = ENVMODE_TITLE;
+                EnvMode = ENVMODE_TITLE;
             }
             break;
 
         case 1019:
         {
             field_3426 = 0;
-            p_ypaworld->isNetGame = 0;
+            p_YW->isNetGame = 0;
 
             sub_bar_button->Hide();
 
-            ypaworld_func158__sub0__sub9(p_ypaworld);
+            ypaworld_func158__sub0__sub9(p_YW);
         }
         break;
 
         case 1021:
             if ( ypaworld_func158__sub0__sub7() )
             {
-                sub_46D9E0(1, p_ypaworld->GetLocaleString(2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?")
-                            , p_ypaworld->GetLocaleString(2439, "2439"), 0);
+                sub_46D9E0(1, p_YW->GetLocaleString(2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?")
+                            , p_YW->GetLocaleString(2439, "2439"), 0);
             }
             else
             {
-                sub_46D9E0(1, p_ypaworld->GetLocaleString(2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?")
-                            , p_ypaworld->GetLocaleString(2440, "2440"), 0);
+                sub_46D9E0(1, p_YW->GetLocaleString(2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?")
+                            , p_YW->GetLocaleString(2440, "2440"), 0);
             }
             break;
 
         case 1016:
-            ypaworld_func158__sub0__sub12(p_ypaworld);
+            ypaworld_func158__sub0__sub12(p_YW);
             break;
 
         case 1020:
-            ypaworld_func158__sub0__sub11(p_ypaworld);
+            ypaworld_func158__sub0__sub11(p_YW);
             break;
 
         case 1026:
@@ -2714,22 +2701,22 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( envMode == ENVMODE_INPUT )
+    if ( EnvMode == ENVMODE_INPUT )
     {
-        if ( !field_D52 && _input->HotKeyID == 43 )
-            p_ypaworld->field_81AF = p_ypaworld->GetLocaleString(759, "help\\19.html");
+        if ( !field_D52 && Input->HotKeyID == 43 )
+            p_YW->field_81AF = p_YW->GetLocaleString(759, "help\\19.html");
 
-        if ( _input->KbdLastHit != Input::KC_NONE )
+        if ( Input->KbdLastHit != Input::KC_NONE )
         {
             if ( field_D52 )
             {
                 input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( !NC_STACK_input::KeyTitle.at( _input->KbdLastHit ).empty() )
+                if ( !NC_STACK_input::KeyTitle.at( Input->KbdLastHit ).empty() )
                 {
                     if ( field_D3A )
                     {
-                        InputConfig[field_D36].PKeyCode = _input->KbdLastHit;
+                        InputConfig[field_D36].PKeyCode = Input->KbdLastHit;
 
                         if ( InputConfig[field_D36].Type == World::INPUT_BIND_TYPE_SLIDER )
                             field_D3A = 0;
@@ -2739,30 +2726,30 @@ void UserData::GameShellUiHandleInput()
                     }
                     else
                     {
-                        InputConfig[field_D36].NKeyCode = _input->KbdLastHit;
+                        InputConfig[field_D36].NKeyCode = Input->KbdLastHit;
                         InputConfig[field_D36].SetFlags &= ~2;
                         field_D3A = 1;
                     }
                 }
-                _input->KbdLastHit = Input::KC_NONE;
+                Input->KbdLastHit = Input::KC_NONE;
             }
             else
             {
                 input_listview.listFlags |= GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( _input->KbdLastHit == Input::KC_BACKSPACE  || _input->KbdLastHit == Input::KC_DELETE)
+                if ( Input->KbdLastHit == Input::KC_BACKSPACE  || Input->KbdLastHit == Input::KC_DELETE)
                 {
                     if (InputConfig[field_D36].Type != World::INPUT_BIND_TYPE_SLIDER)
                         InputConfig[field_D36].PKeyCode = 0;
                 }
-                else if ( _input->KbdLastHit == Input::KC_RETURN )
+                else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
                     InputConfig[field_D36].SetFlags = 3;
                     field_D52 = 1;
                     if ( InputConfig[field_D36].Type == World::INPUT_BIND_TYPE_SLIDER )
                         field_D3A = 0;
                 }
-                else if ( _input->KbdLastHit == Input::KC_ESCAPE )
+                else if ( Input->KbdLastHit == Input::KC_ESCAPE )
                 {
                     InputPageCancel();
                 }
@@ -2783,7 +2770,7 @@ void UserData::GameShellUiHandleInput()
         button_input_button->button_func66(&v410);
     }
 
-    r = button_input_button->button_func69(_input);
+    r = button_input_button->button_func69(Input);
 
     if ( r )
     {
@@ -2806,26 +2793,26 @@ void UserData::GameShellUiHandleInput()
             {
                 inp_joystick = field_D42;
                 if ( field_D42 )
-                    p_ypaworld->field_73CE &= ~World::PREF_JOYDISABLE;
+                    p_YW->field_73CE &= ~World::PREF_JOYDISABLE;
                 else
-                    p_ypaworld->field_73CE |= World::PREF_JOYDISABLE;
+                    p_YW->field_73CE |= World::PREF_JOYDISABLE;
             }
 
             if ( field_D5E & 4 )
             {
                 inp_altjoystick = field_D4A;
                 if ( field_D4A )
-                    p_ypaworld->field_73CE |= World::PREF_ALTJOYSTICK;
+                    p_YW->field_73CE |= World::PREF_ALTJOYSTICK;
                 else
-                    p_ypaworld->field_73CE &= ~World::PREF_ALTJOYSTICK;
+                    p_YW->field_73CE &= ~World::PREF_ALTJOYSTICK;
             }
 
             if ( field_D5E & 2 )
             {
                 if ( field_D4E )
-                    p_ypaworld->field_73CE &= 0xF7;
+                    p_YW->field_73CE &= 0xF7;
                 else
-                    p_ypaworld->field_73CE |= 8;
+                    p_YW->field_73CE |= 8;
             }
 
             field_D5E = 0;
@@ -2837,7 +2824,7 @@ void UserData::GameShellUiHandleInput()
             titel_button->Show();
 
             p_YW->GuiWinClose( &input_listview );
-            envMode = ENVMODE_TITLE;
+            EnvMode = ENVMODE_TITLE;
         }
         else if (r.code == 1053)
         {
@@ -2873,14 +2860,14 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_ypaworld->field_81AF = p_YW->GetLocaleString(759, "help\\19.html");
+            p_YW->field_81AF = p_YW->GetLocaleString(759, "help\\19.html");
             field_D52 = 0;
         }
     }
 
-    if ( envMode == ENVMODE_INPUT )
+    if ( EnvMode == ENVMODE_INPUT )
     {
-        input_listview.InputHandle(p_ypaworld, _input);
+        input_listview.InputHandle(p_YW, Input);
 
         field_D36 = input_listview.selectedEntry + 1;
 
@@ -2890,16 +2877,16 @@ void UserData::GameShellUiHandleInput()
             field_D3A = 1;
             field_D52 = 0;
         }
-        input_listview.Formate(p_ypaworld);
+        input_listview.Formate(p_YW);
     }
 
-    if ( envMode == ENVMODE_SETTINGS )
+    if ( EnvMode == ENVMODE_SETTINGS )
     {
-        if ( _input->KbdLastHit == Input::KC_RETURN )
+        if ( Input->KbdLastHit == Input::KC_RETURN )
         {
             if ( video_listvw.IsClosed() && d3d_listvw.IsClosed() )
             {
-                if ( _settingsChangeOptions & 1 && _gfxMode != p_ypaworld->_gfxMode && _gfxMode )
+                if ( _settingsChangeOptions & 1 && _gfxMode != p_YW->_gfxMode && _gfxMode )
                 {
                     sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
                                 , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
@@ -2927,17 +2914,17 @@ void UserData::GameShellUiHandleInput()
             }
 
         }
-        else if ( _input->KbdLastHit == Input::KC_ESCAPE )
+        else if ( Input->KbdLastHit == Input::KC_ESCAPE )
         {
             sub_46A3C0();
-            envMode = ENVMODE_TITLE;
+            EnvMode = ENVMODE_TITLE;
         }
-        if ( _input->HotKeyID == 43 )
-            p_ypaworld->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
+        if ( Input->HotKeyID == 43 )
+            p_YW->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
     }
 
 
-    r = video_button->button_func69(_input);
+    r = video_button->button_func69(Input);
 
     if ( r )
     {
@@ -2949,7 +2936,7 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinOpen( &video_listvw );
             SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            _input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
+            Input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
         }
         else if ( r.code == 1101 )
         {
@@ -3014,7 +3001,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1124 )
         {
-            if ( (_settingsChangeOptions & 1) &&  _gfxMode != p_ypaworld->_gfxMode && _gfxMode )
+            if ( (_settingsChangeOptions & 1) &&  _gfxMode != p_YW->_gfxMode && _gfxMode )
             {
                 sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
                             , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
@@ -3073,19 +3060,19 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinOpen( &d3d_listvw );
             SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            _input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
+            Input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
         }
         else if ( r.code == 1135 )
         {
             p_YW->GuiWinClose( &d3d_listvw );
         }
         else if ( r.code == 1250 )
-            p_ypaworld->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
+            p_YW->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
     }
 
-    if ( envMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
+    if ( EnvMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
     {
-        video_listvw.InputHandle(p_ypaworld, _input);
+        video_listvw.InputHandle(p_YW, Input);
 
         if ( video_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
@@ -3103,12 +3090,12 @@ void UserData::GameShellUiHandleInput()
             video_button->button_func73(&v408);
         }
 
-        video_listvw.Formate(p_ypaworld);
+        video_listvw.Formate(p_YW);
     }
 
-    if ( envMode == ENVMODE_SETTINGS && d3d_listvw.IsOpen() )
+    if ( EnvMode == ENVMODE_SETTINGS && d3d_listvw.IsOpen() )
     {
-        d3d_listvw.InputHandle(p_ypaworld, _input);
+        d3d_listvw.InputHandle(p_YW, Input);
 
         if ( d3d_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
@@ -3129,7 +3116,7 @@ void UserData::GameShellUiHandleInput()
             video_button->button_func73(&v408);
         }
 
-        d3d_listvw.Formate(p_ypaworld);
+        d3d_listvw.Formate(p_YW);
     }
 
     NC_STACK_button::Slider *v67 = video_button->button_func74(1159);
@@ -3151,13 +3138,13 @@ void UserData::GameShellUiHandleInput()
 
     SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
 
-    if ( envMode == ENVMODE_SELPLAYER ) //Load/Save
+    if ( EnvMode == ENVMODE_SELPLAYER ) //Load/Save
     {
-        if ( _input->KbdLastHit != Input::KC_NONE || _input->chr )
+        if ( Input->KbdLastHit != Input::KC_NONE || Input->chr )
         {
             if ( field_0x1744 )
             {
-                if ( _input->KbdLastHit == Input::KC_BACKSPACE )
+                if ( Input->KbdLastHit == Input::KC_BACKSPACE )
                 {
                     if ( usernamedir_len > 0 )
                     {
@@ -3165,7 +3152,7 @@ void UserData::GameShellUiHandleInput()
                         usernamedir_len--;
                     }
                 }
-                else if ( _input->KbdLastHit == Input::KC_RETURN )
+                else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
                     switch ( field_0x1744 )
                     {
@@ -3205,21 +3192,21 @@ void UserData::GameShellUiHandleInput()
                         break;
                     }
                 }
-                else if ( _input->KbdLastHit == Input::KC_ESCAPE )
+                else if ( Input->KbdLastHit == Input::KC_ESCAPE )
                 {
                     field_0x1744 = 0;
                 }
-                else if ( _input->KbdLastHit == Input::KC_LEFT )
+                else if ( Input->KbdLastHit == Input::KC_LEFT )
                 {
                     if ( usernamedir_len > 0 )
                         usernamedir_len--;
                 }
-                else if ( _input->KbdLastHit == Input::KC_RIGHT )
+                else if ( Input->KbdLastHit == Input::KC_RIGHT )
                 {
                     if ( usernamedir_len < (int)usernamedir.size() )
                         usernamedir_len++;
                 }
-                else if ( _input->KbdLastHit == Input::KC_DELETE )
+                else if ( Input->KbdLastHit == Input::KC_DELETE )
                 {
                     if ( usernamedir_len < (int)usernamedir.size() )
                         usernamedir.erase(usernamedir_len, 1);
@@ -3227,11 +3214,11 @@ void UserData::GameShellUiHandleInput()
 
                 if ( usernamedir.size() < 32 )
                 {
-                    if ( _input->chr >= ' ' )
+                    if ( Input->chr >= ' ' )
                     {
-                        if ( ypaworld_func158__sub0__sub6(_input->chr) )
+                        if ( ypaworld_func158__sub0__sub6(Input->chr) )
                         {
-                            usernamedir.insert(usernamedir_len, 1, _input->chr);
+                            usernamedir.insert(usernamedir_len, 1, Input->chr);
                             usernamedir_len++;
                         }
                     }
@@ -3239,11 +3226,11 @@ void UserData::GameShellUiHandleInput()
             }
             else
             {
-                if ( _input->KbdLastHit == Input::KC_ESCAPE )
+                if ( Input->KbdLastHit == Input::KC_ESCAPE )
                     sub_46A7F8();
 
-                if ( _input->HotKeyID == 43 )
-                    p_ypaworld->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
+                if ( Input->HotKeyID == 43 )
+                    p_YW->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
 
             }
 
@@ -3266,7 +3253,7 @@ void UserData::GameShellUiHandleInput()
         v108++;
     }
 
-    r = disk_button->button_func69(_input);
+    r = disk_button->button_func69(Input);
 
     if ( r )
     {
@@ -3386,16 +3373,16 @@ void UserData::GameShellUiHandleInput()
         }
         else if (r.code == 1250)
         {
-            p_ypaworld->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
+            p_YW->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
             field_0x1744 = 0;
         }
     }
 
-    if ( envMode == ENVMODE_SELPLAYER ) // Multiplayer
+    if ( EnvMode == ENVMODE_SELPLAYER ) // Multiplayer
     {
-        disk_listvw.InputHandle(p_ypaworld, _input);
+        disk_listvw.InputHandle(p_YW, Input);
 
-        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || _input->KbdLastHit == Input::KC_UP || _input->KbdLastHit == Input::KC_DOWN )
+        if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || Input->KbdLastHit == Input::KC_UP || Input->KbdLastHit == Input::KC_DOWN )
         {
             field_1612 = disk_listvw.selectedEntry + 1;
 
@@ -3425,7 +3412,7 @@ void UserData::GameShellUiHandleInput()
                 usernamedir_len = usernamedir.size();
             }
         }
-        disk_listvw.Formate(p_ypaworld);
+        disk_listvw.Formate(p_YW);
     }
 
     if ( field_0x1744 )
@@ -3454,7 +3441,7 @@ void UserData::GameShellUiHandleInput()
             v410.field_4 = 0;
             v410.butID = 1105;
 
-            if ( !field_1612 || !StriCmp(usernamedir, user_name) )
+            if ( !field_1612 || !StriCmp(usernamedir, UserName) )
                 disk_button->button_func67(&v410);
             else
                 disk_button->button_func66(&v410);
@@ -3497,7 +3484,7 @@ void UserData::GameShellUiHandleInput()
         disk_button->button_func67(&v410);
 
         v410.butID = 1102;
-        if ( !StriCmp(usernamedir, user_name) )
+        if ( !StriCmp(usernamedir, UserName) )
             disk_button->button_func67(&v410);
         else
             disk_button->button_func66(&v410);
@@ -3505,24 +3492,24 @@ void UserData::GameShellUiHandleInput()
         disk_button->button_func71(1100, usernamedir);
     }
 
-    if ( envMode == ENVMODE_SELLOCALE )
+    if ( EnvMode == ENVMODE_SELLOCALE )
     {
 
-        if ( _input->KbdLastHit == Input::KC_RETURN )
+        if ( Input->KbdLastHit == Input::KC_RETURN )
         {
             sub_46B0E0();
         }
-        else if ( _input->KbdLastHit == Input::KC_ESCAPE )
+        else if ( Input->KbdLastHit == Input::KC_ESCAPE )
         {
             sub_46AA0C();
         }
 
-        if ( _input->HotKeyID == 43 )
-            p_ypaworld->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
+        if ( Input->HotKeyID == 43 )
+            p_YW->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
     }
 
 
-    r = locale_button->button_func69(_input);
+    r = locale_button->button_func69(Input);
 
     if (r)
     {
@@ -3535,7 +3522,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_ypaworld->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
+            p_YW->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
         }
         else if ( r.code == 1300 )
         {
@@ -3547,9 +3534,9 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( envMode == ENVMODE_SELLOCALE ) //Locale
+    if ( EnvMode == ENVMODE_SELLOCALE ) //Locale
     {
-        local_listvw.InputHandle(p_ypaworld, _input);
+        local_listvw.InputHandle(p_YW, Input);
 
         if ( local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
@@ -3560,26 +3547,26 @@ void UserData::GameShellUiHandleInput()
             prev_lang = &(*it);
         }
 
-        local_listvw.Formate(p_ypaworld);
+        local_listvw.Formate(p_YW);
     }
 
-    r = about_button->button_func69(_input);
+    r = about_button->button_func69(Input);
 
     if ( r )
     {
         if ( r.code == 103 )
         {
-            envMode = ENVMODE_TITLE;
+            EnvMode = ENVMODE_TITLE;
 
             about_button->Hide();
         }
     }
 
-    if ( envMode == ENVMODE_ABOUT )
+    if ( EnvMode == ENVMODE_ABOUT )
     {
-        if ( _input->KbdLastHit == Input::KC_RETURN || _input->KbdLastHit == Input::KC_ESCAPE )
+        if ( Input->KbdLastHit == Input::KC_RETURN || Input->KbdLastHit == Input::KC_ESCAPE )
         {
-            envMode = ENVMODE_TITLE;
+            EnvMode = ENVMODE_TITLE;
 
             about_button->Hide();
 
@@ -3587,9 +3574,9 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( envMode == ENVMODE_TITLE )
+    if ( EnvMode == ENVMODE_TITLE )
     {
-        if ( field_19DA && glblTime - field_19D6 >= 700 )
+        if ( field_19DA && GlobalTime - field_19D6 >= 700 )
         {
             field_19DA = 0;
         }
@@ -3598,53 +3585,53 @@ void UserData::GameShellUiHandleInput()
             switch ( field_19DA )
             {
             case 0:
-                if ( p_ypaworld->sub_449678(_input, Input::KC_A) ) // VK_A
+                if ( p_YW->sub_449678(Input, Input::KC_A) ) // VK_A
                 {
-                    field_19D6 = glblTime;
+                    field_19D6 = GlobalTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KC_NONE )
+                    if ( Input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
 
             case 1:
-                if ( p_ypaworld->sub_449678(_input, Input::KC_M) )
+                if ( p_YW->sub_449678(Input, Input::KC_M) )
                 {
-                    field_19D6 = glblTime;
+                    field_19D6 = GlobalTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KC_NONE )
+                    if ( Input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
 
             case 2:
-                if ( p_ypaworld->sub_449678(_input, Input::KC_O) )
+                if ( p_YW->sub_449678(Input, Input::KC_O) )
                 {
-                    field_19D6 = glblTime;
+                    field_19D6 = GlobalTime;
                     field_19DA++;
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KC_NONE )
+                    if ( Input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
 
             case 3:
-                if ( p_ypaworld->sub_449678(_input, Input::KC_K) )
+                if ( p_YW->sub_449678(Input, Input::KC_K) )
                 {
                     ypaworld_func158__sub0__sub4();
                     SFXEngine::SFXe.startSound(&samples1_info, World::SOUND_ID_SECRET);
                 }
                 else
                 {
-                    if ( _input->KbdLastHit != Input::KC_NONE )
+                    if ( Input->KbdLastHit != Input::KC_NONE )
                         field_19DA = 0;
                 }
                 break;
@@ -3664,19 +3651,19 @@ void UserData::GameShellUiHandleInput()
         nInputMode = 0;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
-        field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
+        field_0x1c30 = 3 * (p_YW->font_default_h + word_5A50C2);
         break;
     case NETSCREEN_SESSION_SELECT:
         nInputMode = 0;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
-        field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
+        field_0x1c30 = 3 * (p_YW->font_default_h + word_5A50C2);
         break;
     case NETSCREEN_CHOOSE_MAP:
         nInputMode = 0;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
-        field_0x1c30 = 3 * (p_ypaworld->font_default_h + word_5A50C2);
+        field_0x1c30 = 3 * (p_YW->font_default_h + word_5A50C2);
         break;
     case NETSCREEN_ENTER_NAME:
         field_1C36 = 0;
@@ -3687,7 +3674,7 @@ void UserData::GameShellUiHandleInput()
         nInputMode = 1;
         field_1C36 = 1;
         network_listvw.maxShownEntries = 6;
-        field_0x1c30 = p_ypaworld->font_default_h * 9.5 + 2 * word_5A50C2;
+        field_0x1c30 = p_YW->font_default_h * 9.5 + 2 * word_5A50C2;
         break;
     default:
         break;
@@ -3699,7 +3686,7 @@ void UserData::GameShellUiHandleInput()
 
     windp_arg79 v368;
 
-    r = network_button->button_func69(_input);
+    r = network_button->button_func69(Input);
 
     if ( r )
     {
@@ -3730,7 +3717,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = 1;
             FreeFraction &= 0xFE;
 
-            p_ypaworld->ypaworld_func181(&v346);
+            p_YW->ypaworld_func181(&v346);
         }
         else if ( r.code == 1205 )
         {
@@ -3740,7 +3727,7 @@ void UserData::GameShellUiHandleInput()
             FreeFraction &= 0xFD;
             SelectedFraction = 2;
 
-            p_ypaworld->ypaworld_func181(&v346);
+            p_YW->ypaworld_func181(&v346);
         }
         else if ( r.code == 1206 )
         {
@@ -3750,7 +3737,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = 4;
             FreeFraction &= 0xFB;
 
-            p_ypaworld->ypaworld_func181(&v346);
+            p_YW->ypaworld_func181(&v346);
         }
         else if ( r.code == 1207 )
         {
@@ -3760,7 +3747,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = 8;
             FreeFraction &= 0xF7;
 
-            p_ypaworld->ypaworld_func181(&v346);
+            p_YW->ypaworld_func181(&v346);
         }
 
         switch ( netSelMode )
@@ -3772,7 +3759,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
+                p_YW->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
             }
             break;
 
@@ -3790,7 +3777,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
+                p_YW->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
             }
             break;
 
@@ -3863,7 +3850,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
+                p_YW->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
             }
             break;
 
@@ -3874,7 +3861,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
+                p_YW->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
             }
             break;
 
@@ -3886,7 +3873,7 @@ void UserData::GameShellUiHandleInput()
                     std::string v425;
                     std::string v425_1;
 
-                    if ( p_ypaworld->windp->CountPlayers(NULL) <= 1 )
+                    if ( p_YW->windp->CountPlayers() <= 1 )
                     {
                         sub_46D9E0(2, p_YW->GetLocaleString(2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?")
                                     , p_YW->GetLocaleString(2442, "2442"), 0);
@@ -3917,7 +3904,7 @@ void UserData::GameShellUiHandleInput()
             {
                 v368.mode = 0;
                 v368.ID = 0;
-                while ( p_ypaworld->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
+                while ( p_YW->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
                     v368.ID++;
 
                 yw_arg181 v353;
@@ -3936,7 +3923,7 @@ void UserData::GameShellUiHandleInput()
                 v353.recvID = 0;
                 v353.garant = 1;
 
-                p_ypaworld->ypaworld_func181(&v353);
+                p_YW->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.receiverFlags = 2;
@@ -3945,13 +3932,13 @@ void UserData::GameShellUiHandleInput()
                 v387.senderID = callSIGN.c_str();
                 v387.guarant = 1;
 
-                p_ypaworld->windp->FlushBuffer(v387);
+                p_YW->windp->FlushBuffer(v387);
             }
             else if ( r.code == 1209 )
             {
                 v368.mode = 0;
                 v368.ID = 0;
-                while ( p_ypaworld->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
+                while ( p_YW->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
                     v368.ID++;
 
 
@@ -3971,7 +3958,7 @@ void UserData::GameShellUiHandleInput()
                 v353.dataSize = sizeof(rdyMsg);
                 v353.garant = 1;
 
-                p_ypaworld->ypaworld_func181(&v353);
+                p_YW->ypaworld_func181(&v353);
 
                 windp_arg82 v387;
                 v387.receiverFlags = 2;
@@ -3980,7 +3967,7 @@ void UserData::GameShellUiHandleInput()
                 v387.senderID = callSIGN.c_str();
                 v387.guarant = 1;
 
-                p_ypaworld->windp->FlushBuffer(v387);
+                p_YW->windp->FlushBuffer(v387);
             }
             else if ( r.code == 1210 )
             {
@@ -4021,21 +4008,21 @@ void UserData::GameShellUiHandleInput()
                     v346.senderID = callSIGN.c_str();
                     v346.garant = 1;
 
-                    p_ypaworld->ypaworld_func181(&v346);
+                    p_YW->ypaworld_func181(&v346);
 
-                    sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
+                    sub_4D0C24(p_YW, callSIGN, msgMsg.message);
 
                     netName = "";
                     netNameCurPos = 0;
 
                     int v223 = strtol(msgMsg.message, NULL, 0);
                     if ( v223 > 0 )
-                        sub_4D9550(p_ypaworld, v223);
+                        sub_4D9550(p_YW, v223);
                 }
             }
             else if ( r.code == 1250 )
             {
-                p_ypaworld->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
+                p_YW->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
             }
             break;
         default:
@@ -4043,15 +4030,15 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( envMode == ENVMODE_NETPLAY )
+    if ( EnvMode == ENVMODE_NETPLAY )
     {
         int a4 = network_button->getBTN_y();
 
         network_listvw.y = field_0x1c30 + a4;
 
-        network_listvw.InputHandle(p_ypaworld, _input);
+        network_listvw.InputHandle(p_YW, Input);
 
-        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || _input->KbdLastHit == Input::KC_UP || _input->KbdLastHit == Input::KC_DOWN )
+        if ( (network_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT) || Input->KbdLastHit == Input::KC_UP || Input->KbdLastHit == Input::KC_DOWN )
         {
             netSel = network_listvw.selectedEntry;
 
@@ -4063,13 +4050,13 @@ void UserData::GameShellUiHandleInput()
                 break;
             case NETSCREEN_CHOOSE_MAP:
             {
-                int v227 = p_ypaworld->windp->CountPlayers(NULL);
+                uint32_t v227 = p_YW->windp->CountPlayers();
 
                 int v228 = 0;
 
-                for (int i = 0; i < 256; i++)
+                for (size_t i = 0; i < 256; i++)
                 {
-                    if ( v227 <= 1 || v227 <= p_ypaworld->LevelNet->mapInfos[ map_descriptions[i].id ].robos_count)
+                    if ( v227 <= 1 || v227 <= p_YW->_mapRegions.MapRegions[ map_descriptions[i].id ].RoboCount)
                     {
                         if ( v228 == netSel )
                         {
@@ -4091,12 +4078,12 @@ void UserData::GameShellUiHandleInput()
             netNameCurPos = netName.size();
         }
 
-        network_listvw.Formate(p_ypaworld);
+        network_listvw.Formate(p_YW);
     }
 
-    if ( envMode == ENVMODE_NETPLAY )
+    if ( EnvMode == ENVMODE_NETPLAY )
     {
-        if ( _input->KbdLastHit != Input::KC_NONE || _input->chr || _input->HotKeyID >= 0 )
+        if ( Input->KbdLastHit != Input::KC_NONE || Input->chr || Input->HotKeyID >= 0 )
         {
             if ( nInputMode )
             {
@@ -4109,17 +4096,17 @@ void UserData::GameShellUiHandleInput()
 
                 if ( netName.size() < v233 )
                 {
-                    if ( _input->chr > ' ' && _input->chr != '*' )
+                    if ( Input->chr > ' ' && Input->chr != '*' )
                     {
                         if (netNameCurPos <= (int)netName.size())
                         {
-                            netName.insert(netNameCurPos, 1, _input->chr);
+                            netName.insert(netNameCurPos, 1, Input->chr);
                             netNameCurPos++;
                         }                           
                     }
                 }
 
-                if ( _input->KbdLastHit == Input::KC_BACKSPACE && netNameCurPos > 0 )
+                if ( Input->KbdLastHit == Input::KC_BACKSPACE && netNameCurPos > 0 )
                 {
                     if (netNameCurPos > 0 && (int)netName.size() >= netNameCurPos)
                     {
@@ -4127,24 +4114,24 @@ void UserData::GameShellUiHandleInput()
                         netNameCurPos--;
                     }
                 }
-                else if ( _input->KbdLastHit == Input::KC_LEFT )
+                else if ( Input->KbdLastHit == Input::KC_LEFT )
                 {
                     if ( netNameCurPos > 0 )
                         netNameCurPos--;
                 }
-                else if ( _input->KbdLastHit == Input::KC_RIGHT )
+                else if ( Input->KbdLastHit == Input::KC_RIGHT )
                 {
                     if ( netNameCurPos < (int)netName.size() )
                         netNameCurPos++;
                 }
-                else if ( _input->KbdLastHit == Input::KC_DELETE && netNameCurPos < (int)netName.size() )
+                else if ( Input->KbdLastHit == Input::KC_DELETE && netNameCurPos < (int)netName.size() )
                 {
                     if ( netNameCurPos < (int)netName.size() )
                         netName.erase(netNameCurPos, 1);
                 }
             }
 
-            if ( _input->KbdLastHit == Input::KC_RETURN )
+            if ( Input->KbdLastHit == Input::KC_RETURN )
             {
                 switch ( netSelMode )
                 {
@@ -4199,44 +4186,44 @@ void UserData::GameShellUiHandleInput()
                         v325.recvFlags = 2;
                         v325.recvID = 0;
 
-                        p_ypaworld->ypaworld_func181(&v325);
+                        p_YW->ypaworld_func181(&v325);
 
-                        sub_4D0C24(p_ypaworld, callSIGN, msgMsg.message);
+                        sub_4D0C24(p_YW, callSIGN, msgMsg.message);
                         netName.clear();
                         netNameCurPos = 0;
 
                         int v271 = strtol(msgMsg.message, NULL, 0);
                         if ( v271 > 0 )
-                            sub_4D9550(p_ypaworld, v271);
+                            sub_4D9550(p_YW, v271);
                     }
                     break;
                 default:
                     break;
                 }
             }
-            else if ( _input->KbdLastHit == Input::KC_ESCAPE )
+            else if ( Input->KbdLastHit == Input::KC_ESCAPE )
             {
                 sub_46D698();
             }
 
-            if ( _input->HotKeyID == 43 && !nInputMode )
+            if ( Input->HotKeyID == 43 && !nInputMode )
             {
                 switch ( netSelMode )
                 {
                 case NETSCREEN_MODE_SELECT:
-                    p_ypaworld->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
+                    p_YW->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
                     break;
                 case NETSCREEN_SESSION_SELECT:
-                    p_ypaworld->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
+                    p_YW->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
                     break;
                 case NETSCREEN_ENTER_NAME:
-                    p_ypaworld->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
+                    p_YW->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
                     break;
                 case NETSCREEN_CHOOSE_MAP:
-                    p_ypaworld->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
+                    p_YW->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
                     break;
                 case NETSCREEN_INSESSION:
-                    p_ypaworld->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
+                    p_YW->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
                     break;
                 default:
                     break;
@@ -4246,7 +4233,7 @@ void UserData::GameShellUiHandleInput()
             if ( netSel != -1 )
                 network_listvw.PosOnSelected(netSel);
 
-            _input->KbdLastHit = Input::KC_NONE;
+            Input->KbdLastHit = Input::KC_NONE;
         }
     }
 
@@ -4254,12 +4241,12 @@ void UserData::GameShellUiHandleInput()
     {
         if ( netSelMode == NETSCREEN_INSESSION && envAction.action != EnvAction::ACTION_NETPLAY )
         {
-            if ( (int)p_ypaworld->windp->CountPlayers(NULL)   <   p_ypaworld->LevelNet->mapInfos[ netLevelID ].robos_count )
+            if ( p_YW->windp->CountPlayers()   <   p_YW->_mapRegions.MapRegions[ netLevelID ].RoboCount )
             {
                 if ( blocked )
                 {
                     int v357 = 0;
-                    p_ypaworld->windp->LockSession(&v357);
+                    p_YW->windp->LockSession(&v357);
 
                     blocked = 0;
                 }
@@ -4267,7 +4254,7 @@ void UserData::GameShellUiHandleInput()
             else if ( !blocked )
             {
                 int v357 = 1;
-                p_ypaworld->windp->LockSession(&v357);
+                p_YW->windp->LockSession(&v357);
 
                 blocked = 1;
             }
@@ -4343,8 +4330,8 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1217;
     network_button->button_func67(&v410);
 
-    if ( (netSelMode != NETSCREEN_SESSION_SELECT || p_ypaworld->windp->GetProvType() != 3)
-            && (netSelMode != NETSCREEN_SESSION_SELECT || modemAskSession != 1 || p_ypaworld->windp->GetProvType() != 4)
+    if ( (netSelMode != NETSCREEN_SESSION_SELECT || p_YW->windp->GetProvType() != 3)
+            && (netSelMode != NETSCREEN_SESSION_SELECT || modemAskSession != 1 || p_YW->windp->GetProvType() != 4)
             && netSelMode != NETSCREEN_MODE_SELECT )
     {
         v410.butID = 1228;
@@ -4360,9 +4347,9 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            if ( p_ypaworld->field_75E2[0] )
+            if ( p_YW->field_75E2[0] )
             {
-                char *v278 = p_ypaworld->field_75E2;
+                char *v278 = p_YW->field_75E2;
                 v280 = fmt::sprintf("%s  %s",  p_YW->GetLocaleString(2437, "YOUR TCP/IP ADDRESS") , v278);
             }
             else
@@ -4391,12 +4378,12 @@ void UserData::GameShellUiHandleInput()
         if ( netSelMode == NETSCREEN_ENTER_NAME )
         {
             v393.width = dword_5A50B6;
-            v393.ypos = 3 * (word_5A50C2 + p_ypaworld->font_default_h);
+            v393.ypos = 3 * (word_5A50C2 + p_YW->font_default_h);
         }
         else
         {
             v393.width = dword_5A50B6 * 0.8;
-            v393.ypos = 14 * (word_5A50C2 + p_ypaworld->font_default_h);
+            v393.ypos = 14 * (word_5A50C2 + p_YW->font_default_h);
         }
 
         network_button->button_func76(&v393);
@@ -4414,11 +4401,11 @@ void UserData::GameShellUiHandleInput()
 
     if ( netSelMode == 2 )
     {
-        v393.ypos = 4 * (word_5A50C2 + p_ypaworld->font_default_h);
+        v393.ypos = 4 * (word_5A50C2 + p_YW->font_default_h);
     }
     else
     {
-        v393.ypos = (word_5A50C2 + p_ypaworld->font_default_h) * 15.2;
+        v393.ypos = (word_5A50C2 + p_YW->font_default_h) * 15.2;
     }
 
     network_button->button_func76(&v393);
@@ -4440,7 +4427,7 @@ void UserData::GameShellUiHandleInput()
 
     case NETSCREEN_SESSION_SELECT:
     {
-        if ( p_ypaworld->windp->GetProvType() != 4 || !modemAskSession )
+        if ( p_YW->windp->GetProvType() != 4 || !modemAskSession )
         {
             network_button->button_func71(1202, p_YW->GetLocaleString(402, "NEW"));
 
@@ -4457,11 +4444,11 @@ void UserData::GameShellUiHandleInput()
         windp_getNameMsg msg;
         msg.id = 0;
 
-        if ( p_ypaworld->windp->GetSessionName(&msg) )
+        if ( p_YW->windp->GetSessionName(&msg) )
         {
             network_button->button_func71(1201, p_YW->GetLocaleString(406, "JOIN"));
         }
-        else if ( p_ypaworld->windp->GetProvType() != 4 || modemAskSession )
+        else if ( p_YW->windp->GetProvType() != 4 || modemAskSession )
         {
             v410.butID = 1201;
             network_button->button_func67(&v410);
@@ -4549,25 +4536,25 @@ void UserData::GameShellUiHandleInput()
             else
             {
                 v410.butID = 1206;
-                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 2 )
+                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 2 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
 
                 v410.butID = 1207;
-                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 0x40 )
+                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 0x40 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
 
                 v410.butID = 1208;
-                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 8 )
+                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 8 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
 
                 v410.butID = 1209;
-                if ( p_ypaworld->LevelNet->mapInfos[ netLevelID ].fractions_mask & 0x10 )
+                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 0x10 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
@@ -4610,21 +4597,21 @@ void UserData::GameShellUiHandleInput()
             field_1CD7 = 1;
             field_1CE8 = 1;
 
-            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 2) )
+            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 2) )
                 v298 = 1;
 
-            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 0x40) )
+            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 0x40) )
                 v298 |= 2;
 
-            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 8) )
+            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 8) )
                 v298 |= 4;
 
-            if ( !(p_ypaworld->LevelNet->mapInfos[netLevelID].fractions_mask & 0x10) )
+            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 0x10) )
                 v298 |= 8;
 
             int v373, v374, v375, v376;
 
-            while ( p_ypaworld->windp->GetPlayerData(&v368) )
+            while ( p_YW->windp->GetPlayerData(&v368) )
             {
                 int v299;
 
@@ -4688,7 +4675,7 @@ void UserData::GameShellUiHandleInput()
         v368.mode = 0;
         v368.ID = 0;
 
-        while ( p_ypaworld->windp->GetPlayerData(&v368) )
+        while ( p_YW->windp->GetPlayerData(&v368) )
         {
             if ( !(v368.flags & 1) )
             {
@@ -4770,7 +4757,7 @@ void UserData::GameShellUiHandleInput()
         {
             int v370;
 
-            int v304 = p_ypaworld->windp->GetPlayerData(&v368);
+            int v304 = p_YW->windp->GetPlayerData(&v368);
 
             std::string name = " ";
             int btID;
@@ -4843,7 +4830,7 @@ void UserData::GameShellUiHandleInput()
                 default:
                     break;
                 }
-                if ( players2[v368.ID].trbl && ((glblTime / 300) & 1) )
+                if ( players2[v368.ID].trbl && ((GlobalTime / 300) & 1) )
                     v339[1] = 'f';
 
                 if ( players2[v368.ID].rdyStart )

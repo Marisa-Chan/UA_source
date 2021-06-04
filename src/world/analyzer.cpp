@@ -224,7 +224,7 @@ bool GameAnalyzer::IsSpottedTek(NC_STACK_ypaworld *world)
     
 bool GameAnalyzer::IsSpottedBeamGate(NC_STACK_ypaworld *world)
 {
-    for (const MapGate &gate : world->_levelInfo->Gates)
+    for (const MapGate &gate : world->_levelInfo.Gates)
     {
         if ( gate.PCell->w_type == 5 )
         {
@@ -238,7 +238,7 @@ bool GameAnalyzer::IsSpottedBeamGate(NC_STACK_ypaworld *world)
 
 bool GameAnalyzer::IsSpottedKeySector(NC_STACK_ypaworld *world)
 {
-    for (const MapGate &gate : world->_levelInfo->Gates)
+    for (const MapGate &gate : world->_levelInfo.Gates)
     {
         for( const MapKeySector &ks : gate.KeySectors )
         {
@@ -326,7 +326,7 @@ bool GameAnalyzer::IsFewOwnSectors(NC_STACK_ypaworld *world)
 
 bool GameAnalyzer::IsReadyToBeam(NC_STACK_ypaworld *world)
 {
-    for (const MapGate &gate : world->_levelInfo->Gates)
+    for (const MapGate &gate : world->_levelInfo.Gates)
     {
         if ( gate.PCell->w_type == 6 )
         {

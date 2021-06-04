@@ -16,10 +16,10 @@ namespace Parsers
 
 bool UserParser::ReadUserNameFile(const std::string &filename)
 {
-    if ( !_o.GameShell->user_name.empty() )
+    if ( !_o.GameShell->UserName.empty() )
         return false;
 
-    std::string buf = fmt::sprintf("save:%s/%s", _o.GameShell->user_name, filename);
+    std::string buf = fmt::sprintf("save:%s/%s", _o.GameShell->UserName, filename);
     FSMgr::FileHandle *signFile = uaOpenFile(buf, "r");
 
     if ( !signFile )
@@ -80,25 +80,25 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
             int plid = std::stol(val, NULL, 0);
             if ( stok.GetNext(&val) )
             {
-                _o.playerstatus[plid].destroyed = std::stol(val, NULL, 0);
+                _o.playerstatus[plid].DestroyedUnits = std::stol(val, NULL, 0);
                 if ( stok.GetNext(&val) )
                 {
-                    _o.playerstatus[plid].destroyedByUser = std::stol(val, NULL, 0);
+                    _o.playerstatus[plid].DestroyedByUser = std::stol(val, NULL, 0);
                     if ( stok.GetNext(&val) )
                     {
-                        _o.playerstatus[plid].elapsedTime = std::stol(val, NULL, 0);
+                        _o.playerstatus[plid].ElapsedTime = std::stol(val, NULL, 0);
                         if ( stok.GetNext(&val) )
                         {
-                            _o.playerstatus[plid].sectorsTaked = std::stol(val, NULL, 0);
+                            _o.playerstatus[plid].SectorsTaked = std::stol(val, NULL, 0);
                             if ( stok.GetNext(&val) )
                             {
-                                _o.playerstatus[plid].score = std::stol(val, NULL, 0);
+                                _o.playerstatus[plid].Score = std::stol(val, NULL, 0);
                                 if ( stok.GetNext(&val) )
                                 {
-                                    _o.playerstatus[plid].power = std::stol(val, NULL, 0);
+                                    _o.playerstatus[plid].Power = std::stol(val, NULL, 0);
                                     if ( stok.GetNext(&val) )
                                     {
-                                        _o.playerstatus[plid].upgrades = std::stol(val, NULL, 0);
+                                        _o.playerstatus[plid].Upgrades = std::stol(val, NULL, 0);
                                     }
                                 }
                             }
@@ -114,27 +114,27 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         std::string val;
         if ( stok.GetNext(&val) )
         {
-            _o._levelInfo->JodieFoster[0] = std::stol(val, NULL, 0);
+            _o._levelInfo.JodieFoster[0] = std::stol(val, NULL, 0);
             if ( stok.GetNext(&val) )
             {
-                _o._levelInfo->JodieFoster[1] = std::stol(val, NULL, 0);
+                _o._levelInfo.JodieFoster[1] = std::stol(val, NULL, 0);
                 if ( stok.GetNext(&val) )
                 {
-                    _o._levelInfo->JodieFoster[2] = std::stol(val, NULL, 0);
+                    _o._levelInfo.JodieFoster[2] = std::stol(val, NULL, 0);
                     if ( stok.GetNext(&val) )
                     {
-                        _o._levelInfo->JodieFoster[3] = std::stol(val, NULL, 0);
+                        _o._levelInfo.JodieFoster[3] = std::stol(val, NULL, 0);
                         if ( stok.GetNext(&val) )
                         {
-                            _o._levelInfo->JodieFoster[4] = std::stol(val, NULL, 0);
+                            _o._levelInfo.JodieFoster[4] = std::stol(val, NULL, 0);
                             if ( stok.GetNext(&val) )
                             {
-                                _o._levelInfo->JodieFoster[5] = std::stol(val, NULL, 0);
+                                _o._levelInfo.JodieFoster[5] = std::stol(val, NULL, 0);
                                 if ( stok.GetNext(&val) )
                                 {
-                                    _o._levelInfo->JodieFoster[6] = std::stol(val, NULL, 0);
+                                    _o._levelInfo.JodieFoster[6] = std::stol(val, NULL, 0);
                                     if ( stok.GetNext(&val) )
-                                        _o._levelInfo->JodieFoster[7] = std::stol(val, NULL, 0);
+                                        _o._levelInfo.JodieFoster[7] = std::stol(val, NULL, 0);
                                 }
                             }
                         }
@@ -1662,96 +1662,96 @@ int MovieParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
 
 BkgParser::BkgParser(NC_STACK_ypaworld *o)
-: _o(*(o->LevelNet))
+: _o(o->_mapRegions)
 {}
 
 int BkgParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
     if ( !StriCmp(p1, "end") )
     {
-        _o.bg_n++;
+        _o.NumSets++;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
     if ( !StriCmp(p1, "background_map") )
     {
-        _o.background_map[_o.bg_n].map_name = p2;
+        _o.background_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "rollover_map") )
     {
-        _o.rollover_map[_o.bg_n].map_name = p2;
+        _o.rollover_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "finished_map") )
     {
-        _o.finished_map[_o.bg_n].map_name = p2;
+        _o.finished_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "enabled_map") )
     {
-        _o.enabled_map[_o.bg_n].map_name = p2;
+        _o.enabled_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "mask_map") )
     {
-        _o.mask_map[_o.bg_n].map_name = p2;
+        _o.mask_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "tut_background_map") )
     {
-        _o.tut_background_map[_o.bg_n].map_name = p2;
+        _o.tut_background_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "tut_rollover_map") )
     {
-        _o.tut_rollover_map[_o.bg_n].map_name = p2;
+        _o.tut_rollover_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "tut_mask_map") )
     {
-        _o.tut_mask_map[_o.bg_n].map_name = p2;
+        _o.tut_mask_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "menu_map") )
     {
-        _o.menu_map[_o.bg_n].map_name = p2;
+        _o.menu_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "input_map") )
     {
-        _o.input_map[_o.bg_n].map_name = p2;
+        _o.input_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "settings_map") )
     {
-        _o.settings_map[_o.bg_n].map_name = p2;
+        _o.settings_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "network_map") )
     {
-        _o.network_map[_o.bg_n].map_name = p2;
+        _o.network_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "locale_map") )
     {
-        _o.locale_map[_o.bg_n].map_name = p2;
+        _o.locale_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "save_map") )
     {
-        _o.save_map[_o.bg_n].map_name = p2;
+        _o.save_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "about_map") )
     {
-        _o.about_map[_o.bg_n].map_name = p2;
+        _o.about_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "help_map") )
     {
-        _o.help_map[_o.bg_n].map_name = p2;
+        _o.help_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "brief_map") )
     {
-        _o.brief_map[_o.bg_n].map_name = p2;
+        _o.brief_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "debrief_map") )
     {
-        _o.debrief_map[_o.bg_n].map_name = p2;
+        _o.debrief_map[_o.NumSets].PicName = p2;
     }
     else if ( !StriCmp(p1, "size_x") )
     {
-        _o.background_map[_o.bg_n].size_x = std::stol(p2, NULL, 0);
+        _o.background_map[_o.NumSets].Size.x = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "size_y") )
     {
-        _o.background_map[_o.bg_n].size_y = std::stol(p2, NULL, 0);
+        _o.background_map[_o.NumSets].Size.y = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2056,7 +2056,7 @@ int SuperItemParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 }
 
 
-void MapSizesParser::ParseSizes(ScriptParser::Parser &parser, int *outx, int *outy)
+Common::Point MapSizesParser::ParseSizes(ScriptParser::Parser &parser)
 {
     std::string tmp;
     parser.ReadLine(&tmp);
@@ -2067,16 +2067,13 @@ void MapSizesParser::ParseSizes(ScriptParser::Parser &parser, int *outx, int *ou
     stok.GetNext(&sX);
     stok.GetNext(&sY);
 
-    int x = std::stol(sX, NULL, 0);
-    int y = std::stol(sY, NULL, 0);
+    int32_t x = std::stol(sX, NULL, 0);
+    int32_t y = std::stol(sY, NULL, 0);
 
     for(int i = 0; i < y; i++)
         parser.ReadLine(&tmp);
 
-    if (outx)
-        (*outx) = x;
-    if (outy)
-        (*outy) = y;
+    return Common::Point(x, y);
 }
 
 
@@ -2087,16 +2084,11 @@ int MapSizesParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 
     if ( !StriCmp(p1, "typ_map") )
     {
-        int y_size;
-        int x_size;
-
-        ParseSizes(parser, &x_size, &y_size);
-        _m.MapXSize = x_size;
-        _m.MapYSize = y_size;
+        _m.MapSize = ParseSizes(parser);
     }
     else if ( !StriCmp(p1, "own_map") || !StriCmp(p1, "hgt_map") || !StriCmp(p1, "blg_map") )
     {
-        ParseSizes(parser, NULL, NULL);
+        ParseSizes(parser);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2109,10 +2101,10 @@ bool LevelDataParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_level") )
         return false;
 
-    _o._levelInfo->MapName = "<NO NAME>";
-    _o._levelInfo->MovieStr.clear();
-    _o._levelInfo->MovieWinStr.clear();
-    _o._levelInfo->MovieLoseStr.clear();
+    _o._levelInfo.MapName = "<NO NAME>";
+    _o._levelInfo.MovieStr.clear();
+    _o._levelInfo.MovieWinStr.clear();
+    _o._levelInfo.MovieLoseStr.clear();
     _o.vehicle_sector_ratio_1 = 0;
     _o.unit_limit_1 = _o.unit_limit;
     _o.unit_limit_type_1 = _o.unit_limit_type;
@@ -2131,37 +2123,37 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         std::string title_lang = std::string("title_") + _o._localeName;
 
         if ( !StriCmp(p1, "title_default") || !StriCmp(p1, title_lang) )
-                _o._levelInfo->MapName = p2;
+                _o._levelInfo.MapName = p2;
     }
     else if ( !StriCmp(p1, "set") )
     {
         _m.SetID = std::stol(p2, NULL, 0);
-        _m.Flags |= 1;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_SET;
     }
     else if ( !StriCmp(p1, "sky") )
     {
         _m.SkyStr = p2;
-        _m.Flags |= 2;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_SKY;
     }
     else if ( !StriCmp(p1, "typ") )
     {
         _m.TypStr = p2;
-        _m.Flags |= 4;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_TYP;
     }
     else if ( !StriCmp(p1, "own") )
     {
         _m.OwnStr = p2;
-        _m.Flags |= 8;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_OWN;
     }
     else if ( !StriCmp(p1, "hgt") )
     {
         _m.HgtStr = p2;
-        _m.Flags |= 0x10;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_HGT;
     }
     else if ( !StriCmp(p1, "blg") )
     {
         _m.BlgStr = p2;
-        _m.Flags |= 0x20;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_BLG;
     }
     else if ( !StriCmp(p1, "palette") )
     {
@@ -2207,33 +2199,33 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "ambiencetrack") )
     {
-        _o._levelInfo->MusicTrackMinDelay = 0;
-        _o._levelInfo->MusicTrackMaxDelay = 0;
+        _o._levelInfo.MusicTrackMinDelay = 0;
+        _o._levelInfo.MusicTrackMaxDelay = 0;
 
         Stok stok(p2, " \t_\n");
         std::string tmp;
         stok.GetNext(&tmp);
-        _o._levelInfo->MusicTrack = std::stol(tmp, NULL, 0);
+        _o._levelInfo.MusicTrack = std::stol(tmp, NULL, 0);
 
         if ( stok.GetNext(&tmp) )
         {
-            _o._levelInfo->MusicTrackMinDelay = std::stol(tmp, NULL, 0);
+            _o._levelInfo.MusicTrackMinDelay = std::stol(tmp, NULL, 0);
 
             if ( stok.GetNext(&tmp) )
-                _o._levelInfo->MusicTrackMaxDelay = std::stol(tmp, NULL, 0);
+                _o._levelInfo.MusicTrackMaxDelay = std::stol(tmp, NULL, 0);
         }
     }
     else if ( !StriCmp(p1, "movie") )
     {
-        _o._levelInfo->MovieStr = p2;
+        _o._levelInfo.MovieStr = p2;
     }
     else if ( !StriCmp(p1, "win_movie") )
     {
-        _o._levelInfo->MovieWinStr = p2;
+        _o._levelInfo.MovieWinStr = p2;
     }
     else if ( !StriCmp(p1, "lose_movie") )
     {
-        _o._levelInfo->MovieLoseStr = p2;
+        _o._levelInfo.MovieLoseStr = p2;
     }
     else if ( !StriCmp(p1, "event_loop") )
     {
@@ -2295,7 +2287,7 @@ int MapRobosParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         if (_m.Robos.size() == 1) //If it's first host station - save owner for brief
             _m.PlayerOwner = _r->Owner;
 
-        _m.Flags |= 0x40;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_END;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
@@ -2671,8 +2663,8 @@ bool LevelGatesParser::IsScope(ScriptParser::Parser &parser, const std::string &
     if ( StriCmp(word, "begin_gate") )
         return false;
 
-    _o._levelInfo->Gates.emplace_back();
-    _g = &_o._levelInfo->Gates.back();
+    _o._levelInfo.Gates.emplace_back();
+    _g = &_o._levelInfo.Gates.back();
     _g->MbStatus = 0;
     return true;
 }
@@ -2683,25 +2675,25 @@ int LevelGatesParser::Handle(ScriptParser::Parser &parser, const std::string &p1
     {
         if ( !_g->ClosedBldID )
         {
-            ypa_log_out("Gate init: gate[%d] no closed building defined!\n", _o._levelInfo->Gates.size() - 1);
+            ypa_log_out("Gate init: gate[%d] no closed building defined!\n", _o._levelInfo.Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_g->OpenBldID )
         {
-            ypa_log_out("Gate init: gate[%d] no opened building defined!\n", _o._levelInfo->Gates.size() - 1);
+            ypa_log_out("Gate init: gate[%d] no opened building defined!\n", _o._levelInfo.Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( _g->SecX == 0 || _g->SecY == 0)
         {
-            ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o._levelInfo->Gates.size() - 1);
+            ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o._levelInfo.Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_g->PassToLevels.size() )
         {
-            ypa_log_out("Gate init: gate[%d] no target levels defined!\n", _o._levelInfo->Gates.size() - 1);
+            ypa_log_out("Gate init: gate[%d] no target levels defined!\n", _o._levelInfo.Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
@@ -2783,15 +2775,15 @@ int LevelMbMapParser::Handle(ScriptParser::Parser &parser, const std::string &p1
 
     if ( !StriCmp(p1, "name") )
     {
-        _d->Name = p2;
+        _d->PicName = p2;
     }
     else if ( !StriCmp(p1, "size_x") )
     {
-        _d->SizeX = std::stol(p2, NULL, 0);
+        _d->Size.x = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "size_y") )
     {
-        _d->SizeY = std::stol(p2, NULL, 0);
+        _d->Size.y = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3003,15 +2995,15 @@ int LevelDebMapParser::Handle(ScriptParser::Parser &parser, const std::string &p
 
     if ( !StriCmp(p1, "name") )
     {
-        _d->Name = p2;
+        _d->PicName = p2;
     }
     else if ( !StriCmp(p1, "size_x") )
     {
-        _d->SizeX = std::stol(p2, NULL, 0);
+        _d->Size.x = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "size_y") )
     {
-        _d->SizeY = std::stol(p2, NULL, 0);
+        _d->Size.y = std::stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3025,12 +3017,12 @@ bool LevelSuperItemsParser::IsScope(ScriptParser::Parser &parser, const std::str
     if ( StriCmp(word, "begin_item") )
         return false;
 
-    _o._levelInfo->SuperItems.emplace_back();
+    _o._levelInfo.SuperItems.emplace_back();
     
-    _s = &_o._levelInfo->SuperItems.back();
+    _s = &_o._levelInfo.SuperItems.back();
     _s->Type = 0;
     _s->TimerValue = 60000; //1hour
-    _s->State = 0;
+    _s->State = TMapSuperItem::STATE_INACTIVE;
     _s->MbStatus = 0;
     return true;
 }
@@ -3039,33 +3031,33 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( _s->SecX == 0 || _s->SecY == 0)
+        if ( _s->Sector.x == 0 || _s->Sector.y == 0)
         {
-            ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o._levelInfo->SuperItems.size() - 1);
+            ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o._levelInfo.SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_s->InactiveBldID )
         {
-            ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", _o._levelInfo->SuperItems.size() - 1);
+            ypa_log_out("Super item #%d: no <inactive_bp> defined!\n", _o._levelInfo.SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_s->ActiveBldID )
         {
-            ypa_log_out("Super item #%d: no <active_bp> defined!\n", _o._levelInfo->SuperItems.size() - 1);
+            ypa_log_out("Super item #%d: no <active_bp> defined!\n", _o._levelInfo.SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
         if ( !_s->TriggerBldID )
         {
-            ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", _o._levelInfo->SuperItems.size() - 1);
+            ypa_log_out("Super item #%d: no <trigger_bp> defined!\n", _o._levelInfo.SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _s->Type != 1 && _s->Type != 2 )
+        if ( _s->Type != TMapSuperItem::TYPE_BOMB && _s->Type != TMapSuperItem::TYPE_WAVE )
         {
-            ypa_log_out("Super item #%d: no valid <type> defined!\n", _o._levelInfo->SuperItems.size() - 1);
+            ypa_log_out("Super item #%d: no valid <type> defined!\n", _o._levelInfo.SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
@@ -3074,11 +3066,11 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
 
     if ( !StriCmp(p1, "sec_x") )
     {
-        _s->SecX = std::stol(p2, NULL, 0);
+        _s->Sector.x = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _s->SecY = std::stol(p2, NULL, 0);
+        _s->Sector.y = std::stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "inactive_bp") )
     {
@@ -3208,10 +3200,9 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.typ_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.MapXSize = _o.typ_map->Width();
-        _m.MapYSize = _o.typ_map->Height();
+        _m.MapSize = _o.typ_map->Size();
 
-        _m.Flags |= 4;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_TYP;
     }
     else if ( !StriCmp(p1, "own_map") )
     {
@@ -3219,7 +3210,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.own_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.Flags |= 8;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_OWN;
     }
     else if ( !StriCmp(p1, "hgt_map") )
     {
@@ -3227,7 +3218,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.hgt_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.Flags |= 0x10;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_HGT;
     }
     else if ( !StriCmp(p1, "blg_map") )
     {
@@ -3235,7 +3226,7 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
         if ( !_o.blg_map )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.Flags |= 0x20;
+        _m.ReadedPartsBits |= TLevelDescription::BIT_BLG;
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3368,7 +3359,7 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 const GFX::GfxMode &mode = pModes.at(i);
                 if (mode.w == w && mode.h == h)
                 {
-                    _o.GameShell->field_FBE = i;
+                    _o.GameShell->_gfxModeIndex = i;
                     _o._gfxMode = mode;
                     _o._gfxWindowed = win;
                     _o.GameShell->_gfxMode = mode;
@@ -3461,8 +3452,8 @@ int LevelStatusParser::Handle(ScriptParser::Parser &parser, const std::string &p
 
     if ( !StriCmp(p1, "status") )
     {
-        if ( _o.LevelNet->mapInfos[_levelId].field_0 )
-            _o.LevelNet->mapInfos[_levelId].field_0 = std::stoi(p2);
+        if ( _o._mapRegions.MapRegions[_levelId].Status != TMapRegionInfo::STATUS_NONE )
+            _o._mapRegions.MapRegions[_levelId].Status = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3474,7 +3465,7 @@ bool BuddyParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
 { 
     if (!StriCmp(word, "begin_buddy"))
     {
-        _o._levelInfo->Buddies.emplace_back();
+        _o._levelInfo.Buddies.emplace_back();
         return true;
     }
     return false;
@@ -3489,15 +3480,15 @@ int BuddyParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
     if ( !StriCmp(p1, "commandid") )
     {
-        _o._levelInfo->Buddies.back().CommandID = std::stoi(p2);
+        _o._levelInfo.Buddies.back().CommandID = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "type") )
     {
-        _o._levelInfo->Buddies.back().Type = std::stoi(p2);
+        _o._levelInfo.Buddies.back().Type = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        _o._levelInfo->Buddies.back().Energy = std::stoi(p2);
+        _o._levelInfo.Buddies.back().Energy = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3568,7 +3559,7 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
         _o.GameShell->prev_lang = _o.GameShell->default_lang_dll;
 
-        if ( !_o.ypaworld_func175(_o.GameShell) )
+        if ( !_o.ReloadLanguage() )
         {
             ypa_log_out("Unable to set new language\n");
         }

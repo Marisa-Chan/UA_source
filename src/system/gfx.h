@@ -401,7 +401,6 @@ public:
     virtual bool AllocTexture(ResBitmap *arg);
     virtual void FreeTexture(ResBitmap *arg);
     virtual void display_func271(IDVPair *stak);
-    virtual void display_func272(IDVPair *);
     virtual void SaveScreenshot(const std::string & screenName);
     virtual void windd_func320(IDVPair *);
     virtual void windd_func321(IDVPair *);

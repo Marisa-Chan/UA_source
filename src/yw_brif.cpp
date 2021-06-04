@@ -10,7 +10,7 @@
 
 extern GuiList stru_5C91D0;
 
-void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     SFXEngine::SFXe.StopMusicTrack();
     if ( yw->GameShell->missiontrack )
@@ -20,7 +20,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState 
     }
 
     brf->StartTime = brf->CurrTime;
-    brf->Stage = 5;
+    brf->Stage = TBriefengScreen::STAGE_SCALING;
 
     brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
 
@@ -58,14 +58,14 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState 
     brf->PreTextTime = brf->CurrTime;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int v5 = brf->CurrTime - brf->StartTime;
 
     if ( v5 >= 600 )
     {
         brf->MapBlitParams.float14 = brf->MapBlitEnd;
-        brf->Stage = 6;
+        brf->Stage = TBriefengScreen::STAGE_SCALEEND;
 
         GFX::displ_arg263 v4;
         v4.bitm = yw->pointers__bitm[5];
@@ -170,7 +170,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
     return 1;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     brf->AddObjectsFlag = true;
     brf->TextTime = brf->CurrTime;
@@ -178,7 +178,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState 
 
     if ( yw_MBLoadSet(yw, brf->Desc.SetID) )
     {
-        brf->Stage = 7;
+        brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
 
         GFX::displ_arg263 v6;
         v6.bitm = yw->pointers__bitm[0];
@@ -188,25 +188,25 @@ void ypaworld_func158__sub4__sub1__sub4__sub5(NC_STACK_ypaworld *yw, InputState 
     }
     else
     {
-        brf->Stage = 1;
+        brf->Stage = TBriefengScreen::STAGE_PLAYLEVEL;
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
 
     brf->ActiveElementID = -1;
     brf->ElementsCount = 1;
 
-    brf->Stage = 8;
+    brf->Stage = TBriefengScreen::STAGE_PLAYER_RN;
     brf->StartTime = brf->CurrTime;
 
     brf->SelectedObjID = -1;
     brf->ObjDescription = yw->GetLocaleString(150, "YOU ARE HERE");
 }
 
-void NC_STACK_ypaworld::BriefingSetObject(const BriefObject &obj, bool doAdd)
+void NC_STACK_ypaworld::BriefingSetObject(const TBriefObject &obj, bool doAdd)
 {
     brief.ViewingObjectStartTime = brief.CurrTime;
     
@@ -219,27 +219,27 @@ void NC_STACK_ypaworld::BriefingSetObject(const BriefObject &obj, bool doAdd)
         SFXEngine::SFXe.startSound(&GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     if ( brf->CurrTime - brf->StartTime >= 2500 )
     {
-        brf->Stage = 9;
+        brf->Stage = TBriefengScreen::STAGE_PLAYER_END;
     }
     else if ( brf->ActiveElementID )
     {
         MapRobo &robo = brf->Desc.Robos[0];
 
         brf->ActiveElementID = 0;
-        yw->BriefingSetObject( BriefObject(BriefObject::TYPE_VEHICLE, robo.VhclID, robo.Pos.x, robo.Pos.z,
+        yw->BriefingSetObject( TBriefObject(TBriefObject::TYPE_VEHICLE, robo.VhclID, robo.Pos.x, robo.Pos.z,
                                            26, 128 + robo.Owner, 25,
                                            yw->GetLocaleString(robo.VhclID + 1200, yw->VhclProtos[ robo.VhclID ].name)), 
                                brf->AddObjectsFlag);
     }
 }
 
-void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
 
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
@@ -247,32 +247,32 @@ void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengSc
 
     brf->ObjDescription = yw->GetLocaleString(151, "PRIMARY TARGETS");
 
-    for (const MapGate &gate : yw->_levelInfo->Gates )
+    for (const MapGate &gate : yw->_levelInfo.Gates )
     {
         if ( gate.MbStatus != 1 )
             brf->ElementsCount += gate.KeySectors.size();
     }
 
     if ( brf->ElementsCount == 0 )
-        brf->Stage = 12;
+        brf->Stage = TBriefengScreen::STAGE_KEYS_END;
     else
-        brf->Stage = 11;
+        brf->Stage = TBriefengScreen::STAGE_KEYS_RN;
 }
 
-void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int elmID = (brf->CurrTime - brf->StartTime) / 2500;
 
     if ( elmID >= brf->ElementsCount )
     {
-        brf->Stage = 12;
+        brf->Stage = TBriefengScreen::STAGE_KEYS_END;
     }
     else if ( elmID != brf->ActiveElementID )
     {
         brf->ActiveElementID = elmID;
         int ksID = 0; /* Current key sector */
 
-        for ( const MapGate &gate : yw->_levelInfo->Gates )
+        for ( const MapGate &gate : yw->_levelInfo.Gates )
         {
             if ( gate.MbStatus != 1 )
             {
@@ -284,7 +284,7 @@ void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengS
 
                         uint8_t v12 = (*yw->typ_map)(ks.x, ks.y);
 
-                        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v12, ps.x, ps.y, 26, 146, 25, 
+                        yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_SECTOR, v12, ps.x, ps.y, 26, 146, 25, 
                                                             yw->GetLocaleString(157, "KEY SECTOR")),
                                                brf->AddObjectsFlag);
                     }
@@ -296,9 +296,9 @@ void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, InputState *inpt, BriefengS
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
 
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
@@ -311,15 +311,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, InputState
             brf->ElementsCount++;
     }
 
-    brf->Stage = (brf->ElementsCount == 0) + 14;
+    brf->Stage = (brf->ElementsCount == 0) + TBriefengScreen::STAGE_TECH_RN;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int elmID = (brf->CurrTime - brf->StartTime) / 2500;
     if ( elmID >= brf->ElementsCount )
     {
-        brf->Stage = 15;
+        brf->Stage = TBriefengScreen::STAGE_TECH_END;
     }
     else if ( elmID != brf->ActiveElementID )
     {
@@ -344,15 +344,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, InputState
         
         int v13 = yw->BuildProtos[pGem->BuildingID].SecType;
 
-        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, ps.x, ps.y, 26, 144, 25, 
+        yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_SECTOR, v13, ps.x, ps.y, 26, 144, 25, 
                                             yw->GetLocaleString(158, "TECH UPGRADE") ),  
                                brf->AddObjectsFlag);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
 
     brf->ActiveElementID = -1;
     brf->StartTime = brf->CurrTime;
@@ -366,16 +366,16 @@ void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, InputState
             brf->ElementsCount++;
     }
 
-    brf->Stage = 17 + (brf->ElementsCount == 0);
+    brf->Stage = TBriefengScreen::STAGE_ENMHS_RN + (brf->ElementsCount == 0);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int v5 = (brf->CurrTime - brf->StartTime) / 2500;
 
     if ( v5 >= brf->ElementsCount )
     {
-        brf->Stage = 18;
+        brf->Stage = TBriefengScreen::STAGE_ENMHS_END;
     }
     else if ( v5 != brf->ActiveElementID )
     {
@@ -397,15 +397,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, InputState
             }
         }
 
-        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, robo->VhclID, robo->Pos.x, robo->Pos.z, 26, 128 + robo->Owner, 25, 
+        yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_VEHICLE, robo->VhclID, robo->Pos.x, robo->Pos.z, 26, 128 + robo->Owner, 25, 
                                             yw->GetLocaleString(robo->VhclID + 1200, yw->VhclProtos[ robo->VhclID ].name) ),  
                                brf->AddObjectsFlag);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
 
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
@@ -419,15 +419,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, InputState
             brf->ElementsCount++;
     }
 
-    brf->Stage = (brf->ElementsCount == 0) + 20;
+    brf->Stage = (brf->ElementsCount == 0) + TBriefengScreen::STAGE_ENMFRC_RN;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int v5 = (brf->CurrTime - brf->StartTime) / 2500;
     if ( v5 >= brf->ElementsCount )
     {
-        brf->Stage = 21;
+        brf->Stage = TBriefengScreen::STAGE_ENMFRC_END;
     }
     else if ( v5 != brf->ActiveElementID )
     {
@@ -452,20 +452,20 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, InputState
         {
             std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetLocaleString(squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name));
 
-            yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 36, 
+            yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 36, 
                                                 nm ),  
                                    brf->AddObjectsFlag);
         }
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
     
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
-    brf->Stage = 23;
+    brf->Stage = TBriefengScreen::STAGE_BUDDY_RN;
     brf->ObjDescription = "FRIENDLY SUPPORT FORCES";
 
     brf->StartTime = brf->CurrTime;
@@ -476,15 +476,15 @@ void ypaworld_func158__sub4__sub1__sub4__sub16(NC_STACK_ypaworld *yw, InputState
             brf->ElementsCount++;
     }
 
-    brf->Stage = (brf->ElementsCount == 0) + 23;
+    brf->Stage = (brf->ElementsCount == 0) + TBriefengScreen::STAGE_BUDDY_RN;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int v5 = (brf->CurrTime - brf->StartTime) / 2500;
     if ( v5 >= brf->ElementsCount )
     {
-        brf->Stage = 24;
+        brf->Stage = TBriefengScreen::STAGE_BUDDY_END;
     }
     else if ( v5 != brf->ActiveElementID )
     {
@@ -510,49 +510,49 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, InputState
         {
             std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetLocaleString(squad->VhclID + 1200, yw->VhclProtos[squad->VhclID].name));
 
-            yw->BriefingSetObject( BriefObject( BriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 25, 
+            yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 25, 
                                                 nm ),  
                                    brf->AddObjectsFlag);
         }
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
-    brf->ViewingObject = BriefObject();
+    brf->ViewingObject = TBriefObject();
 
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
 
-    brf->Stage = 26;
+    brf->Stage = TBriefengScreen::STAGE_GATE_RN;
     brf->StartTime = brf->CurrTime;
 
     brf->ObjDescription = yw->GetLocaleString(156, "TRANSPORTER GATES");
 
-    for ( const MapGate &gate : yw->_levelInfo->Gates )
+    for ( const MapGate &gate : yw->_levelInfo.Gates )
     {
         if (gate.MbStatus != 1)
             brf->ElementsCount++;
     }
 
-    brf->Stage = (brf->ElementsCount == 0) + 26;
+    brf->Stage = (brf->ElementsCount == 0) + TBriefengScreen::STAGE_GATE_RN;
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int elmID = (brf->CurrTime - brf->StartTime) / 2500;
 
     if ( elmID >= brf->ElementsCount )
     {
-        brf->Stage = 27;
+        brf->Stage = TBriefengScreen::STAGE_GATE_END;
     }
     else if ( elmID != brf->ActiveElementID )
     {
         brf->ActiveElementID = elmID;
 
-        const MapGate *pGate = &yw->_levelInfo->Gates[0];
+        const MapGate *pGate = &yw->_levelInfo.Gates[0];
 
-        for ( const MapGate &gate : yw->_levelInfo->Gates )
+        for ( const MapGate &gate : yw->_levelInfo.Gates )
         {
             pGate = &gate;
 
@@ -569,13 +569,13 @@ void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, InputState
 
         int v13 = yw->BuildProtos[ pGate->ClosedBldID ].SecType;
 
-        yw->BriefingSetObject( BriefObject( BriefObject::TYPE_SECTOR, v13, ps.x, ps.y, 26, 145, 25, 
+        yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_SECTOR, v13, ps.x, ps.y, 26, 145, 25, 
                                             yw->GetLocaleString(159, "BEAM GATE") ),  
                                brf->AddObjectsFlag);
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState *inpt, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState *inpt, TBriefengScreen *brf)
 {
     int v20 = -1;
 
@@ -586,12 +586,12 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState
 
         for (size_t i = 0; i < brf->Objects.size(); i++)
         {
-            BriefObject &obj = brf->Objects[i];
+            TBriefObject &obj = brf->Objects[i];
 
-            float v13 = obj.X / yw->_mapLength.x * brf->MapBlitEnd.Width() + brf->MapBlitEnd.left;
+            float v13 = obj.Pos.x / yw->_mapLength.x * brf->MapBlitEnd.Width() + brf->MapBlitEnd.left;
             float v15 = (v13 + 1.0) * 0.5;
 
-            float v14 = -obj.Y / yw->_mapLength.y * brf->MapBlitEnd.Height() + brf->MapBlitEnd.top;
+            float v14 = -obj.Pos.y / yw->_mapLength.y * brf->MapBlitEnd.Height() + brf->MapBlitEnd.top;
             float v23 = 0.5 * (v14 + 1.0);
 
             if ( v15 + -0.025 < mx && v15 + 0.025 > mx && v23 + -0.025 < my && v23 + 0.025 > my )
@@ -602,7 +602,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState
         {
             if ( v20 != brf->SelectedObjID && brf->SelectedObjID != -1 )
             {
-                brf->ViewingObject = BriefObject();
+                brf->ViewingObject = TBriefObject();
                 brf->SelectedObjID = -1;
             }
         }
@@ -614,7 +614,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, InputState
     }
 }
 
-void sub_4ED434(NC_STACK_ypaworld *yw, BriefengScreen *brf)
+void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 {
     char *v3 = stru_5C91D0.itemBlock;
 
@@ -684,7 +684,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 
             if ( stru_5C91D0.firstShownEntries <= v37 && stru_5C91D0.firstShownEntries + stru_5C91D0.shownEntries > v37	&& v12 > 0 )
             {
-                FontUA::set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+                FontUA::set_txtColor(&v3, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
                 v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, line.c_str(), v12, 4);
 
@@ -724,7 +724,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, BriefengScreen *brf)
         {
             v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
 
-            FontUA::set_txtColor(&v3, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+            FontUA::set_txtColor(&v3, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
             v3 = FontUA::TextRelWidthItem(yw->tiles[16], v3, v21, v24, 4);
 
@@ -735,14 +735,14 @@ void sub_4ED434(NC_STACK_ypaworld *yw, BriefengScreen *brf)
     FontUA::set_end(&v3);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 {
     char v27[1024];
     char *pos = v27;
 
     int v39 = -1;
 
-    for ( BriefObject &obj : brf->Objects)
+    for ( TBriefObject &obj : brf->Objects)
     {
         int v29 = 1;
 
@@ -764,8 +764,8 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, BriefengScr
 
             int v38 = yw->tiles[(int)obj.TileSet]->h / 2;
 
-            float v15 = brf->MapBlitEnd.Width() * (obj.X / yw->_mapLength.x) + brf->MapBlitEnd.left;
-            float v14 = brf->MapBlitEnd.Height() * (-obj.Y / yw->_mapLength.y) + brf->MapBlitEnd.top;
+            float v15 = brf->MapBlitEnd.Width() * (obj.Pos.x / yw->_mapLength.x) + brf->MapBlitEnd.left;
+            float v14 = brf->MapBlitEnd.Height() * (-obj.Pos.y / yw->_mapLength.y) + brf->MapBlitEnd.top;
 
             FontUA::set_center_xpos(&pos, (v15 * (yw->screen_width / 2)) - v38);
             FontUA::set_center_ypos(&pos, (v14 * (yw->screen_height / 2)) - v38);
@@ -800,9 +800,9 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     FontUA::select_tileset(&pos, 16);
     FontUA::set_center_xpos(&pos, v35);
     FontUA::set_center_ypos(&pos, 4 + v37);
-    FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
+    FontUA::set_txtColor(&pos, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
-    const std::string v7 = yw->GetLocaleString(yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName);
+    const std::string v7 = yw->GetLocaleString(yw->_levelInfo.LevelID + 1800, yw->_levelInfo.MapName);
 
     pos = FontUA::FormateCenteredSkipableItem(yw->tiles[16], pos, v7, v34 - v35);
     FontUA::set_end(&pos);
@@ -814,13 +814,13 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     GFX::Engine.raster_func209(&v32);
 }
 
-void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *inpt, int obj_id, char a4)
+void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *inpt, int obj_id, char a4)
 {
     if ( brf->ViewingObject.ObjType )
     {
         int v8 = brf->CurrTime - brf->ViewingObjectStartTime;
-        float v26 = -brf->ViewingObject.Y / yw->_mapLength.y;
-        float v27 = brf->ViewingObject.X / yw->_mapLength.x;
+        float v26 = -brf->ViewingObject.Pos.y / yw->_mapLength.y;
+        float v27 = brf->ViewingObject.Pos.x / yw->_mapLength.x;
 
         if ( v8 > 50 )
         {
@@ -877,7 +877,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
                 FontUA::select_tileset(&pos, 16);
                 FontUA::set_center_xpos(&pos, xpos);
                 FontUA::set_center_ypos(&pos, ypos);
-                FontUA::set_txtColor(&pos, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
+                FontUA::set_txtColor(&pos, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
                 pos = FontUA::TextRelWidthItem(yw->tiles[16], pos, brf->ViewingObject.Title.c_str(), v13, 16);
 
@@ -895,62 +895,62 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, BriefengScr
 
 void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, InputState *inpt)
 {
-    BriefengScreen *brf = &yw->brief;
+    TBriefengScreen *brf = &yw->brief;
 
-    if ( yw->brief.Stage == 28 )
+    if ( yw->brief.Stage == TBriefengScreen::STAGE_MOVIE )
     {
         yw->sub_4491A0(yw->brief.MovieStr);
-        brf->Stage = 4;
+        brf->Stage = TBriefengScreen::STAGE_LOADED;
     }
     else
     {
 
         switch ( yw->brief.TimerStatus )
         {
-        case 0:
+        case TBriefengScreen::TIMER_NORMAL:
             yw->brief.CurrTime += inpt->Period;
             break;
 
-        case 1:
+        case TBriefengScreen::TIMER_STOP:
             inpt->Period = 1;
             yw->brief.CurrTime += inpt->Period;
             break;
 
-        case 2:
+        case TBriefengScreen::TIMER_FAST:
             yw->brief.CurrTime += inpt->Period;
 
             if ( yw->brief.Stage == 30 )
             {
                 yw->brief.Stage = 31;
-                yw->brief.TimerStatus = 0;
+                yw->brief.TimerStatus = TBriefengScreen::TIMER_NORMAL;
             }
             else if ( yw->brief.ActiveElementID == -1 )
             {
-                yw->brief.TimerStatus = 0;
+                yw->brief.TimerStatus = TBriefengScreen::TIMER_NORMAL;
             }
             else
             {
                 switch (yw->brief.Stage)
                 {
-                case 8:
-                case 11:
-                case 14:
-                case 17:
-                case 20:
-                case 23:
-                case 26:
+                case TBriefengScreen::STAGE_PLAYER_RN:
+                case TBriefengScreen::STAGE_KEYS_RN:
+                case TBriefengScreen::STAGE_TECH_RN:
+                case TBriefengScreen::STAGE_ENMHS_RN:
+                case TBriefengScreen::STAGE_ENMFRC_RN:
+                case TBriefengScreen::STAGE_BUDDY_RN:
+                case TBriefengScreen::STAGE_GATE_RN:
                     yw->brief.CurrTime = 2500 * (yw->brief.ActiveElementID + 1) + yw->brief.StartTime;
                     break;
                 default:
                     break;
                 }
 
-                yw->brief.TimerStatus = 0;
+                yw->brief.TimerStatus = TBriefengScreen::TIMER_NORMAL;
             }
             break;
 
-        case 3:
-            yw->brief.TimerStatus = 0;
+        case TBriefengScreen::TIMER_RESTART:
+            yw->brief.TimerStatus = TBriefengScreen::TIMER_NORMAL;
             yw->brief.Stage = 29;
             break;
 
@@ -960,85 +960,85 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, In
 
         switch ( yw->brief.Stage )
         {
-        case 4:
+        case TBriefengScreen::STAGE_LOADED:
             ypaworld_func158__sub4__sub1__sub4__sub3(yw, inpt, brf);
             break;
-        case 5:
+        case TBriefengScreen::STAGE_SCALING:
             ypaworld_func158__sub4__sub1__sub4__sub4(yw, inpt, brf);
             break;
-        case 6:
+        case TBriefengScreen::STAGE_SCALEEND:
             ypaworld_func158__sub4__sub1__sub4__sub5(yw, inpt, brf);
             break;
-        case 7:
+        case TBriefengScreen::STAGE_PLAYER_ST:
             ypaworld_func158__sub4__sub1__sub4__sub6(yw, inpt, brf);
             break;
-        case 8:
+        case TBriefengScreen::STAGE_PLAYER_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub7(yw, inpt, brf);
             break;
-        case 9:
-            yw->brief.Stage = 25;
+        case TBriefengScreen::STAGE_PLAYER_END:
+            yw->brief.Stage = TBriefengScreen::STAGE_GATE_ST;
             break;
-        case 10:
+        case TBriefengScreen::STAGE_KEYS_ST:
             yw_BriefSetupKeySectors(yw, inpt, brf);
             break;
-        case 11:
+        case TBriefengScreen::STAGE_KEYS_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 yw_BriefUpdateKeySectors(yw, inpt, brf);
             break;
-        case 12:
-            yw->brief.Stage = 13;
+        case TBriefengScreen::STAGE_KEYS_END:
+            yw->brief.Stage = TBriefengScreen::STAGE_TECH_ST;
             break;
-        case 13:
+        case TBriefengScreen::STAGE_TECH_ST:
             ypaworld_func158__sub4__sub1__sub4__sub10(yw, inpt, brf);
             break;
-        case 14:
+        case TBriefengScreen::STAGE_TECH_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub11(yw, inpt, brf);
             break;
-        case 15:
-            yw->brief.Stage = 16;
+        case TBriefengScreen::STAGE_TECH_END:
+            yw->brief.Stage = TBriefengScreen::STAGE_ENMHS_ST;
             break;
-        case 16:
+        case TBriefengScreen::STAGE_ENMHS_ST:
             ypaworld_func158__sub4__sub1__sub4__sub12(yw, inpt, brf);
             break;
-        case 17:
+        case TBriefengScreen::STAGE_ENMHS_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub13(yw, inpt, brf);
             break;
-        case 18:
-            yw->brief.Stage = 19;
+        case TBriefengScreen::STAGE_ENMHS_END:
+            yw->brief.Stage = TBriefengScreen::STAGE_ENMFRC_ST;
             break;
-        case 19:
+        case TBriefengScreen::STAGE_ENMFRC_ST:
             ypaworld_func158__sub4__sub1__sub4__sub14(yw, inpt, brf);
             break;
-        case 20:
+        case TBriefengScreen::STAGE_ENMFRC_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub15(yw, inpt, brf);
             break;
-        case 21:
-            yw->brief.Stage = 22;
+        case TBriefengScreen::STAGE_ENMFRC_END:
+            yw->brief.Stage = TBriefengScreen::STAGE_BUDDY_ST;
             break;
-        case 22:
+        case TBriefengScreen::STAGE_BUDDY_ST:
             ypaworld_func158__sub4__sub1__sub4__sub16(yw, inpt, brf);
             break;
-        case 23:
+        case TBriefengScreen::STAGE_BUDDY_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub17(yw, inpt, brf);
             break;
-        case 24:
+        case TBriefengScreen::STAGE_BUDDY_END:
             yw->brief.AddObjectsFlag = false;
-            yw->brief.Stage = 7;
+            yw->brief.Stage = TBriefengScreen::STAGE_PLAYER_ST;
             break;
-        case 25:
+        case TBriefengScreen::STAGE_GATE_ST:
             ypaworld_func158__sub4__sub1__sub4__sub18(yw, inpt, brf);
             break;
-        case 26:
+        case TBriefengScreen::STAGE_GATE_RN:
             if ( yw->brief.SelectedObjID == -1 )
                 ypaworld_func158__sub4__sub1__sub4__sub19(yw, inpt, brf);
             break;
-        case 27:
-            yw->brief.Stage = 10;
+        case TBriefengScreen::STAGE_GATE_END:
+            yw->brief.Stage = TBriefengScreen::STAGE_KEYS_ST;
             break;
         default:
             break;
@@ -1110,10 +1110,10 @@ void sub_449310(Common::FRect *rect)
         rect->bottom = -1.0;
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState *struc, TBriefengScreen *brf)
 {
     brf->StartTime = brf->CurrTime;
-    brf->Stage = 5;
+    brf->Stage = TBriefengScreen::STAGE_SCALING;
 
     brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
 
@@ -1141,8 +1141,8 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
     int v8, v9;
     if ( brf->ZoomFromGate )
     {
-        v8 = yw->_levelInfo->Gates[ yw->_levelInfo->GateCompleteID ].SecX;
-        v9 = yw->_levelInfo->Gates[ yw->_levelInfo->GateCompleteID ].SecY;
+        v8 = yw->_levelInfo.Gates[ yw->_levelInfo.GateCompleteID ].SecX;
+        v9 = yw->_levelInfo.Gates[ yw->_levelInfo.GateCompleteID ].SecY;
     }
     else
     {
@@ -1172,7 +1172,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
         SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 11);
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, InputState *struc, TBriefengScreen *brf)
 {
     int v4 = brf->CurrTime - brf->StartTime;
 
@@ -1180,7 +1180,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, InputState 
     {
         brf->MapBlitParams.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         brf->MapBlitParams.float14 = brf->MapBlitEnd;
-        brf->Stage = 6;
+        brf->Stage = TBriefengScreen::STAGE_SCALEEND;
     }
     else
     {
@@ -1193,10 +1193,10 @@ void ypaworld_func158__sub4__sub1__sub6__sub1(NC_STACK_ypaworld *yw, InputState 
     }
 }
 
-void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, InputState *struc, TBriefengScreen *brf)
 {
     brf->StartTime = brf->CurrTime;
-    brf->Stage = 8;
+    brf->Stage = TBriefengScreen::STAGE_PLAYER_RN;
     brf->LastFrameTimeStamp = 0;
 
     brf->OwnMap = *yw->copyof_ownermap;
@@ -1205,13 +1205,12 @@ void ypaworld_func158__sub4__sub1__sub6__sub2(NC_STACK_ypaworld *yw, InputState 
     for (int i = 0; i < 8; i++)
         brf->StatsGlobal[i] = yw->playerstatus[i];
 
-    for (auto &x : brf->StatsIngame)
-        x.clear();
-
+    brf->StatsIngame.fill(World::TPlayerStatus());
+    
     brf->Upgrades.clear();
 }
 
-void yw_DebriefConqSector(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::Conq *arg, uint32_t time, uint32_t stime)
+void yw_DebriefConqSector(NC_STACK_ypaworld *yw, TBriefengScreen *brf, World::History::Conq *arg, uint32_t time, uint32_t stime)
 {
     uint32_t dtime = time - stime;
 
@@ -1253,7 +1252,7 @@ void yw_DebriefConqSector(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
     }
 }
 
-void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::VhclKill *arg, uint32_t time, uint32_t stime)
+void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, TBriefengScreen *brf, World::History::VhclKill *arg, uint32_t time, uint32_t stime)
 {
     int own = arg->owners & 7;
     uint32_t dtime = time - stime;
@@ -1300,7 +1299,7 @@ void yw_DebriefVhclKill(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::Histo
     }
 }
 
-void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::VhclCreate *arg, int time, int stime)
+void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, TBriefengScreen *brf, World::History::VhclCreate *arg, int time, int stime)
 {
     int dtime = time - stime;
     if ( dtime < 45000 )
@@ -1328,7 +1327,7 @@ void yw_DebriefVhclCreate(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::His
     }
 }
 
-void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, BriefengScreen *brf, World::History::Upgrade *arg)
+void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, TBriefengScreen *brf, World::History::Upgrade *arg)
 {
     if ( !yw->field_727c || arg->owner == yw->field_7280 )
     {
@@ -1346,7 +1345,7 @@ void yw_DebriefAddTechUpgrade(NC_STACK_ypaworld *yw, BriefengScreen *brf, World:
     }
 }
 
-void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
+void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 {
     float v3 = brf->MapBlitEnd.Width() / (float)yw->_mapSize.x;
     float v4 = brf->MapBlitEnd.Height() / (float)yw->_mapSize.y;
@@ -1398,13 +1397,13 @@ void yw_DebriefRenderSectorsOwners(NC_STACK_ypaworld *yw, BriefengScreen *brf)
 }
 
 
-void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, BriefengScreen *brf)
+void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 {
     int v14 = (yw->screen_width / 2) * -0.934375;
     int v13 = (yw->screen_width / 2) * 0.03125;
     int v16 = (yw->screen_height / 2) * -0.9333333333333333;
 
-    const std::string v7 = yw->GetLocaleString(yw->_levelInfo->LevelID + 1800, yw->_levelInfo->MapName);
+    const std::string v7 = yw->GetLocaleString(yw->_levelInfo.LevelID + 1800, yw->_levelInfo.MapName);
 
     char cmdBuff[264];
     char *cur = cmdBuff;
@@ -1413,7 +1412,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, Brief
     FontUA::set_center_xpos(&cur, v14);
     FontUA::set_center_ypos(&cur, v16);
 
-    FontUA::set_txtColor(&cur, yw->iniColors[66].r, yw->iniColors[66].g, yw->iniColors[66].b);
+    FontUA::set_txtColor(&cur, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
     cur = FontUA::FormateCenteredSkipableItem(yw->tiles[16], cur, v7, v13 - v14);
 
@@ -1426,11 +1425,11 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, Brief
     GFX::Engine.raster_func209(&arg209);
 }
 
-char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
+char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
 
-    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
     FontUA::ColumnItem elms[3];
 
     elms[0].txt = yw->GetLocaleString(2450, "KILLS");
@@ -1465,7 +1464,7 @@ int sub_4EF2A8(const void *a1, const void *a2)
     return ((debrif_t1 *)a2)->status - ((debrif_t1 *)a1)->status;
 }
 
-char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
+char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
     int a2 = 0;
@@ -1474,10 +1473,10 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
 
     for (int i = 0; i < 8; i++)
     {
-        if ( (1 << i) & yw->_levelInfo->OwnerMask )
+        if ( (1 << i) & yw->_levelInfo.OwnerMask )
         {
             v28[a2].owner = i;
-            v28[a2].status = brf->StatsIngame[i].destroyed;
+            v28[a2].status = brf->StatsIngame[i].DestroyedUnits;
             a2++;
         }
     }
@@ -1530,7 +1529,7 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
 
         FontUA::ColumnItem elms[3];
 
-        FontUA::set_txtColor(&cur, yw->iniColors[clr_id].r, yw->iniColors[clr_id].g, yw->iniColors[clr_id].b);
+        FontUA::set_txtColor(&cur, yw->_iniColors[clr_id].r, yw->_iniColors[clr_id].g, yw->_iniColors[clr_id].b);
 
         elms[0].txt = who;
         elms[0].spaceChar = 32;
@@ -1541,7 +1540,7 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
         elms[0].flags = 36;
 
         if ( yw->field_727c || v28[i].owner == yw->playerOwner )
-            elms[1].txt = fmt::sprintf("%d", brf->StatsIngame[ v28[i].owner ].destroyedByUser);
+            elms[1].txt = fmt::sprintf("%d", brf->StatsIngame[ v28[i].owner ].DestroyedByUser);
         else
             elms[1].txt = "-";
         elms[1].spaceChar = 32;
@@ -1551,7 +1550,7 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
         elms[1].flags = 36;
         elms[1].width = a4 * 0.3;
 
-        elms[2].txt = fmt::sprintf("%d", brf->StatsIngame[ v28[i].owner ].destroyed);
+        elms[2].txt = fmt::sprintf("%d", brf->StatsIngame[ v28[i].owner ].DestroyedUnits);
         elms[2].width = a4 * 0.3;
         elms[2].fontID = 15;
         elms[2].spaceChar = 32;
@@ -1571,7 +1570,7 @@ char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
 {
     char *cur = in;
 
-    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
     FontUA::ColumnItem elm;
 
@@ -1586,7 +1585,7 @@ char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
     return FormateColumnItem(yw, cur, 1, &elm);
 }
 
-char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
+char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
 
@@ -1601,10 +1600,10 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
 
         for (int i = 0; i < 8; i++)
         {
-            if ( (1 << i) & yw->_levelInfo->OwnerMask )
+            if ( (1 << i) & yw->_levelInfo.OwnerMask )
             {
                 v32[a2].owner = i;
-                v32[a2].status = brf->StatsIngame[i].score;
+                v32[a2].status = brf->StatsIngame[i].Score;
                 a2++;
             }
         }
@@ -1654,7 +1653,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
                 break;
             }
 
-            FontUA::set_txtColor(&cur, yw->iniColors[clr_id].r, yw->iniColors[clr_id].g, yw->iniColors[clr_id].b);
+            FontUA::set_txtColor(&cur, yw->_iniColors[clr_id].r, yw->_iniColors[clr_id].g, yw->_iniColors[clr_id].b);
 
             FontUA::ColumnItem a4a[2];
 
@@ -1666,7 +1665,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
             a4a[0].flags = 36;
             a4a[0].width = a4 * 0.5;
 
-            a4a[1].txt = fmt::sprintf("%d", brf->StatsIngame[ v32[i].owner ].score);
+            a4a[1].txt = fmt::sprintf("%d", brf->StatsIngame[ v32[i].owner ].Score);
             a4a[1].width = a4 * 0.5;
             a4a[1].fontID = 15;
             a4a[1].spaceChar = 32;
@@ -1681,7 +1680,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
     }
     else
     {
-        FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+        FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
         FontUA::ColumnItem v35[2];
 
@@ -1693,7 +1692,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
         v35[0].fontID = 15;
         v35[0].flags = 36;
 
-        v35[1].txt = fmt::sprintf("%d", brf->StatsIngame[yw->playerOwner].score);
+        v35[1].txt = fmt::sprintf("%d", brf->StatsIngame[yw->playerOwner].Score);
         v35[1].fontID = 15;
         v35[1].spaceChar = 32;
         v35[1].prefixChar = 0;
@@ -1715,7 +1714,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
 
         
 
-        v35[1].txt = fmt::sprintf("%d", brf->StatsIngame[yw->playerOwner].score + brf->StatsGlobal[yw->playerOwner].score);
+        v35[1].txt = fmt::sprintf("%d", brf->StatsIngame[yw->playerOwner].Score + brf->StatsGlobal[yw->playerOwner].Score);
         v35[1].fontID = 15;
         v35[1].spaceChar = 32;
         v35[1].postfixChar = 0;
@@ -1730,10 +1729,10 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in,
     return cur;
 }
 
-char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in, int a4)
+char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
 {
     char *cur = in;
-    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
     if ( yw->field_727c )
     {
@@ -1792,7 +1791,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
         a4a[0].postfixChar = 0;
         a4a[0].fontID = 15;
 
-        v19 = (brf->LastFrameTimeStamp + brf->StatsGlobal[yw->playerOwner].elapsedTime) / 1024;
+        v19 = (brf->LastFrameTimeStamp + brf->StatsGlobal[yw->playerOwner].ElapsedTime) / 1024;
 
         a4a[1].txt = fmt::sprintf("%02d:%02d:%02d", v19 / 60 / 60, v19 / 60 % 60, v19 % 60);
         a4a[1].fontID = 15;
@@ -1810,7 +1809,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
     return cur;
 }
 
-char * yw_DebriefScoreTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in)
+char * yw_DebriefScoreTable(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in)
 {
     char *cur = in;
 
@@ -1835,7 +1834,7 @@ char * yw_DebriefScoreTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in
     return yw_DebriefRenderTime(yw, brf, cur, v14);
 }
 
-char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, const World::History::Upgrade &upg, char *in, int a5)
+char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, const World::History::Upgrade &upg, char *in, int a5)
 {
     char *cur = in;
 
@@ -2001,7 +2000,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, BriefengScreen *brf, con
     return cur;
 }
 
-char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, char *in)
+char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in)
 {
     char *cur = in;
 
@@ -2009,7 +2008,7 @@ char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, c
     FontUA::set_center_xpos(&cur, ((yw->screen_width / 2) * -0.9875) );
     FontUA::set_center_ypos(&cur, ((yw->screen_height / 2) * 0.35) );
 
-    FontUA::set_txtColor(&cur, yw->iniColors[67].r, yw->iniColors[67].g, yw->iniColors[67].b);
+    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
     for ( const auto &upg : brf->Upgrades )
         cur = yw_DebriefTechUpgradeLine(yw, brf, upg, cur,  (yw->screen_width / 2) * 0.984375 );
@@ -2017,7 +2016,7 @@ char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, BriefengScreen *brf, c
     return cur;
 }
 
-void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, BriefengScreen *brf)
+void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, TBriefengScreen *brf)
 {
     char cmdbuf[2048];
     char *cur = cmdbuf;
@@ -2043,7 +2042,7 @@ void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, BriefengScre
     
     
 
-    if ( brf->Stage == 8 )
+    if ( brf->Stage == TBriefengScreen::STAGE_PLAYER_RN )
     {
         bool readLoop = true;
         auto reader = yw->_history.GetReader();
@@ -2123,7 +2122,7 @@ void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, BriefengScre
 
         if ( !v26 )
         {
-            brf->Stage = 9;
+            brf->Stage = TBriefengScreen::STAGE_PLAYER_END;
             if ( yw->field_727c )
             {
                 for (int i = 0; i < 8; i ++)
@@ -2137,32 +2136,32 @@ void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, InputState *struc, BriefengScre
 
 void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
 {
-    BriefengScreen *brf = &yw->brief;
+    TBriefengScreen *brf = &yw->brief;
 
     if ( yw->_history.Size() ) //FIXME
     {
-        if ( yw->brief.TimerStatus == 0 )
+        if ( yw->brief.TimerStatus == TBriefengScreen::TIMER_NORMAL )
         {
-            if ( brf->Stage == 8 )
+            if ( brf->Stage == TBriefengScreen::STAGE_PLAYER_RN )
             {
                 brf->CurrTime += 60 * inpt->Period;
             }
-            else if ( brf->Stage != 9 )
+            else if ( brf->Stage != TBriefengScreen::STAGE_PLAYER_END )
             {
                 brf->CurrTime += inpt->Period;
             }
         }
-        else if ( yw->brief.TimerStatus == 1 )
+        else if ( yw->brief.TimerStatus == TBriefengScreen::TIMER_STOP )
         {
             inpt->Period = 1;
         }
-        else if ( yw->brief.TimerStatus == 3 )
+        else if ( yw->brief.TimerStatus == TBriefengScreen::TIMER_RESTART )
         {
-            brf->TimerStatus = 0;
-            brf->Stage = 7;
+            brf->TimerStatus = TBriefengScreen::TIMER_NORMAL;
+            brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
         }
 
-        if ( brf->Stage != 4 )
+        if ( brf->Stage != TBriefengScreen::STAGE_LOADED )
         {
             if ( brf->BriefingMapImg )
             {
@@ -2180,24 +2179,24 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
 
         switch ( brf->Stage )
         {
-        case 4:
+        case TBriefengScreen::STAGE_LOADED:
             ypaworld_func158__sub4__sub1__sub6__sub0(yw, inpt, brf);
             break;
 
-        case 5:
+        case TBriefengScreen::STAGE_SCALING:
             ypaworld_func158__sub4__sub1__sub6__sub1(yw, inpt, brf);
             break;
 
-        case 6:
-            brf->Stage = 7;
+        case TBriefengScreen::STAGE_SCALEEND:
+            brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
             break;
 
-        case 7:
+        case TBriefengScreen::STAGE_PLAYER_ST:
             ypaworld_func158__sub4__sub1__sub6__sub2(yw, inpt, brf);
             break;
 
-        case 8:
-        case 9:
+        case TBriefengScreen::STAGE_PLAYER_RN:
+        case TBriefengScreen::STAGE_PLAYER_END:
             yw_DebriefRunDebrief(yw, inpt, brf);
             break;
 
@@ -2207,6 +2206,6 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
     }
     else
     {
-        yw->brief.Stage = 2;
+        yw->brief.Stage = TBriefengScreen::STAGE_CANCEL;
     }
 }

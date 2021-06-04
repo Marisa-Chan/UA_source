@@ -473,21 +473,19 @@ public:
     };
 
 public:
-    int _gameShellInited;
-    int field_0x4;
-    int field_0x8;
-    int field_0xc;
-    int field_0x10;
-    std::string user_name;
+    bool HasInited = false;
+    bool IgnoreScoreSaving = false;
+    bool GameIsOver = false; // If it's opened after complete game
+    bool ResetInputPeriod = false;
+    std::string UserName;
 
-    NC_STACK_ypaworld *p_YW;
-    NC_STACK_ypaworld *p_ypaworld;
-    InputState *_input;
-    int frameTime;
-    uint32_t glblTime;
+    NC_STACK_ypaworld *p_YW = NULL;
+    InputState *Input = NULL;
+    int32_t DTime     = 0;
+    uint32_t GlobalTime = 0;
 
-    int envMode;
-    bool envModeChanged;
+    int EnvMode = 0; 
+    bool EnvModeChanged = false;
 
     bool returnToTitle;
 
@@ -518,7 +516,7 @@ public:
 
     GFX::GfxMode _gfxMode;
     
-    int field_FBE;
+    int _gfxModeIndex;
     GuiList d3d_listvw;
     char win3d_guid[100];
     char win3d_name[300];
@@ -1039,33 +1037,32 @@ struct MapGem
     operator Common::Point() const { return Common::Point(SecX, SecY); };
 };
 
-struct dbmapProto
+struct TBkgPicInfo
 {
-    int16_t SizeX;
-    int16_t SizeY;
-    std::string Name;
-
-    dbmapProto()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        SizeX = 0;
-        SizeY = 0;
-        Name.clear();
-    }
+    Common::Point Size;
+    std::string PicName;
 };
 
-struct LevelDesc
+struct TLevelDescription
 {
-    int Flags;
-    int SetID;
-    int EventLoopID;
-    int MapXSize;
-    int MapYSize;
-    bool SlowConnection;
+    enum BITS
+    {
+        BIT_SET = (1 << 0),
+        BIT_SKY = (1 << 1),
+        BIT_TYP = (1 << 2),
+        BIT_OWN = (1 << 3),
+        BIT_HGT = (1 << 4),
+        BIT_BLG = (1 << 5),
+        BIT_END = (1 << 6),
+        
+        BIT_ALL = (BIT_SET | BIT_SKY | BIT_TYP | BIT_OWN | BIT_HGT | BIT_BLG | BIT_END),
+    };
+    
+    uint32_t ReadedPartsBits = 0;
+    int32_t SetID = 0;
+    int32_t EventLoopID = 0;
+    Common::Point MapSize;
+    bool SlowConnection = false;
     std::string SkyStr;
     std::string TypStr;
     std::string OwnStr;
@@ -1074,201 +1071,98 @@ struct LevelDesc
     std::vector<MapRobo> Robos;
     std::vector<MapSquad> Squads;
     std::array<std::string, 8> Palettes;
-    std::vector<dbmapProto> Mbmaps;
-    std::vector<dbmapProto> Dbmaps;
+    std::vector<TBkgPicInfo> Mbmaps;
+    std::vector<TBkgPicInfo> Dbmaps;
 
-    int PlayerOwner; //Firsts host station owner, for correct XP brief
-
-    LevelDesc()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        Flags = 0;
-        SetID = 0;
-        EventLoopID = 0;
-        MapXSize = 0;
-        MapYSize = 0;
-        SlowConnection = false;
-
-        SkyStr.clear();
-        TypStr.clear();
-        OwnStr.clear();
-        HgtStr.clear();
-        BlgStr.clear();
-
-        Robos.clear();
-
-        Squads.clear();
-
-        for (std::string &p : Palettes)
-            p.clear();
-
-        Mbmaps.clear();
-        Dbmaps.clear();
-    }
+    int32_t PlayerOwner = 0; //Firsts host station owner, for correct XP brief
+    
+    bool IsOk() const { return (ReadedPartsBits & BIT_ALL) == BIT_ALL; }
 };
 
-struct MapBuddy
+struct TMapBuddy
 {
-    int CommandID;
-    int16_t Type;
-    int Energy;
+    int32_t CommandID = 0;
+    int16_t Type = 0;
+    int32_t Energy = 0;
 
-    MapBuddy()
-    {
-    	clear();
-    }
+    TMapBuddy() = default;
     
-    MapBuddy( int cmdID, int16_t tp, int e)
+    TMapBuddy( int32_t cmdID, int16_t tp, int32_t e)
     : CommandID(cmdID), Type(tp), Energy(e)
     {}
-
-    void clear()
-    {
-    	CommandID = 0;
-        Type = 0;
-        Energy = 0;
-    }
 };
 
-struct MapSuperItem
+struct TMapSuperItem
 {
-    int Type;
-    int State;
-    int TimerValue;
-    cellArea *PCell;
-    int SecX;
-    int SecY;
-    int InactiveBldID;
-    int ActiveBldID;
-    int TriggerBldID;
+    enum
+    {
+        TYPE_BOMB = 1,
+        TYPE_WAVE = 2,
+        
+        STATE_INACTIVE = 0,
+        STATE_ACTIVE   = 1,
+        STATE_STOPPED  = 2,
+        STATE_TRIGGED  = 3,
+    };
+    
+    int Type = 0;
+    int State = STATE_INACTIVE;
+    int32_t TimerValue = 0;
+    cellArea *PCell = NULL;
+    Common::Point Sector;
+    int32_t InactiveBldID = 0;
+    int32_t ActiveBldID = 0;
+    int32_t TriggerBldID = 0;
     std::vector<MapKeySector> KeySectors;
-    int MbStatus;
-    int ActiveTime;
-    int TriggerTime;
-    int ActivateOwner;
-    int CountDown;
-    int LastTenSec;
-    int LastSec;
-    int CurrentRadius; // Current radius of the propagation wave
-    int LastRadius;
-
-    MapSuperItem()
-    {
-    	clear();
-    }
-
-    void clear()
-    {
-    	Type = 0;
-        State = 0;
-        TimerValue = 0;
-        PCell = NULL;
-        SecX = 0;
-        SecY = 0;
-        InactiveBldID = 0;
-        ActiveBldID = 0;
-        TriggerBldID = 0;
-
-        KeySectors.clear();
-
-        MbStatus = 0;
-        ActiveTime = 0;
-        TriggerTime = 0;
-        ActivateOwner = 0;
-        CountDown = 0;
-        LastTenSec = 0;
-        LastSec = 0;
-        CurrentRadius = 0;
-        LastRadius = 0;
-    }
+    int MbStatus = 0;
+    int32_t ActiveTime = 0;
+    int32_t TriggerTime = 0;
+    uint32_t ActivateOwner = 0;
+    int32_t CountDown = 0;
+    int32_t LastTenSec = 0;
+    int32_t LastSec = 0;
+    int32_t CurrentRadius = 0; // Current radius of the propagation wave
+    int32_t LastRadius = 0;
 };
 
-struct LevelInfo
+struct TLevelInfo
 {
+    enum STATE
+    {
+        STATE_PLAYING    = 0,
+        STATE_COMPLETED  = 1,
+        STATE_ABORTED    = 2,
+        STATE_PAUSED     = 3,
+        STATE_RESTART    = 4,
+        STATE_BRIEFING   = 5,
+        STATE_SAVE       = 6,
+        STATE_LOAD       = 7,
+        STATE_MENU       = 8,
+        STATE_DEBRIEFING = 9,
+    };
+    
     std::string MapName;
-    int State;
-    int LevelID;
-    int Mode;      // 0 - Normal, 1 - Replay
-    int GateCompleteID; // Index of gate through level complete
-    int MusicTrack;
-    int MusicTrackMinDelay;
-    int MusicTrackMaxDelay;
-    int OwnerMask;
-    int UserMask;
+    int State = STATE_PLAYING;
+    int LevelID = 0;
+    int Mode = 0;      // 0 - Normal, 1 - Replay
+    int GateCompleteID = 0; // Index of gate through level complete
+    int MusicTrack = 0;
+    int MusicTrackMinDelay = 0;
+    int MusicTrackMaxDelay = 0;
+    int OwnerMask = 0;
+    int UserMask = 0;
 
-    std::vector<MapBuddy> Buddies;
+    std::vector<TMapBuddy> Buddies;
     std::vector<MapGate> Gates;
-    std::vector<MapSuperItem> SuperItems;
-    std::array<int, 8> JodieFoster;
+    std::vector<TMapSuperItem> SuperItems;
+    std::array<int, 8> JodieFoster = {{0}};
     std::string MovieStr;
     std::string MovieWinStr;
     std::string MovieLoseStr;
-
-    LevelInfo()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        MapName.clear();
-        State = 0;
-        LevelID = 0;
-        Mode = 0;
-        GateCompleteID = 0;
-        MusicTrack = 0;
-        MusicTrackMinDelay = 0;
-        MusicTrackMaxDelay = 0;
-        OwnerMask = 0;
-        UserMask = 0;
-
-        Buddies.clear();
-
-        Gates.clear();
-
-        SuperItems.clear();
-
-        for ( auto &x : JodieFoster )
-            x = 0;
-
-        MovieStr.clear();
-        MovieWinStr.clear();
-        MovieLoseStr.clear();
-    }
-
-    void operator=(const LevelInfo &b)
-    {
-        MapName = b.MapName;
-        State = b.State;
-        LevelID = b.LevelID;
-        Mode = b.Mode;
-        GateCompleteID = b.GateCompleteID;
-        MusicTrack = b.MusicTrack;
-        MusicTrackMinDelay = b.MusicTrackMinDelay;
-        MusicTrackMaxDelay = b.MusicTrackMaxDelay;
-        OwnerMask = b.OwnerMask;
-        UserMask = b.UserMask;
-
-        Buddies = b.Buddies;
-
-        Gates = b.Gates;
-
-        SuperItems = b.SuperItems;
-
-        JodieFoster = b.JodieFoster;
-
-        MovieStr = b.MovieStr;
-        MovieWinStr = b.MovieWinStr;
-        MovieLoseStr = b.MovieLoseStr;
-    }
 };
 
 
-struct BriefObject
+struct TBriefObject
 {
     enum
     {
@@ -1277,8 +1171,7 @@ struct BriefObject
         TYPE_VEHICLE = 2
     };
     
-    float X = 0.0;
-    float Y = 0.0;
+    vec2d Pos;
     int16_t ObjType = TYPE_NONE;
     int16_t ID = 0;
     int TileSet = 0;
@@ -1286,32 +1179,56 @@ struct BriefObject
     int Color = 0;
     std::string Title;
     
-    NC_STACK_base::Instance *VP = NULL;
+    NC_STACK_base::Instance *VP = NULL; // Must not be copied
 
-    BriefObject()
-    {}
+    TBriefObject() = default;
     
-    BriefObject(int16_t tp, int16_t oid, float sx, float sy, int tset, int tid, int clr, const std::string &ttl)
+    TBriefObject(int16_t tp, int16_t oid, float sx, float sy, int tset, int tid, int clr, const std::string &ttl)
     {
-    	X = sx;
-        Y = sy;
+    	Pos.x = sx;
+        Pos.y = sy;
         ObjType = tp;
         ID = oid;
         TileSet = tset;
         TileID = tid;
         Color = clr;
         Title = ttl;
-        VP = NULL;
     }
     
-    ~BriefObject()
+    TBriefObject(const TBriefObject &b)
+    {
+    	Pos = b.Pos;
+        ObjType = b.ObjType;
+        ID = b.ID;
+        TileSet = b.TileSet;
+        TileID = b.TileID;
+        Color = b.Color;
+        Title = b.Title;
+    }
+    
+    TBriefObject(TBriefObject &&b) = default; //Pointer also can be moved
+    
+    ~TBriefObject()
     {
         Common::DeleteAndNull(&VP);
     }
-
-    bool operator==(const BriefObject &b) const
+    
+    TBriefObject &operator=(const TBriefObject &b)
     {
-        return ObjType == b.ObjType && ID == b.ID && X == b.X && Y == b.Y;
+        Pos = b.Pos;
+        ObjType = b.ObjType;
+        ID = b.ID;
+        TileSet = b.TileSet;
+        TileID = b.TileID;
+        Color = b.Color;
+        Title = b.Title;
+        Common::DeleteAndNull(&VP);
+        return *this;
+    }
+
+    bool operator==(const TBriefObject &b) const
+    {
+        return ObjType == b.ObjType && ID == b.ID && Pos == b.Pos;
     }
     
     operator bool() const
@@ -1320,19 +1237,67 @@ struct BriefObject
     }
 };
 
-struct BriefengScreen
+struct TBriefengScreen
 {
-    NC_STACK_bitmap *MbmapImg;
-    NC_STACK_bitmap *BriefingMapImg;
-    LevelDesc Desc;
-    int Stage;
-    int TimerStatus;
-    int ActiveElementID; // In current heap
-    int ElementsCount;
-    int StartTime;
-    int CurrTime;
-    int TextTime;
-    int PreTextTime;
+    enum
+    {
+        STAGE_NONE        = 0,
+        STAGE_PLAYLEVEL   = 1,
+        STAGE_CANCEL      = 2,
+        
+        STAGE_LOADED      = 4,
+        STAGE_SCALING     = 5,
+        STAGE_SCALEEND    = 6,
+        
+        STAGE_PLAYER_ST   = 7,
+        STAGE_PLAYER_RN   = 8,
+        STAGE_PLAYER_END  = 9,
+        
+        STAGE_KEYS_ST     = 10,
+        STAGE_KEYS_RN     = 11,
+        STAGE_KEYS_END    = 12,
+        
+        STAGE_TECH_ST     = 13,
+        STAGE_TECH_RN     = 14,
+        STAGE_TECH_END    = 15,
+        
+        STAGE_ENMHS_ST    = 16,
+        STAGE_ENMHS_RN    = 17,
+        STAGE_ENMHS_END   = 18,
+        
+        STAGE_ENMFRC_ST   = 19,
+        STAGE_ENMFRC_RN   = 20,
+        STAGE_ENMFRC_END  = 21,
+        
+        STAGE_BUDDY_ST    = 22,
+        STAGE_BUDDY_RN    = 23,
+        STAGE_BUDDY_END   = 24,
+        
+        STAGE_GATE_ST     = 25,
+        STAGE_GATE_RN     = 26,
+        STAGE_GATE_END    = 27,
+        
+        STAGE_MOVIE       = 28,
+        
+        
+        // TimerStatus
+        TIMER_NORMAL      = 0,
+        TIMER_STOP        = 1,
+        TIMER_FAST        = 2,
+        TIMER_RESTART     = 3,
+    };
+    
+    NC_STACK_bitmap *MbmapImg = NULL;
+    NC_STACK_bitmap *BriefingMapImg = NULL;
+    TLevelDescription Desc;
+    int Stage = STAGE_NONE;
+    int TimerStatus = TIMER_NORMAL;
+    int32_t ActiveElementID = 0; // In current heap
+    int32_t ElementsCount = 0;
+    int32_t StartTime = 0;
+    int32_t CurrTime = 0;
+    int32_t TextTime = 0;
+    int32_t PreTextTime = 0;
     std::string ObjDescription;
     std::string BriefingText;
     
@@ -1340,42 +1305,70 @@ struct BriefengScreen
     Common::FRect MapBlitStart;
     Common::FRect MapBlitEnd;
 
-    int SelectedObjID;
+    int32_t SelectedObjID = 0;
     
-    bool AddObjectsFlag;
-    BriefObject ViewingObject;
+    bool AddObjectsFlag = false;
+    TBriefObject ViewingObject;
     Common::FRect ViewingObjectRect;
-    int ViewingObjectAngle;
-    uint32_t ViewingObjectStartTime;
+    int32_t ViewingObjectAngle = 0;
+    uint32_t ViewingObjectStartTime = 0;
     
-    std::vector<BriefObject> Objects;
+    std::vector<TBriefObject> Objects;
     
     baseRender_msg ObjRenderParams;
 
-    bool ZoomFromGate;
+    bool ZoomFromGate = false;
     
-    std::array<NC_STACK_sklt *, 4> VectorGfx;
+    std::array<NC_STACK_sklt *, 4> VectorGfx = {{NULL}};
     Common::PlaneBytes OwnMap;
     Common::PlaneBytes TypMap;
     //int _owner;
-    uint32_t LastFrameTimeStamp;
-    std::array<World::player_status, 8> StatsGlobal;
-    std::array<World::player_status, 8> StatsIngame;
+    uint32_t LastFrameTimeStamp = 0;
+    std::array<World::TPlayerStatus, 8> StatsGlobal;
+    std::array<World::TPlayerStatus, 8> StatsIngame;
     std::string MovieStr;
     std::vector<World::History::Upgrade> Upgrades;
-
-    BriefengScreen()
+    
+    ~TBriefengScreen()
     {
-    	clear();
+        UnloadRes();
+    }
+    
+    void UnloadRes()
+    {
+        if ( MbmapImg )
+        {
+            Nucleus::Delete(MbmapImg);
+            MbmapImg = NULL;
+        }
+
+        if ( BriefingMapImg )
+        {
+            Nucleus::Delete(BriefingMapImg);
+            BriefingMapImg = NULL;
+        }
+        
+        for ( NC_STACK_sklt* &gfx : VectorGfx )
+        {
+            if (gfx)
+            {
+                Nucleus::Delete(gfx);
+                gfx = NULL;
+            }
+        }
+        
+        OwnMap.Clear();
+
+        TypMap.Clear();
     }
 
-    void clear()
+    void Clear()
     {
-        MbmapImg = NULL;
-        BriefingMapImg = NULL;
-        Desc.clear();
-        Stage = 0;
-        TimerStatus = 0;
+        UnloadRes();
+
+        Desc = TLevelDescription();
+        Stage = STAGE_NONE;
+        TimerStatus = TIMER_NORMAL;
         ActiveElementID = 0;
         ElementsCount = 0;
         StartTime = 0;
@@ -1385,7 +1378,7 @@ struct BriefengScreen
         ObjDescription.clear();
         BriefingText.clear();
         
-        ViewingObject = BriefObject();
+        ViewingObject = TBriefObject();
         
         ViewingObjectRect = Common::FRect();
         ViewingObjectAngle = 0;
@@ -1402,152 +1395,81 @@ struct BriefengScreen
         ObjRenderParams = baseRender_msg();
         ZoomFromGate = false;
 
-        for (NC_STACK_sklt* &x : VectorGfx)
-            x = NULL;
-
         //_owner = 0;
         LastFrameTimeStamp = 0;
 
-        for (auto &x : StatsGlobal)
-            x.clear();
-
-        for (auto &x : StatsIngame)
-            x.clear();
+        StatsGlobal.fill( World::TPlayerStatus() );
+        StatsIngame.fill( World::TPlayerStatus() );
 
         MovieStr.clear();
-
         Upgrades.clear();
     }
 };
 
-struct mapINFO
+struct TMapRegionInfo
 {
-    int field_0;
-    std::string mapPath;
-    std::string map_name;
-    Common::FRect field_9C;
-    char robos_count;
-    char fractions_mask;
-    char secXsize;
-    char secYsize;
-    int slow_connection;
-    
-    mapINFO()
+    enum
     {
-        field_0 = 0;
-        robos_count = 0;
-        fractions_mask = 0;
-        secXsize = 0;
-        secYsize = 0;
-        slow_connection = 0;
-    }
+        STATUS_NONE      = 0,
+        STATUS_DISABLED  = 1,
+        STATUS_ENABLED   = 2,
+        STATUS_COMPLETED = 3,
+        STATUS_NETWORK   = 4
+    };
+    int Status = 0;
+    std::string MapDirectory;
+    std::string MapName;
+    Common::FRect Rect;
+    uint32_t RoboCount = 0;
+    uint32_t FractionsBits = 0;
+    Common::Point MapSize;
+    bool SlowConnection = false;
 };
 
-struct stru_LevelNet
+struct TMapRegionsNet
 {
-	enum
-	{
-		MAX_NUM = 4
-	};
+    enum
+    {
+        MAX_NUM = 4
+    };
 
-	struct bkg_pct
-	{
-            int16_t size_x;
-            int16_t size_y;
-            std::string map_name;
-            
-            bkg_pct()
-            {
-                size_x = 0;
-                size_y = 0;
-            }
-	};
-
-    int bg_n;
-    bkg_pct background_map[MAX_NUM];
-    bkg_pct rollover_map[MAX_NUM];
-    bkg_pct finished_map[MAX_NUM];
-    bkg_pct enabled_map[MAX_NUM];
-    bkg_pct mask_map[MAX_NUM];
-    bkg_pct tut_background_map[MAX_NUM];
-    bkg_pct tut_rollover_map[MAX_NUM];
-    bkg_pct tut_mask_map[MAX_NUM];
-    bkg_pct menu_map[MAX_NUM];
-    bkg_pct input_map[MAX_NUM];
-    bkg_pct settings_map[MAX_NUM];
-    bkg_pct network_map[MAX_NUM];
-    bkg_pct locale_map[MAX_NUM];
-    bkg_pct save_map[MAX_NUM];
-    bkg_pct about_map[MAX_NUM];
-    bkg_pct help_map[MAX_NUM];
-    bkg_pct brief_map[MAX_NUM];
-    bkg_pct debrief_map[MAX_NUM];
-    mapINFO mapInfos[256];
-    NC_STACK_bitmap *ilbm_menu_map;
-    NC_STACK_bitmap *ilbm_mask_map;
-    NC_STACK_bitmap *ilbm_rollover_map;
-    NC_STACK_bitmap *ilbm_finished_map;
-    NC_STACK_bitmap *ilbm_enabled_map;
-    int field_BE38;
+    int NumSets = 0;
+    std::array<TBkgPicInfo, MAX_NUM> background_map;
+    std::array<TBkgPicInfo, MAX_NUM> rollover_map;
+    std::array<TBkgPicInfo, MAX_NUM> finished_map;
+    std::array<TBkgPicInfo, MAX_NUM> enabled_map;
+    std::array<TBkgPicInfo, MAX_NUM> mask_map;
+    std::array<TBkgPicInfo, MAX_NUM> tut_background_map;
+    std::array<TBkgPicInfo, MAX_NUM> tut_rollover_map;
+    std::array<TBkgPicInfo, MAX_NUM> tut_mask_map;
+    std::array<TBkgPicInfo, MAX_NUM> menu_map;
+    std::array<TBkgPicInfo, MAX_NUM> input_map;
+    std::array<TBkgPicInfo, MAX_NUM> settings_map;
+    std::array<TBkgPicInfo, MAX_NUM> network_map;
+    std::array<TBkgPicInfo, MAX_NUM> locale_map;
+    std::array<TBkgPicInfo, MAX_NUM> save_map;
+    std::array<TBkgPicInfo, MAX_NUM> about_map;
+    std::array<TBkgPicInfo, MAX_NUM> help_map;
+    std::array<TBkgPicInfo, MAX_NUM> brief_map;
+    std::array<TBkgPicInfo, MAX_NUM> debrief_map;
     
-    stru_LevelNet()
+    std::array<TMapRegionInfo, 256> MapRegions;
+    NC_STACK_bitmap *MenuImage = NULL;
+    NC_STACK_bitmap *MaskImage = NULL;
+    NC_STACK_bitmap *RolloverImage = NULL;
+    NC_STACK_bitmap *FinishedImage = NULL;
+    NC_STACK_bitmap *EnabledImage = NULL;
+    
+    size_t SelectedRegion = 0;
+    
+    ~TMapRegionsNet()
     {
-        bg_n = 0;
-        ilbm_menu_map = NULL;
-        ilbm_mask_map = NULL;
-        ilbm_rollover_map = NULL;
-        ilbm_finished_map = NULL;
-        ilbm_enabled_map = NULL;
-        field_BE38 = 0;
-    }
-};
-
-struct rgbiColor
-{
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t i;
-    uint32_t color;
-
-    rgbiColor()
-    {
-        r = 0;
-        g = 0;
-        b = 0;
-        i = 0;
-        color = 0;
+        UnloadImages();
     }
     
-    operator SDL_Color()
-    {
-        return GFX::Engine.Color(r, g, b, 255);
-    }
+    void UnloadImages();
 };
 
-struct slurp
-{
-    NC_STACK_base *skeletons_bas;
-    UAskeleton::Data *skeleton_internal;
-
-    slurp()
-    {
-        skeletons_bas = NULL;
-        skeleton_internal = NULL;
-    }
-};
-
-struct slurp2
-{
-    NC_STACK_sklt *skeleton;
-    UAskeleton::Data *skeleton_internal;
-
-    slurp2()
-    {
-        skeleton = NULL;
-        skeleton_internal = NULL;
-    }
-};
 
 struct sklt_wis
 {
@@ -1875,6 +1797,8 @@ struct yw_arg165
     int frame;
 };
 
+struct TRenderingSector;
+
 class NC_STACK_ypaworld: public NC_STACK_nucleus //NC_STACK_base
 {
 friend class UserData;
@@ -1911,7 +1835,7 @@ public:
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t base_func64(base_64arg *arg);
+    virtual size_t Process(base_64arg *arg);
     virtual void ypaworld_func129(yw_arg129 *arg);
     virtual size_t GetSectorInfo(yw_130arg *arg);
     virtual void ypaworld_func131(NC_STACK_ypabact *bact);
@@ -1934,11 +1858,11 @@ public:
     virtual void ypaworld_func150(yw_arg150 *arg);
     virtual void DeleteLevel();
     virtual void ypaworld_func153(bact_hudi *arg);
-    virtual size_t ypaworld_func154(UserData *usr);
-    virtual void ypaworld_func155(UserData *usr);
-    virtual size_t ypaworld_func156(UserData *usr);
-    virtual void ypaworld_func157(UserData *usr);
-    virtual void ypaworld_func158(UserData *usr);
+    virtual bool InitGameShell(UserData *usr);
+    virtual void DeinitGameShell();
+    virtual bool OpenGameShell();
+    virtual void CloseGameShell();
+    virtual void ProcessGameShell();
     virtual void ypaworld_func159(yw_arg159 *arg);
     virtual void ypaworld_func160(void *arg);
     virtual size_t ypaworld_func161(yw_arg161 *arg);
@@ -1947,15 +1871,15 @@ public:
     virtual void ypaworld_func164();
     virtual void ypaworld_func165(yw_arg165 *arg);
     virtual size_t ypaworld_func166(const std::string &langname);
-    virtual void ypaworld_func167(UserData *usr);
+    virtual void UpdateGameShell();
     virtual size_t ypaworld_func168(NC_STACK_ypabact *pbact);
     virtual size_t LoadGame(const std::string &saveFile);
     virtual size_t SaveGame(const std::string &saveFile);
     virtual size_t ypaworld_func171(yw_arg172 *arg);
     virtual size_t ypaworld_func172(yw_arg172 *arg, bool playIntro = false);
-    virtual size_t ypaworld_func173(UserData *usr);
-    virtual size_t ChangeResolutionForMenu(bool windowed);
-    virtual size_t ypaworld_func175(UserData *usr);
+    virtual bool ReloadInput(size_t id);
+    virtual size_t SetGameShellVideoMode(bool windowed);
+    virtual size_t ReloadLanguage();
     virtual void ypaworld_func176(yw_arg176 *arg);
     virtual void ypaworld_func177(yw_arg177 *arg);
     virtual size_t ypaworld_func179(yw_arg161 *arg);
@@ -2045,13 +1969,13 @@ public:
     virtual int getYW_lvlFinished();
     virtual int getYW_screenW();
     virtual int getYW_screenH();
-    virtual LevelInfo *getYW_levelInfo();
+    virtual TLevelInfo &getYW_levelInfo();
     virtual int getYW_destroyFX();
     virtual NC_STACK_windp *getYW_pNET();
     virtual int getYW_invulnerable();
 
 protected:
-    int LevelCommonLoader(LevelDesc *mapp, int levelID, int a5);
+    int LevelCommonLoader(TLevelDescription *mapp, int levelID, int a5);
     void FFeedback_Init();
     void FFeedback_StopAll();
     void FFeedback_VehicleChanged();
@@ -2089,12 +2013,15 @@ public:
 //protected:
     void sub_4491A0(const std::string &movie_fname);
     bool LoadProtosScript(const std::string &filename);
-    bool sb_0x4e1a88__sub0__sub0(LevelDesc *mapp, const std::string &fname);
+    bool sb_0x4e1a88__sub0__sub0(TLevelDescription *mapp, const std::string &fname);
     void ypaworld_func158__sub4__sub1();
     bool InitDebrief();
-    int ypaworld_func158__sub4__sub1__sub5__sub0(LevelDesc *mapproto, const std::string &filename);
-    int sub_4DA41C(LevelDesc *mapp, const std::string &fname);
-    int ypaworld_func158__sub4__sub1__sub3(int lvlid);
+    void FreeDebrief();
+    int ypaworld_func158__sub4__sub1__sub5__sub0(TLevelDescription *mapproto, const std::string &filename);
+    int sub_4DA41C(TLevelDescription *mapp, const std::string &fname);
+    bool InitBriefing(int lvlid);
+    void FreeBriefing();
+    void FreeBriefDataSet();
     int ypaworld_func158__sub4__sub1__sub3__sub0();
     void yw_ActivateWunderstein(cellArea *cell, int a3);
     void yw_InitTechUpgradeBuildings();
@@ -2105,15 +2032,34 @@ public:
     void LoadingUnitsRefresh();
     int ypaworld_func172__sub0(const std::string &fname, int parsers_mask);
     void listSaveDir(const std::string &saveDir);
-    int yw_InitLevelNet();
+    bool InitMapRegionsNet();
     int yw_ParseWorldIni(const std::string &filename);
     bool sb_0x4e1a88__sub0(const std::string &fname, bool multiplayer);
     int sb_0x4e1a88(bool multiplayer);
     int yw_ScanLevels();
     int yw_RestoreVehicleData();
-    void sub_471AB8();
+    void EnableLevelPasses();
     int load_fonts_and_icons();
     int yw_LoadSet(int setID);
+    
+    void FreeLegos();
+    void FreeFillers();
+    
+    void DrawMapRegionsTutorial();
+    void DrawMapRegions();
+    
+    void RenderGame(base_64arg *bs64, int a2);
+    void RenderAdditionalBeeBox(Common::Point sect, TRenderingSector *sct, baseRender_msg *bs77);
+    void RenderSector(TRenderingSector *sct, baseRender_msg *bs77);
+    void yw_renderSky(baseRender_msg *rndr_params);
+    void RenderSuperItems(baseRender_msg *arg);
+    void RenderSuperWave(vec2d pos, vec2d fromPos, baseRender_msg *arg);
+    void RenderFillers(baseRender_msg *arg);
+    
+    NC_STACK_base * PrepareVFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5);
+    NC_STACK_base * PrepareHFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5);
+    
+    bool IsVisibleMapPos(vec2d pos);
     
     //PRT - Position Robo Target
     void RefreshUnitPRT(NC_STACK_ypabact *unit, NC_STACK_ypabact *robo, bool isRobo); 
@@ -2126,7 +2072,7 @@ public:
     void NetRemove(NC_STACK_ypabact *bct);
     void NetReleaseMissiles(NC_STACK_ypabact *bact);
     void sub_4F1BE8(NC_STACK_ypabact *bct);
-    void BriefingSetObject(const BriefObject &obj, bool doAdd);
+    void BriefingSetObject(const TBriefObject &obj, bool doAdd);
     
     
     static TileMap * yw_LoadFont(const std::string &fontname);
@@ -2342,10 +2288,10 @@ public:
     NC_STACK_bitmap *shadermp_ilbm;
     int field_138c;
     int str17_NOT_FALSE;
-    slurp slurps1[6][6];
-    slurp slurps2[6][6];
-    slurp2 ColSide;
-    slurp2 ColCross;
+    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersHorizontal = {{NULL}};
+    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersVertical = {{NULL}};
+    NC_STACK_skeleton *FillerSide = NULL;
+    NC_STACK_skeleton *FillerCross = NULL;
     int field_15e4;
     int field_15e8;
     int field_15ec;
@@ -2381,7 +2327,7 @@ public:
     int field_17c4;
     int field_17c8;
     const char **tooltips;
-    std::array<SDL_Color, World::COLOR_MAX_NUMBER> iniColors;
+    std::array<SDL_Color, World::COLOR_MAX_NUMBER> _iniColors;
     int field_1a00;
     int field_1a04;
     int field_1a08;
@@ -2464,10 +2410,10 @@ public:
     int last_modify_weapon;
     int last_modify_build;
 
-    stru_LevelNet *LevelNet;
-    LevelInfo *_levelInfo;
+    TMapRegionsNet _mapRegions;
+    TLevelInfo _levelInfo;
     
-    BriefengScreen brief;
+    TBriefengScreen brief;
     
     // History
     Common::BlocksStream _history;
@@ -2541,8 +2487,8 @@ public:
     int p_1_grp_cnt;
     int p_1_grp[4][8];
     int _profile2DDraw;
-    std::array<World::player_status, 8> playerstatus;
-    std::array<World::player_status, 8> ingamePlayerStatus;
+    std::array<World::TPlayerStatus, 8> playerstatus;
+    std::array<World::TPlayerStatus, 8> ingamePlayerStatus;
     int _maxRoboEnergy;
     int _maxReloadConst;
     TSingleVoiceMessage _voiceMessage;

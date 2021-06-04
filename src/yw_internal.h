@@ -11,7 +11,7 @@ struct TSectorCollision
 };
 
 // For rendering
-struct stru_a3
+struct TRenderingSector
 {
     cellArea *p_cell;
     int dword4;
@@ -31,8 +31,8 @@ int yw_InitTooltips(NC_STACK_ypaworld *yw);
 int loadTOD(NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod);
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc, int a5);
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, BriefengScreen *brf, InputState *struc);
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc, int a5);
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc);
 
 void set_keys_vals(NC_STACK_ypaworld *yw);
 void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr);
@@ -53,10 +53,10 @@ void ypaworld_func156__sub1(UserData *usr);
 
 
 
-void yw_freeDebrief(NC_STACK_ypaworld *yw);
+
 void yw_calcPlayerScore(NC_STACK_ypaworld *yw);
 
-int sub_4DA41C(NC_STACK_ypaworld *yw, LevelDesc *mapp, const char *fname);
+int sub_4DA41C(NC_STACK_ypaworld *yw, TLevelDescription *mapp, const char *fname);
 
 void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, InputState *inpt);
 
@@ -90,7 +90,7 @@ int yw_write_shell(FSMgr::FileHandle *fil, UserData *usr);
 int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil);
 
 void sb_0x44ac24(NC_STACK_ypaworld *yw);
-void sub_4EAC80(NC_STACK_ypaworld *yw);
+
 
 
 
@@ -101,11 +101,6 @@ void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, 
 
 void ypaworld_func2__sub0__sub0(NC_STACK_ypaworld *yw);
 void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabact *bact2);
-
-
-
-
-void sb_0x4d7c08(NC_STACK_ypaworld *yw, base_64arg *bs64, int a2);
 
 
 

@@ -557,20 +557,7 @@ public:
     using std::vector<T>::rend;
     using std::vector<T>::empty;
     
-    PlaneVector()
-    {}
-    
-    PlaneVector(const PlaneVector &b)
-    {
-        operator=(b);
-    }
-    
-    PlaneVector(PlaneVector &&b)
-    : std::vector<T>(std::move(b))
-    {
-        _w = b._w;
-        _h = b._h;
-    }
+    PlaneVector() = default;
     
     PlaneVector(uint32_t w, uint32_t h)
     {
@@ -667,14 +654,7 @@ public:
     {
         return _h;
     }
-    
-    void operator=(const PlaneVector<T> &b)
-    {
-        std::vector<T>::operator=(b);
-        _w = b._w;
-        _h = b._h;
-    }
-    
+
     void Clear()
     {
         _w = 0;
@@ -683,8 +663,8 @@ public:
     }
     
 protected:
-    uint32_t _w;
-    uint32_t _h;
+    uint32_t _w = 0;
+    uint32_t _h = 0;
 };
 
 typedef PlaneVector<uint8_t> PlaneBytes;
@@ -704,23 +684,13 @@ public:
     using _BaseType::rend;
     using _BaseType::fill;
 
-    PlaneArray()
-    {}
+    PlaneArray() = default;
     
     PlaneArray(T val)
     {
         fill(val);
     }
-    
-    PlaneArray(const PlaneArray &b)
-    {
-        operator=(b);
-    }
-    
-    PlaneArray(PlaneArray &&b)
-    : _BaseType(std::move(b))
-    {}
-    
+
     PlaneArray<T, XW, XH>* Copy()
     {
         PlaneArray<T, XW, XH> *tmp = new PlaneArray<T, XW, XH>;
@@ -806,11 +776,6 @@ public:
     uint32_t Height() const
     {
         return XH;
-    }
-    
-    void operator=(const PlaneArray<T, XW, XH> &b)
-    {
-        _BaseType::operator=(b);
     }
 };
 

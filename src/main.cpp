@@ -60,7 +60,7 @@ int sub_4107FC(UserData *usr)
 
     arg171.usr = usr;
     arg171.usertxt = "settings.tmp";
-    arg171.field_4 = usr->user_name.c_str();
+    arg171.field_4 = usr->UserName.c_str();
     arg171.field_8 = 193;
     arg171.field_10 = 0;
 
@@ -69,10 +69,10 @@ int sub_4107FC(UserData *usr)
 
 void sub_410628()
 {
-    std::string buf = fmt::sprintf("%s/user.txt", userdata.user_name);
+    std::string buf = fmt::sprintf("%s/user.txt", userdata.UserName);
     yw_arg172 arg171;
     arg171.usertxt = buf.c_str();
-    arg171.field_4 = userdata.user_name.c_str();
+    arg171.field_4 = userdata.UserName.c_str();
     arg171.usr = &userdata;
     arg171.field_8 = 255;
     arg171.field_10 = 0;
@@ -82,31 +82,31 @@ void sub_410628()
     FSMgr::FileHandle *fil = uaOpenFile("env:user.def", "w");
     if ( fil )
     {
-        fil->write(userdata.user_name.c_str(), userdata.user_name.size());
+        fil->write(userdata.UserName.c_str(), userdata.UserName.size());
         delete fil;
     }
 }
 
 int sb_0x411324__sub0()
 {
-    ypaworld->base_func64(&world_update_arg);
+    ypaworld->Process(&world_update_arg);
 
-    LevelInfo *var_2d90 = ypaworld->getYW_levelInfo();
+    const TLevelInfo &var_2d90 = ypaworld->getYW_levelInfo();
 
-    switch( var_2d90->State )
+    switch( var_2d90.State )
     {
-    case 1:
-    case 2:
+    case TLevelInfo::STATE_COMPLETED:
+    case TLevelInfo::STATE_ABORTED:
     {
         ypaworld->DeleteLevel();
 
-        if ( dword_513638 || var_2d90->State == 2 )
+        if ( dword_513638 || var_2d90.State == TLevelInfo::STATE_ABORTED )
         {
             yw_arg172 arg172;
             arg172.usr = &userdata;
             arg172.usertxt = "settings.tmp";
             arg172.field_10 = 0;
-            arg172.field_4 = userdata.user_name.c_str();
+            arg172.field_4 = userdata.UserName.c_str();
             arg172.field_8 = 0xC1;
 
             if ( !ypaworld->ypaworld_func172(&arg172) )
@@ -120,10 +120,10 @@ int sb_0x411324__sub0()
         if ( userdata.remoteMode )
             v0 = 0;
 
-        if ( userdata.envMode == ENVMODE_NETPLAY )
+        if ( userdata.EnvMode == ENVMODE_NETPLAY )
         {
             userdata.returnToTitle = true;
-            userdata.envMode = ENVMODE_SINGLEPLAY;
+            userdata.EnvMode = ENVMODE_SINGLEPLAY;
         }
         else
         {
@@ -134,9 +134,9 @@ int sb_0x411324__sub0()
         world_update_arg.TimeStamp = 0;
 
         userdata.lastInputEvent = 0;
-        userdata.field_0xc = 1;
+        userdata.GameIsOver = true;
 
-        if ( ypaworld->ypaworld_func156(&userdata) )
+        if ( ypaworld->OpenGameShell() )
         {
             dword_520400 = 1;
             INPe.QueryInput(&input_states);
@@ -147,37 +147,37 @@ int sb_0x411324__sub0()
         else
         {
             ypa_log_out("GameShell-Error!!!\n");
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->DeinitGameShell();
             return 0;
         }
     }
     break;
 
-    case 4:
+    case TLevelInfo::STATE_RESTART:
     {
         ypaworld->DeleteLevel();
 
-        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.rst", userdata.user_name, var_2d90->LevelID) ) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.rst", userdata.UserName, var_2d90.LevelID) ) )
             ypa_log_out("Warning, load error\n");
 
         INPe.QueryInput(&input_states);
     }
     break;
 
-    case 6:
+    case TLevelInfo::STATE_SAVE:
     {
-        if ( !ypaworld->SaveGame( fmt::sprintf("save:%s/%d.sgm", userdata.user_name, 0) ) )
+        if ( !ypaworld->SaveGame( fmt::sprintf("save:%s/%d.sgm", userdata.UserName, 0) ) )
             ypa_log_out("Warning, Save error\n");
 
         INPe.QueryInput(&input_states);
     }
     break;
 
-    case 7:
+    case TLevelInfo::STATE_LOAD:
     {
         ypaworld->DeleteLevel();
 
-        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.user_name, 0) ) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.UserName, 0) ) )
             ypa_log_out("Warning, load error\n");
 
         INPe.QueryInput(&input_states);
@@ -216,7 +216,7 @@ char * sub_4107A0(int a1)
 
 int sb_0x411324__sub2__sub0(base_64arg *arg)
 {
-    if ( (userdata.p_ypaworld->replayer->field_74 - 3) <= userdata.p_ypaworld->replayer->frame_id  &&  dword_513630 )
+    if ( (userdata.p_YW->replayer->field_74 - 3) <= userdata.p_YW->replayer->frame_id  &&  dword_513630 )
     {
         char *gin_and_tonic = sub_4107A0(arg->TimeStamp);
 
@@ -296,7 +296,7 @@ int sb_0x411324__sub2()
             arg172.usr = &userdata;
             arg172.usertxt = "settings.tmp";
             arg172.field_10 = 0;
-            arg172.field_4 = userdata.user_name.c_str();
+            arg172.field_4 = userdata.UserName.c_str();
             arg172.field_8 = 193;
 
             if ( !ypaworld->ypaworld_func172(&arg172) )
@@ -309,15 +309,15 @@ int sb_0x411324__sub2()
         world_update_arg.TimeStamp = 0;
         userdata.lastInputEvent = 0;
 
-        if ( !ypaworld->ypaworld_func156(&userdata) )
+        if ( !ypaworld->OpenGameShell() )
         {
             ypa_log_out("GameShell-Error!!!\n");
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->DeinitGameShell();
 
             return 0;
         }
 
-        userdata.p_ypaworld->_levelInfo->State = 8;
+        userdata.p_YW->_levelInfo.State = TLevelInfo::STATE_MENU;
 
         dword_520400 = 1;
 
@@ -330,18 +330,18 @@ int sb_0x411324__sub2()
 
 int sb_0x411324__sub1()
 {
-    userdata.glblTime = world_update_arg.TimeStamp;
-    userdata.frameTime = world_update_arg.DTime;
-    userdata._input = &input_states;
+    userdata.GlobalTime = world_update_arg.TimeStamp;
+    userdata.DTime = world_update_arg.DTime;
+    userdata.Input = &input_states;
 
-    ypaworld->ypaworld_func158(&userdata);
+    ypaworld->ProcessGameShell();
 
     if ( userdata.envAction.action == EnvAction::ACTION_QUIT )
         return 0;
     else if ( userdata.envAction.action == EnvAction::ACTION_PLAY )
     {
         sub_410628();
-        ypaworld->ypaworld_func157(&userdata);
+        ypaworld->CloseGameShell();
 
         dword_520400 = 0;
 
@@ -356,7 +356,7 @@ int sb_0x411324__sub1()
         {
             ypa_log_out("Sorry, unable to init this level!\n");
 
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->DeinitGameShell();
             return 0;
         }
         dword_520400 = 2;
@@ -366,19 +366,19 @@ int sb_0x411324__sub1()
     {
         dword_520400 = 0;
 
-        LevelInfo *a4 = ypaworld->getYW_levelInfo();
+        const TLevelInfo &a4 = ypaworld->getYW_levelInfo();
 
         sub_410628();
-        ypaworld->ypaworld_func157(&userdata);
+        ypaworld->CloseGameShell();
 
         if ( !sub_4107FC(&userdata) )
             return 0;
 
-        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.user_name, 0) ) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.UserName, 0) ) )
         {
-            ypa_log_out("Error while loading level (level %d, User %s\n", a4->LevelID, userdata.user_name.c_str());
+            ypa_log_out("Error while loading level (level %d, User %s\n", a4.LevelID, userdata.UserName.c_str());
 
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->DeinitGameShell();
             return 0;
         }
         dword_520400 = 2;
@@ -393,7 +393,7 @@ int sb_0x411324__sub1()
 
         dword_513638 = 1;
 
-        ypaworld->ypaworld_func157(&userdata);
+        ypaworld->CloseGameShell();
 
         yw_arg161 v22;
         v22.lvlID = userdata.envAction.params[0];
@@ -404,7 +404,7 @@ int sb_0x411324__sub1()
         if ( !ypaworld->ypaworld_func179(&v22) )
         {
             ypa_log_out("Sorry, unable to init this level for network!\n");
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->DeinitGameShell();
 
             return 0;
         }
@@ -426,7 +426,7 @@ int sb_0x411324__sub1()
 
         dword_513638 = 1;
 
-        ypaworld->ypaworld_func157(&userdata);
+        ypaworld->CloseGameShell();
 
         dword_520400 = 0;
 
@@ -441,10 +441,10 @@ int sb_0x411324__sub1()
             world_update_arg.TimeStamp = 0;
             userdata.lastInputEvent = 0;
 
-            if ( !ypaworld->ypaworld_func156(&userdata) )
+            if ( !ypaworld->OpenGameShell() )
             {
                 ypa_log_out("GameShell-Error!!!\n");
-                ypaworld->ypaworld_func155(&userdata);
+                ypaworld->DeinitGameShell();
                 return 0;
             }
 
@@ -463,10 +463,10 @@ int sb_0x411324()
     input_states.Clear();
     INPe.QueryInput(&input_states);
 
-    if ( userdata.field_0x10 )
+    if ( userdata.ResetInputPeriod )
     {
         input_states.Period = 1;
-        userdata.field_0x10 = 0;
+        userdata.ResetInputPeriod = false;
     }
 
     input_states.Period++;
@@ -641,14 +641,14 @@ int yw_initGameWithSettings()
         {
             delete user_txt;
 
-            userdata.user_name = line;
+            userdata.UserName = line;
             a1 = fmt::sprintf("%s/user.txt", line);
         }
         else
         {
             ypa_log_out("Warning: default user file doesn't exist (%s)\n", a1.c_str());
             a1 = fmt::sprintf("sdu7/user.txt");
-            userdata.user_name = "SDU7";
+            userdata.UserName = "SDU7";
         }
 
         delete user_def;
@@ -656,7 +656,7 @@ int yw_initGameWithSettings()
     else
     {
         a1 = fmt::sprintf("sdu7/user.txt");
-        userdata.user_name = "SDU7";
+        userdata.UserName = "SDU7";
         ypa_log_out("Warning: No default user set\n");
     }
 
@@ -665,7 +665,7 @@ int yw_initGameWithSettings()
     int v8 = 1;
     for ( ProfileList::iterator it = userdata.profiles.begin(); it != userdata.profiles.end(); it++ )
     {
-        if ( !StriCmp(it->name, userdata.user_name) )
+        if ( !StriCmp(it->name, userdata.UserName) )
         {
             userdata.field_1612 = v8;
             break;
@@ -678,7 +678,7 @@ int yw_initGameWithSettings()
 
     v13.usertxt = a1.c_str();
     v13.usr = &userdata;
-    v13.field_4 = userdata.user_name.c_str();
+    v13.field_4 = userdata.UserName.c_str();
     v13.field_8 = 255;
     v13.field_10 = 1;
 
@@ -710,13 +710,13 @@ void sub_4113E8()
         if ( dword_520400 == 2 )
         {
             ypaworld->DeleteLevel();
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->DeinitGameShell();
         }
         else if ( dword_520400 == 1 )
         {
             sub_410628();
-            ypaworld->ypaworld_func157(&userdata);
-            ypaworld->ypaworld_func155(&userdata);
+            ypaworld->CloseGameShell();
+            ypaworld->DeinitGameShell();
         }
 
         delete_class_obj(ypaworld);
@@ -742,7 +742,7 @@ int WinMain__sub0__sub1()
         return 0;
     }
 
-    if ( !ypaworld->ypaworld_func154(&userdata) )
+    if ( !ypaworld->InitGameShell(&userdata) )
     {
         ypa_log_out("Unable to init shell structure\n");
         return 0;
@@ -754,7 +754,7 @@ int WinMain__sub0__sub1()
         return 0;
     }
 
-    if ( !userdata._gameShellInited && !ypaworld->ypaworld_func156(&userdata))
+    if ( !userdata.HasInited && !ypaworld->OpenGameShell())
     {
         ypa_log_out("Error: Unable to open Gameshell\n");
         return 0;

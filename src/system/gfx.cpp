@@ -1585,10 +1585,6 @@ void GFXEngine::display_func271(IDVPair *stak)
 
 }
 
-void GFXEngine::display_func272(IDVPair *)
-{
-}
-
 void GFXEngine::win3d_func274__sub0(FSMgr::FileHandle *fil)
 {
     int bf_w = 0, bf_h = 0;

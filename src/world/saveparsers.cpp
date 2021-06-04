@@ -758,11 +758,11 @@ int SaveMasksParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "ownermask") )
     {
-        _o._levelInfo->OwnerMask = std::stoi(p2);
+        _o._levelInfo.OwnerMask = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "usermask") )
     {
-        _o._levelInfo->UserMask = std::stoi(p2);
+        _o._levelInfo.UserMask = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -797,35 +797,35 @@ int SaveSuperBombParser::Handle(ScriptParser::Parser &parser, const std::string 
     }
     else if ( !StriCmp(p1, "activated_by") )
     {
-        _o._levelInfo->SuperItems[_id].ActivateOwner = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].ActivateOwner = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "active_timestamp") )
     {
-        _o._levelInfo->SuperItems[_id].ActiveTime = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].ActiveTime = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "trigger_timestamp") )
     {
-        _o._levelInfo->SuperItems[_id].TriggerTime = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].TriggerTime = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "countdown") )
     {
-        _o._levelInfo->SuperItems[_id].CountDown = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].CountDown = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_ten_sec") )
     {
-        _o._levelInfo->SuperItems[_id].LastTenSec = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].LastTenSec = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_sec") )
     {
-        _o._levelInfo->SuperItems[_id].LastSec = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].LastSec = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "radius") )
     {
-        _o._levelInfo->SuperItems[_id].CurrentRadius = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].CurrentRadius = std::stoi(p2);
     }
     else if ( !StriCmp(p1, "last_radius") )
     {
-        _o._levelInfo->SuperItems[_id].LastRadius = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].LastRadius = std::stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

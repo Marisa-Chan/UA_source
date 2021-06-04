@@ -17,14 +17,14 @@ class NC_STACK_yparobo;
 class NC_STACK_bitmap;
 class UserData;
 struct save_status;
-struct LevelDesc;
+struct TLevelDescription;
 struct MapRobo;
 struct MapGem;
 struct MapSquad;
 struct MapGate;
-struct dbmapProto;
-struct MapSuperItem;
-struct stru_LevelNet;
+struct TBkgPicInfo;
+struct TMapSuperItem;
+struct TMapRegionsNet;
 
 namespace World
 {
@@ -82,7 +82,7 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "begin_bg"); };
 
 protected:
-    stru_LevelNet &_o;
+    TMapRegionsNet &_o;
 };
 
 class SuperItemParser : public ScriptParser::DataHandler
@@ -221,35 +221,35 @@ protected:
 class LevelDataParser : public ScriptParser::DataHandler
 {
 public:
-    LevelDataParser(NC_STACK_ypaworld *o, LevelDesc *p) : _o(*o), _m(*p) {} ;
+    LevelDataParser(NC_STACK_ypaworld *o, TLevelDescription *p) : _o(*o), _m(*p) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    LevelDesc &_m;
+    TLevelDescription &_m;
 };
 
 class MapRobosParser : public ScriptParser::DataHandler
 {
 public:
-    MapRobosParser(LevelDesc *m) : _m(*m), _r(NULL) {} ;
+    MapRobosParser(TLevelDescription *m) : _m(*m), _r(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    LevelDesc &_m;
+    TLevelDescription &_m;
     MapRobo *_r;
 };
 
 class MapSizesParser : public ScriptParser::DataHandler
 {
 public:
-    MapSizesParser(LevelDesc *m) : _m(*m) {} ;
+    MapSizesParser(TLevelDescription *m) : _m(*m) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "begin_maps"); };
 protected:
-    void ParseSizes(ScriptParser::Parser &parser, int *outx, int *outy);
+    Common::Point ParseSizes(ScriptParser::Parser &parser);
 
-    LevelDesc &_m;
+    TLevelDescription &_m;
 };
 
 class LevelGemParser : public ScriptParser::DataHandler
@@ -266,11 +266,11 @@ protected:
 class LevelSquadParser : public ScriptParser::DataHandler
 {
 public:
-    LevelSquadParser(LevelDesc *m) : _m(*m), _s(NULL) {} ;
+    LevelSquadParser(TLevelDescription *m) : _m(*m), _s(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    LevelDesc &_m;
+    TLevelDescription &_m;
     MapSquad *_s;
 };
 
@@ -288,12 +288,12 @@ protected:
 class LevelMbMapParser : public ScriptParser::DataHandler
 {
 public:
-    LevelMbMapParser(LevelDesc *m) : _m(*m), _d(NULL) {} ;
+    LevelMbMapParser(TLevelDescription *m) : _m(*m), _d(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    LevelDesc &_m;
-    dbmapProto *_d;
+    TLevelDescription &_m;
+    TBkgPicInfo *_d;
 };
 
 class MapAsPlaneBytes
@@ -305,23 +305,23 @@ protected:
 class LevelMapsParser : public ScriptParser::DataHandler, public MapAsPlaneBytes
 {
 public:
-    LevelMapsParser(NC_STACK_ypaworld *o, LevelDesc *m) : _o(*o), _m(*m) {} ;
+    LevelMapsParser(NC_STACK_ypaworld *o, TLevelDescription *m) : _o(*o), _m(*m) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    LevelDesc &_m;
+    TLevelDescription &_m;
 };
 
 class LevelDebMapParser : public ScriptParser::DataHandler
 {
 public:
-    LevelDebMapParser(LevelDesc *m) : _m(*m), _d(NULL) {} ;
+    LevelDebMapParser(TLevelDescription *m) : _m(*m), _d(NULL) {} ;
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    LevelDesc &_m;
-    dbmapProto *_d;
+    TLevelDescription &_m;
+    TBkgPicInfo *_d;
 };
 
 class LevelEnableParser : public ScriptParser::DataHandler
@@ -343,7 +343,7 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    MapSuperItem *_s;
+    TMapSuperItem *_s;
 };
 
 class ShellSoundParser : public ScriptParser::DataHandler

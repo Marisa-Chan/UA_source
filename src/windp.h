@@ -164,7 +164,7 @@ public:
     virtual size_t GetCaps(IDVPair *stak);
     virtual size_t LockSession(int *);
     virtual size_t Reset(IDVPair *stak);
-    virtual size_t CountPlayers(IDVPair *stak);
+    virtual uint32_t CountPlayers();
 
     virtual bool GetRemoteStart(windp_arg87 *arg);
 

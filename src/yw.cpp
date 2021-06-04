@@ -210,11 +210,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     last_modify_vhcl = 0;
     last_modify_weapon = 0;
     last_modify_build = 0;
-
-    LevelNet = NULL;
-    _levelInfo = NULL;
-
-    brief.clear();
     
     _historyLastIsTimeStamp = false;
 
@@ -599,7 +594,7 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
     shell_default_res = (640 << 12) | 480;
     game_default_res = (640 << 12) | 480;
 
-    if ( !yw_InitLevelNet() )
+    if ( !InitMapRegionsNet() )
     {
         ypa_log_out("yw_main.c/OM_NEW: yw_InitLevelNet() failed!\n");
         Deinit();
@@ -647,7 +642,7 @@ void sub_445230(NC_STACK_ypaworld *yw)
     }
 }
 
-size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
+size_t NC_STACK_ypaworld::Process(base_64arg *arg)
 {
     extern GuiList gui_lstvw; //In yw_game_ui.cpp
     extern GuiList lstvw2; //In yw_game_ui.cpp
@@ -751,7 +746,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
         if ( isNetGame )
             yw_NetMsgHndlLoop(this);
 
-        if ( !isNetGame || _levelInfo->State != 2 )
+        if ( !isNetGame || _levelInfo.State != TLevelInfo::STATE_ABORTED )
         {
             p_1_grp[0][6] = profiler_end(v22);
 
@@ -900,7 +895,7 @@ size_t NC_STACK_ypaworld::base_func64(base_64arg *arg)
 
                 if ( UserUnit->_sectX || UserUnit->_sectY )
                 {
-                    sb_0x4d7c08(this, arg, 1);
+                    RenderGame(arg, 1);
 
                     if ( isNetGame )
                         yw_NetDrawStats(this);
@@ -2267,33 +2262,33 @@ void NC_STACK_ypaworld::ypaworld_func150(yw_arg150 *arg)
 
 void NC_STACK_ypaworld::DeleteLevel()
 {
-    sub_471AB8();
+    EnableLevelPasses();
 
-    if ( _levelInfo->State == 1 )
+    if ( _levelInfo.State == TLevelInfo::STATE_COMPLETED )
     {
         field_7278 = 1;
         if ( field_81AB )
-            _levelInfo->JodieFoster[ field_81AB ] = 1;
+            _levelInfo.JodieFoster[ field_81AB ] = 1;
     }
     else
     {
         field_7278 = 0;
     }
 
-    if ( _levelInfo->State == 1 )
+    if ( _levelInfo.State == TLevelInfo::STATE_COMPLETED )
     {
         if ( GameShell )
         {
-            FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt", GameShell->user_name), "w");
+            FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt", GameShell->UserName), "w");
 
             if ( fil )
                 delete fil;
 
-            std::string buf = fmt::sprintf("%s/user.txt", GameShell->user_name);
+            std::string buf = fmt::sprintf("%s/user.txt", GameShell->UserName);
 
             yw_arg172 arg171;
             arg171.usertxt = buf.c_str();
-            arg171.field_4 = GameShell->user_name.c_str();
+            arg171.field_4 = GameShell->UserName.c_str();
             arg171.usr = GameShell;
             arg171.field_10 = 0;
             arg171.field_8 = 255;
@@ -2304,7 +2299,7 @@ void NC_STACK_ypaworld::DeleteLevel()
 
             if ( fil )
             {
-                fil->printf(GameShell->user_name);
+                fil->printf(GameShell->UserName);
                 delete fil;
             }
         }
@@ -2456,21 +2451,20 @@ void UserData::sub_46D2B4()
     for (int i = 1; i <= 45; i++)
     {
         field_D36 = i;
-        p_YW->ypaworld_func173(this);
+        p_YW->ReloadInput(i);
     }
 
     field_D36 = v10;
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
+bool NC_STACK_ypaworld::InitGameShell(UserData *usr)
 {
     GameShell = usr;
-    usr->p_ypaworld = this;
     usr->p_YW = this;
 
-    _levelInfo->State = 8;
-    usr->envMode = ENVMODE_TITLE;
+    _levelInfo.State = TLevelInfo::STATE_MENU;
+    usr->EnvMode = ENVMODE_TITLE;
 
     System::IniConf::ReadFromNucleusIni();
 
@@ -2488,7 +2482,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     usr->usernamedir = "NEWUSER";
     usr->usernamedir_len = usr->usernamedir.size();
 
-    usr->field_0x8 = 1;
+    usr->IgnoreScoreSaving = true;
     usr->field_1612 = 0;
     usr->field_D36 = 1;   
 
@@ -2504,14 +2498,14 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     if ( !usr->ShellSoundsLoad() )
     {
         ypa_log_out("Error: Unable to load from Shell.ini\n");
-        return 0;
+        return false;
     }
     
     usr->_gfxMode = _gfxMode;
-    usr->field_FBE = GFX::GFXEngine::Instance.GetGfxModeIndex(_gfxMode);
+    usr->_gfxModeIndex = GFX::GFXEngine::Instance.GetGfxModeIndex(_gfxMode);
     
-    if (usr->field_FBE < 0)
-        usr->field_FBE = 0;
+    if (usr->_gfxModeIndex < 0)
+        usr->_gfxModeIndex = 0;
 
     usr->InputConfig[World::INPUT_BIND_DRIVE_DIR]   = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 3,  Input::KC_RIGHT, Input::KC_LEFT);
     usr->InputConfig[World::INPUT_BIND_DRIVE_SPEED] = UserData::TInputConf(World::INPUT_BIND_TYPE_SLIDER, 4,  Input::KC_UP, Input::KC_DOWN);
@@ -2568,7 +2562,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
     if (!windp->GetRemoteStart(&v67) )
     {
         ypa_log_out("Error while remote start check\n");
-        return  0;
+        return  false;
     }
 
     if ( v67.isClient )
@@ -2583,7 +2577,7 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
         GameShell->remoteMode = 1;
 
         usr->netLevelID = 0;
-        usr->envMode = ENVMODE_NETPLAY;
+        usr->EnvMode = ENVMODE_NETPLAY;
 
         windp_arg79 v68;
 
@@ -2622,21 +2616,21 @@ size_t NC_STACK_ypaworld::ypaworld_func154(UserData *usr)
 
     usr->WaitForDemo = 200000;
 
-    return 1;
+    return true;
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
+void NC_STACK_ypaworld::DeinitGameShell()
 {
-    usr->yw_netcleanup();
+    GameShell->yw_netcleanup();
 
-    usr->profiles.clear();
+    GameShell->profiles.clear();
 
-    usr->lang_dlls.clear();
+    GameShell->lang_dlls.clear();
 
     SFXEngine::SFXe.StopPlayingSounds();
 
-    for (NC_STACK_sample * &smpl : usr->samples1)
+    for (NC_STACK_sample * &smpl : GameShell->samples1)
     {
         if (smpl)
         {
@@ -2645,40 +2639,36 @@ void NC_STACK_ypaworld::ypaworld_func155(UserData *usr)
         }
     }
     
-    SFXEngine::SFXe.StopCarrier(&usr->samples1_info);
+    SFXEngine::SFXe.StopCarrier(&GameShell->samples1_info);
 }
 
 
-
-void sub_4E6FEC(NC_STACK_ypaworld *yw)
+void TMapRegionsNet::UnloadImages()
 {
-    stru_LevelNet *lvlnet;
-
-    lvlnet = yw->LevelNet;
-    if ( lvlnet->ilbm_menu_map )
+    if ( MenuImage )
     {
-        delete_class_obj(lvlnet->ilbm_menu_map);
-        lvlnet->ilbm_menu_map = NULL;
+        Nucleus::Delete(MenuImage);
+        MenuImage = NULL;
     }
-    if ( lvlnet->ilbm_rollover_map )
+    if ( RolloverImage )
     {
-        delete_class_obj(lvlnet->ilbm_rollover_map);
-        lvlnet->ilbm_rollover_map = NULL;
+        Nucleus::Delete(RolloverImage);
+        RolloverImage = NULL;
     }
-    if ( lvlnet->ilbm_finished_map )
+    if ( FinishedImage )
     {
-        delete_class_obj(lvlnet->ilbm_finished_map);
-        lvlnet->ilbm_finished_map = NULL;
+        Nucleus::Delete(FinishedImage);
+        FinishedImage = NULL;
     }
-    if ( lvlnet->ilbm_enabled_map )
+    if ( EnabledImage )
     {
-        delete_class_obj(lvlnet->ilbm_enabled_map);
-        lvlnet->ilbm_enabled_map = NULL;
+        Nucleus::Delete(EnabledImage);
+        EnabledImage = NULL;
     }
-    if ( lvlnet->ilbm_mask_map )
+    if ( MaskImage )
     {
-        delete_class_obj(lvlnet->ilbm_mask_map);
-        lvlnet->ilbm_mask_map = NULL;
+        Nucleus::Delete(MaskImage);
+        MaskImage = NULL;
     }
 }
 
@@ -2687,17 +2677,17 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 {
     int v37 = 1;
 
-    if ( yw->LevelNet->bg_n )
+    if ( yw->_mapRegions.NumSets )
     {
         std::string oldRsrc = Common::Env.SetPrefix("rsrc", "levels:");
 
         int v38 = 0;
         int v39 = 65535;
-        for (int i = 0; i < yw->LevelNet->bg_n; i++)
+        for (int i = 0; i < yw->_mapRegions.NumSets; i++)
         {
 
-            int xx = (yw->LevelNet->background_map[i].size_x - yw->screen_width);
-            int yy = (yw->LevelNet->background_map[i].size_y - yw->screen_height);
+            int xx = (yw->_mapRegions.background_map[i].Size.x - yw->screen_width);
+            int yy = (yw->_mapRegions.background_map[i].Size.y - yw->screen_height);
 
             int sq = sqrt(xx * xx + yy * yy);
 
@@ -2730,20 +2720,20 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
         case ENVMODE_ABOUT:
         case ENVMODE_SELPLAYER:
         case ENVMODE_HELP:
-            menu_map  = yw->LevelNet->menu_map[v38].map_name;
-            rollover_map = yw->LevelNet->settings_map[v38].map_name;
+            menu_map  = yw->_mapRegions.menu_map[v38].PicName;
+            rollover_map = yw->_mapRegions.settings_map[v38].PicName;
             break;
         case ENVMODE_TUTORIAL:
-            menu_map  = yw->LevelNet->tut_background_map[v38].map_name;
-            mask_map = yw->LevelNet->tut_mask_map[v38].map_name;
-            rollover_map = yw->LevelNet->tut_rollover_map[v38].map_name;
+            menu_map  = yw->_mapRegions.tut_background_map[v38].PicName;
+            mask_map = yw->_mapRegions.tut_mask_map[v38].PicName;
+            rollover_map = yw->_mapRegions.tut_rollover_map[v38].PicName;
             break;
         case ENVMODE_SINGLEPLAY:
-            menu_map  = yw->LevelNet->background_map[v38].map_name;
-            rollover_map = yw->LevelNet->rollover_map[v38].map_name;
-            finished_map = yw->LevelNet->finished_map[v38].map_name;
-            mask_map = yw->LevelNet->mask_map[v38].map_name;
-            enabled_map = yw->LevelNet->enabled_map[v38].map_name;
+            menu_map  = yw->_mapRegions.background_map[v38].PicName;
+            rollover_map = yw->_mapRegions.rollover_map[v38].PicName;
+            finished_map = yw->_mapRegions.finished_map[v38].PicName;
+            mask_map = yw->_mapRegions.mask_map[v38].PicName;
+            enabled_map = yw->_mapRegions.enabled_map[v38].PicName;
             break;
         default:
             break;
@@ -2836,12 +2826,12 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
                 ilbm_mask_map = NULL;
             }
         }
-        sub_4E6FEC(yw);
-        yw->LevelNet->ilbm_menu_map = ilbm_menu_map;
-        yw->LevelNet->ilbm_mask_map = ilbm_mask_map;
-        yw->LevelNet->ilbm_rollover_map = ilbm_rollover_map;
-        yw->LevelNet->ilbm_finished_map = ilbm_finished_map;
-        yw->LevelNet->ilbm_enabled_map = ilbm_enabled_map;
+        yw->_mapRegions.UnloadImages();
+        yw->_mapRegions.MenuImage = ilbm_menu_map;
+        yw->_mapRegions.MaskImage = ilbm_mask_map;
+        yw->_mapRegions.RolloverImage = ilbm_rollover_map;
+        yw->_mapRegions.FinishedImage = ilbm_finished_map;
+        yw->_mapRegions.EnabledImage = ilbm_enabled_map;
     }
 }
 
@@ -2849,7 +2839,7 @@ void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
 {
     std::array<Common::Rect, 256> regions;
 
-    if ( yw->LevelNet->ilbm_mask_map )
+    if ( yw->_mapRegions.MaskImage )
     {
         for (int i = 0; i < 256; i++)
         {
@@ -2859,7 +2849,7 @@ void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
             regions[i].bottom = -10000;
         }
 
-        ResBitmap *bitm = yw->LevelNet->ilbm_mask_map->GetResBmp();
+        ResBitmap *bitm = yw->_mapRegions.MaskImage->GetResBmp();
 
         SDL_LockSurface(bitm->swTex);
         for (int y = 0; y < bitm->height; y++ )
@@ -2886,17 +2876,17 @@ void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
 
         for (int i = 0; i < 256; i++)
         {
-            mapINFO &minf = yw->LevelNet->mapInfos[i];
+            TMapRegionInfo &minf = yw->_mapRegions.MapRegions[i];
 
-            if ( minf.field_0 && minf.field_0 != 4 && regions.at(i).IsValid() )
+            if ( minf.Status != TMapRegionInfo::STATUS_NONE && minf.Status != TMapRegionInfo::STATUS_NETWORK && regions.at(i).IsValid() )
             {
-                minf.field_9C.left = 2.0 * ((float)(regions[i].left) / (float)bitm->width) + -1.0;
-                minf.field_9C.right = 2.0 * ((float)(regions[i].right) / (float)bitm->width) + -1.0;
-                minf.field_9C.top = 2.0 * ((float)(regions[i].top) / (float)bitm->height) + -1.0;
-                minf.field_9C.bottom = 2.0 * ((float)(regions[i].bottom) / (float)bitm->height) + -1.0;
+                minf.Rect.left = 2.0 * ((float)(regions[i].left) / (float)bitm->width) + -1.0;
+                minf.Rect.right = 2.0 * ((float)(regions[i].right) / (float)bitm->width) + -1.0;
+                minf.Rect.top = 2.0 * ((float)(regions[i].top) / (float)bitm->height) + -1.0;
+                minf.Rect.bottom = 2.0 * ((float)(regions[i].bottom) / (float)bitm->height) + -1.0;
             }
             else
-                minf.field_9C = Common::FRect();
+                minf.Rect = Common::FRect();
         }
         
         SDL_UnlockSurface(bitm->swTex);
@@ -2909,8 +2899,8 @@ void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
     if ( mode == ENVMODE_TUTORIAL || mode == ENVMODE_SINGLEPLAY )
     {
         field_81AB = 0;
-        brief.Stage = 0;
-        LevelNet->field_BE38 = 0;
+        brief.Stage = TBriefengScreen::STAGE_NONE;
+        _mapRegions.SelectedRegion = 0;
 
         sb_0x4e75e8__sub0(this);
 
@@ -2927,31 +2917,31 @@ void NC_STACK_ypaworld::GameShellInitBkgMode(int mode)
 bool NC_STACK_ypaworld::GameShellInitBkg()
 {
     GFX::Engine.raster_func211(Common::Rect (-(screen_width / 2), -(screen_height / 2), screen_width / 2, screen_height / 2) );
-    GameShellInitBkgMode(GameShell->envMode);
+    GameShellInitBkgMode(GameShell->EnvMode);
     return true;
 }
 
-size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
+bool NC_STACK_ypaworld::OpenGameShell()
 {
-    ChangeResolutionForMenu(_gfxWindowed);
+    SetGameShellVideoMode(_gfxWindowed);
 
     if ( !yw_LoadSet(46) )
     {
         ypa_log_out("Unable to load set for shell\n");
-        return 0;
+        return false;
     }
 
-    usr->field_3426 = 0;
-    usr->field_D3A = 1;
-    usr->lastInputEvent = 0;
-    usr->p_ypaworld->icon_energy__h = 0;
-    usr->field_D52 = 0;
-    usr->p_ypaworld->field_81AF.clear();
-    usr->blocked = 0;
+    GameShell->field_3426 = 0;
+    GameShell->field_D3A = 1;
+    GameShell->lastInputEvent = 0;
+    GameShell->p_YW->icon_energy__h = 0;
+    GameShell->field_D52 = 0;
+    GameShell->p_YW->field_81AF.clear();
+    GameShell->blocked = 0;
 
-    if ( usr->default_lang_dll )
+    if ( GameShell->default_lang_dll )
     {
-        if ( ! ypaworld_func166(*usr->default_lang_dll) )
+        if ( ! ypaworld_func166(*GameShell->default_lang_dll) )
             ypa_log_out("Warning: Catalogue not found\n");
     }
     else
@@ -2959,12 +2949,12 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         ypa_log_out("Warning: No Language selected, use default set\n");
     }
 
-    ypaworld_func156__sub1(usr);
+    ypaworld_func156__sub1(GameShell);
 
     if ( !GameShellInitBkg() )
     {
         ypa_log_out("Could not init level select stuff!\n");
-        return 0;
+        return false;
     }
 
     GFX::displ_arg263 v233;
@@ -2992,16 +2982,16 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         {
             if ( v227.currr & 1 )
             {
-                strcpy(usr->win3d_guid, v227.guid);
+                strcpy(GameShell->win3d_guid, v227.guid);
 
                 if ( !strcmp(v227.name, "software") )
                 {
                     const std::string tmp = GetLocaleString(2472, "2472 = Software");
-                    strcpy(usr->win3d_name, tmp.c_str());
+                    strcpy(GameShell->win3d_name, tmp.c_str());
                 }
                 else
                 {
-                    strcpy(usr->win3d_name, v227.name);
+                    strcpy(GameShell->win3d_name, v227.name);
                 }
 
                 v3 = v261;
@@ -3010,7 +3000,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         }
     }
 
-    if ( usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE )
+    if ( GameShell->GFX_flags & World::GFX_FLAG_SOFTMOUSE )
     {
         GFX::Engine.setWDD_cursor(1);
     }
@@ -3021,51 +3011,51 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
 
     LoadKeyNames();
 
-    usr->InputConfigTitle[World::INPUT_BIND_PAUSE]       = GetLocaleString(544, "PAUSE");
-    usr->InputConfigTitle[World::INPUT_BIND_QUIT]        = GetLocaleString(536, "QUIT");
-    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = GetLocaleString(500, "DRIVE DIR");
-    usr->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = GetLocaleString(501, "DRIVE SPEED");
-    usr->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = GetLocaleString(511, "GUN HEIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = GetLocaleString(502, "FLY HEIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = GetLocaleString(503, "FLY SPEED");
-    usr->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = GetLocaleString(504, "FLY DIR");
-    usr->InputConfigTitle[World::INPUT_BIND_BRAKE]       = GetLocaleString(505, "STOP");
-    usr->InputConfigTitle[World::INPUT_BIND_FIRE]        = GetLocaleString(506, "FIRE");
-    usr->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = GetLocaleString(507, "FIRE VIEW");
-    usr->InputConfigTitle[World::INPUT_BIND_GUN]         = GetLocaleString(508, "FIRE GUN");
-    usr->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = GetLocaleString(561, "MAKE CURRENT VEHICLE COMMANDER");
-    usr->InputConfigTitle[World::INPUT_BIND_HUD]         = GetLocaleString(541, "HEADUP DISPLAY");
-    usr->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = GetLocaleString(520, "AUTOPILOT");
-    usr->InputConfigTitle[World::INPUT_BIND_ORDER]       = GetLocaleString(513, "ORDER");
-    usr->InputConfigTitle[World::INPUT_BIND_NEW]         = GetLocaleString(515, "NEW");
-    usr->InputConfigTitle[World::INPUT_BIND_ADD]         = GetLocaleString(516, "ADD");
-    usr->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = GetLocaleString(522, "FINDER");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = GetLocaleString(553, "AGGR: COME BACK");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = GetLocaleString(554, "AGGR: FIGHT TARGET");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = GetLocaleString(555, "AGGR: FIGHT ENEMIES TOO");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = GetLocaleString(556, "AGGR: CONQUER ALL ENEMY AREA TOO");
-    usr->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = GetLocaleString(557, "AGGR: GO AMOK");
-    usr->InputConfigTitle[World::INPUT_BIND_MAP]         = GetLocaleString(521, "MAP");
-    usr->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = GetLocaleString(558, "SELECT WAYPOINT");
-    usr->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = GetLocaleString(523, "LANDSCAPE");
-    usr->InputConfigTitle[World::INPUT_BIND_OWNER]       = GetLocaleString(524, "OWNER");
-    usr->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = GetLocaleString(525, "HEIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = GetLocaleString(531, "MAP MINI");
-    usr->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = GetLocaleString(527, "LOCK VIEWER");
-    usr->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = GetLocaleString(529, "ZOOM IN");
-    usr->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = GetLocaleString(530, "ZOOM OUT");
-    usr->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = GetLocaleString(538, "LOGWIN");
-    usr->InputConfigTitle[World::INPUT_BIND_CONTROL]     = GetLocaleString(517, "CONTROL");
-    usr->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = GetLocaleString(560, "GOTO LAST OCCUPIED VEHICLE");
-    usr->InputConfigTitle[World::INPUT_BIND_ATTACK]      = GetLocaleString(514, "FIGHT");
-    usr->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = GetLocaleString(533, "TO ROBO");
-    usr->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = GetLocaleString(535, "TO COMMANDER");
-    usr->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = GetLocaleString(534, "NEXT MAN");
-    usr->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = GetLocaleString(532, "NEXT COM");
-    usr->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = GetLocaleString(543, "JUMP TO LASTMSG-SENDER");
-    usr->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = GetLocaleString(552, "MESSAGE TO ALL PLAYERS");
-    usr->InputConfigTitle[World::INPUT_BIND_HELP]        = GetLocaleString(559, "HELP");
-    usr->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = GetLocaleString(562, "SITUATION ANALYZER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_PAUSE]       = GetLocaleString(544, "PAUSE");
+    GameShell->InputConfigTitle[World::INPUT_BIND_QUIT]        = GetLocaleString(536, "QUIT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = GetLocaleString(500, "DRIVE DIR");
+    GameShell->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = GetLocaleString(501, "DRIVE SPEED");
+    GameShell->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = GetLocaleString(511, "GUN HEIGHT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = GetLocaleString(502, "FLY HEIGHT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = GetLocaleString(503, "FLY SPEED");
+    GameShell->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = GetLocaleString(504, "FLY DIR");
+    GameShell->InputConfigTitle[World::INPUT_BIND_BRAKE]       = GetLocaleString(505, "STOP");
+    GameShell->InputConfigTitle[World::INPUT_BIND_FIRE]        = GetLocaleString(506, "FIRE");
+    GameShell->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = GetLocaleString(507, "FIRE VIEW");
+    GameShell->InputConfigTitle[World::INPUT_BIND_GUN]         = GetLocaleString(508, "FIRE GUN");
+    GameShell->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = GetLocaleString(561, "MAKE CURRENT VEHICLE COMMANDER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_HUD]         = GetLocaleString(541, "HEADUP DISPLAY");
+    GameShell->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = GetLocaleString(520, "AUTOPILOT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_ORDER]       = GetLocaleString(513, "ORDER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_NEW]         = GetLocaleString(515, "NEW");
+    GameShell->InputConfigTitle[World::INPUT_BIND_ADD]         = GetLocaleString(516, "ADD");
+    GameShell->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = GetLocaleString(522, "FINDER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = GetLocaleString(553, "AGGR: COME BACK");
+    GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = GetLocaleString(554, "AGGR: FIGHT TARGET");
+    GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = GetLocaleString(555, "AGGR: FIGHT ENEMIES TOO");
+    GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = GetLocaleString(556, "AGGR: CONQUER ALL ENEMY AREA TOO");
+    GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = GetLocaleString(557, "AGGR: GO AMOK");
+    GameShell->InputConfigTitle[World::INPUT_BIND_MAP]         = GetLocaleString(521, "MAP");
+    GameShell->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = GetLocaleString(558, "SELECT WAYPOINT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = GetLocaleString(523, "LANDSCAPE");
+    GameShell->InputConfigTitle[World::INPUT_BIND_OWNER]       = GetLocaleString(524, "OWNER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = GetLocaleString(525, "HEIGHT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = GetLocaleString(531, "MAP MINI");
+    GameShell->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = GetLocaleString(527, "LOCK VIEWER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = GetLocaleString(529, "ZOOM IN");
+    GameShell->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = GetLocaleString(530, "ZOOM OUT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = GetLocaleString(538, "LOGWIN");
+    GameShell->InputConfigTitle[World::INPUT_BIND_CONTROL]     = GetLocaleString(517, "CONTROL");
+    GameShell->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = GetLocaleString(560, "GOTO LAST OCCUPIED VEHICLE");
+    GameShell->InputConfigTitle[World::INPUT_BIND_ATTACK]      = GetLocaleString(514, "FIGHT");
+    GameShell->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = GetLocaleString(533, "TO ROBO");
+    GameShell->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = GetLocaleString(535, "TO COMMANDER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = GetLocaleString(534, "NEXT MAN");
+    GameShell->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = GetLocaleString(532, "NEXT COM");
+    GameShell->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = GetLocaleString(543, "JUMP TO LASTMSG-SENDER");
+    GameShell->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = GetLocaleString(552, "MESSAGE TO ALL PLAYERS");
+    GameShell->InputConfigTitle[World::INPUT_BIND_HELP]        = GetLocaleString(559, "HELP");
+    GameShell->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = GetLocaleString(562, "SITUATION ANALYZER");
 
     int v259_4;
 
@@ -3123,15 +3113,15 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     int v276 = v269;
     int v298 = (v278_4 - 2 * word_5A50C0) / 3;
 
-    usr->titel_button = Nucleus::CInit<NC_STACK_button>( {
+    GameShell->titel_button = Nucleus::CInit<NC_STACK_button>( {
         {NC_STACK_button::BTN_ATT_X, (int32_t)0},
         {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
         {NC_STACK_button::BTN_ATT_W, (int32_t)screen_width},
         {NC_STACK_button::BTN_ATT_H, (int32_t)screen_height} } );
-    if ( !usr->titel_button )
+    if ( !GameShell->titel_button )
     {
         ypa_log_out("Unable to create Titel-Button-Object\n");
-        return 0;
+        return false;
     }
 
     int v70 = 0;
@@ -3151,11 +3141,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_id = 1018;
     btn_64arg.up_id = 1024;
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = iniColors[68].r;
-    btn_64arg.txt_g = iniColors[68].g;
-    btn_64arg.txt_b = iniColors[68].b;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
-    if ( usr->titel_button->button_func64(&btn_64arg) )
+    if ( GameShell->titel_button->button_func64(&btn_64arg) )
     {
         btn_64arg.ypos = screen_height * 0.3083333333333334;
         btn_64arg.caption = GetLocaleString(81, "NETWORK");
@@ -3165,7 +3155,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.down_id = 1251;
         btn_64arg.button_id = 1016;
 
-        if ( usr->titel_button->button_func64(&btn_64arg) )
+        if ( GameShell->titel_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = screen_width * 0.3328125;
             btn_64arg.ypos = screen_height * 0.4333333333333334;
@@ -3177,7 +3167,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.button_id = 1003;
             btn_64arg.up_id = 1007;
 
-            if ( usr->titel_button->button_func64(&btn_64arg) )
+            if ( GameShell->titel_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.ypos = screen_height * 0.5125;
                 btn_64arg.caption = GetLocaleString(84, "SETTINGS");
@@ -3187,7 +3177,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.down_id = 1251;
                 btn_64arg.button_id = 1004;
 
-                if ( usr->titel_button->button_func64(&btn_64arg) )
+                if ( GameShell->titel_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.ypos = screen_height * 0.5916666666666667;
                     btn_64arg.caption = GetLocaleString(85, "PLAYER");
@@ -3197,7 +3187,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.up_id = 1001;
                     btn_64arg.button_id = 1001;
 
-                    if ( usr->titel_button->button_func64(&btn_64arg) )
+                    if ( GameShell->titel_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.xpos = screen_width * 0.890625;
                         btn_64arg.ypos = screen_height * 0.9583333333333334;
@@ -3209,7 +3199,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.down_id = 1251;
                         btn_64arg.button_id = 1008;
 
-                        if ( usr->titel_button->button_func64(&btn_64arg) )
+                        if ( GameShell->titel_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.xpos = screen_width * 0.3328125;
                             btn_64arg.ypos = screen_height * 0.7166666666666667;
@@ -3221,7 +3211,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.button_id = 1017;
                             btn_64arg.up_id = 1025;
 
-                            if ( usr->titel_button->button_func64(&btn_64arg) )
+                            if ( GameShell->titel_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.ypos = screen_height * 0.7958333333333333;
                                 btn_64arg.caption = GetLocaleString(88, "QUIT");
@@ -3231,7 +3221,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.down_id = 1251;
                                 btn_64arg.button_id = 1007;
 
-                                if ( usr->titel_button->button_func64(&btn_64arg) )
+                                if ( GameShell->titel_button->button_func64(&btn_64arg) )
                                     v70 = 1;
                             }
                         }
@@ -3244,32 +3234,32 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add button to Titel\n");
-        return 0;
+        return false;
     }
 
     NC_STACK_button::button_66arg v228;
 
-    if ( usr->lang_dlls_count <= 1 )
+    if ( GameShell->lang_dlls_count <= 1 )
     {
         v228.field_4 = 0;
         v228.butID = 1008;
-        usr->titel_button->button_func67(&v228);
+        GameShell->titel_button->button_func67(&v228);
     }
 
-    usr->titel_button->Hide();
+    GameShell->titel_button->Hide();
 
     dword_5A50B6_h = screen_width / 4 - 20;
 
-    usr->sub_bar_button = Nucleus::CInit<NC_STACK_button>({ 
+    GameShell->sub_bar_button = Nucleus::CInit<NC_STACK_button>({ 
         {NC_STACK_button::BTN_ATT_X, (int32_t)0},
         {NC_STACK_button::BTN_ATT_Y, (int32_t)(screen_height - font_default_h)},
         {NC_STACK_button::BTN_ATT_W, (int32_t)screen_width},
         {NC_STACK_button::BTN_ATT_H, (int32_t)font_default_h}});
 
-    if ( !usr->sub_bar_button )
+    if ( !GameShell->sub_bar_button )
     {
         ypa_log_out("Unable to create Button-Object\n");
-        return 0;
+        return false;
     }
 
     v70 = 0;
@@ -3289,7 +3279,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_id = 1011;
     btn_64arg.up_id = 1016;
 
-    if ( usr->sub_bar_button->button_func64(&btn_64arg) )
+    if ( GameShell->sub_bar_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 2 * (word_5A50C0 + dword_5A50B6_h);
         btn_64arg.caption = GetLocaleString(641, "STEP FORWARD");
@@ -3299,7 +3289,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.pressed_id = 1018;
         btn_64arg.button_id = 1013;
 
-        if ( usr->sub_bar_button->button_func64(&btn_64arg) )
+        if ( GameShell->sub_bar_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
             btn_64arg.caption = GetLocaleString(643, "START GAME");
@@ -3309,7 +3299,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.down_id = 1251;
             btn_64arg.button_id = 1014;
 
-            if ( usr->sub_bar_button->button_func64(&btn_64arg) )
+            if ( GameShell->sub_bar_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = (screen_width - 3 * dword_5A50B6_h - 2 * word_5A50C0);
                 btn_64arg.caption = GetLocaleString(2422, "GOTO LOADSAVE");
@@ -3319,7 +3309,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.button_id = 1020;
                 btn_64arg.up_id = 1026;
 
-                if ( usr->sub_bar_button->button_func64(&btn_64arg) )
+                if ( GameShell->sub_bar_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.xpos = (screen_width - 2 * dword_5A50B6_h - word_5A50C0);
                     btn_64arg.caption = GetLocaleString(642, "LOAD GAME");
@@ -3329,7 +3319,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.down_id = 1251;
                     btn_64arg.button_id = 1015;
 
-                    if ( usr->sub_bar_button->button_func64(&btn_64arg) )
+                    if ( GameShell->sub_bar_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.xpos = screen_width - dword_5A50B6_h;
                         btn_64arg.caption = GetLocaleString(644, "GO BACK");
@@ -3339,7 +3329,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.button_id = 1019;
                         btn_64arg.up_id = 1013;
 
-                        if ( usr->sub_bar_button->button_func64(&btn_64arg) )
+                        if ( GameShell->sub_bar_button->button_func64(&btn_64arg) )
                         {
                             v70 = 1;
                         }
@@ -3351,37 +3341,37 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add button to sub-bar\n");
-        return 0;
+        return false;
     }
 
-    if ( usr->field_3426 != 1 )
+    if ( GameShell->field_3426 != 1 )
     {
         v228.butID = 1015;
         v228.field_4 = 0;
-        usr->sub_bar_button->button_func67(&v228);
+        GameShell->sub_bar_button->button_func67(&v228);
     }
 
     v228.field_4 = 0;
     v228.butID = 1014;
-    usr->sub_bar_button->button_func67(&v228);
+    GameShell->sub_bar_button->button_func67(&v228);
 
     v228.butID = 1013;
-    usr->sub_bar_button->button_func67(&v228);
+    GameShell->sub_bar_button->button_func67(&v228);
 
     v228.butID = 1011;
-    usr->sub_bar_button->button_func67(&v228);
+    GameShell->sub_bar_button->button_func67(&v228);
 
-    usr->sub_bar_button->Hide();
+    GameShell->sub_bar_button->Hide();
 
-    usr->confirm_button = Nucleus::CInit<NC_STACK_button>( {
+    GameShell->confirm_button = Nucleus::CInit<NC_STACK_button>( {
         {NC_STACK_button::BTN_ATT_X, (int32_t)0},
         {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
         {NC_STACK_button::BTN_ATT_W, (int32_t)screen_width},
         {NC_STACK_button::BTN_ATT_H, (int32_t)screen_height}} );
-    if ( !usr->confirm_button )
+    if ( !GameShell->confirm_button )
     {
         ypa_log_out("Unable to create Confirm-Button-Object\n");
-        return 0;
+        return false;
     }
 
     btn_64arg.tileset_up = 18;
@@ -3398,11 +3388,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.up_id = 1350;
     btn_64arg.down_id = 1251;
     btn_64arg.button_id = 1300;
-    btn_64arg.txt_r = iniColors[68].r;
-    btn_64arg.txt_g = iniColors[68].g;
-    btn_64arg.txt_b = iniColors[68].b;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
-    if ( usr->confirm_button->button_func64(&btn_64arg) )
+    if ( GameShell->confirm_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = screen_width * 0.625;
         btn_64arg.caption = GetLocaleString(3, "CANCEL");
@@ -3412,7 +3402,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.down_id = 1251;
         btn_64arg.pressed_id = 0;
 
-        if ( usr->confirm_button->button_func64(&btn_64arg) )
+        if ( GameShell->confirm_button->button_func64(&btn_64arg) )
         {
             btn_64arg.tileset_down = 16;
             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
@@ -3428,11 +3418,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
             btn_64arg.button_id = 1302;
             btn_64arg.width = screen_width * 0.5;
-            btn_64arg.txt_r = iniColors[60].r;
-            btn_64arg.txt_g = iniColors[60].g;
-            btn_64arg.txt_b = iniColors[60].b;
+            btn_64arg.txt_r = _iniColors[60].r;
+            btn_64arg.txt_g = _iniColors[60].g;
+            btn_64arg.txt_b = _iniColors[60].b;
 
-            if ( usr->confirm_button->button_func64(&btn_64arg) )
+            if ( GameShell->confirm_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.button_id = 1303;
                 btn_64arg.ypos = screen_height * 0.46875;
@@ -3440,18 +3430,18 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                 btn_64arg.caption2.clear();
 
-                usr->confirm_button->button_func64(&btn_64arg);
+                GameShell->confirm_button->button_func64(&btn_64arg);
             }
         }
     }
 
     v228.butID = 1300;
-    usr->confirm_button->button_func67(&v228);
+    GameShell->confirm_button->button_func67(&v228);
 
     v228.butID = 1301;
-    usr->confirm_button->button_func67(&v228);
+    GameShell->confirm_button->button_func67(&v228);
 
-    usr->confirm_button->Hide();
+    GameShell->confirm_button->Hide();
 
     dword_5A50B2_h = v278_4 - font_yscrl_bkg_w;
 
@@ -3470,28 +3460,28 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.instantInput = false;
     args.keyboardInput = true;
 
-    if ( !usr->input_listview.Init(this, args) )
+    if ( !GameShell->input_listview.Init(this, args) )
     {
         ypa_log_out("Unable to create Input-ListView\n");
-        return 0;
+        return false;
     }
 
-    usr->input_listview.x = v278;
-    usr->input_listview.y = v273 + (word_5A50C2 + font_default_h) * 4;
+    GameShell->input_listview.x = v278;
+    GameShell->input_listview.y = v273 + (word_5A50C2 + font_default_h) * 4;
 
-    usr->field_D5A = v278;
-    usr->field_0xd5c = v273;
+    GameShell->field_D5A = v278;
+    GameShell->field_0xd5c = v273;
 
     
-    usr->button_input_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)usr->field_D5A},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)usr->field_0xd5c},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - usr->field_D5A)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - usr->field_0xd5c)}});
-    if ( !usr->button_input_button )
+    GameShell->button_input_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)GameShell->field_D5A},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)GameShell->field_0xd5c},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - GameShell->field_D5A)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - GameShell->field_0xd5c)}});
+    if ( !GameShell->button_input_button )
     {
         ypa_log_out("Unable to create Input-Button\n");
-        return 0;
+        return false;
     }
 
 
@@ -3510,11 +3500,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.pressed_id = 0;
     btn_64arg.button_id = 1057;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = iniColors[68].r;
-    btn_64arg.txt_g = iniColors[68].g;
-    btn_64arg.txt_b = iniColors[68].b;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
-    if ( usr->button_input_button->button_func64(&btn_64arg) )
+    if ( GameShell->button_input_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + font_default_h;
@@ -3522,11 +3512,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.caption2.clear();
         btn_64arg.pressed_id = 0;
         btn_64arg.button_id = 1058;
-        btn_64arg.txt_r = iniColors[60].r;
-        btn_64arg.txt_g = iniColors[60].g;
-        btn_64arg.txt_b = iniColors[60].b;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
 
-        if ( usr->button_input_button->button_func64(&btn_64arg) )
+        if ( GameShell->button_input_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
@@ -3535,7 +3525,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.pressed_id = 0;
             btn_64arg.button_id = 1059;
 
-            if ( usr->button_input_button->button_func64(&btn_64arg) )
+            if ( GameShell->button_input_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
@@ -3544,7 +3534,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.pressed_id = 0;
                 btn_64arg.button_id = 1060;
 
-                if ( usr->button_input_button->button_func64(&btn_64arg) )
+                if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.tileset_down = 19;
                     btn_64arg.field_3A = 30;
@@ -3561,7 +3551,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.down_id = 1050;
                     btn_64arg.button_id = 1050;
 
-                    if ( usr->button_input_button->button_func64(&btn_64arg) )
+                    if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.tileset_down = 16;
                         btn_64arg.tileset_up = 16;
@@ -3576,11 +3566,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.up_id = 0;
                         btn_64arg.pressed_id = 0;
                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.txt_r = iniColors[60].r;
-                        btn_64arg.txt_g = iniColors[60].g;
-                        btn_64arg.txt_b = iniColors[60].b;
+                        btn_64arg.txt_r = _iniColors[60].r;
+                        btn_64arg.txt_g = _iniColors[60].g;
+                        btn_64arg.txt_b = _iniColors[60].b;
 
-                        if ( usr->button_input_button->button_func64(&btn_64arg) )
+                        if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.tileset_down = 19;
                             btn_64arg.field_3A = 30;
@@ -3596,7 +3586,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.up_id = 1059;
                             btn_64arg.flags = 0;
 
-                            if ( usr->button_input_button->button_func64(&btn_64arg) )
+                            if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.tileset_down = 16;
                                 btn_64arg.tileset_up = 16;
@@ -3611,11 +3601,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.pressed_id = 0;
                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                 btn_64arg.button_id = 2;
-                                btn_64arg.txt_r = iniColors[60].r;
-                                btn_64arg.txt_g = iniColors[60].g;
-                                btn_64arg.txt_b = iniColors[60].b;
+                                btn_64arg.txt_r = _iniColors[60].r;
+                                btn_64arg.txt_g = _iniColors[60].g;
+                                btn_64arg.txt_b = _iniColors[60].b;
 
-                                if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                 {
                                     btn_64arg.tileset_down = 19;
                                     btn_64arg.field_3A = 30;
@@ -3632,7 +3622,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.flags = 0;
                                     btn_64arg.down_id = 1056;
 
-                                    if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                    if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                     {
                                         btn_64arg.tileset_down = 16;
                                         btn_64arg.tileset_up = 16;
@@ -3648,7 +3638,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.up_id = 0;
                                         btn_64arg.pressed_id = 0;
 
-                                        if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                        if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                         {
                                             btn_64arg.tileset_down = 19;
                                             btn_64arg.tileset_up = 18;
@@ -3664,11 +3654,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.pressed_id = 0;
                                             btn_64arg.up_id = 1057;
                                             btn_64arg.button_id = 1056;
-                                            btn_64arg.txt_r = iniColors[68].r;
-                                            btn_64arg.txt_g = iniColors[68].g;
-                                            btn_64arg.txt_b = iniColors[68].b;
+                                            btn_64arg.txt_r = _iniColors[68].r;
+                                            btn_64arg.txt_g = _iniColors[68].g;
+                                            btn_64arg.txt_b = _iniColors[68].b;
 
-                                            if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                            if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.xpos = word_5A50C0 + v278_4 / 2;
                                                 btn_64arg.caption = GetLocaleString(13, "RESET");
@@ -3677,7 +3667,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.up_id = 1053;
                                                 btn_64arg.button_id = 1053;
 
-                                                if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                                if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                                 {
                                                     btn_64arg.xpos = v267;
                                                     btn_64arg.ypos = v269;
@@ -3690,7 +3680,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.up_id = 1052;
                                                     btn_64arg.down_id = 1251;
 
-                                                    if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                                    if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                                     {
                                                         btn_64arg.xpos = v274;
                                                         btn_64arg.ypos = v258;
@@ -3701,7 +3691,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.button_id = 1052;
                                                         btn_64arg.pressed_id = 0;
 
-                                                        if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                                        if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                                         {
                                                             btn_64arg.xpos = v264;
                                                             btn_64arg.ypos = v276;
@@ -3712,7 +3702,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             btn_64arg.caption2.clear();
                                                             btn_64arg.pressed_id = 0;
 
-                                                            if ( usr->button_input_button->button_func64(&btn_64arg) )
+                                                            if ( GameShell->button_input_button->button_func64(&btn_64arg) )
                                                             {
                                                                 v70 = 1;
                                                             }
@@ -3733,16 +3723,16 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add input-button\n");
-        return 0;
+        return false;
     }
 
-    usr->button_input_button->Hide();
+    GameShell->button_input_button->Hide();
 
     int v294 = v278_4 - 3 * word_5A50C0 - font_yscrl_bkg_w;
     int v94 = (v278_4 - 3 * word_5A50C0 - font_yscrl_bkg_w) * 0.6;
 
 
-    args.Init();
+    args = GuiList::tInit();
     args.resizeable = false;
     args.numEntries = GFX::GFXEngine::Instance.GetAvailableModes().size();
     args.shownEntries = 4;
@@ -3757,13 +3747,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.instantInput = true;
     args.keyboardInput = true;
 
-    if ( !usr->video_listvw.Init(this, args) )
+    if ( !GameShell->video_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create Game-Video-Menu\n");
-        return 0;
+        return false;
     }
 
-    args.Init();
+    args = GuiList::tInit();
     args.resizeable = false;
     args.numEntries = v261;
     args.shownEntries = 4;
@@ -3778,35 +3768,35 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.instantInput = true;
     args.keyboardInput = true;
 
-    if ( !usr->d3d_listvw.Init(this, args) )
+    if ( !GameShell->d3d_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create D3D-Menu\n");
-        return 0;
+        return false;
     }
 
-    usr->field_13AA = v278;
-    usr->field_0x13ac = v273;
+    GameShell->field_13AA = v278;
+    GameShell->field_0x13ac = v273;
 
-    usr->video_button = Nucleus::CInit<NC_STACK_button>({
-        {NC_STACK_button::BTN_ATT_X, (int32_t)usr->field_13AA},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)usr->field_0x13ac},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - usr->field_13AA)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - usr->field_0x13ac)}});
+    GameShell->video_button = Nucleus::CInit<NC_STACK_button>({
+        {NC_STACK_button::BTN_ATT_X, (int32_t)GameShell->field_13AA},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)GameShell->field_0x13ac},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - GameShell->field_13AA)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - GameShell->field_0x13ac)}});
 
-    if ( !usr->video_button )
+    if ( !GameShell->video_button )
     {
         ypa_log_out("Unable to create Video-Button\n");
-        return 0;
+        return false;
     }
 
     int v98 = v294 * 0.4;
     int v99 = v278 + word_5A50C0 + v98;
 
-    usr->video_listvw.x = v99;
-    usr->video_listvw.y = 6 * word_5A50C2 + 6 * font_default_h + v273;
+    GameShell->video_listvw.x = v99;
+    GameShell->video_listvw.y = 6 * word_5A50C2 + 6 * font_default_h + v273;
 
-    usr->d3d_listvw.x = v99;
-    usr->d3d_listvw.y = 7 * word_5A50C2 + 7 * font_default_h + v273;
+    GameShell->d3d_listvw.x = v99;
+    GameShell->d3d_listvw.y = 7 * word_5A50C2 + 7 * font_default_h + v273;
 
     v70 = 0;
 
@@ -3824,11 +3814,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.pressed_id = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.button_id = 1168;
-    btn_64arg.txt_r = iniColors[68].r;
-    btn_64arg.txt_g = iniColors[68].g;
-    btn_64arg.txt_b = iniColors[68].b;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
-    if ( usr->video_button->button_func64(&btn_64arg) )
+    if ( GameShell->video_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + font_default_h;
@@ -3836,11 +3826,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.caption = GetLocaleString(328, "2");
         btn_64arg.caption2.clear();
         btn_64arg.button_id = 1169;
-        btn_64arg.txt_r = iniColors[60].r;
-        btn_64arg.txt_g = iniColors[60].g;
-        btn_64arg.txt_b = iniColors[60].b;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
 
-        if ( usr->video_button->button_func64(&btn_64arg) )
+        if ( GameShell->video_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
@@ -3849,7 +3839,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.button_id = 1170;
             btn_64arg.caption2.clear();
 
-            if ( usr->video_button->button_func64(&btn_64arg) )
+            if ( GameShell->video_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.width = v278_4;
@@ -3858,7 +3848,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1171;
 
-                if ( usr->video_button->button_func64(&btn_64arg) )
+                if ( GameShell->video_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.tileset_down = 16;
                     btn_64arg.tileset_up = 16;
@@ -3874,11 +3864,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.pressed_id = 0;
                     btn_64arg.button_id = 2;
                     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
-                    btn_64arg.txt_r = iniColors[60].r;
-                    btn_64arg.txt_g = iniColors[60].g;
-                    btn_64arg.txt_b = iniColors[60].b;
+                    btn_64arg.txt_r = _iniColors[60].r;
+                    btn_64arg.txt_g = _iniColors[60].g;
+                    btn_64arg.txt_b = _iniColors[60].b;
 
-                    if ( usr->video_button->button_func64(&btn_64arg) )
+                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.tileset_down = 19;
                         btn_64arg.field_3A = 30;
@@ -3893,11 +3883,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.up_id = 1101;
                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                         btn_64arg.width = v294 * 0.6;
-                        btn_64arg.txt_r = iniColors[68].r;
-                        btn_64arg.txt_g = iniColors[68].g;
-                        btn_64arg.txt_b = iniColors[68].b;
+                        btn_64arg.txt_r = _iniColors[68].r;
+                        btn_64arg.txt_g = _iniColors[68].g;
+                        btn_64arg.txt_b = _iniColors[68].b;
 
-                        if ( usr->video_button->button_func64(&btn_64arg) )
+                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.tileset_down = 16;
                             btn_64arg.tileset_up = 16;
@@ -3913,11 +3903,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.pressed_id = 0;
                             btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
                             btn_64arg.button_id = 2;
-                            btn_64arg.txt_r = iniColors[60].r;
-                            btn_64arg.txt_g = iniColors[60].g;
-                            btn_64arg.txt_b = iniColors[60].b;
+                            btn_64arg.txt_r = _iniColors[60].r;
+                            btn_64arg.txt_g = _iniColors[60].g;
+                            btn_64arg.txt_b = _iniColors[60].b;
 
-                            if ( usr->video_button->button_func64(&btn_64arg) )
+                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.width = v294 * 0.6;
                                 btn_64arg.tileset_down = 19;
@@ -3930,13 +3920,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.pressed_id = 0;
                                 btn_64arg.xpos = word_5A50C0 + v294 * 0.4;
                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                btn_64arg.caption = usr->win3d_name;
+                                btn_64arg.caption = GameShell->win3d_name;
                                 btn_64arg.button_id = 1172;
-                                btn_64arg.txt_r = iniColors[68].r;
-                                btn_64arg.txt_g = iniColors[68].g;
-                                btn_64arg.txt_b = iniColors[68].b;
+                                btn_64arg.txt_r = _iniColors[68].r;
+                                btn_64arg.txt_g = _iniColors[68].g;
+                                btn_64arg.txt_b = _iniColors[68].b;
 
-                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                 {
                                     int v117 = dword_5A50B2 - 6 * word_5A50C0 - 2 * v259_4;
 
@@ -3955,7 +3945,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.flags = 0;
                                     btn_64arg.button_id = 1157;
 
-                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                     {
                                         int v120 = v117 / 2;
 
@@ -3972,11 +3962,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.pressed_id = 0;
                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                         btn_64arg.button_id = 2;
-                                        btn_64arg.txt_r = iniColors[60].r;
-                                        btn_64arg.txt_g = iniColors[60].g;
-                                        btn_64arg.txt_b = iniColors[60].b;
+                                        btn_64arg.txt_r = _iniColors[60].r;
+                                        btn_64arg.txt_g = _iniColors[60].g;
+                                        btn_64arg.txt_b = _iniColors[60].b;
 
-                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                         {
                                             btn_64arg.tileset_down = 19;
                                             btn_64arg.tileset_up = 18;
@@ -3992,7 +3982,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.flags = 0;
                                             btn_64arg.button_id = 1160;
 
-                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.tileset_down = 16;
                                                 btn_64arg.tileset_up = 16;
@@ -4008,7 +3998,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.button_id = 2;
                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                 {
                                                     btn_64arg.tileset_down = 19;
                                                     btn_64arg.tileset_up = 18;
@@ -4025,7 +4015,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.button_id = 1165;
                                                     btn_64arg.flags = 0;
 
-                                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                     {
                                                         btn_64arg.tileset_down = 16;
                                                         btn_64arg.tileset_up = 16;
@@ -4041,7 +4031,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.button_id = 2;
                                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                         {
                                                             btn_64arg.width = v259_4;
                                                             btn_64arg.tileset_down = 19;
@@ -4057,7 +4047,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             btn_64arg.button_id = 1166;
                                                             btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
 
-                                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                             {
                                                                 btn_64arg.tileset_down = 16;
                                                                 btn_64arg.tileset_up = 16;
@@ -4073,7 +4063,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.pressed_id = 0;
                                                                 btn_64arg.button_id = 2;
 
-                                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                 {
                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                     btn_64arg.xpos = v259_4 + word_5A50C0;
@@ -4087,7 +4077,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                     btn_64arg.pressed_id = 0;
                                                                     btn_64arg.button_id = 0;
 
-                                                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                     {
                                                                         btn_64arg.width = v259_4;
                                                                         btn_64arg.tileset_down = 19;
@@ -4103,7 +4093,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                         btn_64arg.down_id = 1113;
                                                                         btn_64arg.up_id = 1114;
 
-                                                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                         {
                                                                             btn_64arg.tileset_down = 16;
                                                                             btn_64arg.tileset_up = 16;
@@ -4119,7 +4109,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                             btn_64arg.button_id = 0;
                                                                             btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                             {
                                                                                 btn_64arg.width = v259_4;
                                                                                 btn_64arg.tileset_down = 19;
@@ -4135,7 +4125,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                 btn_64arg.button_id = 1164;
                                                                                 btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
 
-                                                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                 {
                                                                                     btn_64arg.tileset_down = 19;
                                                                                     btn_64arg.field_3A = 30;
@@ -4152,7 +4142,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                     btn_64arg.up_id = 1127;
                                                                                     btn_64arg.flags = 0;
 
-                                                                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                     {
                                                                                         btn_64arg.tileset_down = 16;
                                                                                         btn_64arg.tileset_up = 16;
@@ -4168,7 +4158,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                         btn_64arg.button_id = 0;
                                                                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                         {
                                                                                             btn_64arg.tileset_down = 16;
                                                                                             btn_64arg.tileset_up = 16;
@@ -4184,7 +4174,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                             btn_64arg.button_id = 0;
                                                                                             btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                             {
                                                                                                 btn_64arg.width = v259_4;
                                                                                                 btn_64arg.tileset_down = 19;
@@ -4200,7 +4190,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
                                                                                                 btn_64arg.up_id = 1111;
 
-                                                                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                 {
                                                                                                     btn_64arg.tileset_down = 16;
                                                                                                     btn_64arg.tileset_up = 16;
@@ -4217,7 +4207,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.button_id = 2;
                                                                                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                                                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                     {
                                                                                                         NC_STACK_button::Slider v225;
 
@@ -4240,7 +4230,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.up_id = 1109;
                                                                                                         btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.55;
 
-                                                                                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                         {
                                                                                                             btn_64arg.tileset_down = 16;
                                                                                                             btn_64arg.tileset_up = 16;
@@ -4256,7 +4246,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                             btn_64arg.caption = " 4";
                                                                                                             btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
 
-                                                                                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                             {
                                                                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                 btn_64arg.xpos = 0;
@@ -4270,7 +4260,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.button_id = 2;
                                                                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                                                                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                 {
                                                                                                                     btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.55;
 
@@ -4292,7 +4282,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                     btn_64arg.pressed_id = 1116;
                                                                                                                     btn_64arg.flags = 0;
 
-                                                                                                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                     {
                                                                                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                         btn_64arg.tileset_down = 16;
@@ -4308,7 +4298,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                         btn_64arg.up_id = 0;
                                                                                                                         btn_64arg.pressed_id = 0;
 
-                                                                                                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                         {
                                                                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                                             btn_64arg.xpos = 0;
@@ -4322,7 +4312,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                             btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                                                                                                             btn_64arg.button_id = 2;
 
-                                                                                                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                             {
                                                                                                                                 btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.55;
                                                                                                                                 v225.min = 1;
@@ -4343,7 +4333,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                 btn_64arg.flags = 0;
                                                                                                                                 btn_64arg.button_id = 1154;
 
-                                                                                                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                                 {
                                                                                                                                     btn_64arg.tileset_down = 16;
                                                                                                                                     btn_64arg.tileset_up = 16;
@@ -4359,7 +4349,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                     btn_64arg.button_id = 1155;
                                                                                                                                     btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
 
-                                                                                                                                    if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                                    if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                                     {
                                                                                                                                         btn_64arg.tileset_up = 18;
                                                                                                                                         btn_64arg.field_3A = 30;
@@ -4375,11 +4365,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                         btn_64arg.pressed_id = 0;
                                                                                                                                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                                                                                                                         btn_64arg.button_id = 1161;
-                                                                                                                                        btn_64arg.txt_r = iniColors[68].r;
-                                                                                                                                        btn_64arg.txt_g = iniColors[68].g;
-                                                                                                                                        btn_64arg.txt_b = iniColors[68].b;
+                                                                                                                                        btn_64arg.txt_r = _iniColors[68].r;
+                                                                                                                                        btn_64arg.txt_g = _iniColors[68].g;
+                                                                                                                                        btn_64arg.txt_b = _iniColors[68].b;
 
-                                                                                                                                        if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                                        if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                                         {
                                                                                                                                             btn_64arg.xpos = v274;
                                                                                                                                             btn_64arg.ypos = v258;
@@ -4391,7 +4381,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                             btn_64arg.pressed_id = 0;
                                                                                                                                             btn_64arg.button_id = 1167;
 
-                                                                                                                                            if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                                            if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                                             {
                                                                                                                                                 btn_64arg.xpos = v264;
                                                                                                                                                 btn_64arg.ypos = v276;
@@ -4403,7 +4393,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                                                 btn_64arg.pressed_id = 0;
                                                                                                                                                 btn_64arg.button_id = 1162;
 
-                                                                                                                                                if ( usr->video_button->button_func64(&btn_64arg) )
+                                                                                                                                                if ( GameShell->video_button->button_func64(&btn_64arg) )
                                                                                                                                                 {
                                                                                                                                                     v70 = 1;
                                                                                                                                                 }
@@ -4445,23 +4435,23 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add video-button\n");
-        return 0;
+        return false;
     }
 
     NC_STACK_button::button_66arg v229;
     v229.butID = 1151;
-    v229.field_4 = ((usr->snd__flags2 & 1) == 0) + 1;
+    v229.field_4 = ((GameShell->snd__flags2 & 1) == 0) + 1;
 
-    usr->video_button->button_func73(&v229);
+    GameShell->video_button->button_func73(&v229);
 
 
-    usr->video_button->Hide();
+    GameShell->video_button->Hide();
 
     word_5A50B0 = v278_4;
 
-    args.Init();
+    args = GuiList::tInit();
     args.resizeable = false;
-    args.numEntries = usr->profiles.size();
+    args.numEntries = GameShell->profiles.size();
     args.shownEntries = 10;
     args.firstShownEntry = 0;
     args.selectedEntry = 0;
@@ -4474,40 +4464,40 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.instantInput = false;
     args.keyboardInput = true;
 
-    if ( !usr->disk_listvw.Init(this, args) )
+    if ( !GameShell->disk_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create disk-listview\n");
-        return 0;
+        return false;
     }
 
-    usr->field_0x175c = v278;
-    usr->field_175E = v273;
+    GameShell->field_0x175c = v278;
+    GameShell->field_175E = v273;
 
-    usr->disk_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)usr->field_0x175c},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)usr->field_175E},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - usr->field_0x175c)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - usr->field_175E)}} );
+    GameShell->disk_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)GameShell->field_0x175c},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)GameShell->field_175E},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - GameShell->field_0x175c)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - GameShell->field_175E)}} );
 
-    if ( !usr->disk_button )
+    if ( !GameShell->disk_button )
     {
         ypa_log_out("Unable to create disk-buttonobject\n");
-        return 0;
+        return false;
     }
 
-    usr->field_0x1758 = v278;
-    usr->field_175A = 4 * (word_5A50C2 + font_default_h) + v273;
+    GameShell->field_0x1758 = v278;
+    GameShell->field_175A = 4 * (word_5A50C2 + font_default_h) + v273;
 
-    usr->disk_listvw.x = usr->field_0x1758;
-    usr->disk_listvw.y = usr->field_175A;
+    GameShell->disk_listvw.x = GameShell->field_0x1758;
+    GameShell->disk_listvw.y = GameShell->field_175A;
 
-    usr->usernamedir = usr->user_name;
+    GameShell->usernamedir = GameShell->UserName;
 
-    usr->usernamedir_len = usr->usernamedir.size();
+    GameShell->usernamedir_len = GameShell->usernamedir.size();
 
-    std::string v223 = usr->usernamedir;
+    std::string v223 = GameShell->usernamedir;
 
-    if ( usr->field_0x1744 )
+    if ( GameShell->field_0x1744 )
         v223 += "h";
 
     v70 = 0;
@@ -4524,22 +4514,22 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.caption2.clear();
     btn_64arg.button_id = 1108;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = iniColors[68].r;
-    btn_64arg.txt_g = iniColors[68].g;
-    btn_64arg.txt_b = iniColors[68].b;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
-    if ( usr->disk_button->button_func64(&btn_64arg) )
+    if ( GameShell->disk_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C0 + font_default_h;
         btn_64arg.caption = GetLocaleString(368, "2");
         btn_64arg.button_id = 1109;
         btn_64arg.caption2.clear();
-        btn_64arg.txt_r = iniColors[60].r;
-        btn_64arg.txt_g = iniColors[60].g;
-        btn_64arg.txt_b = iniColors[60].b;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
 
-        if ( usr->disk_button->button_func64(&btn_64arg))
+        if ( GameShell->disk_button->button_func64(&btn_64arg))
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C0);
@@ -4547,7 +4537,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.caption2.clear();
             btn_64arg.button_id = 1110;
 
-            if ( usr->disk_button->button_func64(&btn_64arg) )
+            if ( GameShell->disk_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C0 + font_default_h);
@@ -4555,7 +4545,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1111;
 
-                if ( usr->disk_button->button_func64(&btn_64arg) )
+                if ( GameShell->disk_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.tileset_down = 17;
                     btn_64arg.tileset_up = 17;
@@ -4572,7 +4562,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.button_id = 1100;
                     btn_64arg.ypos = 6 * word_5A50C0 + 14 * font_default_h;
 
-                    if ( usr->disk_button->button_func64(&btn_64arg) )
+                    if ( GameShell->disk_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.tileset_down = 19;
                         btn_64arg.tileset_up = 18;
@@ -4588,11 +4578,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.pressed_id = 0;
                         btn_64arg.button_id = 1101;
                         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.txt_r = iniColors[68].r;
-                        btn_64arg.txt_g = iniColors[68].g;
-                        btn_64arg.txt_b = iniColors[68].b;
+                        btn_64arg.txt_r = _iniColors[68].r;
+                        btn_64arg.txt_g = _iniColors[68].g;
+                        btn_64arg.txt_b = _iniColors[68].b;
 
-                        if ( usr->disk_button->button_func64(&btn_64arg) )
+                        if ( GameShell->disk_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.xpos = (3 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.75;
                             btn_64arg.caption = GetLocaleString(362, "DELETE");
@@ -4600,7 +4590,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.up_id = 1161;
                             btn_64arg.button_id = 1102;
 
-                            if ( usr->disk_button->button_func64(&btn_64arg) )
+                            if ( GameShell->disk_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.xpos = 0;
                                 btn_64arg.caption = GetLocaleString(363, "NEW GAME");
@@ -4608,7 +4598,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.caption2.clear();
                                 btn_64arg.up_id = 1162;
 
-                                if ( usr->disk_button->button_func64(&btn_64arg) )
+                                if ( GameShell->disk_button->button_func64(&btn_64arg) )
                                 {
                                     btn_64arg.xpos = (2 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.5;
                                     btn_64arg.caption = GetLocaleString(361, "SAVE");
@@ -4616,7 +4606,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.caption2.clear();
                                     btn_64arg.up_id = 1163;
 
-                                    if ( usr->disk_button->button_func64(&btn_64arg) )
+                                    if ( GameShell->disk_button->button_func64(&btn_64arg) )
                                     {
                                         btn_64arg.xpos = v267;
                                         btn_64arg.ypos = v269;
@@ -4628,7 +4618,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                         btn_64arg.pressed_id = 0;
                                         btn_64arg.up_id = 1164;
 
-                                        if ( usr->disk_button->button_func64(&btn_64arg) )
+                                        if ( GameShell->disk_button->button_func64(&btn_64arg) )
                                         {
                                             btn_64arg.ypos = v258;
                                             btn_64arg.width = v262;
@@ -4638,7 +4628,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.caption2.clear();
                                             btn_64arg.up_id = 1250;
 
-                                            if ( usr->disk_button->button_func64(&btn_64arg) )
+                                            if ( GameShell->disk_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.ypos = v276;
                                                 btn_64arg.width = v298;
@@ -4648,7 +4638,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.caption2.clear();
                                                 btn_64arg.up_id = 1165;
 
-                                                if ( usr->disk_button->button_func64(&btn_64arg) )
+                                                if ( GameShell->disk_button->button_func64(&btn_64arg) )
                                                 {
                                                     v70 = 1;
                                                 }
@@ -4663,17 +4653,21 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             }
         }
     }
+    
     if ( !v70 )
+    {
         ypa_log_out("Unable to add button to disk-buttonobject\n");
+        return false;
+    }
 
 
-    usr->disk_button->Hide();
+    GameShell->disk_button->Hide();
 
     v228.field_4 = 0;
     v228.butID = 1105;
-    usr->disk_button->button_func67(&v228);
+    GameShell->disk_button->button_func67(&v228);
 
-    args.Init();
+    args = GuiList::tInit();
     args.resizeable = false;
     args.numEntries = 10;
     args.shownEntries = 10;
@@ -4689,30 +4683,30 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.keyboardInput = true;
 
 
-    if ( !usr->local_listvw.Init(this, args) )
+    if ( !GameShell->local_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create local-listview\n");
-        return 0;
+        return false;
     }
 
-    usr->field_19C6 = v278;
-    usr->field_0x19c8 = v273;
+    GameShell->field_19C6 = v278;
+    GameShell->field_0x19c8 = v273;
 
 
-    usr->locale_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)usr->field_19C6},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)usr->field_0x19c8},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - usr->field_19C6)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - usr->field_0x19c8)}} );
+    GameShell->locale_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)GameShell->field_19C6},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)GameShell->field_0x19c8},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - GameShell->field_19C6)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - GameShell->field_0x19c8)}} );
 
-    if ( !usr->locale_button )
+    if ( !GameShell->locale_button )
     {
         ypa_log_out("Unable to create locale-buttonobject\n");
-        return 0;
+        return false;
     }
 
-    usr->local_listvw.x = v278;
-    usr->local_listvw.y = 4 * (word_5A50C2 + font_default_h) + v273;
+    GameShell->local_listvw.x = v278;
+    GameShell->local_listvw.y = 4 * (word_5A50C2 + font_default_h) + v273;
 
     v70 = 0;
     btn_64arg.tileset_down = 16;
@@ -4729,22 +4723,22 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.pressed_id = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.button_id = 1253;
-    btn_64arg.txt_r = iniColors[68].r;
-    btn_64arg.txt_g = iniColors[68].g;
-    btn_64arg.txt_b = iniColors[68].b;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
-    if ( usr->locale_button->button_func64(&btn_64arg) )
+    if ( GameShell->locale_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + font_default_h;
         btn_64arg.caption = GetLocaleString(396, "2");
         btn_64arg.caption2.clear();
         btn_64arg.button_id = 1254;
-        btn_64arg.txt_r = iniColors[60].r;
-        btn_64arg.txt_g = iniColors[60].g;
-        btn_64arg.txt_b = iniColors[60].b;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
 
-        if ( usr->locale_button->button_func64(&btn_64arg) )
+        if ( GameShell->locale_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
@@ -4752,7 +4746,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.caption2.clear();
             btn_64arg.button_id = 1255;
 
-            if ( usr->locale_button->button_func64(&btn_64arg) )
+            if ( GameShell->locale_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
@@ -4760,14 +4754,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1256;
 
-                if ( usr->locale_button->button_func64(&btn_64arg) )
+                if ( GameShell->locale_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.tileset_down = 19;
                     btn_64arg.tileset_up = 18;
                     btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                     btn_64arg.field_3A = 30;
-                    btn_64arg.xpos = v267 - (usr->field_19C6 - v278);
-                    btn_64arg.ypos = v269 - (usr->field_0x19c8 - v273);
+                    btn_64arg.xpos = v267 - (GameShell->field_19C6 - v278);
+                    btn_64arg.ypos = v269 - (GameShell->field_0x19c8 - v273);
                     btn_64arg.width = v270;
                     btn_64arg.caption = GetLocaleString(2, "OK");
                     btn_64arg.caption2.clear();
@@ -4776,14 +4770,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.up_id = 1300;
                     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                     btn_64arg.button_id = 1250;
-                    btn_64arg.txt_r = iniColors[68].r;
-                    btn_64arg.txt_g = iniColors[68].g;
-                    btn_64arg.txt_b = iniColors[68].b;
+                    btn_64arg.txt_r = _iniColors[68].r;
+                    btn_64arg.txt_g = _iniColors[68].g;
+                    btn_64arg.txt_b = _iniColors[68].b;
 
-                    if ( usr->locale_button->button_func64(&btn_64arg) )
+                    if ( GameShell->locale_button->button_func64(&btn_64arg) )
                     {
-                        btn_64arg.xpos = v274 - (usr->field_19C6 - v278);
-                        btn_64arg.ypos = v258 - (usr->field_0x19c8 - v273);
+                        btn_64arg.xpos = v274 - (GameShell->field_19C6 - v278);
+                        btn_64arg.ypos = v258 - (GameShell->field_0x19c8 - v273);
                         btn_64arg.width = v262;
                         btn_64arg.caption = GetLocaleString(20, "HELP");
                         btn_64arg.button_id = 1252;
@@ -4792,10 +4786,10 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.up_id = 1250;
                         btn_64arg.pressed_id = 0;
 
-                        if ( usr->locale_button->button_func64(&btn_64arg) )
+                        if ( GameShell->locale_button->button_func64(&btn_64arg) )
                         {
-                            btn_64arg.xpos = v264 - (usr->field_19C6 - v278);
-                            btn_64arg.ypos = v276 - (usr->field_0x19c8 - v273);
+                            btn_64arg.xpos = v264 - (GameShell->field_19C6 - v278);
+                            btn_64arg.ypos = v276 - (GameShell->field_0x19c8 - v273);
                             btn_64arg.width = v298;
                             btn_64arg.caption = GetLocaleString(3, "CANCEL");
                             btn_64arg.caption2.clear();
@@ -4804,7 +4798,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.up_id = 1301;
                             btn_64arg.button_id = 1251;
 
-                            if ( usr->locale_button->button_func64(&btn_64arg) )
+                            if ( GameShell->locale_button->button_func64(&btn_64arg) )
                                 v70 = 1;
                         }
                     }
@@ -4815,24 +4809,24 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add locale-button\n");
-        return 0;
+        return false;
     }
 
-    usr->locale_button->Hide();
+    GameShell->locale_button->Hide();
 
-    usr->field_19DE = 0;
-    usr->field_0x19e0 = v273;
+    GameShell->field_19DE = 0;
+    GameShell->field_0x19e0 = v273;
 
-    usr->about_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)usr->field_19DE},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)usr->field_0x19e0},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - usr->field_19DE)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - usr->field_0x19e0)}} );
+    GameShell->about_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)GameShell->field_19DE},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)GameShell->field_0x19e0},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - GameShell->field_19DE)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - GameShell->field_0x19e0)}} );
 
-    if ( !usr->about_button )
+    if ( !GameShell->about_button )
     {
         ypa_log_out("Unable to create sound-buttonobject\n");
-        return 0;
+        return false;
     }
 
     v70 = 0;
@@ -4851,82 +4845,82 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
     btn_64arg.caption = "Fuer den Kauf dieses erzgebirgischen Qualitaetsspielzeuges bedanken sich";
 
-    if ( usr->about_button->button_func64(&btn_64arg) )
+    if ( GameShell->about_button->button_func64(&btn_64arg) )
     {
         btn_64arg.ypos = 2 * (font_default_h + word_5A50C2);
         btn_64arg.caption = "Bernd Beyreuther,";
 
-        if ( usr->about_button->button_func64(&btn_64arg) )
+        if ( GameShell->about_button->button_func64(&btn_64arg) )
         {
             btn_64arg.ypos = 3 * (word_5A50C2 + font_default_h);
             btn_64arg.caption = "Andre 'Floh' Weissflog, Andreas Flemming,";
 
-            if ( usr->about_button->button_func64(&btn_64arg) )
+            if ( GameShell->about_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.ypos = 4 * (font_default_h + word_5A50C2);
                 btn_64arg.caption = "Stefan 'Metzel Hetzel' Karau, Sylvius Lack,";
 
-                if ( usr->about_button->button_func64(&btn_64arg) )
+                if ( GameShell->about_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.ypos = 5 * (word_5A50C2 + font_default_h);
                     btn_64arg.caption = "Dietmar 'Didi' Koebelin, Nico Nitsch, Steffen Priebus, ";
 
-                    if ( usr->about_button->button_func64(&btn_64arg) )
+                    if ( GameShell->about_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.ypos = 6 * (font_default_h + word_5A50C2);
                         btn_64arg.caption = "Stefan Warias, Henrik Volkening und";
 
-                        if ( usr->about_button->button_func64(&btn_64arg) )
+                        if ( GameShell->about_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.ypos = 7 * (word_5A50C2 + font_default_h);
                             btn_64arg.caption = "Uta Kapp";
 
-                            if ( usr->about_button->button_func64(&btn_64arg) )
+                            if ( GameShell->about_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.ypos = 8 * (font_default_h + word_5A50C2);
                                 btn_64arg.caption = " ";
 
-                                if ( usr->about_button->button_func64(&btn_64arg) )
+                                if ( GameShell->about_button->button_func64(&btn_64arg) )
                                 {
                                     btn_64arg.ypos = 9 * (font_default_h + word_5A50C2);
                                     btn_64arg.caption = "Unser Dank gilt:";
 
-                                    if ( usr->about_button->button_func64(&btn_64arg) )
+                                    if ( GameShell->about_button->button_func64(&btn_64arg) )
                                     {
                                         btn_64arg.ypos = 10 * (font_default_h + word_5A50C2);
                                         btn_64arg.caption = "dem gesamten Microsoft Team, besonders";
 
-                                        if ( usr->about_button->button_func64(&btn_64arg) )
+                                        if ( GameShell->about_button->button_func64(&btn_64arg) )
                                         {
                                             btn_64arg.ypos = 11 * (word_5A50C2 + font_default_h);
                                             btn_64arg.caption = "Michael Lyons, Jonathan Sposato und Earnest Yuen";
 
-                                            if ( usr->about_button->button_func64(&btn_64arg) )
+                                            if ( GameShell->about_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.ypos = 12 * (font_default_h + word_5A50C2);
                                                 btn_64arg.caption = "weiterhin";
 
-                                                if ( usr->about_button->button_func64(&btn_64arg) )
+                                                if ( GameShell->about_button->button_func64(&btn_64arg) )
                                                 {
                                                     btn_64arg.ypos = 13 * (font_default_h + word_5A50C2);
                                                     btn_64arg.caption = "Robert Birker, Andre 'Goetz' Blechschmidt, Jan Blechschmidt, Stephan Bludau,";
 
-                                                    if ( usr->about_button->button_func64(&btn_64arg) )
+                                                    if ( GameShell->about_button->button_func64(&btn_64arg) )
                                                     {
                                                         btn_64arg.ypos = 14 * (font_default_h + word_5A50C2);
                                                         btn_64arg.caption = "Andre Kunth, Markus Lorenz, Dirk Mansbart";
 
-                                                        if ( usr->about_button->button_func64(&btn_64arg) )
+                                                        if ( GameShell->about_button->button_func64(&btn_64arg) )
                                                         {
                                                             btn_64arg.ypos = 15 * (word_5A50C2 + font_default_h);
                                                             btn_64arg.caption = "und natuerlich";
 
-                                                            if ( usr->about_button->button_func64(&btn_64arg) )
+                                                            if ( GameShell->about_button->button_func64(&btn_64arg) )
                                                             {
                                                                 btn_64arg.ypos = 16 * (font_default_h + word_5A50C2);
                                                                 btn_64arg.caption = "        GoldEd - dPaint - SAS/C";
 
-                                                                if ( usr->about_button->button_func64(&btn_64arg) )
+                                                                if ( GameShell->about_button->button_func64(&btn_64arg) )
                                                                 {
                                                                     v70 = 1;
                                                                 }
@@ -4948,14 +4942,14 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add about-button\n");
-        return 0;
+        return false;
     }
 
-    usr->about_button->Hide();
+    GameShell->about_button->Hide();
 
     dword_5A50B6 = v278_4 - font_yscrl_bkg_w;
 
-    args.Init();
+    args = GuiList::tInit();
     args.resizeable = false;
     args.numEntries = 12;
     args.shownEntries = 12;
@@ -4970,31 +4964,31 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     args.instantInput = false;
     args.keyboardInput = true;
 
-    if ( !usr->network_listvw.Init(this, args) )
+    if ( !GameShell->network_listvw.Init(this, args) )
     {
         ypa_log_out("Unable to create network-listview\n");
-        return 0;
+        return false;
     }
 
-    usr->field_1C32 = v278;
-    usr->field_0x1c34 = v273 - font_default_h;
+    GameShell->field_1C32 = v278;
+    GameShell->field_0x1c34 = v273 - font_default_h;
 
-    usr->network_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)usr->field_1C32},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)usr->field_0x1c34},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - usr->field_1C32)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - usr->field_0x1c34)}});
-    if ( !usr->network_button )
+    GameShell->network_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)GameShell->field_1C32},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)GameShell->field_0x1c34},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(screen_width - GameShell->field_1C32)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(screen_height - GameShell->field_0x1c34)}});
+    if ( !GameShell->network_button )
     {
         ypa_log_out("Unable to create network-buttonobject\n");
-        return 0;
+        return false;
     }
 
-    usr->field_1C2E = usr->field_1C32;
-    usr->field_0x1c30 = 3 * (word_5A50C2 + font_default_h) + usr->field_0x1c34;
+    GameShell->field_1C2E = GameShell->field_1C32;
+    GameShell->field_0x1c30 = 3 * (word_5A50C2 + font_default_h) + GameShell->field_0x1c34;
 
-    usr->network_listvw.x = usr->field_1C2E;
-    usr->network_listvw.y = usr->field_0x1c30;
+    GameShell->network_listvw.x = GameShell->field_1C2E;
+    GameShell->network_listvw.y = GameShell->field_0x1c30;
 
     btn_64arg.tileset_down = 17;
     btn_64arg.tileset_up = 17;
@@ -5010,13 +5004,13 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     btn_64arg.button_id = 1200;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.width = dword_5A50B6 * 0.8;
-    btn_64arg.txt_r = iniColors[60].r;
-    btn_64arg.txt_g = iniColors[60].g;
-    btn_64arg.txt_b = iniColors[60].b;
+    btn_64arg.txt_r = _iniColors[60].r;
+    btn_64arg.txt_g = _iniColors[60].g;
+    btn_64arg.txt_b = _iniColors[60].b;
 
     v70 = 0;
 
-    if ( usr->network_button->button_func64(&btn_64arg) )
+    if ( GameShell->network_button->button_func64(&btn_64arg) )
     {
         btn_64arg.tileset_down = 19;
         btn_64arg.tileset_up = 18;
@@ -5030,11 +5024,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
         btn_64arg.pressed_id = 0;
         btn_64arg.button_id = 1225;
         btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-        btn_64arg.txt_r = iniColors[68].r;
-        btn_64arg.txt_g = iniColors[68].g;
-        btn_64arg.txt_b = iniColors[68].b;
+        btn_64arg.txt_r = _iniColors[68].r;
+        btn_64arg.txt_g = _iniColors[68].g;
+        btn_64arg.txt_b = _iniColors[68].b;
 
-        if ( usr->network_button->button_func64(&btn_64arg) )
+        if ( GameShell->network_button->button_func64(&btn_64arg) )
         {
             int v284 = ((dword_5A50B6 - 3 * word_5A50C0) * 0.25 - 3 * word_5A50C0) * 0.25;
 
@@ -5052,11 +5046,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
             btn_64arg.down_id = 0;
             btn_64arg.flags = NC_STACK_button::FLAG_TEXT | NC_STACK_button::FLAG_RALIGN;
             btn_64arg.button_id = 1220;
-            btn_64arg.txt_r = iniColors[60].r;
-            btn_64arg.txt_g = iniColors[60].g;
-            btn_64arg.txt_b = iniColors[60].b;
+            btn_64arg.txt_r = _iniColors[60].r;
+            btn_64arg.txt_g = _iniColors[60].g;
+            btn_64arg.txt_b = _iniColors[60].b;
 
-            if ( usr->network_button->button_func64(&btn_64arg) )
+            if ( GameShell->network_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.tileset_down = 8;
                 btn_64arg.tileset_up = 8;
@@ -5070,7 +5064,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                 btn_64arg.down_id = 1204;
                 btn_64arg.flags = 0;
 
-                if ( usr->network_button->button_func64(&btn_64arg) )
+                if ( GameShell->network_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.caption = "C";
                     btn_64arg.caption2 = "D";
@@ -5078,7 +5072,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                     btn_64arg.button_id = 1207;
                     btn_64arg.xpos += v284 + word_5A50C0;
 
-                    if ( usr->network_button->button_func64(&btn_64arg) )
+                    if ( GameShell->network_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.caption = "E";
                         btn_64arg.caption2 = "F";
@@ -5086,7 +5080,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                         btn_64arg.button_id = 1208;
                         btn_64arg.xpos += v284 + word_5A50C0;
 
-                        if ( usr->network_button->button_func64(&btn_64arg) )
+                        if ( GameShell->network_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.caption = "G";
                             btn_64arg.caption2 = "H";
@@ -5094,7 +5088,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                             btn_64arg.button_id = 1209;
                             btn_64arg.xpos += v284 + word_5A50C0;
 
-                            if ( usr->network_button->button_func64(&btn_64arg) )
+                            if ( GameShell->network_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.tileset_down = 19;
                                 btn_64arg.tileset_up = 18;
@@ -5109,11 +5103,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                 btn_64arg.up_id = 1203;
                                 btn_64arg.down_id = 1251;
-                                btn_64arg.txt_r = iniColors[68].r;
-                                btn_64arg.txt_g = iniColors[68].g;
-                                btn_64arg.txt_b = iniColors[68].b;
+                                btn_64arg.txt_r = _iniColors[68].r;
+                                btn_64arg.txt_g = _iniColors[68].g;
+                                btn_64arg.txt_b = _iniColors[68].b;
 
-                                if ( usr->network_button->button_func64(&btn_64arg) )
+                                if ( GameShell->network_button->button_func64(&btn_64arg) )
                                 {
                                     btn_64arg.tileset_down = 16;
                                     btn_64arg.xpos = 0;
@@ -5130,18 +5124,18 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                     btn_64arg.pressed_id = 0;
                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
-                                    if ( usr->network_button->button_func64(&btn_64arg) )
+                                    if ( GameShell->network_button->button_func64(&btn_64arg) )
                                     {
                                         btn_64arg.xpos = 0;
                                         btn_64arg.ypos = word_5A50C0 + font_default_h;
                                         btn_64arg.caption = GetLocaleString(425, "2");
                                         btn_64arg.caption2.clear();
                                         btn_64arg.button_id = 1222;
-                                        btn_64arg.txt_r = iniColors[60].r;
-                                        btn_64arg.txt_g = iniColors[60].g;
-                                        btn_64arg.txt_b = iniColors[60].b;
+                                        btn_64arg.txt_r = _iniColors[60].r;
+                                        btn_64arg.txt_g = _iniColors[60].g;
+                                        btn_64arg.txt_b = _iniColors[60].b;
 
-                                        if ( usr->network_button->button_func64(&btn_64arg) )
+                                        if ( GameShell->network_button->button_func64(&btn_64arg) )
                                         {
                                             btn_64arg.xpos = 0;
                                             btn_64arg.ypos = 2 * (font_default_h + word_5A50C0);
@@ -5149,7 +5143,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                             btn_64arg.caption2.clear();
                                             btn_64arg.button_id = 1223;
 
-                                            if ( usr->network_button->button_func64(&btn_64arg) )
+                                            if ( GameShell->network_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.tileset_down = 19;
                                                 btn_64arg.tileset_up = 18;
@@ -5165,11 +5159,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                 btn_64arg.up_id = 1201;
                                                 btn_64arg.caption2.clear();
                                                 btn_64arg.pressed_id = 0;
-                                                btn_64arg.txt_r = iniColors[68].r;
-                                                btn_64arg.txt_g = iniColors[68].g;
-                                                btn_64arg.txt_b = iniColors[68].b;
+                                                btn_64arg.txt_r = _iniColors[68].r;
+                                                btn_64arg.txt_g = _iniColors[68].g;
+                                                btn_64arg.txt_b = _iniColors[68].b;
 
-                                                if ( usr->network_button->button_func64(&btn_64arg) )
+                                                if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                 {
                                                     btn_64arg.xpos = v267;
                                                     btn_64arg.ypos = v269 + font_default_h;
@@ -5180,7 +5174,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                     btn_64arg.button_id = 1201;
                                                     btn_64arg.up_id = 1200;
 
-                                                    if ( usr->network_button->button_func64(&btn_64arg) )
+                                                    if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                     {
                                                         btn_64arg.xpos = v274;
                                                         btn_64arg.ypos = v258 + font_default_h;
@@ -5191,7 +5185,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                         btn_64arg.pressed_id = 0;
                                                         btn_64arg.button_id = 1218;
 
-                                                        if ( usr->network_button->button_func64(&btn_64arg) )
+                                                        if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                         {
                                                             btn_64arg.xpos = v264;
                                                             btn_64arg.ypos = v276 + font_default_h;
@@ -5202,7 +5196,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                             btn_64arg.pressed_id = 0;
                                                             btn_64arg.button_id = 1203;
 
-                                                            if ( usr->network_button->button_func64(&btn_64arg) )
+                                                            if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                             {
                                                                 int v204;
 
@@ -5225,26 +5219,26 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                 btn_64arg.up_id = 0;
                                                                 btn_64arg.pressed_id = 0;
                                                                 btn_64arg.button_id = 1210;
-                                                                btn_64arg.txt_r = iniColors[60].r;
-                                                                btn_64arg.txt_g = iniColors[60].g;
-                                                                btn_64arg.txt_b = iniColors[60].b;
+                                                                btn_64arg.txt_r = _iniColors[60].r;
+                                                                btn_64arg.txt_g = _iniColors[60].g;
+                                                                btn_64arg.txt_b = _iniColors[60].b;
 
-                                                                if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                 {
                                                                     btn_64arg.ypos = 5 * (word_5A50C0 + font_default_h);
                                                                     btn_64arg.button_id = 1211;
 
-                                                                    if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                    if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                     {
                                                                         btn_64arg.ypos = 6 * (word_5A50C0 + font_default_h);
                                                                         btn_64arg.button_id = 1212;
 
-                                                                        if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                        if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                         {
                                                                             btn_64arg.ypos = 7 * (word_5A50C0 + font_default_h);
                                                                             btn_64arg.button_id = 1213;
 
-                                                                            if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                            if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                             {
                                                                                 btn_64arg.tileset_down = 8;
                                                                                 btn_64arg.tileset_up = 8;
@@ -5260,26 +5254,26 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                 btn_64arg.caption = " ";
                                                                                 btn_64arg.flags = 0;
                                                                                 btn_64arg.button_id = 1214;
-                                                                                btn_64arg.txt_r = iniColors[60].r;
-                                                                                btn_64arg.txt_g = iniColors[60].g;
-                                                                                btn_64arg.txt_b = iniColors[60].b;
+                                                                                btn_64arg.txt_r = _iniColors[60].r;
+                                                                                btn_64arg.txt_g = _iniColors[60].g;
+                                                                                btn_64arg.txt_b = _iniColors[60].b;
 
-                                                                                if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                 {
                                                                                     btn_64arg.ypos = 5 * (font_default_h + word_5A50C0);
                                                                                     btn_64arg.button_id = 1215;
 
-                                                                                    if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                    if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                     {
                                                                                         btn_64arg.ypos = 6 * (word_5A50C0 + font_default_h);
                                                                                         btn_64arg.button_id = 1216;
 
-                                                                                        if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                        if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                         {
                                                                                             btn_64arg.ypos = 7 * (word_5A50C0 + font_default_h);
                                                                                             btn_64arg.button_id = 1217;
 
-                                                                                            if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                            if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                             {
                                                                                                 btn_64arg.tileset_down = 19;
                                                                                                 btn_64arg.tileset_up = 18;
@@ -5296,7 +5290,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                 btn_64arg.flags = 0;
                                                                                                 btn_64arg.up_id = 1209;
 
-                                                                                                if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                                if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                                 {
                                                                                                     btn_64arg.tileset_down = 16;
                                                                                                     btn_64arg.tileset_up = 16;
@@ -5312,7 +5306,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                                                                                     btn_64arg.button_id = 1221;
 
-                                                                                                    if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                                    if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                                     {
                                                                                                         btn_64arg.xpos = 0;
                                                                                                         btn_64arg.tileset_down = 16;
@@ -5328,11 +5322,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                         btn_64arg.pressed_id = 0;
                                                                                                         btn_64arg.button_id = 1227;
                                                                                                         btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                        btn_64arg.txt_r = iniColors[68].r;
-                                                                                                        btn_64arg.txt_g = iniColors[68].g;
-                                                                                                        btn_64arg.txt_b = iniColors[68].b;
+                                                                                                        btn_64arg.txt_r = _iniColors[68].r;
+                                                                                                        btn_64arg.txt_g = _iniColors[68].g;
+                                                                                                        btn_64arg.txt_b = _iniColors[68].b;
 
-                                                                                                        if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                                        if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                                         {
                                                                                                             btn_64arg.xpos = dword_5A50B6 * 0.3;
                                                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
@@ -5341,7 +5335,7 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                             btn_64arg.button_id = 1226;
                                                                                                             btn_64arg.caption = "...";
 
-                                                                                                            if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                                            if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                                             {
                                                                                                                 btn_64arg.tileset_down = 16;
                                                                                                                 btn_64arg.tileset_up = 16;
@@ -5357,11 +5351,11 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
                                                                                                                 btn_64arg.pressed_id = 0;
                                                                                                                 btn_64arg.button_id = 1228;
                                                                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                                btn_64arg.txt_r = iniColors[60].r;
-                                                                                                                btn_64arg.txt_g = iniColors[60].g;
-                                                                                                                btn_64arg.txt_b = iniColors[60].b;
+                                                                                                                btn_64arg.txt_r = _iniColors[60].r;
+                                                                                                                btn_64arg.txt_g = _iniColors[60].g;
+                                                                                                                btn_64arg.txt_b = _iniColors[60].b;
 
-                                                                                                                if ( usr->network_button->button_func64(&btn_64arg) )
+                                                                                                                if ( GameShell->network_button->button_func64(&btn_64arg) )
                                                                                                                     v70 = 1;
                                                                                                             }
                                                                                                         }
@@ -5393,223 +5387,215 @@ size_t NC_STACK_ypaworld::ypaworld_func156(UserData *usr)
     if ( !v70 )
     {
         ypa_log_out("Unable to add network-button\n");
-        return 0;
+        return false;
     }
 
     v228.butID = 1210;
     v228.field_4 = 0;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1211;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1212;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1213;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1214;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1215;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1216;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
     v228.butID = 1217;
-    usr->network_button->button_func67(&v228);
+    GameShell->network_button->button_func67(&v228);
 
-    usr->network_button->Hide();
+    GameShell->network_button->Hide();
 
-    switch (usr->envMode)
+    switch (GameShell->EnvMode)
     {
     default:
-        usr->titel_button->Show();
+        GameShell->titel_button->Show();
         break;
     case ENVMODE_TUTORIAL:
     case ENVMODE_SINGLEPLAY:
-        usr->sub_bar_button->Show();
+        GameShell->sub_bar_button->Show();
 
-        if ( usr->field_0xc )
+        if ( GameShell->GameIsOver )
         {
             NC_STACK_button::button_66arg v231;
             v231.field_4 = 0;
             v231.butID = 1014;
 
-            usr->sub_bar_button->button_func67(&v231);
+            GameShell->sub_bar_button->button_func67(&v231);
 
             v231.butID = 1013;
-            usr->sub_bar_button->button_func67(&v231);
+            GameShell->sub_bar_button->button_func67(&v231);
         }
         break;
     case ENVMODE_NETPLAY:
-        usr->network_button->Show();
+        GameShell->network_button->Show();
         break;
     }
 
 
-    ypaworld_func167(usr);
+    UpdateGameShell();
 
-    SFXEngine::SFXe.startSound(&usr->samples1_info, 6);
+    SFXEngine::SFXe.startSound(&GameShell->samples1_info, 6);
 
-    usr->_gameShellInited = 1;
+    GameShell->HasInited = true;
 
-    usr->field_0x4 = 1;
-    if ( usr->remoteMode )
+    if ( GameShell->remoteMode )
     {
-        usr->GameShellUiOpenNetwork();
-        usr->p_ypaworld->isNetGame = 1;
-        usr->FreeFraction = 14;
-        usr->SelectedFraction = 1;
+        GameShell->GameShellUiOpenNetwork();
+        GameShell->p_YW->isNetGame = 1;
+        GameShell->FreeFraction = 14;
+        GameShell->SelectedFraction = 1;
     }
     else
     {
-        usr->yw_netcleanup();
-        usr->netSelMode = UserData::NETSCREEN_MODE_SELECT;
+        GameShell->yw_netcleanup();
+        GameShell->netSelMode = UserData::NETSCREEN_MODE_SELECT;
     }
 
-    usr->netSel = -1;
+    GameShell->netSel = -1;
 
-    if ( usr->p_ypaworld->field_73CE & World::PREF_CDMUSICDISABLE )
+    if ( GameShell->p_YW->field_73CE & World::PREF_CDMUSICDISABLE )
     {
         SFXEngine::SFXe.StopMusicTrack();
-        SFXEngine::SFXe.SetMusicTrack(usr->shelltrack, usr->shelltrack__adv.min_delay, usr->shelltrack__adv.max_delay);
+        SFXEngine::SFXe.SetMusicTrack(GameShell->shelltrack, GameShell->shelltrack__adv.min_delay, GameShell->shelltrack__adv.max_delay);
         SFXEngine::SFXe.PlayMusicTrack();
     }
 
-    return 1;
+    return true;
 }
 
 
-void ypaworld_func157__sub0(NC_STACK_ypaworld *yw)
+void NC_STACK_ypaworld::CloseGameShell()
 {
-    sub_4E6FEC(yw);
-
-    if ( yw->GameShell->envMode == ENVMODE_TUTORIAL || yw->GameShell->envMode == ENVMODE_SINGLEPLAY )
-    {
-        if ( yw->_levelInfo->State == 5 )
-        {
-            sub_4EAC80(yw);
-        }
-        else if ( yw->_levelInfo->State == 9 )
-        {
-            yw_freeDebrief(yw);
-        }
-    }
-}
-
-void NC_STACK_ypaworld::ypaworld_func157(UserData *usr)
-{
-    if ( usr->_gameShellInited )
+    if ( GameShell->HasInited )
     {       
-        if ( usr->confirm_button )
+        if ( GameShell->confirm_button )
         {
-            usr->confirm_button->Hide();
-            delete_class_obj(usr->confirm_button);
+            GameShell->confirm_button->Hide();
+            Nucleus::Delete(GameShell->confirm_button);
         }
-        usr->confirm_button = NULL;
+        GameShell->confirm_button = NULL;
 
-        if ( usr->sub_bar_button )
+        if ( GameShell->sub_bar_button )
         {
-            usr->sub_bar_button->Hide();
-            delete_class_obj(usr->sub_bar_button);
+            GameShell->sub_bar_button->Hide();
+            Nucleus::Delete(GameShell->sub_bar_button);
         }
-        usr->sub_bar_button = NULL;
+        GameShell->sub_bar_button = NULL;
 
-        if ( usr->titel_button )
+        if ( GameShell->titel_button )
         {
-            usr->titel_button->Hide();
-            delete_class_obj(usr->titel_button);
+            GameShell->titel_button->Hide();
+            Nucleus::Delete(GameShell->titel_button);
         }
-        usr->titel_button = 0;
+        GameShell->titel_button = NULL;
 
-        if ( usr->button_input_button )
+        if ( GameShell->button_input_button )
         {
-            if ( usr->input_listview.IsOpen() )
-                usr->p_YW->GuiWinClose( &usr->input_listview );
-            usr->input_listview.Free();
+            if ( GameShell->input_listview.IsOpen() )
+                GameShell->p_YW->GuiWinClose( &GameShell->input_listview );
+            GameShell->input_listview.Free();
 
-            usr->button_input_button->Hide();
-            delete_class_obj(usr->button_input_button);
-            usr->button_input_button = NULL;
-        }
-
-        if ( usr->video_button )
-        {
-            if ( usr->video_listvw.IsOpen() )
-                usr->p_YW->GuiWinClose( &usr->video_listvw );
-            usr->video_listvw.Free();
-
-            if ( usr->d3d_listvw.IsOpen() )
-                usr->p_YW->GuiWinClose( &usr->d3d_listvw );
-            usr->d3d_listvw.Free();
-
-            usr->video_button->Hide();
-            delete_class_obj(usr->video_button);
-            usr->video_button = NULL;
+            GameShell->button_input_button->Hide();
+            Nucleus::Delete(GameShell->button_input_button);
+            GameShell->button_input_button = NULL;
         }
 
-        if ( usr->disk_button )
+        if ( GameShell->video_button )
         {
-            if ( usr->disk_listvw.IsOpen() )
-                usr->p_YW->GuiWinClose( &usr->disk_listvw );
-            usr->disk_listvw.Free();
+            if ( GameShell->video_listvw.IsOpen() )
+                GameShell->p_YW->GuiWinClose( &GameShell->video_listvw );
+            GameShell->video_listvw.Free();
 
-            usr->disk_button->Hide();
-            delete_class_obj(usr->disk_button);
-            usr->disk_button = NULL;
+            if ( GameShell->d3d_listvw.IsOpen() )
+                GameShell->p_YW->GuiWinClose( &GameShell->d3d_listvw );
+            GameShell->d3d_listvw.Free();
+
+            GameShell->video_button->Hide();
+            Nucleus::Delete(GameShell->video_button);
+            GameShell->video_button = NULL;
         }
 
-        if ( usr->locale_button )
+        if ( GameShell->disk_button )
         {
-            if ( usr->local_listvw.IsOpen() )
-                usr->p_YW->GuiWinClose( &usr->local_listvw );
-            usr->local_listvw.Free();
+            if ( GameShell->disk_listvw.IsOpen() )
+                GameShell->p_YW->GuiWinClose( &GameShell->disk_listvw );
+            GameShell->disk_listvw.Free();
 
-            usr->locale_button->Hide();
-            delete_class_obj(usr->locale_button);
-            usr->locale_button = NULL;
+            GameShell->disk_button->Hide();
+            Nucleus::Delete(GameShell->disk_button);
+            GameShell->disk_button = NULL;
         }
 
-        if ( usr->about_button )
+        if ( GameShell->locale_button )
         {
-            usr->about_button->Hide();
-            delete_class_obj(usr->about_button);
-            usr->about_button = NULL;
+            if ( GameShell->local_listvw.IsOpen() )
+                GameShell->p_YW->GuiWinClose( &GameShell->local_listvw );
+            GameShell->local_listvw.Free();
+
+            GameShell->locale_button->Hide();
+            Nucleus::Delete(GameShell->locale_button);
+            GameShell->locale_button = NULL;
         }
 
-        if ( usr->network_button )
+        if ( GameShell->about_button )
         {
-            if ( usr->network_listvw.IsOpen() )
-                usr->p_YW->GuiWinClose( &usr->network_listvw );
-            usr->network_listvw.Free();
+            GameShell->about_button->Hide();
+            Nucleus::Delete(GameShell->about_button);
+            GameShell->about_button = NULL;
+        }
 
-            usr->network_button->Hide();
-            delete_class_obj(usr->network_button);
-            usr->network_button = NULL;
+        if ( GameShell->network_button )
+        {
+            if ( GameShell->network_listvw.IsOpen() )
+                GameShell->p_YW->GuiWinClose( &GameShell->network_listvw );
+            GameShell->network_listvw.Free();
+
+            GameShell->network_button->Hide();
+            Nucleus::Delete(GameShell->network_button);
+            GameShell->network_button = NULL;
         }
 
         SFXEngine::SFXe.StopPlayingSounds();
 
-        ypaworld_func157__sub0(this);
+        _mapRegions.UnloadImages();
+
+        if ( GameShell->EnvMode == ENVMODE_TUTORIAL || GameShell->EnvMode == ENVMODE_SINGLEPLAY )
+        {
+            if ( _levelInfo.State == TLevelInfo::STATE_BRIEFING )
+            {
+                FreeBriefing();
+            }
+            else if ( _levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
+            {
+                FreeDebrief();
+            }
+        }
 
         sb_0x44ac24(this);
 
-        //nullsub_7();
-
-        usr->_gameShellInited = 0;
+        GameShell->HasInited = false;
     }
 }
 
 //Draw bkg or briefing
 void NC_STACK_ypaworld::GameShellBkgProcess()
 {
-    if ( GameShell->envModeChanged )
-        GameShellInitBkgMode(GameShell->envMode);
+    if ( GameShell->EnvModeChanged )
+        GameShellInitBkgMode(GameShell->EnvMode);
 
-    switch(GameShell->envMode)
+    switch(GameShell->EnvMode)
     {
     case ENVMODE_TUTORIAL:
     case ENVMODE_SINGLEPLAY:
@@ -5617,11 +5603,11 @@ void NC_STACK_ypaworld::GameShellBkgProcess()
         break;
 
     case ENVMODE_TITLE:
-        GameShellBlitBkg(LevelNet->ilbm_menu_map);
+        GameShellBlitBkg(_mapRegions.MenuImage);
         break;
 
     default:
-        GameShellBlitBkg(LevelNet->ilbm_rollover_map);
+        GameShellBlitBkg(_mapRegions.RolloverImage);
         break;
     }
 }
@@ -5659,14 +5645,14 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 
         if ( !v2.empty() )
         {
-            FontUA::set_txtColor(&pos, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+            FontUA::set_txtColor(&pos, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
 
             pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos, v2.c_str(), yw->screen_width);
 
             FontUA::next_line(&pos);
         }
 
-        FontUA::set_txtColor(&pos, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+        FontUA::set_txtColor(&pos, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
         pos = FontUA::FormateCenteredSkipableItem(yw->tiles[15], pos,  yw->GetLocaleString(yw->field_17c4 + 800, yw->tooltips[ yw->field_17c4 ]) , yw->screen_width);
 
@@ -5706,36 +5692,36 @@ bool NC_STACK_ypaworld::IsAnyInput(InputState *struc)
     return struc->KbdLastDown != Input::KC_NONE || struc->KbdLastHit != Input::KC_NONE || struc->HotKeyID >= 0 || click || mousemove;
 }
 
-void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
+void NC_STACK_ypaworld::ProcessGameShell()
 {
-    usr->envAction.action = EnvAction::ACTION_NONE;
+    GameShell->envAction.action = EnvAction::ACTION_NONE;
 
-    SFXEngine::SFXe.sub_423EFC(usr->frameTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
+    SFXEngine::SFXe.sub_423EFC(GameShell->DTime, vec3d(0.0), vec3d(0.0), mat3x3::Ident());
 
     GFX::Engine.BeginFrame();
 
-    int oldMode = usr->envMode;
-    usr->envModeChanged = false;
+    int oldMode = GameShell->EnvMode;
+    GameShell->EnvModeChanged = false;
 
-    usr->GameShellUiHandleInput();
+    GameShell->GameShellUiHandleInput();
 
-    if ( oldMode != usr->envMode )
-        usr->envModeChanged = true;
+    if ( oldMode != GameShell->EnvMode )
+        GameShell->EnvModeChanged = true;
 
     GameShellBkgProcess();
 
     draw_tooltip(this);
 
-    ypaworld_func158__sub3(this, usr);
+    ypaworld_func158__sub3(this, GameShell);
 
     if ( isNetGame )
     {
-        field_7586 -= usr->frameTime;
+        field_7586 -= GameShell->DTime;
         if ( field_7586 <= 0 )
         {
             windp_arg82 arg82;
             arg82.senderFlags = 1;
-            arg82.senderID = usr->callSIGN.c_str();
+            arg82.senderID = GameShell->callSIGN.c_str();
             arg82.receiverFlags = 2;
             arg82.receiverID = 0;
             arg82.guarant = 1;
@@ -5746,37 +5732,30 @@ void NC_STACK_ypaworld::ypaworld_func158(UserData *usr)
         }
     }
 
-    SFXEngine::SFXe.UpdateSoundCarrier(&usr->samples1_info);
+    SFXEngine::SFXe.UpdateSoundCarrier(&GameShell->samples1_info);
 
     SFXEngine::SFXe.sb_0x424c74();
-
-//  if ( usr->field_0x4 )
-//    nullsub_7();
+    
 
     GFX::Engine.EndFrame();
 
-    if ( usr->field_0x4 )
-    {
-        usr->field_0x4 = 0;
-//    nullsub_7();
-    }
-
-    if ( sub_449678(usr->_input, Input::KC_NUMMUL) )
+    
+    if ( sub_449678(GameShell->Input, Input::KC_NUMMUL) )
         sub_4476AC(this);
 
-    if ( usr->netSelMode == UserData::NETSCREEN_INSESSION )
+    if ( GameShell->netSelMode == UserData::NETSCREEN_INSESSION )
     {
         yw_CheckCRCs(this);
-        usr->yw_CheckCDs();
+        GameShell->yw_CheckCDs();
     }
 
-    if ( IsAnyInput(usr->_input) )
-        usr->lastInputEvent = usr->glblTime;
+    if ( IsAnyInput(GameShell->Input) )
+        GameShell->lastInputEvent = GameShell->GlobalTime;
 
-    if ( (usr->glblTime - usr->lastInputEvent) > usr->WaitForDemo && usr->envMode == ENVMODE_TITLE )
-        usr->envAction.action = EnvAction::ACTION_DEMO;
+    if ( (GameShell->GlobalTime - GameShell->lastInputEvent) > GameShell->WaitForDemo && GameShell->EnvMode == ENVMODE_TITLE )
+        GameShell->envAction.action = EnvAction::ACTION_DEMO;
 
-    usr->field_0xc = 0;
+    GameShell->GameIsOver = false;
 
     if ( !field_81AF.empty() )
     {
@@ -5919,7 +5898,7 @@ void NC_STACK_ypaworld::ypaworld_func160(void *arg)
 size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 {
     int ok = 0;
-    LevelDesc mapp;
+    TLevelDescription mapp;
     
     _particles.Clear();
 
@@ -5935,7 +5914,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
                     {
                         if ( LoadBlgMap(mapp.BlgStr) )
                         {
-                            if ( _levelInfo->Mode != 1 )
+                            if ( _levelInfo.Mode != 1 )
                             {
                                 yw_InitSquads(mapp.Squads);
                                 InitBuddies();
@@ -6110,7 +6089,7 @@ void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 
     uint32_t v28 = profiler_begin();
 
-    sb_0x4d7c08(this, arg, 0);
+    RenderGame(arg, 0);
 
     debug_info_draw(arg->field_8);
 
@@ -6304,131 +6283,126 @@ size_t NC_STACK_ypaworld::ypaworld_func166(const std::string &langname)
 }
 
 
-void ypaworld_func167__sub0(UserData *usr)
-{
-    NC_STACK_button::button_66arg v9;
-    v9.butID = 1050;
-    v9.field_4 = ((usr->p_ypaworld->field_73CE & 4) != 0) + 1;
-
-    usr->button_input_button->button_func73(&v9);
-
-    v9.butID = 1061;
-    v9.field_4 = (usr->inp_altjoystick == false) + 1;
-    usr->button_input_button->button_func73(&v9);
-
-    v9.butID = 1055;
-    v9.field_4 = ((usr->p_ypaworld->field_73CE & 8) != 0) + 1;
-    usr->button_input_button->button_func73(&v9);
-
-    if ( usr->field_D36 )
-    {
-        int v7 = usr->field_D36 - 1;
-        int v8 = usr->input_listview.maxShownEntries + usr->input_listview.firstShownEntries;
-
-        if ( v7 >= usr->input_listview.firstShownEntries && v7 < v8 )
-        {
-            if ( v8 > usr->input_listview.numEntries )
-                usr->input_listview.firstShownEntries = usr->input_listview.numEntries - usr->input_listview.maxShownEntries;
-
-            if ( usr->input_listview.firstShownEntries < 0 )
-                usr->input_listview.firstShownEntries = 0;
-        }
-        else if ( usr->input_listview.numEntries - v7 <= usr->input_listview.maxShownEntries )
-        {
-            usr->input_listview.firstShownEntries = usr->input_listview.numEntries - usr->input_listview.maxShownEntries;
-        }
-        else
-        {
-            usr->input_listview.firstShownEntries = v7;
-        }
-    }
-}
-
 // Update menu values
-void NC_STACK_ypaworld::ypaworld_func167(UserData *usr)
+void NC_STACK_ypaworld::UpdateGameShell()
 {
-    if ( usr->field_1612 )
+    if ( GameShell->field_1612 )
     {
-        usr->disk_listvw.PosOnSelected(usr->field_1612 - 1);
+        GameShell->disk_listvw.PosOnSelected(GameShell->field_1612 - 1);
 
         NC_STACK_button::button_66arg v18;
         v18.field_4 = 1;
         v18.butID = 1101;
-        usr->disk_button->button_func66(&v18);
+        GameShell->disk_button->button_func66(&v18);
 
         v18.butID = 1102;
-        usr->disk_button->button_func66(&v18);
+        GameShell->disk_button->button_func66(&v18);
 
         v18.butID = 1103;
-        usr->disk_button->button_func66(&v18);
+        GameShell->disk_button->button_func66(&v18);
     }
     else
     {
         NC_STACK_button::button_66arg v18;
         v18.field_4 = 1;
         v18.butID = 1101;
-        usr->disk_button->button_func67(&v18);
+        GameShell->disk_button->button_func67(&v18);
 
         v18.butID = 1102;
-        usr->disk_button->button_func67(&v18);
+        GameShell->disk_button->button_func67(&v18);
 
         v18.butID = 1103;
-        usr->disk_button->button_func67(&v18);
+        GameShell->disk_button->button_func67(&v18);
     }
 
     NC_STACK_button::button_66arg v16;
     v16.butID = 1151;
-    v16.field_4 = ((usr->snd__flags2 & 1) == 0) + 1;
+    v16.field_4 = ((GameShell->snd__flags2 & 1) == 0) + 1;
 
-    usr->video_button->button_func73(&v16);
+    GameShell->video_button->button_func73(&v16);
 
 
     v16.butID = 1150;
-    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
-    usr->video_button->button_func73(&v16);
+    v16.field_4 = ((GameShell->GFX_flags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
+    GameShell->video_button->button_func73(&v16);
 
-    v16.field_4 = ((usr->snd__flags2 & 0x10) == 0) + 1;
+    v16.field_4 = ((GameShell->snd__flags2 & 0x10) == 0) + 1;
     v16.butID = 1164;
-    usr->video_button->button_func73(&v16);
+    GameShell->video_button->button_func73(&v16);
 
-    NC_STACK_button::Slider *tmp = usr->video_button->button_func74(1152);
-    tmp->value = usr->snd__volume;
+    NC_STACK_button::Slider *tmp = GameShell->video_button->button_func74(1152);
+    tmp->value = GameShell->snd__volume;
 
-    usr->video_button->button_func75(1152);
+    GameShell->video_button->button_func75(1152);
 
-    tmp = usr->video_button->button_func74(1154);
-    tmp->value = usr->snd__cdvolume;
+    tmp = GameShell->video_button->button_func74(1154);
+    tmp->value = GameShell->snd__cdvolume;
 
-    usr->video_button->button_func75(1154);
+    GameShell->video_button->button_func75(1154);
 
     v16.butID = 1163;
-    v16.field_4 = (usr->enemyindicator == 0) + 1;
-    usr->video_button->button_func73(&v16);
+    v16.field_4 = (GameShell->enemyindicator == 0) + 1;
+    GameShell->video_button->button_func73(&v16);
 
     v16.butID = 1157;
-    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_FARVIEW) == 0) + 1;
-    usr->video_button->button_func73(&v16);
+    v16.field_4 = ((GameShell->GFX_flags & World::GFX_FLAG_FARVIEW) == 0) + 1;
+    GameShell->video_button->button_func73(&v16);
 
-    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
+    v16.field_4 = ((GameShell->GFX_flags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
     v16.butID = 1160;
-    usr->video_button->button_func73(&v16);
+    GameShell->video_button->button_func73(&v16);
 
     v16.butID = 1165;
-    v16.field_4 = ((usr->GFX_flags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
-    usr->video_button->button_func73(&v16);
+    v16.field_4 = ((GameShell->GFX_flags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
+    GameShell->video_button->button_func73(&v16);
 
     v16.butID = 1166;
-    v16.field_4 = (!usr->p_ypaworld->_gfxWindowed) + 1;
-    usr->video_button->button_func73(&v16);
+    v16.field_4 = (!GameShell->p_YW->_gfxWindowed) + 1;
+    GameShell->video_button->button_func73(&v16);
 
-    usr->video_button->button_func71(1156, usr->p_ypaworld->_gfxMode.name);
+    GameShell->video_button->button_func71(1156, GameShell->p_YW->_gfxMode.name);
 
-    tmp = usr->video_button->button_func74(1159);
-    tmp->value = usr->fxnumber;
+    tmp = GameShell->video_button->button_func74(1159);
+    tmp->value = GameShell->fxnumber;
 
-    usr->video_button->button_func75(1159);
+    GameShell->video_button->button_func75(1159);
 
-    ypaworld_func167__sub0(usr);
+    NC_STACK_button::button_66arg v9;
+    v9.butID = 1050;
+    v9.field_4 = ((GameShell->p_YW->field_73CE & 4) != 0) + 1;
+
+    GameShell->button_input_button->button_func73(&v9);
+
+    v9.butID = 1061;
+    v9.field_4 = (GameShell->inp_altjoystick == false) + 1;
+    GameShell->button_input_button->button_func73(&v9);
+
+    v9.butID = 1055;
+    v9.field_4 = ((GameShell->p_YW->field_73CE & 8) != 0) + 1;
+    GameShell->button_input_button->button_func73(&v9);
+
+    if ( GameShell->field_D36 )
+    {
+        int v7 = GameShell->field_D36 - 1;
+        int v8 = GameShell->input_listview.maxShownEntries + GameShell->input_listview.firstShownEntries;
+
+        if ( v7 >= GameShell->input_listview.firstShownEntries && v7 < v8 )
+        {
+            if ( v8 > GameShell->input_listview.numEntries )
+                GameShell->input_listview.firstShownEntries = GameShell->input_listview.numEntries - GameShell->input_listview.maxShownEntries;
+
+            if ( GameShell->input_listview.firstShownEntries < 0 )
+                GameShell->input_listview.firstShownEntries = 0;
+        }
+        else if ( GameShell->input_listview.numEntries - v7 <= GameShell->input_listview.maxShownEntries )
+        {
+            GameShell->input_listview.firstShownEntries = GameShell->input_listview.numEntries - GameShell->input_listview.maxShownEntries;
+        }
+        else
+        {
+            GameShell->input_listview.firstShownEntries = v7;
+        }
+    }
 }
 
 
@@ -6443,15 +6417,15 @@ size_t NC_STACK_ypaworld::ypaworld_func168(NC_STACK_ypabact *bact)
         {
             if ( UserRobo == bact )
             {
-                _levelInfo->State = 1;
-                _levelInfo->GateCompleteID = bact->_pSector->w_id;
+                _levelInfo.State = TLevelInfo::STATE_COMPLETED;
+                _levelInfo.GateCompleteID = bact->_pSector->w_id;
             }
             else
             {
                 _currentBeamLoad += (bact->_energy_max + 99) / 100;
 
                 if ( _currentBeamLoad <= beamenergy )
-                    _levelInfo->Buddies.push_back( MapBuddy( bact->_commandID, bact->_vehicleID, bact->_energy ) );
+                    _levelInfo.Buddies.push_back( TMapBuddy( bact->_commandID, bact->_vehicleID, bact->_energy ) );
                 else
                     return 0;
             }
@@ -6541,7 +6515,7 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
     _extraViewNumber = -1;
     _extraViewEnable = false;
 
-    LevelDesc mapp;
+    TLevelDescription mapp;
     
     _particles.Clear();
 
@@ -6566,8 +6540,8 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
         return 0;
     }
 
-    _levelInfo->OwnerMask = 0;
-    _levelInfo->UserMask = 0;
+    _levelInfo.OwnerMask = 0;
+    _levelInfo.UserMask = 0;
 
     bact_id = 0x10000;
     dword_5A7A80 = 0;
@@ -6629,7 +6603,7 @@ size_t NC_STACK_ypaworld::SaveGame(const std::string &saveFile)
     bool write_ok = true;
 
     if ( saveFile.find(".sgm") != std::string::npos || saveFile.find(".SGM") != std::string::npos )
-        uaDeleteFile( fmt::sprintf("save:%s/sgisold.txt", GameShell->user_name) );
+        uaDeleteFile( fmt::sprintf("save:%s/sgisold.txt", GameShell->UserName) );
 
     int write_modifers;
     int write_user;
@@ -6705,7 +6679,7 @@ size_t NC_STACK_ypaworld::SaveGame(const std::string &saveFile)
     {
         for (int i = 0; i < 256; i++)
         {
-            if ( LevelNet->mapInfos[i].field_0 )
+            if ( _mapRegions.MapRegions[i].Status != TMapRegionInfo::STATUS_NONE )
             {
                 if ( !yw_write_level_status(fil, this, i) )
                 {
@@ -6787,14 +6761,14 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
         return 0;
     }
 
-    if ( arg->field_8 & 0x10 && !yw_write_levels_statuses(sfil, usr->p_ypaworld) )
+    if ( arg->field_8 & 0x10 && !yw_write_levels_statuses(sfil, usr->p_YW) )
     {
         ypa_log_out("Unable to write score data to file\n");
         delete sfil;
         return 0;
     }
 
-    if ( arg->field_8 & 0x80 && !yw_write_buddies(sfil, usr->p_ypaworld) )
+    if ( arg->field_8 & 0x80 && !yw_write_buddies(sfil, usr->p_YW) )
     {
         ypa_log_out("Unable to write buddies to file\n");
         delete sfil;
@@ -6808,7 +6782,7 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
         return 0;
     }
 
-    if ( arg->field_8 & 0x40 && !yw_write_item_modifers(usr->p_ypaworld, sfil) )
+    if ( arg->field_8 & 0x40 && !yw_write_item_modifers(usr->p_YW, sfil) )
     {
         ypa_log_out("Unable to write build info to file\n");
         delete sfil;
@@ -6862,19 +6836,19 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg, bool playIntro)
 
     if ( arg->field_8 & 0x10 )
     {
-        if ( usr->field_0x8 )
+        if ( usr->IgnoreScoreSaving )
         {
-            usr->field_0x8 = 0;
+            usr->IgnoreScoreSaving = false;
         }
         else
         {
-            std::string tmpStr = fmt::sprintf("%s/user.txt", usr->user_name);
+            std::string tmpStr = fmt::sprintf("%s/user.txt", usr->UserName);
 
             yw_arg172 v12;
             v12.usr = usr;
             v12.usertxt = tmpStr.c_str();
             v12.field_10 = 0;
-            v12.field_4 = usr->user_name.c_str();
+            v12.field_4 = usr->UserName.c_str();
             v12.field_8 = 255;
 
             ypaworld_func171(&v12);
@@ -6884,7 +6858,7 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg, bool playIntro)
     usr->_saveDataFlags = 0;
 
     if ( arg->field_8 & 0x80 )
-        _levelInfo->Buddies.clear();
+        _levelInfo.Buddies.clear();
 
     if ( !ypaworld_func172__sub0(fmt::sprintf("save:%s", arg->usertxt), arg->field_8) )
     {
@@ -6894,11 +6868,11 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg, bool playIntro)
     
     if (playIntro && !GameShell->remoteMode)
     {
-        ChangeResolutionForMenu(_gfxWindowed);
+        SetGameShellVideoMode(_gfxWindowed);
         PlayIntroMovie();
     }
 
-    if ( (arg->field_10 & 1) && !usr->_gameShellInited && !ypaworld_func156(usr) ) // Init menus
+    if ( (arg->field_10 & 1) && !usr->HasInited && !OpenGameShell() ) // Init menus
     {
         ypa_log_out("Unable to open GameShell\n");
         return 0;
@@ -6907,33 +6881,33 @@ size_t NC_STACK_ypaworld::ypaworld_func172(yw_arg172 *arg, bool playIntro)
 
     if ( arg->field_8 & 0x10 && usr->_saveDataFlags & 0x10 )
     {
-        usr->user_name = arg->field_4;
+        usr->UserName = arg->field_4;
     }
 
     if ( arg->field_8 & 2 )
         usr->InputConfCopyToBackup();
 
     if ( arg->field_10 & 1 )
-        ypaworld_func167(usr); // Update menu values
+        UpdateGameShell(); // Update menu values
 
     return 1;
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
+bool NC_STACK_ypaworld::ReloadInput(size_t id)
 {
     std::string keyConfStr;
 
-    if ( usr->field_D36 < 1 || usr->field_D36 >= usr->InputConfig.size() )
-        return 0;
+    if ( id < 1 || id >= GameShell->InputConfig.size() )
+        return false;
 
-    UserData::TInputConf &kconf = usr->InputConfig.at(usr->field_D36);
+    UserData::TInputConf &kconf = GameShell->InputConfig.at(id);
 
     if ( NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
-        return 0;
+        return false;
 
     if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER && NC_STACK_input::KeyNamesTable.at(kconf.NKeyCode).Name.empty() )
-        return 0;
+        return false;
 
     if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER )
     {
@@ -6949,7 +6923,7 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
     }
 
     if ( NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
-        return 0;
+        return false;
 
     keyConfStr += NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name;
 
@@ -6975,11 +6949,11 @@ size_t NC_STACK_ypaworld::ypaworld_func173(UserData *usr)
     }
     kconf.NKeyCodeBkp = kconf.NKeyCode;
     kconf.PKeyCodeBkp = kconf.PKeyCode;
-    return 1;
+    return true;
 }
 
 
-size_t NC_STACK_ypaworld::ChangeResolutionForMenu(bool windowed)
+size_t NC_STACK_ypaworld::SetGameShellVideoMode(bool windowed)
 {
     UserData *usr = GameShell;
     
@@ -6991,9 +6965,9 @@ size_t NC_STACK_ypaworld::ChangeResolutionForMenu(bool windowed)
 
     int v6;
 
-    if ( usr->_gameShellInited )
+    if ( usr->HasInited )
     {
-        ypaworld_func157(usr);
+        CloseGameShell();
         v6 = 1;
     }
     else
@@ -7006,7 +6980,7 @@ size_t NC_STACK_ypaworld::ChangeResolutionForMenu(bool windowed)
     screen_width = GFX::Engine.GetScreenW();
     screen_height = GFX::Engine.GetScreenH();
 
-    if ( v6 && !ypaworld_func156(usr))
+    if ( v6 && !OpenGameShell())
     {
         ypa_log_out("Error: Unable to open GameShell with mode %d x %d\n", _shellGfxMode.x, _shellGfxMode.y);
 
@@ -7037,9 +7011,9 @@ size_t NC_STACK_ypaworld::ChangeResolutionForMenu(bool windowed)
 }
 
 
-size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
+size_t NC_STACK_ypaworld::ReloadLanguage()
 {
-    if ( !usr->default_lang_dll )
+    if ( !GameShell->default_lang_dll )
     {
         ypa_log_out("Set Language, but no language selected\n");
         return 0;
@@ -7047,9 +7021,9 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
 
     int v6;
 
-    if ( usr->_gameShellInited )
+    if ( GameShell->HasInited )
     {
-        ypaworld_func157(usr);
+        CloseGameShell();
         v6 = 1;
     }
     else
@@ -7057,10 +7031,10 @@ size_t NC_STACK_ypaworld::ypaworld_func175(UserData *usr)
         v6 = 0;
     }
 
-    if ( !ypaworld_func166(*usr->default_lang_dll) )
+    if ( !ypaworld_func166(*GameShell->default_lang_dll) )
         ypa_log_out("Warning: SETLANGUAGE failed\n");
 
-    if ( v6 && !ypaworld_func156(usr) )
+    if ( v6 && !OpenGameShell() )
     {
         ypa_log_out("Unable to open GameShell\n");
         return 0;
@@ -7241,9 +7215,9 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 {
     int v6;
 
-    if ( LevelNet->mapInfos[ arg->lvlID ].field_0 == 3 && ypaworld_func183__sub0(arg->lvlID, GameShell->user_name.c_str()) )
+    if ( _mapRegions.MapRegions[ arg->lvlID ].Status == TMapRegionInfo::STATUS_COMPLETED && ypaworld_func183__sub0(arg->lvlID, GameShell->UserName.c_str()) )
     {
-        std::string savename = fmt::sprintf("save:%s/%d.fin", GameShell->user_name, arg->lvlID);
+        std::string savename = fmt::sprintf("save:%s/%d.fin", GameShell->UserName, arg->lvlID);
         v6 = LoadGame(savename);
 
         if ( !v6 )
@@ -7261,8 +7235,8 @@ size_t NC_STACK_ypaworld::ypaworld_func183(yw_arg161 *arg)
 
     if ( v6 )
     {
-        if ( !SaveGame(fmt::sprintf("save:%s/%d.rst", GameShell->user_name, _levelInfo->LevelID)) )
-            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", _levelInfo->LevelID, GameShell->user_name.c_str());
+        if ( !SaveGame(fmt::sprintf("save:%s/%d.rst", GameShell->UserName, _levelInfo.LevelID)) )
+            ypa_log_out("Warning: could not create restart file for level %d, user %s.\n", _levelInfo.LevelID, GameShell->UserName.c_str());
     }
 
     if ( copyof_typemap )
@@ -7475,7 +7449,7 @@ NC_STACK_ypabact *NC_STACK_ypaworld::getYW_userVehicle()
 
 int NC_STACK_ypaworld::getYW_lvlFinished()
 {
-    if ( _levelInfo->State != 1 && _levelInfo->State != 2 )
+    if ( _levelInfo.State != TLevelInfo::STATE_COMPLETED && _levelInfo.State != TLevelInfo::STATE_ABORTED )
         return 0;
 
     return 1;
@@ -7491,7 +7465,7 @@ int NC_STACK_ypaworld::getYW_screenH()
     return screen_height;
 }
 
-LevelInfo *NC_STACK_ypaworld::getYW_levelInfo()
+TLevelInfo &NC_STACK_ypaworld::getYW_levelInfo()
 {
     return _levelInfo;
 }
@@ -7574,8 +7548,8 @@ int NC_STACK_ypaworld::TestVehicle(int protoID, int job)
 
 void NC_STACK_ypaworld::UpdateGuiSettings()
 {
-    Gui::UA::_UATextColor = iniColors[60];
-    Gui::UA::_UAButtonTextColor = iniColors[68];
+    Gui::UA::_UATextColor = _iniColors[60];
+    Gui::UA::_UAButtonTextColor = _iniColors[68];
 
     
 
@@ -7619,7 +7593,7 @@ void NC_STACK_ypaworld::DeleteNewGuiElements()
 
 SDL_Color NC_STACK_ypaworld::GetColor(int colorID)
 {
-    return iniColors.at(colorID);
+    return _iniColors.at(colorID);
 }
 
 std::string NC_STACK_ypaworld::GetLocaleString(int32_t id, const std::string &def) const

@@ -131,13 +131,13 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
 
     if ( usr->takTime > 0 )
     {
-        usr->takTime -= usr->frameTime;
+        usr->takTime -= usr->DTime;
     }
     else
     {
         usr->takTime = 15000;
 
-        int plCnt = yw->windp->CountPlayers(NULL);
+        int plCnt = yw->windp->CountPlayers();
 
         bool err = false;
         int errmsg = 0;
@@ -169,15 +169,15 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
 
 void UserData::yw_CheckCDs()
 {
-    if ( glblTime - last_cdchk >= 1500 )
+    if ( GlobalTime - last_cdchk >= 1500 )
     {
-        last_cdchk = glblTime;
+        last_cdchk = GlobalTime;
 
         windp_arg79 plData;
         plData.ID = 0;
         plData.mode = 0;
 
-        while ( p_ypaworld->windp->GetPlayerData(&plData) )
+        while ( p_YW->windp->GetPlayerData(&plData) )
         {
             if ( !StriCmp(plData.name, callSIGN) )
             {
@@ -2652,7 +2652,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         yw->GameShell->netLevelID = lobbyMsg->lvlID;
-        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name);
+        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->_mapRegions.MapRegions[yw->GameShell->netLevelID].MapName);
 
         windp_arg79 plDat;
         plDat.ID = 0;
@@ -2669,12 +2669,12 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             plDat.ID++;
         }
 
-        mapINFO *minf = &yw->LevelNet->mapInfos[lobbyMsg->lvlID];
-        int tmp = yw->windp->CountPlayers(NULL);
+        TMapRegionInfo &minf = yw->_mapRegions.MapRegions[lobbyMsg->lvlID];
+        int tmp = yw->windp->CountPlayers();
 
         plDat.ID = 0;
         plDat.mode = 0;
-        if ( minf->fractions_mask & 2 )
+        if ( minf.FractionsBits & 2 )
         {
             if ( tmp )
             {
@@ -2695,7 +2695,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
         }
 
-        if ( minf->fractions_mask & 0x40 )
+        if ( minf.FractionsBits & 0x40 )
         {
             if ( tmp )
             {
@@ -2715,7 +2715,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
         }
 
-        if ( minf->fractions_mask & 8 )
+        if ( minf.FractionsBits & 8 )
         {
             if ( tmp )
             {
@@ -2735,7 +2735,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
         }
 
-        if ( minf->fractions_mask & 0x10 )
+        if ( minf.FractionsBits & 0x10 )
         {
             if ( tmp )
             {
@@ -2768,21 +2768,21 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         yw->GameShell->netLevelID = stlvlMsg->lvlID;
-        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->LevelNet->mapInfos[yw->GameShell->netLevelID].map_name);
+        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->_mapRegions.MapRegions[yw->GameShell->netLevelID].MapName);
 
         for (int i = 0; i < 4; i++)
         {
             yw->GameShell->players2[i].checksum = 0;
         }
 
-        mapINFO *minf = &yw->LevelNet->mapInfos[stlvlMsg->lvlID];
-        int tmp = yw->windp->CountPlayers(NULL);
+        TMapRegionInfo &minf = yw->_mapRegions.MapRegions[stlvlMsg->lvlID];
+        int tmp = yw->windp->CountPlayers();
 
         windp_arg79 plDat;
         plDat.ID = 0;
         plDat.mode = 0;
 
-        if ( minf->fractions_mask & 2 )
+        if ( minf.FractionsBits & 2 )
         {
             if ( tmp )
             {
@@ -2803,7 +2803,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
         }
 
-        if ( minf->fractions_mask & 0x40 )
+        if ( minf.FractionsBits & 0x40 )
         {
             if ( tmp )
             {
@@ -2823,7 +2823,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
         }
 
-        if ( minf->fractions_mask & 8 )
+        if ( minf.FractionsBits & 8 )
         {
             if ( tmp )
             {
@@ -2843,7 +2843,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
         }
 
-        if ( minf->fractions_mask & 0x10 )
+        if ( minf.FractionsBits & 0x10 )
         {
             if ( tmp )
             {
@@ -3223,7 +3223,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
 const char *yw_corruptionCheck(UserData *usr)
 {
-    NC_STACK_ypaworld *ywo = usr->p_ypaworld;
+    NC_STACK_ypaworld *ywo = usr->p_YW;
     NC_STACK_ypabact *found = NULL;
 
     if ( ywo->timeStamp - usr->deadCheck >= 100000 )
@@ -3351,7 +3351,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
             }
             else
             {
-                usr->sendScore -= usr->frameTime;
+                usr->sendScore -= usr->DTime;
             }
 
         }
@@ -3370,9 +3370,9 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
             msgcount++;
 
-            if ( yw->_levelInfo->State != 2 || !yw->netGameStarted )
+            if ( yw->_levelInfo.State != TLevelInfo::STATE_ABORTED || !yw->netGameStarted )
             {
-                if ( yw->windp->CountPlayers(NULL) * 5 >= msgcount )
+                if ( yw->windp->CountPlayers() * 5 >= msgcount )
                 {
                     yw->netInfoOverkill = 0;
                 }
@@ -3444,7 +3444,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                     if ( !StriCmp(usr->callSIGN, recvMsg.senderName) )
                     {
                         itisI = true;
-                        yw->_levelInfo->State = 2;
+                        yw->_levelInfo.State = TLevelInfo::STATE_ABORTED;
                     }
 
                     for(int i = 0; i < 4; i++)
@@ -3463,7 +3463,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
                     log_netlog(">>> Received a destroy player for %s at %d\n", recvMsg.senderName.c_str(), yw->timeStamp / 1000);
 
-                    if ( usr->_gameShellInited == 0 && plFound)
+                    if ( !usr->HasInited && plFound)
                     {
                         for (int i = 0; i < 8; i++)
                         {
@@ -3663,8 +3663,8 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
 bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 {
-    _levelInfo->OwnerMask = 0;
-    _levelInfo->UserMask = 0;
+    _levelInfo.OwnerMask = 0;
+    _levelInfo.UserMask = 0;
 
     for (int i = 0; i < 8; i++)
         GameShell->players[i].rdyStart = 0;
@@ -3791,7 +3791,7 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
         hostObj->_owner = owner;
         hostObj->_gid |= owner << 24;
 
-        _levelInfo->OwnerMask |= 1 << owner;
+        _levelInfo.OwnerMask |= 1 << owner;
 
         for (NC_STACK_ypabact* &bct :  hostObj->_kidList)
         {
@@ -3804,7 +3804,7 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
             hostObj->setBACT_viewer(1);
             hostObj->setBACT_inputting(1);
             GameShell->netPlayerOwner = owner;
-            _levelInfo->UserMask |= 1 << owner;
+            _levelInfo.UserMask |= 1 << owner;
         }
 
         ypaworld_func134(hostObj);
@@ -3841,7 +3841,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     
     _particles.Clear();
 
-    LevelDesc proto;
+    TLevelDescription proto;
     bool loadOK = false;
 
     if ( LevelCommonLoader(&proto, arg->lvlID, arg->field_4) )
@@ -4010,8 +4010,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
     GameShell->deadCheck = timeStamp + 300000;
     GameShell->sendScore = 3000;
 
-    for (auto &x : playerstatus)
-        x.clear();
+    playerstatus.fill(World::TPlayerStatus());
 
     return 1;
 }
@@ -4023,7 +4022,7 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
     switch ( usr->netProblem )
     {
     case 1:
-        usr->field_0x10 = 1;
+        usr->ResetInputPeriod = true;
         usr->netProblemCount--;
 
         if ( usr->netProblemCount <= 0 )
@@ -4058,7 +4057,7 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
         usr->netProblemCount -= yw->field_1b24.frameTime;
         if ( usr->netProblemCount < 0 )
         {
-            yw->_levelInfo->State = 2;
+            yw->_levelInfo.State = TLevelInfo::STATE_ABORTED;
             usr->netProblem = 0;
         }
         break;
@@ -4208,7 +4207,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
 {
     UserData *usr = yw->GameShell;
 
-    int numpl = yw->windp->CountPlayers(NULL);
+    int numpl = yw->windp->CountPlayers();
 
     if ( yw->netGameStarted )
         return 1;
@@ -4393,7 +4392,7 @@ void yw_NetMsgHndlLoop(NC_STACK_ypaworld *yw)
 
         yw_HandleNetMsg(yw);
 
-        if ( yw->_levelInfo->State == 2 )
+        if ( yw->_levelInfo.State == TLevelInfo::STATE_ABORTED )
             break;
 
         SPEED_DOWN_NET = 0;

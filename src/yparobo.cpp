@@ -5911,13 +5911,13 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
                 _position = _old_pos;
                 _roboYPos = _old_pos.y;
 
-                if ( !_world->SaveGame( fmt::sprintf("save:%s/%d.fin", _world->GameShell->user_name, _world->_levelInfo->LevelID) ) )
+                if ( !_world->SaveGame( fmt::sprintf("save:%s/%d.fin", _world->GameShell->UserName, _world->_levelInfo.LevelID) ) )
                     ypa_log_out("Warning, final sgm save error\n");
 
                 _position = tt;
 
                 if ( _world->GameShell )
-                    uaDeleteFile( fmt::sprintf("save:%s/%d.rst", _world->GameShell->user_name, _world->_levelInfo->LevelID) );
+                    uaDeleteFile( fmt::sprintf("save:%s/%d.rst", _world->GameShell->UserName, _world->_levelInfo.LevelID) );
                 
                 _status_flg |= BACT_STFLAG_CLEAN;
 
@@ -5939,7 +5939,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
                 sub_unit->_status_flg |= BACT_STFLAG_CLEAN;
         }
 
-        _world->_levelInfo->Buddies.clear();
+        _world->_levelInfo.Buddies.clear();
 
         int v15 = 0;
 

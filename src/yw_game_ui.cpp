@@ -806,7 +806,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 }
             }
 
-            for ( const MapGate &gate : yw->_levelInfo->Gates )
+            for ( const MapGate &gate : yw->_levelInfo.Gates )
             {
                 if ( gate.PCell->w_type == 5 )
                 {
@@ -844,31 +844,33 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                 }
             }
 
-            for (const MapSuperItem &sitem : yw->_levelInfo->SuperItems)
+            for (const TMapSuperItem &sitem : yw->_levelInfo.SuperItems)
             {
                 int v29 = 0;
                 int v61 = 0;
 
-                if ( sitem.Type == 1 )
+                if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
                 {
                     v29 = 0x8E;
 
-                    if ( sitem.State == 0 )
+                    if ( sitem.State == TMapSuperItem::STATE_INACTIVE )
                         v61 = 0x8B;
-                    else if ( sitem.State <= 2 )
+                    else if ( sitem.State == TMapSuperItem::STATE_ACTIVE ||
+                              sitem.State == TMapSuperItem::STATE_STOPPED )
                         v61 = 0x8C;
-                    else if ( sitem.State == 3 )
+                    else if ( sitem.State == TMapSuperItem::STATE_TRIGGED )
                         v61 = 0x8D;
                 }
-                else if ( sitem.Type == 2 )
+                else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
                 {
                     v29 = 0x92;
 
-                    if ( sitem.State == 0 )
+                    if ( sitem.State == TMapSuperItem::STATE_INACTIVE )
                         v61 = 0x8F;
-                    else if ( sitem.State <= 2 )
+                    else if ( sitem.State == TMapSuperItem::STATE_ACTIVE ||
+                              sitem.State == TMapSuperItem::STATE_STOPPED )
                         v61 = 0x90;
-                    else if ( sitem.State == 3 )
+                    else if ( sitem.State == TMapSuperItem::STATE_TRIGGED )
                         v61 = 0x91;
                 }
 
@@ -884,7 +886,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
 
                     if ( v34 )
                     {
-                        vec2d tmp = World::SectorIDToCenterPos2( {sitem.SecX, sitem.SecY} );
+                        vec2d tmp = World::SectorIDToCenterPos2( sitem.Sector );
                         pcur = sub_4F6980(pcur, tmp.x, tmp.y, v61, a4, a4);
                     }
 
@@ -1428,7 +1430,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         }
     }
 
-    for ( const MapGate &gate : yw->_levelInfo->Gates )
+    for ( const MapGate &gate : yw->_levelInfo.Gates )
     {
         if ( gate.PCell->w_type == 6 )
         {
@@ -2954,7 +2956,7 @@ int sb_0x451034(NC_STACK_ypaworld *yw)
 
     if ( yw->field_73CE & World::PREF_CDMUSICDISABLE )
     {
-        SFXEngine::SFXe.SetMusicTrack(yw->_levelInfo->MusicTrack, yw->_levelInfo->MusicTrackMinDelay, yw->_levelInfo->MusicTrackMaxDelay);
+        SFXEngine::SFXe.SetMusicTrack(yw->_levelInfo.MusicTrack, yw->_levelInfo.MusicTrackMinDelay, yw->_levelInfo.MusicTrackMaxDelay);
         SFXEngine::SFXe.PlayMusicTrack();
     }
 
@@ -3047,7 +3049,7 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
 
     if ( a2 )
     {
-        FontUA::set_txtColor(&pcur, yw->iniColors[62].r, yw->iniColors[62].g, yw->iniColors[62].b);
+        FontUA::set_txtColor(&pcur, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
 
         v14 = 9;
         v15 = 98;
@@ -3056,7 +3058,7 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
     }
     else
     {
-        FontUA::set_txtColor(&pcur, yw->iniColors[61].r, yw->iniColors[61].g, yw->iniColors[61].b);
+        FontUA::set_txtColor(&pcur, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
 
         v14 = 0;
         v16 = 102;
@@ -3601,7 +3603,7 @@ char *ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, char *cur)
 
             int v30 = -(yw->icon0___h + 7 * yw->font_default_h);
 
-            FontUA::set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+            FontUA::set_txtColor(&pcur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
             pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2474, "2474 == VS ROBO:"), v5, v6);
 
@@ -5445,7 +5447,7 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
 
         FontUA::select_tileset(&pcur, 0);
 
-        FontUA::set_txtColor(&pcur, yw->iniColors[60].r, yw->iniColors[60].g, yw->iniColors[60].b);
+        FontUA::set_txtColor(&pcur, yw->_iniColors[60].r, yw->_iniColors[60].g, yw->_iniColors[60].b);
 
         pcur = FontUA::FormateClippedText(yw->tiles[0], pcur, fmt::sprintf(" %d", yw->_kidsCount + 1) , 4 * yw->tiles[0]->map[65].w, 32);
 
@@ -6658,7 +6660,7 @@ void ypaworld_func64__sub7__sub6__sub3(NC_STACK_ypaworld *yw, int a2, int a4)
 {
     char *pcur = exit_menu.ItemsPreLayout(yw, exit_menu.itemBlock, 0, "{ }");
 
-    FontUA::set_txtColor(&pcur, yw->iniColors[68].r, yw->iniColors[68].g, yw->iniColors[68].b);
+    FontUA::set_txtColor(&pcur, yw->_iniColors[68].r, yw->_iniColors[68].g, yw->_iniColors[68].b);
 
     pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, yw->GetLocaleString(7, "CANCEL MISSION"));
     pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, yw->GetLocaleString(5, "SAVE"));
@@ -6676,9 +6678,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
 {
     if ( exit_menu.IsClosed() )
     {
-        if ( _levelInfo->State )
+        if ( _levelInfo.State != TLevelInfo::STATE_PLAYING )
         {
-            if ( _levelInfo->State == 6 )
+            if ( _levelInfo.State == TLevelInfo::STATE_SAVE )
             {
                 yw_arg159 v18;
                 v18.unit = 0;
@@ -6689,20 +6691,20 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                 ypaworld_func159(&v18);
             }
 
-            _levelInfo->State = 0;
+            _levelInfo.State = TLevelInfo::STATE_PLAYING;
         }
     }
     else
     {
-        if ( _levelInfo->State != 3 )
+        if ( _levelInfo.State != TLevelInfo::STATE_PAUSED )
         {
-            _levelInfo->State = 3;
+            _levelInfo.State = TLevelInfo::STATE_PAUSED;
 
             if ( GameShell )
             {
-                field_1604 = sub_47B388(0, GameShell->user_name) != 0;
+                field_1604 = sub_47B388(0, GameShell->UserName) != 0;
 
-                if ( ypaworld_func64__sub7__sub6__sub0(_levelInfo->LevelID, GameShell->user_name) )
+                if ( ypaworld_func64__sub7__sub6__sub0(_levelInfo.LevelID, GameShell->UserName) )
                     field_1608 = 1;
                 else
                     field_1608 = 0;
@@ -6719,7 +6721,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
             switch ( dword_5C8B78 )
             {
             case 8:
-                _levelInfo->State = 2;
+                _levelInfo.State = TLevelInfo::STATE_ABORTED;
 
                 if ( isNetGame )
                     sub_47DB04(1);
@@ -6727,15 +6729,15 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(InputState *inpt)
                 break;
 
             case 9:
-                _levelInfo->State = 6;
+                _levelInfo.State = TLevelInfo::STATE_SAVE;
                 break;
 
             case 10:
-                _levelInfo->State = 7;
+                _levelInfo.State = TLevelInfo::STATE_LOAD;
                 break;
 
             case 11:
-                _levelInfo->State = 4;
+                _levelInfo.State = TLevelInfo::STATE_RESTART;
                 break;
 
             case 13:
@@ -6981,12 +6983,12 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4__sub0(int a2)
 {
     char *pcur = lstvw2.ItemsPreLayout(this, lstvw2.itemBlock, 0, "{ }");
 
-    FontUA::set_txtColor(&pcur, iniColors[60].r, iniColors[60].g, iniColors[60].b);
+    FontUA::set_txtColor(&pcur, _iniColors[60].r, _iniColors[60].g, _iniColors[60].b);
 
     pcur = sub_4C8534(this, pcur, dword_5BAF98);
     pcur = sub_4C8534(this, pcur, " ");
 
-    FontUA::set_txtColor(&pcur, iniColors[68].r, iniColors[68].g, iniColors[68].b);
+    FontUA::set_txtColor(&pcur, _iniColors[68].r, _iniColors[68].g, _iniColors[68].b);
 
     pcur = ypaworld_func64__sub7__sub4__sub0__sub0(this, pcur, a2);
     pcur = lstvw2.ItemsPostLayout(this, pcur, 0, "xyz");
@@ -8206,7 +8208,7 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
             if ( v19 > 0 )
             {
                 FontUA::set_xpos(&pcur, 16);
-                FontUA::set_txtColor(&pcur, yw->iniColors[64].r, yw->iniColors[64].g, yw->iniColors[64].b);
+                FontUA::set_txtColor(&pcur, yw->_iniColors[64].r, yw->_iniColors[64].g, yw->_iniColors[64].b);
                 // Output ingame messages. From analyzer and other.
                 pcur = FontUA::TextRelWidthItem(yw->tiles[15], pcur, v14->txt, v19, 4);
 
@@ -8384,7 +8386,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
 
     char *pcur = cur;
 
-    FontUA::set_txtColor(&pcur, yw->iniColors[65].r, yw->iniColors[65].g, yw->iniColors[65].b);
+    FontUA::set_txtColor(&pcur, yw->_iniColors[65].r, yw->_iniColors[65].g, yw->_iniColors[65].b);
 
     v51 -= (wis->field_9A + wis->field_96 + v49) / 2;
 
@@ -8540,7 +8542,7 @@ char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur,
         FontUA::set_center_xpos(&pcur, v30);
         FontUA::set_center_ypos(&pcur, v34);
 
-        FontUA::set_txtColor(&pcur,  yw->iniColors[65].r,  yw->iniColors[65].g,  yw->iniColors[65].b);
+        FontUA::set_txtColor(&pcur,  yw->_iniColors[65].r,  yw->_iniColors[65].g,  yw->_iniColors[65].b);
 
         pcur = sub_451714(yw->tiles[15], pcur, name, v31, 32);
     }
@@ -9507,7 +9509,7 @@ char *sb_0x4d7c08__sub0__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur, NC_S
                                     FontUA::set_center_xpos(&pcur, v27_4 - (yw->screen_width / 2) );
                                     FontUA::set_center_ypos(&pcur, v15 - (yw->screen_height / 2) );
 
-                                    FontUA::set_txtColor(&pcur, yw->iniColors[ bact->_owner ].r, yw->iniColors[ bact->_owner ].g, yw->iniColors[ bact->_owner ].b);
+                                    FontUA::set_txtColor(&pcur, yw->_iniColors[ bact->_owner ].r, yw->_iniColors[ bact->_owner ].g, yw->_iniColors[ bact->_owner ].b);
 
                                     pcur = FontUA::FormateClippedText(yw->tiles[15], pcur,  yw->GameShell->players[bact->_owner].name, v28, 32);
                                 }
@@ -9860,7 +9862,7 @@ int sub_47F360(const void *a1, const void *a2)
     return (((const aab *)a2)->b) - (((const aab *)a1)->b);
 }
 
-char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std::array<World::player_status, 8> &statuses, int a3)
+char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std::array<World::TPlayerStatus, 8> &statuses, int a3)
 {
     char *pcur = cur;
 
@@ -9872,10 +9874,10 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
 
         for (int i = 0; i < 8; i++)
         {
-            if ( (1 << i) & yw->_levelInfo->OwnerMask )
+            if ( (1 << i) & yw->_levelInfo.OwnerMask )
             {
                 v25[nums].a = i;
-                v25[nums].b = statuses[i].score;
+                v25[nums].b = statuses[i].Score;
                 nums++;
             }
         }
@@ -9926,7 +9928,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
                 break;
             }
 
-            FontUA::set_txtColor(&pcur, yw->iniColors[clrid].r, yw->iniColors[clrid].g, yw->iniColors[clrid].b);
+            FontUA::set_txtColor(&pcur, yw->_iniColors[clrid].r, yw->_iniColors[clrid].g, yw->_iniColors[clrid].b);
 
             a4a[0].spaceChar = 32;
             a4a[0].prefixChar = 0;
@@ -9935,7 +9937,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
             a4a[0].flags = 36;
             a4a[0].width = a3 * 0.5;
 
-            a4a[1].txt = fmt::sprintf("%d", statuses[ v25[i].a ].score);
+            a4a[1].txt = fmt::sprintf("%d", statuses[ v25[i].a ].Score);
             a4a[1].width = a3 * 0.5;
             a4a[1].fontID = 15;
             a4a[1].spaceChar = 32;
@@ -9961,9 +9963,9 @@ char * sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
     if ( yw->isNetGame )
     {
         if ( yw->field_1bac[ yw->UserRobo->_owner ] <= yw->unit_limit_1 )
-            FontUA::set_txtColor(&pcur, yw->iniColors[63].r, yw->iniColors[63].g, yw->iniColors[63].b);
+            FontUA::set_txtColor(&pcur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
         else
-            FontUA::set_txtColor(&pcur, yw->iniColors[6].r, yw->iniColors[6].g, yw->iniColors[6].b);
+            FontUA::set_txtColor(&pcur, yw->_iniColors[6].r, yw->_iniColors[6].g, yw->_iniColors[6].b);
 
         FontUA::ColumnItem a4[2];
 
@@ -10005,21 +10007,21 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
     pcur = sb_0x4d7c08__sub0__sub2__sub0(yw, pcur, v2);
     pcur = sb_0x4d7c08__sub0__sub2__sub1(yw, pcur, yw->ingamePlayerStatus, v2);
 
-    for (const MapSuperItem &sitem : yw->_levelInfo->SuperItems)
+    for (const TMapSuperItem &sitem : yw->_levelInfo.SuperItems)
     {
-        if ( sitem.Type )
+        if ( sitem.Type != 0 )
         {
             std::string timeStr;
             std::string typeStr = "SUPER ITEM";
 
-            if (sitem.Type == 1)
+            if (sitem.Type == TMapSuperItem::TYPE_BOMB)
                 typeStr = yw->GetLocaleString(18, "18 == STOUDSON BOMB");
-            else if ( sitem.Type == 2 )
+            else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
                 typeStr = yw->GetLocaleString(19, "19 == STOUDSON WAVE");
 
             int v23 = 0;
 
-            if ( sitem.State == 1 || sitem.State == 2 )
+            if ( sitem.State == TMapSuperItem::STATE_ACTIVE || sitem.State == TMapSuperItem::STATE_STOPPED )
             {
                 int v10 = (sitem.CountDown + 1023) / 1024;
 
@@ -10030,7 +10032,7 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
 
                 v23 = 1;
             }
-            else if ( sitem.State == 3 )
+            else if ( sitem.State == TMapSuperItem::STATE_TRIGGED )
             {
                 timeStr = fmt::sprintf("%s: %s", typeStr,  yw->GetLocaleString(2471, "2471 == TRIGGERED") );
 
@@ -10041,7 +10043,7 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
             {
                 FontUA::set_xpos(&pcur, v25);
 
-                FontUA::set_txtColor(&pcur, yw->iniColors[sitem.ActivateOwner].r, yw->iniColors[sitem.ActivateOwner].g, yw->iniColors[sitem.ActivateOwner].b);
+                FontUA::set_txtColor(&pcur, yw->_iniColors[sitem.ActivateOwner].r, yw->_iniColors[sitem.ActivateOwner].g, yw->_iniColors[sitem.ActivateOwner].b);
 
                 pcur = FontUA::FormateClippedText(yw->tiles[15], pcur, timeStr.c_str(), yw->screen_width - v25, 32);
 

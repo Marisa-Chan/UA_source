@@ -39,7 +39,7 @@ public:
     virtual void WriteBytes(void *dst) const {} ;
     virtual void ReadBytes(const void *bt) {};
     
-    virtual void AddScore(std::array<player_status, 8> *score) const {};
+    virtual void AddScore(std::array<TPlayerStatus, 8> *score) const {};
     
     bool ReadByteArray(const Common::ByteArray &bt)
     {
@@ -135,10 +135,10 @@ public:
         owner = d[2];
     }
     
-    virtual void AddScore(std::array<player_status, 8> *score) const
+    virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
-        score->at(owner).sectorsTaked++;
-        score->at(owner).score++;
+        score->at(owner).SectorsTaked++;
+        score->at(owner).Score++;
     }
 };
 
@@ -190,30 +190,30 @@ public:
         posY = d[4];
     }
     
-    virtual void AddScore(std::array<player_status, 8> *score) const
+    virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
         int owner = (owners >> 3) & 7;
         int flags = owners & 0xC0;
         
-        score->at(owner).destroyed++;
+        score->at(owner).DestroyedUnits++;
 
         if ( flags == 0x80 )
         {
-            score->at(owner).destroyedByUser++;
-            score->at(owner).score += 20;
+            score->at(owner).DestroyedByUser++;
+            score->at(owner).Score += 20;
         }
         else if ( flags == 0xC0 )
         {
-            score->at(owner).destroyedByUser++;
-            score->at(owner).score += 200;
+            score->at(owner).DestroyedByUser++;
+            score->at(owner).Score += 200;
         }
         else
         {
-            score->at(owner).score += 10;
+            score->at(owner).Score += 10;
         }
 
         if ( vp & 0x8000 )
-            score->at(owner).score += 1000;
+            score->at(owner).Score += 1000;
     }    
 };
 
@@ -311,10 +311,10 @@ public:
         owner = d[2];
     }
     
-    virtual void AddScore(std::array<player_status, 8> *score) const
+    virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
-        score->at(owner).score += 100;
-        score->at(owner).power++;
+        score->at(owner).Score += 100;
+        score->at(owner).Power++;
     }
 };
 
@@ -396,10 +396,10 @@ public:
         lastBuild = Utils::UL16Byte(&d[9]);
     }
     
-    virtual void AddScore(std::array<player_status, 8> *score) const
+    virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
-        score->at(owner).score += 500;
-        score->at(owner).upgrades++;
+        score->at(owner).Score += 500;
+        score->at(owner).Upgrades++;
     }
     
     void operator=(const Upgrade &b)

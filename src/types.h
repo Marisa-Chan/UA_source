@@ -22,31 +22,15 @@ typedef RefList<NC_STACK_ypabact *> RefBactList;
 typedef std::list<NC_STACK_ypabact *> BactList;
 typedef std::list<NC_STACK_ypamissile *> MissileList;
 
-struct player_status
+struct TPlayerStatus
 {
-    int destroyed;
-    int destroyedByUser;
-    int elapsedTime;
-    int sectorsTaked;
-    int score;
-    int power;
-    int upgrades;
-
-    player_status()
-    {
-    	clear();
-    }
-
-    void clear()
-    {
-    	destroyed = 0;
-        destroyedByUser = 0;
-        elapsedTime = 0;
-        sectorsTaked = 0;
-        score = 0;
-        power = 0;
-        upgrades = 0;
-    }
+    int32_t DestroyedUnits = 0;
+    int32_t DestroyedByUser = 0;
+    int32_t ElapsedTime = 0;
+    int32_t SectorsTaked = 0;
+    int32_t Score = 0;
+    int32_t Power = 0;
+    int32_t Upgrades = 0;
 };
 
 }

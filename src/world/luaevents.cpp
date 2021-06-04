@@ -456,7 +456,7 @@ int LuaEvents::Lua_WrldGetGates(lua_State *l)
     lua_newtable(l);
     
     int32_t i = 0;
-    for(const MapGate &gate : wrld->_levelInfo->Gates)
+    for(const MapGate &gate : wrld->_levelInfo.Gates)
     {
         lua_pushinteger(l, i);
         lua_newtable(l);
