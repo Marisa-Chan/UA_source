@@ -68,7 +68,7 @@ public:
     int16_t entryWidth = 0;
     int16_t minEntryWidth = 0;
     int16_t maxEntryWidth = 0;
-    char title[64] = {{0}};
+    char title[64] = {0};
     char *scrollbar = NULL;
     char *itemBlock = NULL;
     int16_t rszX = 0;
