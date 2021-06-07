@@ -327,15 +327,9 @@ size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL
 
     if ( _texImg )
     {
-        bitmap_arg130 bitm130;
-
-        bitm130.time_stmp = arg->timeStamp;
-        bitm130.frame_time = arg->frameTime;
-
-        _texImg->bitmap_func130(&bitm130);
-
-        datSub->pbitm = bitm130.pbitm;
-        skel133.texCoords = bitm130.outline;
+        _texImg->SetTime(arg->timeStamp, arg->frameTime);
+        datSub->pbitm = _texImg->GetBitmap();
+        skel133.texCoords = _texImg->GetOutline();
     }
     else
     {

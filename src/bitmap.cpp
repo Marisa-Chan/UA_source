@@ -7,55 +7,6 @@
 
 const Nucleus::ClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
 
-int NC_STACK_bitmap::sub_416704(pixel_2d *src)
-{
-    //// WHAT IT THIS !?
-    int a4 = getRsrc_dontCopy();
-
-    if ( outline_coords )
-    {
-        if ( !a4 )
-            nc_FreeMem(outline_coords);
-    }
-
-    if ( a4 )
-    {
-        outline_coords = (tUtV *)src;
-        return 1;
-    }
-
-    int opl_count = 1; //Mandatory end (tu/tv = -1/-1)
-
-    pixel_2d *opl_cur = src;
-
-    while (opl_cur->flags >= 0)
-    {
-        opl_count++;
-        opl_cur++;
-    }
-
-    tUtV *unk = (tUtV *)AllocVec(sizeof(tUtV) * opl_count, 1);
-
-    if ( unk )
-    {
-        tUtV *tmp = unk;
-        pixel_2d *opl = src;
-
-        for (int i = 0; i < (opl_count - 1); i++)
-        {
-            tmp[i].tu = (float)opl[i].x * (1.0 / 256.0);
-            tmp[i].tv = (float)opl[i].y * (1.0 / 256.0);
-        }
-
-        tmp[opl_count - 1].tu = -1;
-        tmp[opl_count - 1].tv = -1;
-
-        outline_coords = unk;
-
-        return 1;
-    }
-    return 0;
-}
 
 
 size_t NC_STACK_bitmap::Init(IDVList &stak)
@@ -63,10 +14,10 @@ size_t NC_STACK_bitmap::Init(IDVList &stak)
     if ( !NC_STACK_rsrc::Init(stak) )
         return 0;
 
-    pixel_2d *v9 = stak.Get<pixel_2d *>(BMD_ATT_OUTLINE, NULL);
+    std::vector<tUtV> *v9 = stak.Get<std::vector<tUtV> *>(BMD_ATT_OUTLINE, NULL);
 
     if ( v9 )
-        sub_416704(v9);
+        outline_coords = *v9;
 
     bitm_intern = (ResBitmap *)getRsrc_pData();
 
@@ -75,14 +26,6 @@ size_t NC_STACK_bitmap::Init(IDVList &stak)
 
 size_t NC_STACK_bitmap::Deinit()
 {
-    if ( outline_coords )
-    {
-        size_t a4 = getRsrc_dontCopy();
-
-        if ( !a4 )
-            nc_FreeMem(outline_coords);
-    }
-
     return NC_STACK_rsrc::Deinit();
 }
 
@@ -161,29 +104,6 @@ size_t NC_STACK_bitmap::rsrc_func65(rsrc *res)
     return NC_STACK_rsrc::rsrc_func65(res);
 }
 
-size_t NC_STACK_bitmap::bitmap_func128(IDVPair *)
-{
-    return 0;
-}
-
-size_t NC_STACK_bitmap::bitmap_func129(IDVPair *)
-{
-    return 0;
-}
-
-void NC_STACK_bitmap::bitmap_func130(bitmap_arg130 *out)
-{
-    out->pbitm = bitm_intern;
-    out->outline = outline_coords;
-}
-
-
-
-void NC_STACK_bitmap::setBMD_outline(pixel_2d *otl)
-{
-    sub_416704(otl);
-}
-
 void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 {
     if ( bitm_intern->palette )
@@ -192,9 +112,16 @@ void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 
 
 
-ResBitmap * NC_STACK_bitmap::GetResBmp()
+ResBitmap * NC_STACK_bitmap::GetBitmap()
 {
     return bitm_intern;
+}
+
+tUtV * NC_STACK_bitmap::GetOutline()
+{
+    if (outline_coords.empty())
+        return NULL;
+    return outline_coords.data();
 }
 
 int NC_STACK_bitmap::getBMD_width()

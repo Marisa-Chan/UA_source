@@ -326,7 +326,7 @@ int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
                         if ( !frames[i].bitmObj )
                             return 0;
 
-                        frames[i].bitm_intern = frames[i].bitmObj->GetResBmp();
+                        frames[i].bitm_intern = frames[i].bitmObj->GetBitmap();
                         frames[i].title = pbmpAnm_titles[i];
                     }
                     return 1;
@@ -576,7 +576,7 @@ int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const std::string &cla
         if ( !t1->bitm_buff[i].bitmObj )
             return 0;
 
-        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->GetResBmp();
+        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->GetBitmap();
 
         t1->bitm_buff[i].title = out;
 
@@ -909,9 +909,9 @@ size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
     return 0;
 }
 
-void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
+void NC_STACK_bmpanim::SetTime(int32_t timeStamp, int32_t frameTime)
 {
-    if ( arg->frame_time == -1 )
+    if ( frameTime == -1 )
     {
         bmpAnim_t2 *t2 = &current_frame[ frm_adds ];
 
@@ -934,53 +934,41 @@ void NC_STACK_bmpanim::bitmap_func130(bitmap_arg130 *arg)
         }
 
         current_frame = t2;
-        arg->pbitm = t2->bitm;
-        arg->outline = t2->outline;
     }
-    else
+    else if ( timeStamp != time_stmp )
     {
-        if ( arg->time_stmp != time_stmp )
+        time_stmp = timeStamp;
+
+        bmpAnim_t2 *t2 = current_frame;
+        int v8 = frameTime + time_ovr;
+
+        while ( v8 - t2->frm_time >= 0 )
         {
-            time_stmp = arg->time_stmp;
+            v8 = v8 - t2->frm_time;
 
-            bmpAnim_t2 *t2 = current_frame;
-            int v8 = arg->frame_time + time_ovr;
+            t2 += frm_adds;
 
-            while ( v8 - t2->frm_time >= 0 )
+            if ( t2 == bmpanm_intern->end_frame )
             {
-                v8 = v8 - t2->frm_time;
-
-                t2 += frm_adds;
-
-                if ( t2 == bmpanm_intern->end_frame )
+                if ( anim_type )
                 {
-                    if ( anim_type )
-                    {
-                        t2--;
-                        frm_adds = -1;
-                    }
-                    else
-                    {
-                        t2 = bmpanm_intern->start_frame;
-                    }
+                    t2--;
+                    frm_adds = -1;
                 }
-                else if ( t2 < bmpanm_intern->start_frame )
+                else
                 {
-                    t2++;
-                    frm_adds = 1;
+                    t2 = bmpanm_intern->start_frame;
                 }
             }
+            else if ( t2 < bmpanm_intern->start_frame )
+            {
+                t2++;
+                frm_adds = 1;
+            }
+        }
 
-            time_ovr = v8;
-            current_frame = t2;
-            arg->pbitm = t2->bitm;
-            arg->outline = t2->outline;
-        }
-        else
-        {
-            arg->pbitm = current_frame->bitm;
-            arg->outline = current_frame->outline;
-        }
+        time_ovr = v8;
+        current_frame = t2;
     }
 }
 
@@ -991,9 +979,14 @@ void NC_STACK_bmpanim::setBANM_animType(int newType)
     anim_type = newType;
 }
 
-ResBitmap * NC_STACK_bmpanim::GetResBmp()
+ResBitmap * NC_STACK_bmpanim::GetBitmap()
 {
     return current_frame->bitm;
+}
+
+tUtV * NC_STACK_bmpanim::GetOutline()
+{
+    return current_frame->outline;
 }
 
 int NC_STACK_bmpanim::getBMD_width()

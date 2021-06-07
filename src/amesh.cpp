@@ -269,12 +269,8 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
 
     if ( _texImg )
     {
-        bitmap_arg130 bitm130;
-
-        bitm130.time_stmp = arg->timeStamp;
-        bitm130.frame_time = arg->frameTime;
-        _texImg->bitmap_func130(&bitm130);
-        v21 = bitm130.pbitm;
+        _texImg->SetTime(arg->timeStamp, arg->frameTime);
+        v21 = _texImg->GetBitmap();
     }
     else
     {

@@ -15,14 +15,6 @@ struct pixel_2d
     int16_t flags;
 };
 
-struct bitmap_arg130
-{
-    int time_stmp;
-    int frame_time;
-    ResBitmap *pbitm;
-    tUtV *outline;
-};
-
 class NC_STACK_bitmap: public NC_STACK_rsrc
 {
     
@@ -31,9 +23,7 @@ public:
     virtual size_t Deinit();
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
-    virtual size_t bitmap_func128(IDVPair *);
-    virtual size_t bitmap_func129(IDVPair *);
-    virtual void bitmap_func130(bitmap_arg130 *out);
+    virtual void SetTime(int32_t timeStamp, int32_t frameTime) {};
 
     NC_STACK_bitmap() {};
     virtual ~NC_STACK_bitmap() {};
@@ -57,11 +47,11 @@ public:
     };
 
     //Set
-    virtual void setBMD_outline(pixel_2d *);
     virtual void setBMD_palette(UA_PALETTE *);
 
     //Get
-    virtual ResBitmap  * GetResBmp();
+    virtual ResBitmap  * GetBitmap();
+    virtual tUtV       * GetOutline();
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual int getBMD_hasPalette();
@@ -69,8 +59,6 @@ public:
     
     virtual SDL_Surface * GetSwTex();
 
-
-    int sub_416704(pixel_2d *a3);
     
     virtual void PrepareTexture( bool force = false );
 
@@ -80,7 +68,7 @@ public:
 
 public:
     ResBitmap *bitm_intern = NULL;
-    tUtV * outline_coords = NULL;
+    std::vector<tUtV> outline_coords;
 };
 
 #endif // BITMAP_H_INCLUDED

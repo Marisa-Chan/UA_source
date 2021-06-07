@@ -567,12 +567,8 @@ size_t NC_STACK_3ds::Render(baseRender_msg *arg, Instance * inst)
                 {
                     if (faceMaterial[i]->texture1_map.tex)
                     {
-                        bitmap_arg130 bitm130;
-
-                        bitm130.time_stmp = arg->globTime;
-                        bitm130.frame_time = arg->frameTime;
-                        faceMaterial[i]->texture1_map.tex->bitmap_func130(&bitm130);
-                        bitm = bitm130.pbitm;
+                        faceMaterial[i]->texture1_map.tex->SetTime(arg->globTime, arg->frameTime);
+                        bitm = faceMaterial[i]->texture1_map.tex->GetBitmap();
                     }
                 }
 

@@ -27,7 +27,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
     int has_opl = 0;
 
     char name[256];
-    pixel_2d opls[64];
+    std::vector<tUtV> opls;
 
     while ( 1 )
     {
@@ -55,17 +55,13 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
             mfile->read(&dst, 128);
 
             int opl_count = iff_chunk->TAG_SIZE / 2;
+            opls.resize(opl_count + 1);
 
-            for (int i = 0; i < opl_count; i++)
+            for (int i = 0; i < opl_count; ++i)
             {
-                memset(&opls[i], 0, sizeof(pixel_2d));
-
-                opls[i].x = dst[0 + 2 * i];
-                opls[i].y = dst[1 + 2 * i];
+                opls[i].tu = float(dst[0 + 2 * i]) / 256.0;
+                opls[i].tv = float(dst[1 + 2 * i]) / 256.0;
             }
-
-            memset(&opls[opl_count], 0, sizeof(pixel_2d));
-            opls[opl_count].flags = 0xFFFF;
 
             mfile->parse();
 
@@ -85,7 +81,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
             {BMD_ATT_CONVCOLOR, (int32_t)1}};
 
         if ( has_opl )
-            stk.Add(BMD_ATT_OUTLINE, (pixel_2d *)opls);
+            stk.Add(BMD_ATT_OUTLINE, &opls);
 
         return NC_STACK_bitmap::Init(stk);
     }
@@ -106,15 +102,10 @@ size_t NC_STACK_ilbm::SavingIntoIFF(IFFile **pmfile)
 {
     IFFile *mfile = *pmfile;
 
-    const char *name = getRsrc_name();
+    std::string name = getRsrc_name();
 
-    bitmap_arg130 bitmap_info;
-    bitmap_info.time_stmp = 1;
-    bitmap_info.frame_time = 1;
-
-    bitmap_func130(&bitmap_info);
-
-    tUtV *opl2 = bitmap_info.outline;
+    SetTime(1, 1);
+    tUtV *opl2 = GetOutline();
 
     if ( mfile->pushChunk(TAG_CIBO, TAG_FORM, -1) )
     {
@@ -124,7 +115,7 @@ size_t NC_STACK_ilbm::SavingIntoIFF(IFFile **pmfile)
     {
 
         mfile->pushChunk(0, TAG_NAM2, -1);
-        mfile->write(name, strlen(name) + 1);
+        mfile->write(name.c_str(), name.length() + 1);
         mfile->popChunk();
 
         if ( opl2 )
@@ -653,21 +644,19 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
     if ( !mfile )
         return 0;
 
-    bitmap_arg130 v6;
-    v6.time_stmp = 1;
-    v6.frame_time = 1;
+    SetTime(1, 1);
+    
+    ResBitmap *bitm = GetBitmap();
 
-    bitmap_func130(&v6);
-
-    if ( !v6.pbitm || !v6.pbitm->swTex )
+    if ( !bitm || !bitm->swTex )
         return 0;
 
     int res;
 
     if ( _saveAsIlbm )
-        res = ILBM__WRITE_TO_FILE(mfile, v6.pbitm);
+        res = ILBM__WRITE_TO_FILE(mfile, bitm);
     else
-        res = VBMP__WRITE_TO_FILE(mfile, v6.pbitm);
+        res = VBMP__WRITE_TO_FILE(mfile, bitm);
 
     //// CHECK THIS---
     if ( res )

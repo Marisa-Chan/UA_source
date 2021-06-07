@@ -2849,7 +2849,7 @@ void sb_0x4e75e8__sub0(NC_STACK_ypaworld *yw)
             regions[i].bottom = -10000;
         }
 
-        ResBitmap *bitm = yw->_mapRegions.MaskImage->GetResBmp();
+        ResBitmap *bitm = yw->_mapRegions.MaskImage->GetBitmap();
 
         SDL_LockSurface(bitm->swTex);
         for (int y = 0; y < bitm->height; y++ )

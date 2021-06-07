@@ -52,7 +52,7 @@ public:
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
     virtual size_t rsrc_func66(rsrc_func66_arg *sv);
-    virtual void bitmap_func130(bitmap_arg130 *arg);
+    virtual void SetTime(int32_t timeStamp, int32_t frameTime);
 
     NC_STACK_bmpanim() {};
     virtual ~NC_STACK_bmpanim() {};
@@ -80,7 +80,8 @@ public:
     virtual void setBANM_animType(int newType);
 
     //Get
-    virtual ResBitmap * GetResBmp();
+    virtual ResBitmap * GetBitmap();
+    virtual tUtV * GetOutline();
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual void *getBMD_buffer();

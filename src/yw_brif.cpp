@@ -22,7 +22,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, InputState 
     brf->StartTime = brf->CurrTime;
     brf->Stage = TBriefengScreen::STAGE_SCALING;
 
-    brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
+    brf->MapBlitParams.pbitm = brf->MbmapImg->GetBitmap();
 
     brf->MapBlitStart.left = -0.4515625;
     brf->MapBlitStart.top = -0.324999988079;
@@ -1055,7 +1055,7 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, In
         {
             GFX::rstr_arg204 a4;
 
-            a4.pbitm = brf->BriefingMapImg->GetResBmp();
+            a4.pbitm = brf->BriefingMapImg->GetBitmap();
 
             a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
             a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
@@ -1115,7 +1115,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub0(NC_STACK_ypaworld *yw, InputState 
     brf->StartTime = brf->CurrTime;
     brf->Stage = TBriefengScreen::STAGE_SCALING;
 
-    brf->MapBlitParams.pbitm = brf->MbmapImg->GetResBmp();
+    brf->MapBlitParams.pbitm = brf->MbmapImg->GetBitmap();
 
     float v21, v22;
 
@@ -2166,7 +2166,7 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( brf->BriefingMapImg )
             {
                 GFX::rstr_arg204 arg204;
-                arg204.pbitm = brf->BriefingMapImg->GetResBmp();
+                arg204.pbitm = brf->BriefingMapImg->GetBitmap();
 
                 arg204.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
                 arg204.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);

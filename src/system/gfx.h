@@ -75,8 +75,8 @@ struct w3d_a209
 
 struct tUtV
 {
-    float tu;
-    float tv;
+    float tu = -1.0;
+    float tv = -1.0;
 };
 
 struct polysDatSub

@@ -149,7 +149,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadTileSet(const std::string &bitmap, Common::P
         
         for (int i = 0; i < cr.x; i++ )
         {
-            ResBitmap *bitm = tileset->img->GetResBmp();
+            ResBitmap *bitm = tileset->img->GetBitmap();
 
             if ( x_pos + chrSz.x > bitm->width )
                 x_pos = bitm->width - chrSz.x;
@@ -1148,7 +1148,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
             return 0;
         }
 
-        yw->pointers__bitm[i] = yw->pointers[i]->GetResBmp();
+        yw->pointers__bitm[i] = yw->pointers[i]->GetBitmap();
     }
 
     GFX::displ_arg263 arg_263;
@@ -1288,8 +1288,8 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
         return 0;
     }
 
-    GFX::Engine.SetTracyRmp( tracyrmp_ilbm->GetResBmp() );
-    GFX::Engine.SetShadeRmp( shadermp_ilbm->GetResBmp() );
+    GFX::Engine.SetTracyRmp( tracyrmp_ilbm->GetBitmap() );
+    GFX::Engine.SetShadeRmp( shadermp_ilbm->GetBitmap() );
 
     additionalBeeBox = NC_STACK_base::LoadBaseFromFile("rsrc:objects/beebox.base");
     if ( !additionalBeeBox )
@@ -1356,7 +1356,7 @@ int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod)
 void NC_STACK_ypaworld::GameShellBlitBkg(NC_STACK_bitmap *bitm)
 {
     GFX::rstr_arg204 a4;
-    a4.pbitm = bitm->GetResBmp();
+    a4.pbitm = bitm->GetBitmap();
 
     a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
     a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
@@ -1475,7 +1475,7 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
     {
         if ( inpt->ClickInf.selected_btnID == -1 )
         {
-            ResBitmap *a4 = yw->_mapRegions.MaskImage->GetResBmp();
+            ResBitmap *a4 = yw->_mapRegions.MaskImage->GetBitmap();
 
             int xpos = a4->width * v3;
             int ypos = a4->height * v4;
@@ -1547,7 +1547,7 @@ void NC_STACK_ypaworld::DrawMapRegionsTutorial()
     if ( _mapRegions.MenuImage && _mapRegions.MaskImage && _mapRegions.RolloverImage )
     {
         GFX::rstr_arg204 a4;
-        a4.pbitm = _mapRegions.MenuImage->GetResBmp();
+        a4.pbitm = _mapRegions.MenuImage->GetBitmap();
 
         a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
@@ -1566,7 +1566,7 @@ void NC_STACK_ypaworld::DrawMapRegionsTutorial()
                 {
                     if ( i == _mapRegions.SelectedRegion )
                     {
-                        v20 = _mapRegions.RolloverImage->GetResBmp();
+                        v20 = _mapRegions.RolloverImage->GetBitmap();
                     }
                 }
 
@@ -1574,7 +1574,7 @@ void NC_STACK_ypaworld::DrawMapRegionsTutorial()
                 {
                     GFX::rstr_218_arg v17;
                     v17.bitm_intern = v20;
-                    v17.bitm_intern2 = _mapRegions.MaskImage->GetResBmp();
+                    v17.bitm_intern2 = _mapRegions.MaskImage->GetBitmap();
 
                     v17.flg = i;
                     v17.rect2 = region.Rect;
@@ -1622,7 +1622,7 @@ void NC_STACK_ypaworld::DrawMapRegions()
     if ( _mapRegions.MenuImage && _mapRegions.MaskImage && _mapRegions.RolloverImage && _mapRegions.FinishedImage && _mapRegions.EnabledImage )
     {
         GFX::rstr_arg204 a4;
-        a4.pbitm = _mapRegions.MenuImage->GetResBmp();
+        a4.pbitm = _mapRegions.MenuImage->GetBitmap();
 
         a4.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
@@ -1642,23 +1642,23 @@ void NC_STACK_ypaworld::DrawMapRegions()
                 {
                     if ( i == _mapRegions.SelectedRegion )
                     {
-                        v20 = _mapRegions.RolloverImage->GetResBmp();
+                        v20 = _mapRegions.RolloverImage->GetBitmap();
                     }
                     else
                     {
-                        v20 = _mapRegions.EnabledImage->GetResBmp();
+                        v20 = _mapRegions.EnabledImage->GetBitmap();
                     }
                 }
                 else if ( region.Status == TMapRegionInfo::STATUS_COMPLETED )
                 {
-                    v20 = _mapRegions.FinishedImage->GetResBmp();
+                    v20 = _mapRegions.FinishedImage->GetBitmap();
                 }
 
                 if ( v20 )
                 {
                     GFX::rstr_218_arg v17;
                     v17.bitm_intern = v20;
-                    v17.bitm_intern2 = _mapRegions.MaskImage->GetResBmp();
+                    v17.bitm_intern2 = _mapRegions.MaskImage->GetBitmap();
 
                     v17.flg = i;
                     v17.rect2 = region.Rect;

@@ -47,7 +47,7 @@ void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen)
     {
         GFX::rstr_arg204 a4;
 
-        a4.pbitm = splashScreen->GetResBmp();
+        a4.pbitm = splashScreen->GetBitmap();
 
         a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
@@ -74,7 +74,7 @@ void drawSplashScreenWithTOD(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScree
     {
         GFX::rstr_arg204 a4;
 
-        a4.pbitm = splashScreen->GetResBmp();
+        a4.pbitm = splashScreen->GetBitmap();
 
         a4.float4  = Common::FRect(-1.0, -1.0, 1.0, 1.0);
         a4.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
