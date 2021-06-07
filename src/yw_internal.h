@@ -26,7 +26,7 @@ struct TRenderingSector
 int yw_InitNetwork(NC_STACK_ypaworld *yw);
 
 
-int yw_InitTooltips(NC_STACK_ypaworld *yw);
+
 
 int loadTOD(NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod);

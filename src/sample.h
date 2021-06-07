@@ -10,7 +10,6 @@ public:
     virtual size_t Init(IDVList &stak);
     virtual rsrc * rsrc_func64(IDVList &stak);
     virtual size_t rsrc_func65(rsrc *pres);
-    virtual void * sample_func128(void **arg);
 
     NC_STACK_sample() {};
     virtual ~NC_STACK_sample() {};

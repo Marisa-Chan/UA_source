@@ -2235,7 +2235,7 @@ public:
     void ProtosFreeSounds();
     
     
-    
+    void InitTooltips();
     
     World::ParticleSystem &ParticleSystem() { return _particles; };
     
@@ -2326,7 +2326,7 @@ public:
     int _mouseGrabbed; // Grab mouse for unit steer-turn
     int field_17c4;
     int field_17c8;
-    const char **tooltips;
+    std::vector<std::string> tooltips;
     std::array<SDL_Color, World::COLOR_MAX_NUMBER> _iniColors;
     int field_1a00;
     int field_1a04;

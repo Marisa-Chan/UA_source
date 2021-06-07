@@ -122,7 +122,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     _mouseGrabbed = 0; // Grab mouse for unit steer-turn
     field_17c4 = 0;
     field_17c8 = -1;
-    tooltips = NULL;
 //rgbiColor iniColors[70];
     field_1a00 = 0;
     field_1a04 = 0;
@@ -579,12 +578,8 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
         Deinit();
         return 0;
     }
-    if ( !yw_InitTooltips(this) )
-    {
-        ypa_log_out("yw_main.c/OM_NEW: yw_InitTooltips() failed!\n");
-        Deinit();
-        return 0;
-    }
+    
+    InitTooltips();
 
     _shellGfxMode = Common::Point( GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT );
     _gfxMode = Common::Point( GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT );

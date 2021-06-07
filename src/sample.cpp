@@ -30,7 +30,7 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
     if ( bufsz == 0 || type == 0xFFFF )
         return res;
 
-    TSampleData *smpl = (TSampleData *)AllocVec(sizeof(TSampleData), 65537);
+    TSampleData *smpl = new TSampleData();
 
     if ( !smpl )
         return res;
@@ -42,14 +42,8 @@ rsrc * NC_STACK_sample::rsrc_func64(IDVList &stak)
 
     if ( !buf )
     {
-        buf = AllocVec(bufsz, 65537);
-        smpl->Data = buf;
-
-        if ( !buf )
-        {
-            nc_FreeMem(smpl);
-            return res;
-        }
+        smpl->_Buffer.resize(bufsz);
+        smpl->Data = smpl->_Buffer.data();
     }
     else
     {
@@ -68,25 +62,12 @@ size_t NC_STACK_sample::rsrc_func65(rsrc *res)
 
     if ( smpl )
     {
-        if ( !(smpl->field_10 & 1) )
-        {
-            if ( smpl->Data )
-                nc_FreeMem(smpl->Data);
-        }
-        nc_FreeMem(smpl);
+        delete smpl;
         res->data = NULL;
     }
 
     return NC_STACK_rsrc::rsrc_func65(res);
 }
-
-void * NC_STACK_sample::sample_func128(void **arg)
-{
-    printf("%s - NOT RECOGINZED ARGUMENT\n","sample_func128");
-    arg[2] = p_sampl;
-    return p_sampl;
-}
-
 
 
 TSampleData *NC_STACK_sample::GetSampleData()

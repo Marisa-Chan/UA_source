@@ -540,10 +540,7 @@ void ILBM__WRITE_TO_FILE_BMHD(IFFile *mfile, ResBitmap *bitm)
 int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
 {
     int planeSz = 2 * ((bitm->width + 15) / 16);
-    uint8_t *buf = (uint8_t *)AllocVec(planeSz, 1);
-
-    if (!buf)
-        return 0;
+    std::vector<uint8_t> buf(planeSz);
 
     mfile->pushChunk(0, TAG_BODY, 8 * bitm->height * planeSz);
 
@@ -554,7 +551,7 @@ int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
     {
         for (int plane = 0; plane < 8; plane++)
         {
-            memset((void *)buf, 0, planeSz);
+            std::fill(buf.begin(), buf.end(), 0);
 
             for (int x = 0; x < bitm->width; x++)
             {
@@ -562,7 +559,7 @@ int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
                     buf[ x / 8 ] |= ( 1 << ( (x & 7) ^ 7) );
             }
 
-            mfile->write((const void *)buf, planeSz);
+            mfile->write((const void *)buf.data(), planeSz);
         }
 
         bfline += bitm->width;
@@ -570,7 +567,6 @@ int ILBM__WRITE_TO_FILE_BODY(IFFile *mfile, ResBitmap *bitm)
     SDL_UnlockSurface(bitm->swTex);
 
     mfile->popChunk();
-    nc_FreeMem(buf);
     return 1;
 }
 
