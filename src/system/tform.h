@@ -91,20 +91,19 @@ public:
 
     inline static bool Vec3dReadIFF(vec3d *v, IFFile *iff, bool BigEndian)
     {
-        bool res = true;
         if (BigEndian)
         {
-            res &= iff->readFloatB(v->x);
-            res &= iff->readFloatB(v->y);
-            res &= iff->readFloatB(v->z);
+            v->x = iff->readFloatB();
+            v->y = iff->readFloatB();
+            v->z = iff->readFloatB();
         }
         else
         {
-            res &= iff->readFloatL(v->x);
-            res &= iff->readFloatL(v->y);
-            res &= iff->readFloatL(v->z);
+            v->x = iff->readFloatL();
+            v->y = iff->readFloatL();
+            v->z = iff->readFloatL();
         }
-        return res;
+        return iff->readErr();
     }
 
     inline static bool Vec3dWriteIFF(const vec3d &v, IFFile *iff, bool BigEndian)
@@ -127,32 +126,31 @@ public:
 
     inline static bool Mat3x3ReadIFF(mat3x3 &m, IFFile *iff, bool BigEndian)
     {
-        bool res = true;
         if (BigEndian)
         {
-            res &= iff->readFloatB(m.m00);
-            res &= iff->readFloatB(m.m01);
-            res &= iff->readFloatB(m.m02);
-            res &= iff->readFloatB(m.m10);
-            res &= iff->readFloatB(m.m11);
-            res &= iff->readFloatB(m.m12);
-            res &= iff->readFloatB(m.m20);
-            res &= iff->readFloatB(m.m21);
-            res &= iff->readFloatB(m.m22);
+            m.m00 = iff->readFloatB();
+            m.m01 = iff->readFloatB();
+            m.m02 = iff->readFloatB();
+            m.m10 = iff->readFloatB();
+            m.m11 = iff->readFloatB();
+            m.m12 = iff->readFloatB();
+            m.m20 = iff->readFloatB();
+            m.m21 = iff->readFloatB();
+            m.m22 = iff->readFloatB();
         }
         else
         {
-            res &= iff->readFloatL(m.m00);
-            res &= iff->readFloatL(m.m01);
-            res &= iff->readFloatL(m.m02);
-            res &= iff->readFloatL(m.m10);
-            res &= iff->readFloatL(m.m11);
-            res &= iff->readFloatL(m.m12);
-            res &= iff->readFloatL(m.m20);
-            res &= iff->readFloatL(m.m21);
-            res &= iff->readFloatL(m.m22);
+            m.m00 = iff->readFloatL();
+            m.m01 = iff->readFloatL();
+            m.m02 = iff->readFloatL();
+            m.m10 = iff->readFloatL();
+            m.m11 = iff->readFloatL();
+            m.m12 = iff->readFloatL();
+            m.m20 = iff->readFloatL();
+            m.m21 = iff->readFloatL();
+            m.m22 = iff->readFloatL();
         }
-        return res;
+        return iff->readErr();
     }
 
     inline static bool Mat3x3WriteIFF(const mat3x3 &m, IFFile *iff, bool BigEndian)

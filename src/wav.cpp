@@ -34,7 +34,7 @@ rsrc * wav_func64__sub0(NC_STACK_wav *obj, IDVList &stak, const std::string &fil
 {
     rsrc *res = NULL;
 
-    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("rsrc:%s", filname), "rb");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(fmt::sprintf("rsrc:%s", filname), "rb");
 
     if ( fil )
     {

@@ -39,22 +39,22 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
         if ( v6 )
             return 0;
 
-        IFFile::Context *iff_chunk = mfile->getCurrentChunk();
+        const IFFile::Context &iff_chunk = mfile->GetCurrentChunk();
 
-        if ( iff_chunk->TAG == TAG_NAM2 )
+        if ( iff_chunk.Is(TAG_NAM2) )
         {
             mfile->read(name, 256);
             mfile->parse();
 
             has_nam2 = 1;
         }
-        else if ( iff_chunk->TAG == TAG_OTL2 )
+        else if ( iff_chunk.Is(TAG_OTL2) )
         {
             uint8_t dst[128];
 
             mfile->read(&dst, 128);
 
-            int opl_count = iff_chunk->TAG_SIZE / 2;
+            int opl_count = iff_chunk.TAG_SIZE / 2;
             opls.resize(opl_count + 1);
 
             for (int i = 0; i < opl_count; ++i)
@@ -90,9 +90,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
 
 size_t NC_STACK_ilbm::LoadingFromIFF(IFFile **file)
 {
-    uint32_t TAG = (*file)->getCurrentChunk()->TAG_EXTENSION;
-
-    if ( TAG == TAG_CIBO )
+    if ( (*file)->GetCurrentChunk().TAG_EXTENSION == TAG_CIBO )
         return ilbm_func5__sub0(this, file);
 
     return 0;
@@ -229,12 +227,12 @@ int ILBM_BODY_READ(IFFile *mfile, BMHD_type *bmhd, ResBitmap *bitm)
     if ( !bitm->swTex )
         return false;
 
-    IFFile::Context *chunk = mfile->getCurrentChunk();
+    const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
     std::vector<int8_t> buffer;
-    buffer.resize(chunk->TAG_SIZE);
+    buffer.resize(chunk.TAG_SIZE);
 
-    mfile->read(buffer.data(), chunk->TAG_SIZE);
+    mfile->read(buffer.data(), chunk.TAG_SIZE);
 
     ILBM_BODY_READ__sub0(bmhd, buffer, bitm);
 
@@ -263,16 +261,16 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
         return NULL;
     }
 
-    IFFile::Context *chunk = mfil->getCurrentChunk();
-    if ( chunk->TAG != TAG_FORM )
+    const IFFile::Context &formChunk = mfil->GetCurrentChunk();
+    if ( !formChunk.Is(TAG_FORM) )
     {
         ypa_log_out("ilbm.class: Not an IFF FORM chunk!\n");
         return NULL;
     }
 
-    if ( chunk->TAG_EXTENSION == TAG_ILBM )
+    if ( formChunk.TAG_EXTENSION == TAG_ILBM )
         ILBM__OR__VBMP = 1;
-    else if ( chunk->TAG_EXTENSION == TAG_VBMP )
+    else if ( formChunk.TAG_EXTENSION == TAG_VBMP )
         ILBM__OR__VBMP = 0;
     else
     {
@@ -293,23 +291,23 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
             return NULL;
         }
 
-        uint32_t tag = mfil->getCurrentChunk()->TAG;
+        const IFFile::Context &chunk = mfil->GetCurrentChunk();
 
-        if ( tag == TAG_BMHD )
+        if ( chunk.Is(TAG_BMHD) )
         {
-            mfil->readU16B(bmhd.width);
-            mfil->readU16B(bmhd.height);
-            mfil->readU16B(bmhd.x);
-            mfil->readU16B(bmhd.y);
-            mfil->readS8(bmhd.nPlanes);
-            mfil->readS8(bmhd.masking);
-            mfil->readS8(bmhd.compression);
-            mfil->readS8(bmhd.flags);
-            mfil->readU16B(bmhd.transparentColor);
-            mfil->readS8(bmhd.xAspect);
-            mfil->readS8(bmhd.yAspect);
-            mfil->readU16B(bmhd.pageWidth);
-            mfil->readU16B(bmhd.pageHeight);
+            bmhd.width = mfil->readU16B();
+            bmhd.height = mfil->readU16B();
+            bmhd.x = mfil->readU16B();
+            bmhd.y = mfil->readU16B();
+            bmhd.nPlanes = mfil->readS8();
+            bmhd.masking = mfil->readS8();
+            bmhd.compression = mfil->readS8();
+            bmhd.flags = mfil->readS8();
+            bmhd.transparentColor = mfil->readU16B();
+            bmhd.xAspect = mfil->readS8();
+            bmhd.yAspect = mfil->readS8();
+            bmhd.pageWidth = mfil->readU16B();
+            bmhd.pageHeight = mfil->readU16B();
 
             bitm = new ResBitmap;
             bitm->width = bmhd.width;
@@ -319,11 +317,11 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
             
             mfil->parse();
         }
-        else if ( tag == TAG_HEAD )
+        else if ( chunk.Is(TAG_HEAD) )
         {
-            mfil->readU16B(vbmp.width);
-            mfil->readU16B(vbmp.height);
-            mfil->readU16B(vbmp.flags);
+            vbmp.width = mfil->readU16B();
+            vbmp.height = mfil->readU16B();
+            vbmp.flags = mfil->readU16B();
             
             bitm = new ResBitmap;
             bitm->width = vbmp.width;
@@ -333,7 +331,7 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
 
             mfil->parse();
         }
-        else if ( tag == TAG_CMAP )
+        else if ( chunk.Is(TAG_CMAP) )
         {
             if ( bitm )
             {
@@ -344,20 +342,16 @@ rsrc * NC_STACK_ilbm::READ_ILBM(IDVList &stak, IFFile *mfil, int transp)
                 {
                     for (int i = 0; i < 256; i++)
                     {
-                        uint8_t r,g,b;
-                        mfil->readU8(r);
-                        mfil->readU8(g);
-                        mfil->readU8(b);
-                        bitm->palette->at(i).r = r;
-                        bitm->palette->at(i).g = g;
-                        bitm->palette->at(i).b = b;
+                        bitm->palette->at(i).r = mfil->readU8();
+                        bitm->palette->at(i).g = mfil->readU8();
+                        bitm->palette->at(i).b = mfil->readU8();
                         bitm->palette->at(i).a = 255;
                     }
                 }
             }
             mfil->parse();
         }
-        else if ( tag == TAG_BODY )
+        else if ( chunk.Is(TAG_BODY) )
         {
             bool success = false;
 
@@ -485,7 +479,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
             mfile->skipChunk();
         }
 
-        mfile = IFFile::openIFFile(reassignName, 0);
+        mfile = IFFile::RsrcOpenIFFile(reassignName, "rb");
 
         if ( !mfile )
             return NULL;
@@ -500,7 +494,7 @@ rsrc * NC_STACK_ilbm::rsrc_func64(IDVList &stak)
         }
         else
         {
-            mfile = IFFile::openIFFile(resName, 0);
+            mfile = IFFile::RsrcOpenIFFile(resName, "rb");
             if ( !mfile )
                 return NULL;
 
@@ -632,7 +626,7 @@ size_t NC_STACK_ilbm::rsrc_func66(rsrc_func66_arg *arg)
         if ( !arg->filename )
             return 0;
 
-        mfile = IFFile::openIFFile(arg->filename, true);
+        mfile = IFFile::RsrcOpenIFFile(arg->filename, "wb");
     }
     else
         mfile = arg->file;

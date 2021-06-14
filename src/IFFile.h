@@ -1,21 +1,35 @@
 #ifndef IFFile_H_INCLUDED
 #define IFFile_H_INCLUDED
 
-#include <list>
+#include <deque>
 #include "system/fsmgr.h"
 
-class IFFile
+class IFFile : public FSMgr::iFileHandle
 {
 public:
     struct Context
     {
-        uint32_t TAG;
-        uint32_t TAG_EXTENSION;
-        int32_t TAG_SIZE;
-        int32_t position;
-    };
+        uint32_t TAG = 0;
+        uint32_t TAG_EXTENSION = 0;
+        int32_t TAG_SIZE = 0;
+        int32_t position = 0;
+        
+        Context() = default;
+        Context(uint32_t tag, uint32_t tag_ext, int32_t tag_sz, int32_t pos) 
+        : TAG(tag), TAG_EXTENSION(tag_ext), TAG_SIZE(tag_sz), position(pos) 
+        {}
+        
+        bool Is(uint32_t tag) const
+        {
+            return TAG == tag;
+        }
+        
+        bool Is(uint32_t tag, uint32_t ext) const
+        {
+            return TAG == tag && TAG_EXTENSION == ext;
+        }
 
-    typedef std::list<Context *> CtxList;
+    };
 
     enum IFF_ERR
     {
@@ -32,61 +46,53 @@ public:
 
     enum IFF_FLAGS
     {
-        IFF_FLAGS_WRITE   = 1,
         IFF_FLAGS_POP     = 2
     };
+    
+    IFFile() = default;
 
-    IFFile(FSMgr::FileHandle *handle, bool forWrite = false, bool freeAfterUse = false);
-    ~IFFile();
+    IFFile(const std::string &diskPath, const std::string &mode);
+    virtual ~IFFile() = default;
+    
+    IFFile(IFFile &&) = default;
+    IFFile& operator=(IFFile &&) = default;
+    
+    IFFile(FSMgr::FileHandle *, bool del = true);
+    IFFile(FSMgr::FileHandle &);
+    IFFile(FSMgr::FileHandle &&);
+    
+    IFFile(const IFFile&) = delete;
+    IFFile& operator=(const IFFile &) = delete;
+    
+    
+    
+    virtual void close() override;
+    
 
     int pushChunk(uint32_t TAG1, uint32_t TAG2, int32_t TAG_SZ);
     int popChunk();
     int parse();
     bool skipChunk();
-    int32_t read(void *buf, int32_t sz);
-    int32_t write(const void *buf, int32_t sz);
-    IFFile::Context *getCurrentChunk();
+    
+    size_t read(void *buf, size_t sz) override;
+    size_t write(const void *buf, size_t sz) override;
+    const IFFile::Context &GetCurrentChunk(); 
+    
+    virtual bool eof() const override;
+    virtual bool OK() const override;
+    virtual size_t tell() const override;
+    virtual int seek(long int offset, int origin) override;
 
-    bool readU8(uint8_t &dst);
-    bool readS8(int8_t &dst);
-    bool readU16L(uint16_t &dst);
-    bool readS16L(int16_t &dst);
-    bool readU16B(uint16_t &dst);
-    bool readS16B(int16_t &dst);
-    bool readU32L(uint32_t &dst);
-    bool readS32L(int32_t &dst);
-    bool readU32B(uint32_t &dst);
-    bool readS32B(int32_t &dst);
-    bool readFloatL(float &dst);
-    bool readFloatB(float &dst);
-    bool readFloatL(double &dst);
-    bool readFloatB(double &dst);
     std::string readStr(int maxSz);
 
-    bool writeU8(uint8_t val);
-    bool writeS8(int8_t val);
-    bool writeU16L(uint16_t val);
-    bool writeS16L(int16_t val);
-    bool writeU16B(uint16_t val);
-    bool writeS16B(int16_t val);
-    bool writeU32L(uint32_t val);
-    bool writeS32L(int32_t val);
-    bool writeU32B(uint32_t val);
-    bool writeS32B(int32_t val);
-    bool writeFloatL(float val);
-    bool writeFloatB(float val);
-
-    static IFFile *openIFFile(const std::string &filename, bool forWrite);
-
-private:
-    void _Init();
+    static IFFile *RsrcOpenIFFile(const std::string &filename, const std::string &mode);
+    static IFFile UAOpenIFFile(const std::string &filename, const std::string &mode);
 
 protected:
-    FSMgr::FileHandle *file_handle;
-    uint32_t flags;
-    int depth;
-    CtxList ctxStack;
-    bool freeAfterUse;
+    FSMgr::FileHandle file_handle;
+    bool _flagPop = false;
+    int depth = 0;
+    std::deque<Context> ctxStack;
 };
 
 #endif // MFILE_H_INCLUDED

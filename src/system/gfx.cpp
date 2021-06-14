@@ -114,7 +114,7 @@ GFXEngine::GFXEngine()
 
 int out_guid_to_file(const char *filename, const char *name)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "w");
     if ( fil )
     {
         fil->puts(name);
@@ -126,7 +126,7 @@ int out_guid_to_file(const char *filename, const char *name)
 
 void out_yes_no_status(const char *filename, int val)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "w");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "w");
     if ( fil )
     {
         if ( val )
@@ -1621,7 +1621,7 @@ void GFXEngine::win3d_func274__sub0(FSMgr::FileHandle *fil)
 
 void GFXEngine::SaveScreenshot(const std::string & screenName)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("%s.ppm", screenName), "wb");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(fmt::sprintf("%s.ppm", screenName), "wb");
     if ( fil )
     {
         win3d_func274__sub0(fil);
@@ -2178,7 +2178,7 @@ uint32_t GFXEngine::CursPix(uint8_t *data, int ofs, int bpp)
 
 SDL_Cursor *GFXEngine::LoadCursor(const std::string &name)
 {
-    FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("res/%s.cur", name) , "rb");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc( fmt::sprintf("res/%s.cur", name) , "rb");
 
     UA_PALETTE pal;
 
@@ -2531,7 +2531,7 @@ int GFXEngine::GetScreenW()
 
 GfxMode GFXEngine::windd_func0__sub0(const std::string &file)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(file, "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(file, "r");
 
     if ( fil )
     {
@@ -2642,7 +2642,7 @@ void GFXEngine::SetResolution(const Common::Point &res, bool windowed)
     
     GfxSelectedMode = picked;
     
-    FSMgr::FileHandle *fil = uaOpenFile("env/vid.def", "w");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc("env/vid.def", "w");
     if ( fil )
     {
         if (picked.windowed)
@@ -3540,7 +3540,7 @@ uint32_t GFXEngine::LoadShader(int32_t type, const std::string &fl)
     if (!sh)
         return 0;
     
-    FSMgr::FileHandle *f = FSMgr::iDir::openFile(fl, "rb");
+    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc(fl, "rb");
     if (!f)
     {
         GLDeleteShader(sh);

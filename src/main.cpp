@@ -79,7 +79,7 @@ void sub_410628()
 
     ypaworld->ypaworld_func171(&arg171);
 
-    FSMgr::FileHandle *fil = uaOpenFile("env:user.def", "w");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc("env:user.def", "w");
     if ( fil )
     {
         fil->write(userdata.UserName.c_str(), userdata.UserName.size());
@@ -624,7 +624,7 @@ int WinMain__sub0__sub0()
 
 int yw_initGameWithSettings()
 {
-    FSMgr::FileHandle *user_def = uaOpenFile("env:user.def", "r");
+    FSMgr::FileHandle *user_def = uaOpenFileAlloc("env:user.def", "r");
 
     std::string a1;
 
@@ -635,7 +635,7 @@ int yw_initGameWithSettings()
 
         a1 = fmt::sprintf("save:%s/user.txt", line);
 
-        FSMgr::FileHandle *user_txt = uaOpenFile(a1, "r");
+        FSMgr::FileHandle *user_txt = uaOpenFileAlloc(a1, "r");
 
         if ( user_txt )
         {

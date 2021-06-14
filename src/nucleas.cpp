@@ -110,7 +110,7 @@ size_t NC_STACK_nucleus::LoadingFromIFF(IFFile **file)
             Deinit();
             return 0;
         }
-        if ( mfile->getCurrentChunk()->TAG == TAG_NAME )
+        if ( mfile->GetCurrentChunk().Is(TAG_NAME) )
         {
             char a4[33];
             memset(a4, 0, 33);
@@ -191,9 +191,9 @@ NC_STACK_nucleus *NC_STACK_nucleus::LoadObjectFromIFF(IFFile *mfile)
         if ( v4 )
             return NULL;
 
-        int tag = mfile->getCurrentChunk()->TAG;
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( tag == TAG_CLID )
+        if ( chunk.Is(TAG_CLID) )
         {
             char classname[300];
             memset(classname, 0, 300);
@@ -210,7 +210,7 @@ NC_STACK_nucleus *NC_STACK_nucleus::LoadObjectFromIFF(IFFile *mfile)
 
             mfile->parse();
         }
-        else if ( tag == TAG_FORM )
+        else if ( chunk.Is(TAG_FORM) )
         {
             IFFile *v11 = mfile;
 

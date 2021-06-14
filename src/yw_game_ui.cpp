@@ -6516,7 +6516,7 @@ void ypaworld_func64__sub7__sub0(NC_STACK_ypaworld *yw, InputState *inpt)
 
 int ypaworld_func64__sub7__sub6__sub0(int a1, const std::string &a2)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/%d.rst", a2, a1), "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(fmt::sprintf("save:%s/%d.rst", a2, a1), "r");
 
     if ( !fil )
         return 0;

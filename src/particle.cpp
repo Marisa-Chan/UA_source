@@ -368,7 +368,6 @@ int NC_STACK_particle::ReadIFFAtts(IFFile *mfile)
     vec3d accelEnd;
     vec3d magnifyStart;
     vec3d magnifyEnd;
-    int32_t unused = 0;
     int32_t startSpeed = 0;
     int32_t contextNumber = 1;
     int32_t contextLifeTime = 1000;
@@ -380,7 +379,7 @@ int NC_STACK_particle::ReadIFFAtts(IFFile *mfile)
     int32_t endSize = 50;
     int32_t noise = 0;
 
-    mfile->readS16B(version);
+    version = mfile->readS16B();
 
     TF::Engine.Vec3dReadIFF(&accelStart, mfile, true);
     TF::Engine.Vec3dReadIFF(&accelEnd, mfile, true);
@@ -388,17 +387,17 @@ int NC_STACK_particle::ReadIFFAtts(IFFile *mfile)
     TF::Engine.Vec3dReadIFF(&magnifyStart, mfile, true);
     TF::Engine.Vec3dReadIFF(&magnifyEnd, mfile, true);
 
-    mfile->readS32B(unused);
-    mfile->readS32B(startSpeed);
-    mfile->readS32B(contextNumber);
-    mfile->readS32B(contextLifeTime);
-    mfile->readS32B(contextStartGen);
-    mfile->readS32B(contextStopGen);
-    mfile->readS32B(genRate);
-    mfile->readS32B(lifeTime);
-    mfile->readS32B(startSize);
-    mfile->readS32B(endSize);
-    mfile->readS32B(noise);
+    mfile->readS32B();
+    startSpeed = mfile->readS32B();
+    contextNumber = mfile->readS32B();
+    contextLifeTime = mfile->readS32B();
+    contextStartGen = mfile->readS32B();
+    contextStopGen = mfile->readS32B();
+    genRate = mfile->readS32B();
+    lifeTime = mfile->readS32B();
+    startSize = mfile->readS32B();
+    endSize = mfile->readS32B();
+    noise = mfile->readS32B();
 
     if ( version >= 1 )
     {
@@ -442,9 +441,9 @@ size_t NC_STACK_particle::LoadingFromIFF(IFFile **file)
             return 0;
         }
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
+        if ( chunk.Is(TAG_FORM, TAG_ADE) )
         {
             obj_ok = NC_STACK_ade::LoadingFromIFF(file);
 
@@ -453,7 +452,7 @@ size_t NC_STACK_particle::LoadingFromIFF(IFFile **file)
 
 
         }
-        else if ( chunk->TAG == TAG_ATTS )
+        else if ( chunk.Is(TAG_ATTS) )
         {
             if ( !ReadIFFAtts(mfile) )
             {
@@ -462,7 +461,7 @@ size_t NC_STACK_particle::LoadingFromIFF(IFFile **file)
             }
             mfile->parse();
         }
-        else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+        else if ( chunk.Is(TAG_FORM, TAG_OBJT) )
         {
             NC_STACK_ade *ade = (NC_STACK_ade *)LoadObjectFromIFF(mfile);
             if (!ade)

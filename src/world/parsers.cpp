@@ -20,7 +20,7 @@ bool UserParser::ReadUserNameFile(const std::string &filename)
         return false;
 
     std::string buf = fmt::sprintf("save:%s/%s", _o.GameShell->UserName, filename);
-    FSMgr::FileHandle *signFile = uaOpenFile(buf, "r");
+    FSMgr::FileHandle *signFile = uaOpenFileAlloc(buf, "r");
 
     if ( !signFile )
         return false;
@@ -2851,7 +2851,7 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
     {
         _g->ScriptFile = p2;
 
-        FSMgr::FileHandle *tmp = uaOpenFile(_g->ScriptFile, "r");
+        FSMgr::FileHandle *tmp = uaOpenFileAlloc(_g->ScriptFile, "r");
 
         if ( !tmp )
             return ScriptParser::RESULT_BAD_DATA;

@@ -743,7 +743,7 @@ struct recorder
         OBJ_TYPE_VEHICLE = 2
     };
 
-    IFFile *mfile;
+    IFFile mfileYOYO;
     uint16_t seqn;
     uint16_t level_id;
     int32_t frame_id;

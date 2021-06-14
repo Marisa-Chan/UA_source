@@ -78,8 +78,10 @@ public:
     static bool createDir(const std::string &path);
     static bool deleteDir(const std::string &path);
     static DirIter readDir(const std::string &path);
-    static FileHandle *openFile(const std::string &path, const std::string &mode);
-    static FileHandle *openFile(iNode *nod, const std::string &mode);
+    static FileHandle *openFileAlloc(const std::string &path, const std::string &mode);
+    static FileHandle *openFileAlloc(iNode *nod, const std::string &mode);
+    static FileHandle openFile(const std::string &path, const std::string &mode);
+    static FileHandle openFile(iNode *nod, const std::string &mode);
     static bool deleteFile(const std::string &path);
 
 
@@ -108,63 +110,104 @@ private:
     std::list<iNode *>::iterator _cur;
 };
 
-class FileHandle
+
+class iFileHandle
 {
 public:
+    virtual ~iFileHandle() {};
+    
+    virtual void close() = 0;
+    
+    virtual size_t read(void *buf, size_t num) = 0;
+    virtual size_t write(const void *buf, size_t num) = 0;
+
+    virtual size_t tell() const = 0;
+    virtual int seek(long int offset, int origin) = 0;
+    
+    virtual bool OK() const = 0;
+    virtual bool eof() const = 0;
+    
+    virtual bool readErr();
+
+    virtual uint8_t readU8();
+    virtual int8_t readS8();
+    virtual uint16_t readU16L();
+    virtual int16_t readS16L();
+    virtual uint16_t readU16B();
+    virtual int16_t readS16B();
+    virtual uint32_t readU32L();
+    virtual int32_t readS32L();
+    virtual uint32_t readU32B();
+    virtual int32_t readS32B();
+    virtual float readFloatL();
+    virtual float readFloatB();
+
+    virtual bool writeU8(uint8_t val);
+    virtual bool writeS8(int8_t val);
+    virtual bool writeU16L(uint16_t val);
+    virtual bool writeS16L(int16_t val);
+    virtual bool writeU16B(uint16_t val);
+    virtual bool writeS16B(int16_t val);
+    virtual bool writeU32L(uint32_t val);
+    virtual bool writeS32L(int32_t val);
+    virtual bool writeU32B(uint32_t val);
+    virtual bool writeS32B(int32_t val);
+    virtual bool writeFloatL(float val);
+    virtual bool writeFloatB(float val);
+    
+protected:
+    bool _ReadERR = false;
+    bool _WriteERR = false;
+};
+
+
+
+class FileHandle : public iFileHandle
+{
+public:
+    FileHandle() = default;
     FileHandle(const std::string &diskPath, const std::string &mode);
     virtual ~FileHandle();
+    
+    FileHandle(FileHandle &&b);
+    FileHandle& operator=(FileHandle &&b);
+    
+    FileHandle(FileHandle *b, bool del = true);
+    
+    FileHandle(const FileHandle&) = delete;
+    FileHandle& operator=(const FileHandle &) = delete;
 
-    size_t read(void *buf, size_t num);
-    size_t write(const void *buf, size_t num);
+    virtual size_t read(void *buf, size_t num) override;
+    virtual size_t write(const void *buf, size_t num)  override;
 
-    size_t tell();
-    int seek(long int offset, int origin);
-    char *gets(char *str, int num);
-    int puts(const std::string &str);
-    int printf(const std::string &format, ...);
-    int vprintf(const std::string &format,va_list args);
-    bool ReadLine(std::string *out);
+    virtual size_t tell() const override;
+    virtual int seek(long int offset, int origin) override;
+    
+    virtual void close() override;
+    
+    virtual char *gets(char *str, int num);
+    virtual int puts(const std::string &str);
+    virtual int printf(const std::string &format, ...);
+    virtual int vprintf(const std::string &format,va_list args);
+    virtual bool ReadLine(std::string *out);
 
-    uint8_t readU8();
-    int8_t readS8();
-    uint16_t readU16L();
-    int16_t readS16L();
-    uint16_t readU16B();
-    int16_t readS16B();
-    uint32_t readU32L();
-    int32_t readS32L();
-    uint32_t readU32B();
-    int32_t readS32B();
-    float readFloatL();
-    float readFloatB();
+    virtual bool eof() const override;
+    
 
-    bool writeU8(uint8_t val);
-    bool writeS8(int8_t val);
-    bool writeU16L(uint16_t val);
-    bool writeS16L(int16_t val);
-    bool writeU16B(uint16_t val);
-    bool writeS16B(int16_t val);
-    bool writeU32L(uint32_t val);
-    bool writeS32L(int32_t val);
-    bool writeU32B(uint32_t val);
-    bool writeS32B(int32_t val);
-    bool writeFloatL(float val);
-    bool writeFloatB(float val);
-
-    bool eof();
-    bool readErr();
-
-    virtual bool OK();
+    virtual bool OK() const override;
 
     static void closeFile(FileHandle *fl) {
         if (fl) delete fl;
     };
+    
+    bool IsWriting() const {
+        return _writeMode;
+    }
 
 protected:
-    FILE *hndl;
-
-private:
-    bool _ReadERR;
+    FILE *hndl = NULL;
+    bool _writeMode = false;
+    
 };
 
 void dumpDir();

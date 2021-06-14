@@ -675,10 +675,10 @@ void UserData::GameShellUiOpenNetwork()
 
 void sb_0x46ca74__sub0(const std::string &a1, const std::string &a2)
 {
-    FSMgr::FileHandle *f1 = uaOpenFile(a1, "r");
+    FSMgr::FileHandle *f1 = uaOpenFileAlloc(a1, "r");
     if ( f1 )
     {
-        FSMgr::FileHandle *f2 = uaOpenFile(a2, "w");
+        FSMgr::FileHandle *f2 = uaOpenFileAlloc(a2, "w");
 
         if ( f2 )
         {
@@ -799,7 +799,7 @@ void sub_44A1FC(NC_STACK_ypaworld *yw)
 
     if ( yw->GameShell )
     {
-        FSMgr::FileHandle *fil = uaOpenFile("env:levels.def", "r");
+        FSMgr::FileHandle *fil = uaOpenFileAlloc("env:levels.def", "r");
 
         if ( fil )
         {
@@ -1201,7 +1201,7 @@ void UserData::sub_46DC1C()
 
 int sub_47B388(int a1, const std::string &a2)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/%d.sgm", a2, a1), "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(fmt::sprintf("save:%s/%d.sgm", a2, a1), "r");
     if ( !fil )
         return 0;
 
@@ -1211,7 +1211,7 @@ int sub_47B388(int a1, const std::string &a2)
 
 int UserData::ypaworld_func158__sub0__sub7()
 {
-    FSMgr::FileHandle *fl = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt",UserName), "r");
+    FSMgr::FileHandle *fl = uaOpenFileAlloc(fmt::sprintf("save:%s/sgisold.txt",UserName), "r");
     if ( !fl )
         return 0;
 

@@ -121,7 +121,8 @@ uint32_t profiler_begin();
 uint32_t profiler_end(uint32_t prev);
 
 //FSMgr::FileHandle *uaOpenFile(const char *src_path, const char *mode);
-FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mode);
+FSMgr::FileHandle *uaOpenFileAlloc(const std::string &src_path, const std::string &mode);
+FSMgr::FileHandle uaOpenFile(const std::string &src_path, const std::string &mode);
 FSMgr::DirIter uaOpenDir(const std::string &dir);
 
 bool uaDeleteFile(const std::string &path);

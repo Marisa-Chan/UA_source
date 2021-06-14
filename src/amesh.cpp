@@ -77,41 +77,41 @@ size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
             return 0;
         }
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_AREA )
+        if ( chunk.Is(TAG_FORM, TAG_AREA) )
         {
             obj_ok = NC_STACK_area::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
         }
-        else if ( chunk->TAG == TAG_ATTS )
+        else if ( chunk.Is(TAG_ATTS) )
         {
             if ( obj_ok )
             {
-                polyCnt = chunk->TAG_SIZE / 6;
+                polyCnt = chunk.TAG_SIZE / 6;
                 
                 atts.resize(polyCnt);
                 
                 for (int i = 0; i < polyCnt; i++)
                 {
                     ATTS &att = atts.at(i);
-                    mfile->readS16B(att.polyID);
-                    mfile->readU8(att.colorVal);
-                    mfile->readU8(att.shadeVal);
-                    mfile->readU8(att.tracyVal);
-                    mfile->readU8(att.pad);
+                    att.polyID = mfile->readS16B();
+                    att.colorVal = mfile->readU8();
+                    att.shadeVal = mfile->readU8();
+                    att.tracyVal = mfile->readU8();
+                    att.pad = mfile->readU8();
                 }
             }
             mfile->parse();
         }
-        else if ( chunk->TAG == TAG_OLPL )
+        else if ( chunk.Is(TAG_OLPL) )
         {
             if ( obj_ok )
             {
                 texCoords.resize(polyCnt);
-                texCoordsData.resize( chunk->TAG_SIZE / 2 );
+                texCoordsData.resize( chunk.TAG_SIZE / 2 );
 
                 tUtV *uv = texCoordsData.data();
 
@@ -120,17 +120,14 @@ size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
                     texCoords[i] = uv;
 
                     int16_t cnt;
-                    mfile->readS16B(cnt);
+                    cnt = mfile->readS16B();
 
                     for (int j = 0; j < cnt; j++)
                     {
-                        uint8_t x; //If you cross refernce the VBMP these are the X,Y coordinates
-                        uint8_t y; // as it is stored on disk
-                        mfile->readU8(x);
-                        mfile->readU8(y);
-
-                        uv->tu = x / 256.0;
-                        uv->tv = y / 256.0;
+                        //If you cross refernce the VBMP these are the X,Y coordinates
+                        // as it is stored on disk
+                        uv->tu = mfile->readU8() / 256.0;
+                        uv->tv = mfile->readU8() / 256.0;
                         uv++;
                     }
 

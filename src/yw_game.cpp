@@ -3584,29 +3584,20 @@ int recorder_startrec(NC_STACK_ypaworld *yw)
     rcrd->field_34 = 0;
     rcrd->ainf_size = 0;
 
-    FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("env:snaps/m%02d%04d.raw", yw->_levelInfo.LevelID, rcrd->seqn), "wb");
-    if ( !fil )
+    rcrd->mfileYOYO = IFFile::UAOpenIFFile(fmt::sprintf("env:snaps/m%02d%04d.raw", yw->_levelInfo.LevelID, rcrd->seqn), "wb");
+
+    if ( !rcrd->mfileYOYO.OK() )
     {
-        rcrd->mfile = NULL;
         return 0;
     }
 
-    rcrd->mfile = new IFFile(fil, true, true);
+    rcrd->mfileYOYO.pushChunk(TAG_SEQN, TAG_FORM, -1);
+    rcrd->mfileYOYO.pushChunk(0, TAG_SINF, 4);
 
-    if ( !rcrd->mfile )
-    {
-        delete fil;
-        rcrd->mfile = NULL;
-        return 0;
-    }
+    rcrd->mfileYOYO.writeU16L(rcrd->seqn);
+    rcrd->mfileYOYO.writeU16L(rcrd->level_id);
 
-    rcrd->mfile->pushChunk(TAG_SEQN, TAG_FORM, -1);
-    rcrd->mfile->pushChunk(0, TAG_SINF, 4);
-
-    rcrd->mfile->writeU16L(rcrd->seqn);
-    rcrd->mfile->writeU16L(rcrd->level_id);
-
-    rcrd->mfile->popChunk();
+    rcrd->mfileYOYO.popChunk();
 
     rcrd->do_record = 1;
     return 1;
@@ -3617,14 +3608,9 @@ void recorder_stoprec(NC_STACK_ypaworld *yw)
     recorder *rcrd = yw->sceneRecorder;
     rcrd->do_record = 0;
 
-    if ( rcrd->mfile )
-    {
-        rcrd->mfile->popChunk();
+    rcrd->mfileYOYO.popChunk();
 
-        delete rcrd->mfile;
-
-        rcrd->mfile = NULL;
-    }
+    rcrd->mfileYOYO.close();
 }
 
 void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt)
@@ -3962,51 +3948,51 @@ void NC_STACK_ypaworld::recorder_write_frame()
             if ( frame_size & 1 )
                 frame_size++;
         }
-        rcrd->mfile->pushChunk(TAG_FRAM, TAG_FORM, frame_size);
-        rcrd->mfile->pushChunk(0, TAG_FINF, 12);
+        rcrd->mfileYOYO.pushChunk(TAG_FRAM, TAG_FORM, frame_size);
+        rcrd->mfileYOYO.pushChunk(0, TAG_FINF, 12);
 
-        rcrd->mfile->writeS32L(rcrd->frame_id);
-        rcrd->mfile->writeS32L(rcrd->time);
-        rcrd->mfile->writeU32L(rcrd->ctrl_bact_id);
+        rcrd->mfileYOYO.writeS32L(rcrd->frame_id);
+        rcrd->mfileYOYO.writeS32L(rcrd->time);
+        rcrd->mfileYOYO.writeU32L(rcrd->ctrl_bact_id);
 
-        rcrd->mfile->popChunk();
+        rcrd->mfileYOYO.popChunk();
 
         if ( oinf_size )
         {
-            rcrd->mfile->pushChunk(0, TAG_OINF, oinf_size);
+            rcrd->mfileYOYO.pushChunk(0, TAG_OINF, oinf_size);
 
             for (int i = 0; i < rcrd->bacts_count; i++)
             {
                 trec_bct *oinf = &rcrd->oinf[i];
 
-                rcrd->mfile->writeU32L(oinf->bact_id);
-                TF::Engine.Vec3dWriteIFF(oinf->pos, rcrd->mfile, false);
-                rcrd->mfile->writeS8(oinf->rot_x);
-                rcrd->mfile->writeS8(oinf->rot_y);
-                rcrd->mfile->writeS8(oinf->rot_z);
-                rcrd->mfile->writeU8(oinf->vp_id);
-                rcrd->mfile->writeU8(oinf->objType);
-                rcrd->mfile->writeU8(oinf->vhcl_id);
+                rcrd->mfileYOYO.writeU32L(oinf->bact_id);
+                TF::Engine.Vec3dWriteIFF(oinf->pos, &rcrd->mfileYOYO, false);
+                rcrd->mfileYOYO.writeS8(oinf->rot_x);
+                rcrd->mfileYOYO.writeS8(oinf->rot_y);
+                rcrd->mfileYOYO.writeS8(oinf->rot_z);
+                rcrd->mfileYOYO.writeU8(oinf->vp_id);
+                rcrd->mfileYOYO.writeU8(oinf->objType);
+                rcrd->mfileYOYO.writeU8(oinf->vhcl_id);
             }
 
-            rcrd->mfile->popChunk();
+            rcrd->mfileYOYO.popChunk();
         }
 
         if ( rcrd->ainf_size )
         {
-            rcrd->mfile->pushChunk(0, TAG_AINF, rcrd->ainf_size);
-            rcrd->mfile->write(rcrd->ainf, rcrd->ainf_size);
-            rcrd->mfile->popChunk();
+            rcrd->mfileYOYO.pushChunk(0, TAG_AINF, rcrd->ainf_size);
+            rcrd->mfileYOYO.write(rcrd->ainf, rcrd->ainf_size);
+            rcrd->mfileYOYO.popChunk();
         }
 
         if ( v5 )
         {
-            rcrd->mfile->pushChunk(0, TAG_MODE, v5);
-            rcrd->mfile->write(rcrd->field_20, v5);
-            rcrd->mfile->popChunk();
+            rcrd->mfileYOYO.pushChunk(0, TAG_MODE, v5);
+            rcrd->mfileYOYO.write(rcrd->field_20, v5);
+            rcrd->mfileYOYO.popChunk();
         }
 
-        rcrd->mfile->popChunk();
+        rcrd->mfileYOYO.popChunk();
 
         rcrd->field_34 = 0;
         rcrd->field_40 += 250;
@@ -4017,33 +4003,20 @@ void NC_STACK_ypaworld::recorder_write_frame()
 
 int recorder_open_replay(recorder *rcrd)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(rcrd->filename, "rb");
+    rcrd->mfileYOYO = IFFile( uaOpenFile(rcrd->filename, "rb") );
 
-    if ( !fil )
+    if ( !rcrd->mfileYOYO.OK() )
     {
-        rcrd->mfile = NULL;
         return 0;
     }
 
-    rcrd->mfile = new IFFile(fil, false, true);
-
-    if ( !rcrd->mfile )
+    if ( rcrd->mfileYOYO.parse() != IFFile::IFF_ERR_OK )
     {
-        delete fil;
+        rcrd->mfileYOYO.close();
         return 0;
     }
 
-    if ( rcrd->mfile->parse() != IFFile::IFF_ERR_OK )
-    {
-        delete rcrd->mfile;
-
-        rcrd->mfile = NULL;
-        return 0;
-    }
-
-    IFFile::Context *v3 = rcrd->mfile->getCurrentChunk();
-
-    if ( v3->TAG == TAG_FORM && v3->TAG_EXTENSION == TAG_SEQN )
+    if ( rcrd->mfileYOYO.GetCurrentChunk().Is(TAG_FORM, TAG_SEQN) )
         return 1;
 
     return 0;
@@ -4083,69 +4056,65 @@ bool NC_STACK_ypaworld::recorder_create_camera()
 
 void recorder_read_framedata(recorder *rcrd)
 {
-    while ( rcrd->mfile->parse() != IFFile::IFF_ERR_EOC )
+    while ( rcrd->mfileYOYO.parse() != IFFile::IFF_ERR_EOC )
     {
-        IFFile::Context *v3 = rcrd->mfile->getCurrentChunk();
+        const IFFile::Context &v3 = rcrd->mfileYOYO.GetCurrentChunk();
 
-        switch ( v3->TAG )
+        switch ( v3.TAG )
         {
         case TAG_FLSH:
             rcrd->field_78 |= 1;
-            rcrd->mfile->parse();
+            rcrd->mfileYOYO.parse();
             break;
 
         case TAG_FINF:
-            rcrd->mfile->readS32L(rcrd->frame_id);
-            rcrd->mfile->readS32L(rcrd->time);
-            rcrd->mfile->readU32L(rcrd->ctrl_bact_id);
-            rcrd->mfile->parse();
+            rcrd->frame_id = rcrd->mfileYOYO.readS32L();
+            rcrd->time = rcrd->mfileYOYO.readS32L();
+            rcrd->ctrl_bact_id = rcrd->mfileYOYO.readU32L();
+            rcrd->mfileYOYO.parse();
             break;
 
         case TAG_OINF:
         {
-            rcrd->bacts_count = v3->TAG_SIZE / 22;
+            rcrd->bacts_count = v3.TAG_SIZE / 22;
 
             for (int i = 0; i < rcrd->bacts_count; i++)
             {
                 trec_bct *oinf = &rcrd->oinf[i];
 
-                rcrd->mfile->readU32L(oinf->bact_id);
-                TF::Engine.Vec3dReadIFF(&oinf->pos, rcrd->mfile, false);
-                rcrd->mfile->readS8(oinf->rot_x);
-                rcrd->mfile->readS8(oinf->rot_y);
-                rcrd->mfile->readS8(oinf->rot_z);
+                oinf->bact_id = rcrd->mfileYOYO.readU32L();
+                TF::Engine.Vec3dReadIFF(&oinf->pos, &rcrd->mfileYOYO, false);
+                oinf->rot_x = rcrd->mfileYOYO.readS8();
+                oinf->rot_y = rcrd->mfileYOYO.readS8();
+                oinf->rot_z = rcrd->mfileYOYO.readS8();
 
-                uint8_t tmp;
-                rcrd->mfile->readU8(tmp);
-                oinf->vp_id = tmp;
-                rcrd->mfile->readU8(tmp);
-                oinf->objType = tmp;
-                rcrd->mfile->readU8(tmp);
-                oinf->vhcl_id = tmp;
+                oinf->vp_id = rcrd->mfileYOYO.readU8();
+                oinf->objType = rcrd->mfileYOYO.readU8();
+                oinf->vhcl_id = rcrd->mfileYOYO.readU8();
             }
 
-            rcrd->mfile->parse();
+            rcrd->mfileYOYO.parse();
         }
         break;
 
         case TAG_AINF:
-            rcrd->mfile->read(rcrd->ainf, v3->TAG_SIZE);
-            rcrd->ainf_size = v3->TAG_SIZE;
+            rcrd->mfileYOYO.read(rcrd->ainf, v3.TAG_SIZE);
+            rcrd->ainf_size = v3.TAG_SIZE;
 
             recorder_unpack_soundstates(rcrd);
 
-            rcrd->mfile->parse();
+            rcrd->mfileYOYO.parse();
             break;
 
         case TAG_MODE:
-            rcrd->mfile->read(rcrd->field_20, v3->TAG_SIZE);
-            rcrd->field_34 = v3->TAG_SIZE / 16;
+            rcrd->mfileYOYO.read(rcrd->field_20, v3.TAG_SIZE);
+            rcrd->field_34 = v3.TAG_SIZE / 16;
 
-            rcrd->mfile->parse();
+            rcrd->mfileYOYO.parse();
             break;
 
         default:
-            rcrd->mfile->skipChunk();
+            rcrd->mfileYOYO.skipChunk();
             break;
         }
     }
@@ -4416,23 +4385,13 @@ int NC_STACK_ypaworld::recorder_go_to_frame(recorder *rcrd, int wanted_frame_id)
         frame_id = 0;
     }
 
-    if ( rcrd->mfile )
-    {
-        delete rcrd->mfile;
-        rcrd->mfile = NULL;
-    }
+    rcrd->mfileYOYO.close();
 
     if ( recorder_open_replay(rcrd) )
     {
-        while ( rcrd->mfile->parse() != IFFile::IFF_ERR_EOC )
+        while ( rcrd->mfileYOYO.parse() != IFFile::IFF_ERR_EOC )
         {
-            IFFile::Context *v7 = rcrd->mfile->getCurrentChunk();
-
-            if ( v7->TAG != TAG_FORM || v7->TAG_EXTENSION != TAG_FRAM )
-            {
-                rcrd->mfile->skipChunk();
-            }
-            else
+            if ( rcrd->mfileYOYO.GetCurrentChunk().Is(TAG_FORM, TAG_FRAM) )
             {
                 if ( cur_frame_id == frame_id )
                 {
@@ -4445,8 +4404,12 @@ int NC_STACK_ypaworld::recorder_go_to_frame(recorder *rcrd, int wanted_frame_id)
                 }
 
                 cur_frame_id++;
-                rcrd->mfile->skipChunk();
+                rcrd->mfileYOYO.skipChunk();
             }
+            else
+            {
+                rcrd->mfileYOYO.skipChunk();
+            }            
         }
     }
     return 0;
@@ -4461,11 +4424,9 @@ void NC_STACK_ypaworld::ypaworld_func163__sub1(recorder *rcrd, int dTime)
 
         while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (dTime + timeStamp) > rcrd->time )
         {
-            if ( rcrd->mfile->parse() != IFFile::IFF_ERR_EOF )
+            if ( rcrd->mfileYOYO.parse() != IFFile::IFF_ERR_EOF )
             {
-                IFFile::Context *v5 = rcrd->mfile->getCurrentChunk();
-
-                if ( v5->TAG == TAG_FORM && v5->TAG_EXTENSION == TAG_FRAM )
+                if ( rcrd->mfileYOYO.GetCurrentChunk().Is(TAG_FORM, TAG_FRAM) )
                     recorder_read_framedata(rcrd);
             }
         }

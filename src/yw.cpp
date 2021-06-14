@@ -459,7 +459,7 @@ int yw_InitSceneRecorder(NC_STACK_ypaworld *yw)
 void yw_setInitScriptLoc(NC_STACK_ypaworld *yw)
 {
     bool ok = false;
-    FSMgr::FileHandle *fil = uaOpenFile("env:startup.def", "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc("env:startup.def", "r");
 
     if (fil)
     {
@@ -2274,7 +2274,7 @@ void NC_STACK_ypaworld::DeleteLevel()
     {
         if ( GameShell )
         {
-            FSMgr::FileHandle *fil = uaOpenFile(fmt::sprintf("save:%s/sgisold.txt", GameShell->UserName), "w");
+            FSMgr::FileHandle *fil = uaOpenFileAlloc(fmt::sprintf("save:%s/sgisold.txt", GameShell->UserName), "w");
 
             if ( fil )
                 delete fil;
@@ -2290,7 +2290,7 @@ void NC_STACK_ypaworld::DeleteLevel()
 
             ypaworld_func171(&arg171);
 
-            fil = uaOpenFile("env:user.def", "w");
+            fil = uaOpenFileAlloc("env:user.def", "w");
 
             if ( fil )
             {
@@ -5962,32 +5962,29 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const char *fname)
     if ( !recorder_open_replay(repl) )
         return 0;
 
-    while ( repl->mfile->parse() != IFFile::IFF_ERR_EOC )
+    while ( repl->mfileYOYO.parse() != IFFile::IFF_ERR_EOC )
     {
-        IFFile::Context *v13 = repl->mfile->getCurrentChunk();
+        const IFFile::Context &v13 = repl->mfileYOYO.GetCurrentChunk();
 
-        if ( v13->TAG == TAG_SINF )
+        if ( v13.Is(TAG_SINF) )
         {
-            repl->mfile->readU16L(repl->seqn);
-            repl->mfile->readU16L(repl->level_id);
-            repl->mfile->parse();
+            repl->seqn = repl->mfileYOYO.readU16L();
+            repl->level_id = repl->mfileYOYO.readU16L();
+            repl->mfileYOYO.parse();
         }
-        else if ( v13->TAG != TAG_FORM || v13->TAG_EXTENSION != TAG_FRAM )
+        else if ( v13.Is(TAG_FORM, TAG_FRAM) )
         {
-            repl->mfile->skipChunk();
+            repl->field_74++;
+            repl->mfileYOYO.skipChunk();
         }
         else
         {
-            repl->field_74++;
-            repl->mfile->skipChunk();
-        }
+            repl->mfileYOYO.skipChunk();
+        }        
     }
 
-    if ( repl->mfile )
-    {
-        delete repl->mfile;
-        repl->mfile = NULL;
-    }
+    
+    repl->mfileYOYO.close();
 
     yw_arg161 arg161;
     arg161.field_4 = 1;
@@ -6106,12 +6103,7 @@ void NC_STACK_ypaworld::ypaworld_func164()
 {
     if ( replayer )
     {
-        if ( replayer->mfile )
-        {
-            delete replayer->mfile;
-
-            replayer->mfile = NULL;
-        }
+        replayer->mfileYOYO.close();
 
         DeleteLevel();
 
@@ -6185,7 +6177,7 @@ void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
 
 bool NC_STACK_ypaworld::LngFileLoad(const std::string &filename)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "r");
     if ( !fil )
         return false;
 
@@ -6625,7 +6617,7 @@ size_t NC_STACK_ypaworld::SaveGame(const std::string &saveFile)
     if (_historyLastIsTimeStamp)
         _history.Write( _historyLastFrame.MakeByteArray() );
 
-    FSMgr::FileHandle *fil = uaOpenFile( saveFile, "w");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc( saveFile, "w");
 
     if ( !fil )
     {
@@ -6723,7 +6715,7 @@ size_t NC_STACK_ypaworld::ypaworld_func171(yw_arg172 *arg)
         return 0;
     }
 
-    FSMgr::FileHandle *sfil = uaOpenFile(fmt::sprintf("save:%s", arg->usertxt), "w");
+    FSMgr::FileHandle *sfil = uaOpenFileAlloc(fmt::sprintf("save:%s", arg->usertxt), "w");
 
     if ( !sfil )
         return 1;
@@ -7196,7 +7188,7 @@ void NC_STACK_ypaworld::ypaworld_func182(void *arg)
 
 int ypaworld_func183__sub0(int lvlID, const char *userName)
 {
-    FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%d.fin", userName, lvlID) , "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc( fmt::sprintf("save:%s/%d.fin", userName, lvlID) , "r");
 
     if ( !fil )
         return 0;

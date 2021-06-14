@@ -70,27 +70,27 @@ size_t NC_STACK_ade::LoadingFromIFF(IFFile **file)
             return 0;
         }
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
+        if ( chunk.Is(TAG_FORM, TAG_ROOT) )
         {
             obj_ok = NC_STACK_nucleus::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 break;
         }
-        else if ( chunk->TAG == TAG_STRC )
+        else if ( chunk.Is(TAG_STRC) )
         {
             if ( obj_ok )
             {
                 ADE_STRC hdr;
 
-                mfile->readS16B(hdr.version);
-                mfile->readS8(hdr._nu1);
-                mfile->readS8(hdr.flags);
-                mfile->readS16B(hdr.point);
-                mfile->readS16B(hdr.poly);
-                mfile->readS16B(hdr._nu2);
+                hdr.version = mfile->readS16B();
+                hdr._nu1 = mfile->readS8();
+                hdr.flags = mfile->readS8();
+                hdr.point = mfile->readS16B();
+                hdr.poly = mfile->readS16B();
+                hdr._nu2 = mfile->readS16B();
 
                 if ( hdr.version >= 1 )
                 {

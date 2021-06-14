@@ -17,7 +17,7 @@ int yw_write_callSign(NC_STACK_ypaworld *yw, const char *filename, const char *c
     if ( usr->UserName.empty() )
         return 0;
 
-    FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", usr->UserName, filename), "w");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc( fmt::sprintf("save:%s/%s", usr->UserName, filename), "w");
 
     if ( !fil )
         return 0;

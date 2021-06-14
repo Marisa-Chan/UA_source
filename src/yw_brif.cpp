@@ -111,7 +111,7 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
 
     if ( setID != 46 )
     {
-        FSMgr::FileHandle *fil = uaOpenFile("rsrc:scripts/set.sdf", "r");
+        FSMgr::FileHandle *fil = uaOpenFileAlloc("rsrc:scripts/set.sdf", "r");
         if ( !fil )
         {
             ypa_log_out("Briefing: no set description file.\n");

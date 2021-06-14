@@ -3,139 +3,126 @@
 #include "includes.h"
 #include "IFFile.h"
 #include "utils.h"
+#include "env.h"
 
 
-void IFFile::_Init()
+
+IFFile::IFFile(const std::string &diskPath, const std::string &mode)
+: file_handle(diskPath, mode)
 {
-    file_handle = NULL;
-    flags = 0;
-    depth = 0;
-    ctxStack.clear();
-    freeAfterUse = false;
-
-    Context *ctx = new Context;
-
-    if ( !ctx )
-    {
-        printf("Can't create IFFile root context\n");
-        exit(1);
-    }
-
-    ctx->TAG = TAG_FORM;
-    ctx->TAG_EXTENSION = TAG_NONE;
-    ctx->TAG_SIZE = 0x80000000;
-    ctx->position = 0;
-
-    ctxStack.push_front(ctx);
+    ctxStack.emplace_front(TAG_FORM, TAG_NONE, 0x80000000, 0);
 }
 
-IFFile::IFFile(FSMgr::FileHandle *handle, bool forWrite, bool _freeAfterUse)
+
+IFFile::IFFile(FSMgr::FileHandle *f, bool del)
+: file_handle(f, false)
 {
-    _Init();
-    file_handle = handle;
-
-    if (forWrite)
-        flags |= IFF_FLAGS_WRITE;
-
-    freeAfterUse = _freeAfterUse;
+    ctxStack.emplace_front(TAG_FORM, TAG_NONE, 0x80000000, 0);
+    
+    if (f && del)
+        delete f;
 }
 
-IFFile::~IFFile()
+IFFile::IFFile(FSMgr::FileHandle &f)
+: file_handle(&f, false)
 {
-    for(CtxList::iterator it = ctxStack.begin(); it != ctxStack.end(); it++)
-        delete *it;
-
-    if (freeAfterUse)
-        delete file_handle;
+    ctxStack.emplace_front(TAG_FORM, TAG_NONE, 0x80000000, 0);
 }
 
-IFFile *IFFile::openIFFile(const std::string &filename, bool forWrite)
+IFFile::IFFile(FSMgr::FileHandle &&f)
+: file_handle( std::move(f) )
+{
+    ctxStack.emplace_front(TAG_FORM, TAG_NONE, 0x80000000, 0);
+}
+
+IFFile *IFFile::RsrcOpenIFFile(const std::string &filename, const std::string &mode)
 {
     std::string tmpBuf = "rsrc:";
     tmpBuf += filename;
+    
+    tmpBuf = correctSeparatorAndExt( Common::Env.ApplyPrefix( tmpBuf ) );
 
-    FSMgr::FileHandle *fil;
-
-    if (forWrite)
-        fil = uaOpenFile(tmpBuf, "wb");
-    else
-        fil = uaOpenFile(tmpBuf, "rb");
-
-    if ( !fil )
+    if ( !FSMgr::iDir::fileExist(tmpBuf) )
         return NULL;
+    
+    FSMgr::FileHandle f = FSMgr::iDir::openFile(tmpBuf, mode);
+    return new IFFile(f);
+}
 
-    IFFile *tmp = new IFFile(fil, forWrite, true);
+IFFile *IFFile::UAOpenIFFileAlloc(const std::string &filename, const std::string &mode)
+{
+    std::string tmpBuf = correctSeparatorAndExt( Common::Env.ApplyPrefix( filename ) );
 
-    if (!tmp)
-        delete fil;
+    if ( !FSMgr::iDir::fileExist(tmpBuf) )
+        return NULL;
+    
+    return new IFFile(FSMgr::iDir::openFileAlloc(tmpBuf, mode));
+}
 
-    return tmp;
+IFFile IFFile::UAOpenIFFile(const std::string &filename, const std::string &mode)
+{
+    std::string tmpBuf = correctSeparatorAndExt( Common::Env.ApplyPrefix( filename ) );
+
+    if ( !FSMgr::iDir::fileExist(tmpBuf) )
+        return IFFile();
+    
+    return IFFile(FSMgr::iDir::openFileAlloc(tmpBuf, mode));
 }
 
 int IFFile::pushChunk(uint32_t TAG1, uint32_t TAG2, int32_t TAG_SZ)
 {
     int32_t position = 0;
 
-    if ( flags & IFF_FLAGS_WRITE )
+    if ( file_handle.IsWriting() )
     {
-        Context *currentCtx = ctxStack.front();
+        Context &currentCtx = ctxStack.front();
 
-        if ( currentCtx->TAG != TAG_FORM )
+        if ( currentCtx.TAG != TAG_FORM )
             return IFF_ERR_SYNTAX;
 
-        if ( !file_handle->writeU32B(TAG2) )
+        if ( !file_handle.writeU32B(TAG2) )
             return IFF_ERR_WRITE;
 
-        if ( !file_handle->writeU32B(TAG_SZ) )
+        if ( !file_handle.writeU32B(TAG_SZ) )
             return IFF_ERR_WRITE;
 
         if ( TAG2 == TAG_FORM )
         {
-            if ( !file_handle->writeU32B(TAG1) )
+            if ( !file_handle.writeU32B(TAG1) )
                 return IFF_ERR_WRITE;
 
             position = 4;
         }
         else
         {
-            TAG1 = currentCtx->TAG_EXTENSION;
+            TAG1 = currentCtx.TAG_EXTENSION;
         }
     }
     else                                          // READING
     {
-        Context *currentCtx = ctxStack.front();
+        Context &currentCtx = ctxStack.front();
 
-        if ( currentCtx->TAG != TAG_FORM )
+        if ( currentCtx.TAG != TAG_FORM )
             return IFF_ERR_EOC;
 
-        if ( currentCtx->TAG_SIZE == currentCtx->position )
+        if ( currentCtx.TAG_SIZE == currentCtx.position )
             return IFF_ERR_EOC;
 
-        TAG2 = file_handle->readU32B();
+        TAG2 = file_handle.readU32B();
 
-        TAG_SZ = file_handle->readU32B();
+        TAG_SZ = file_handle.readU32B();
 
-        TAG1 = currentCtx->TAG_EXTENSION;
+        TAG1 = currentCtx.TAG_EXTENSION;
 
         if ( TAG2 == TAG_FORM )
         {
-            TAG1 = file_handle->readU32B();
+            TAG1 = file_handle.readU32B();
 
             position = 4;
         }
     }
 
-    Context *ctx = new Context();
-
-    if ( !ctx )
-        return IFF_ERR_MEM;
-
-    ctx->TAG = TAG2;
-    ctx->TAG_EXTENSION = TAG1;
-    ctx->TAG_SIZE = TAG_SZ;
-    ctx->position = position;
-
-    ctxStack.push_front(ctx);
+    ctxStack.emplace_front(TAG2, TAG1, TAG_SZ, position);
 
     depth++;
 
@@ -144,56 +131,55 @@ int IFFile::pushChunk(uint32_t TAG1, uint32_t TAG2, int32_t TAG_SZ)
 
 int IFFile::popChunk()
 {
-    Context *ctx = ctxStack.front();
-    int TAG_SZ = ctx->TAG_SIZE;
+    Context &ctx = ctxStack.front();
+    int TAG_SZ = ctx.TAG_SIZE;
 
-    if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
+    if ( ctx.TAG == TAG_FORM && ctx.TAG_EXTENSION == TAG_NONE )
         return IFF_ERR_SYNTAX;
 
-    if ( flags & IFF_FLAGS_WRITE )
+    if ( file_handle.IsWriting() )
     {
         if ( TAG_SZ == -1 ) // UNKNOWN SIZE
         {
-            TAG_SZ = ctx->position;
+            TAG_SZ = ctx.position;
 
-            if ( file_handle->seek(-(ctx->position + 4), SEEK_CUR) ) // seek for write TAG SIZE
+            if ( file_handle.seek(-(ctx.position + 4), SEEK_CUR) ) // seek for write TAG SIZE
                 return IFF_ERR_SEEK;
 
-            if ( !file_handle->writeU32B(ctx->position) )
+            if ( !file_handle.writeU32B(ctx.position) )
                 return IFF_ERR_WRITE;
 
-            if ( file_handle->seek(ctx->position, SEEK_CUR) )
+            if ( file_handle.seek(ctx.position, SEEK_CUR) )
                 return IFF_ERR_SEEK;
         }
 
-        if ( ctx->position < TAG_SZ ) // if we not in the end
+        if ( ctx.position < TAG_SZ ) // if we not in the end
             return IFF_ERR_CORRUPT;
 
         if ( TAG_SZ & 1 ) // pad 1 byte
         {
-            if ( !file_handle->writeU8(0) )
+            if ( !file_handle.writeU8(0) )
                 return -IFF_ERR_WRITE;
 
             TAG_SZ++;
         }
 
         ctxStack.pop_front();
-        delete ctx;
 
-        ctxStack.front()->position += TAG_SZ + 8;
+        ctxStack.front().position += TAG_SZ + 8;
 
         depth--;
     }
     else
     {
-        if ( ctx->TAG != TAG_FORM )
+        if ( ctx.TAG != TAG_FORM )
         {
-            if ( ctx->position < TAG_SZ && file_handle->seek(TAG_SZ -  ctx->position, SEEK_CUR) )
+            if ( ctx.position < TAG_SZ && file_handle.seek(TAG_SZ -  ctx.position, SEEK_CUR) )
                 return IFF_ERR_SEEK;
 
             if ( TAG_SZ & 1 ) // pad 1 byte
             {
-                if ( file_handle->seek(1, SEEK_CUR) )
+                if ( file_handle.seek(1, SEEK_CUR) )
                     return IFF_ERR_SEEK;
 
                 TAG_SZ++;
@@ -201,13 +187,12 @@ int IFFile::popChunk()
         }
 
         ctxStack.pop_front();
-        delete ctx;
 
-        ctx = ctxStack.front();
-        if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
+        Context &ctx2 = ctxStack.front();
+        if ( ctx2.TAG == TAG_FORM && ctx2.TAG_EXTENSION == TAG_NONE )
             return IFF_ERR_EOF;
 
-        ctx->position += TAG_SZ + 8;
+        ctx2.position += TAG_SZ + 8;
         depth--;
     }
 
@@ -218,10 +203,10 @@ int IFFile::parse()
 {
     int res = IFF_ERR_SYNTAX;
 
-    if (flags & IFF_FLAGS_POP)
+    if (_flagPop)
     {
         res = popChunk();
-        flags &= ~IFF_FLAGS_POP;
+        _flagPop = false;
 
         if (res != IFF_ERR_OK)
             return res;
@@ -229,7 +214,7 @@ int IFFile::parse()
 
     res = pushChunk(TAG_NONE, TAG_NONE, -1);
     if ( res == IFF_ERR_EOC )
-        flags |= IFF_FLAGS_POP;
+        _flagPop = true;
 
     return res;
 }
@@ -252,27 +237,27 @@ bool IFFile::skipChunk()
     return true;
 }
 
-int32_t IFFile::read(void *buf, int32_t sz)
+size_t IFFile::read(void *buf, size_t sz)
 {
-    Context *ctx = getCurrentChunk();
+    Context &ctx = ctxStack.front();
 
-    if ( !ctx )
+    if ( ctx.Is(TAG_FORM, TAG_NONE) )
         return IFF_ERR_SYNTAX;
 
-    if ( ctx->TAG == TAG_FORM )
+    if ( ctx.TAG == TAG_FORM )
         return IFF_ERR_SYNTAX;
 
-    if ( sz + ctx->position > ctx->TAG_SIZE )
+    if ( sz + ctx.position > (size_t)ctx.TAG_SIZE )
     {
-        if (ctx->TAG_SIZE == ctx->position)
+        if (ctx.TAG_SIZE == ctx.position)
             return 0;
 
-        sz = ctx->TAG_SIZE - ctx->position;
+        sz = ctx.TAG_SIZE - ctx.position;
     }
 
-    ctx->position += sz;
+    ctx.position += sz;
 
-    int32_t readed = file_handle->read(buf, sz);
+    size_t readed = file_handle.read(buf, sz);
 
     if ( readed != sz )
         return IFF_ERR_READ;
@@ -280,27 +265,27 @@ int32_t IFFile::read(void *buf, int32_t sz)
     return readed;
 }
 
-int32_t IFFile::write(const void *buf, int32_t sz)
+size_t IFFile::write(const void *buf, size_t sz)
 {
-    Context *ctx = getCurrentChunk();
+    Context &ctx = ctxStack.front();
 
-    if ( !ctx )
+    if ( ctx.Is(TAG_FORM, TAG_NONE) )
         return IFF_ERR_SYNTAX;
 
-    if ( ctx->TAG == TAG_FORM )
+    if ( ctx.TAG == TAG_FORM )
         return IFF_ERR_SYNTAX;
 
-    if ( ctx->TAG_SIZE != -1 &&
-            ctx->position + sz > ctx->TAG_SIZE)
+    if ( ctx.TAG_SIZE != -1 &&
+            ctx.position + sz > (size_t)ctx.TAG_SIZE)
     {
-        if ( ctx->TAG_SIZE == ctx->position )
+        if ( ctx.TAG_SIZE == ctx.position )
             return 0;
 
-        sz = ctx->TAG_SIZE - ctx->position;
+        sz = ctx.TAG_SIZE - ctx.position;
     }
 
-    ctx->position += sz;
-    int32_t writed = file_handle->write(buf, sz);
+    ctx.position += sz;
+    size_t writed = file_handle.write(buf, sz);
 
     if ( writed != sz )
         return IFF_ERR_WRITE;
@@ -308,281 +293,41 @@ int32_t IFFile::write(const void *buf, int32_t sz)
     return writed;
 }
 
-IFFile::Context *IFFile::getCurrentChunk()
+const IFFile::Context &IFFile::GetCurrentChunk()
 {
-    Context *ctx = ctxStack.front();
-    if ( ctx->TAG == TAG_FORM && ctx->TAG_EXTENSION == TAG_NONE )
-        return NULL;
-    return ctx;
-}
-
-bool IFFile::readU8(uint8_t &dst)
-{
-    return read(&dst, 1) == 1;
-}
-
-bool IFFile::readS8(int8_t &dst)
-{
-    return read(&dst, 1) == 1;
-}
-
-bool IFFile::readU16L(uint16_t &dst)
-{
-    int32_t sz = read(&dst, 2);
-
-    if (sz != 2)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF00) >> 8) | ((dst & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readS16L(int16_t &dst)
-{
-    int32_t sz = read(&dst, 2);
-
-    if (sz != 2)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF00) >> 8) | ((dst & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readU16B(uint16_t &dst)
-{
-    int32_t sz = read(&dst, 2);
-
-    if (sz != 2)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF00) >> 8) | ((dst & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readS16B(int16_t &dst)
-{
-    int32_t sz = read(&dst, 2);
-
-    if (sz != 2)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF00) >> 8) | ((dst & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readU32L(uint32_t &dst)
-{
-    int32_t sz = read(&dst, 4);
-
-    if (sz != 4)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF000000) >> 24) | ((dst & 0xFF0000) >> 8) | ((dst & 0xFF00) << 8) | ((dst & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readS32L(int32_t &dst)
-{
-    int32_t sz = read(&dst, 4);
-
-    if (sz != 4)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF000000) >> 24) | ((dst & 0xFF0000) >> 8) | ((dst & 0xFF00) << 8) | ((dst & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readU32B(uint32_t &dst)
-{
-    int32_t sz = read(&dst, 4);
-
-    if (sz != 4)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF000000) >> 24) | ((dst & 0xFF0000) >> 8) | ((dst & 0xFF00) << 8) | ((dst & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readS32B(int32_t &dst)
-{
-    int32_t sz = read(&dst, 4);
-
-    if (sz != 4)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    dst = ((dst & 0xFF000000) >> 24) | ((dst & 0xFF0000) >> 8) | ((dst & 0xFF00) << 8) | ((dst & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-
-    return true;
-}
-
-bool IFFile::readFloatL(float &dst)
-{
-    int32_t sz = read(&dst, 4);
-
-    if (sz != 4)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&dst;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return true;
-}
-
-bool IFFile::readFloatB(float &dst)
-{
-    int32_t sz = read(&dst, 4);
-
-    if (sz != 4)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&dst;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return true;
-}
-
-bool IFFile::readFloatL(double &dst)
-{
-    float tmp;
-    if (!readFloatL(tmp))
-        return false;
-
-    dst = tmp;
-    return true;
-}
-
-bool IFFile::readFloatB(double &dst)
-{
-    float tmp;
-    if (!readFloatB(tmp))
-        return false;
-
-    dst = tmp;
-    return true;
+    return ctxStack.front();
 }
 
 std::string IFFile::readStr(int maxSz)
 {
-    char *bf = new char[maxSz];
+    char *bf = new char[maxSz]();
     std::string tmp(bf, read(bf, maxSz));
     delete[] bf;
     return tmp;
 }
 
-bool IFFile::writeU8(uint8_t val)
+
+bool IFFile::eof() const
 {
-    return write(&val, 1) == 1;
+    return file_handle.eof();
 }
 
-bool IFFile::writeS8(int8_t val)
+bool IFFile::OK() const
 {
-    return write(&val, 1) == 1;
+    return file_handle.OK();
 }
 
-bool IFFile::writeU16L(uint16_t val)
+size_t IFFile::tell() const
 {
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
+    return file_handle.tell();
 }
 
-bool IFFile::writeS16L(int16_t val)
+int IFFile::seek(long int offset, int origin)
 {
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
+    return 0;
 }
 
-bool IFFile::writeU16B(uint16_t val)
+void IFFile::close()
 {
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
-}
-
-bool IFFile::writeS16B(int16_t val)
-{
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
-}
-
-bool IFFile::writeU32L(uint32_t val)
-{
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool IFFile::writeS32L(int32_t val)
-{
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool IFFile::writeU32B(uint32_t val)
-{
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool IFFile::writeS32B(int32_t val)
-{
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool IFFile::writeFloatL(float val)
-{
-
-#ifndef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&val;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool IFFile::writeFloatB(float val)
-{
-#ifdef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&val;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
+    file_handle.close();
 }

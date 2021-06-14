@@ -390,7 +390,7 @@ bool walmus::open(const std::string &fname)
             delete hndl;
         }
 
-        hndl = FSMgr::iDir::openFile(fname, "rb");
+        hndl = FSMgr::iDir::openFileAlloc(fname, "rb");
 
         if (!hndl)
             return false;

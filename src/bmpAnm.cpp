@@ -53,7 +53,7 @@ size_t NC_STACK_bmpanim::LoadingFromIFF(IFFile **file)
     int16_t animType = 0;
     int16_t version = 0;
     int16_t offset = 0;
-    char *anmName = NULL;
+    std::string anmName;
 
     while ( 1 )
     {
@@ -63,16 +63,16 @@ size_t NC_STACK_bmpanim::LoadingFromIFF(IFFile **file)
         if ( v8 )
             return 0;
 
-        if ( mfile->getCurrentChunk()->TAG == TAG_STRC )
+        if ( mfile->GetCurrentChunk().Is(TAG_STRC) )
         {
-            mfile->readS16B(version);
-            mfile->readS16B(offset);
-            mfile->readS16B(animType);
+            version = mfile->readS16B();
+            offset = mfile->readS16B();
+            animType = mfile->readS16B();
             mfile->read(buf, 250);
 
             if ( version >= 1 )
             {
-                anmName = buf + offset - 6;
+                anmName.assign( buf + offset - 6 );
             }
             mfile->parse();
         }
@@ -86,8 +86,8 @@ size_t NC_STACK_bmpanim::LoadingFromIFF(IFFile **file)
         return 0;
     
     IDVList stak {
-        {RSRC_ATT_NAME, std::string(anmName)},
-        {BANM_ATT_NAME, std::string(anmName)},
+        {RSRC_ATT_NAME, anmName},
+        {BANM_ATT_NAME, anmName},
         {BANM_ATT_ANIMTYPE, (int32_t)animType}};
 
     return Init( stak );
@@ -131,26 +131,18 @@ size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-void *sub_4BFB60(void *mfl, const char *mode)
+void *sub_4BFB60(void *mfl, const std::string &mode)
 {
-    while ( *mode != 'r' )
-    {
-        if (! *mode)
-        {
-            mode = NULL;
-            break;
-        }
-        mode++;
-    }
+    bool writeMode = mode.find("w") != std::string::npos;
 
-    dword_5B2410 = mode == NULL;
+    dword_5B2410 = writeMode;
 
     if ( dword_515200 )
     {
         IFFile *mfile = (IFFile *)mfl;
         dword_515204 = 1;
 
-        if ( mode == NULL )
+        if ( writeMode )
         {
             if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
                 return mfile;
@@ -169,16 +161,16 @@ void *sub_4BFB60(void *mfl, const char *mode)
 
         FSMgr::FileHandle *fil;
 
-        if ( mode == NULL )
+        if ( writeMode )
         {
             dword_515200 = 1;
-            fil = uaOpenFile(fname, mode);
+            fil = uaOpenFileAlloc(fname, mode);
             if ( !fil )
                 return NULL;
         }
         else
         {
-            fil = uaOpenFile(fname, mode);
+            fil = uaOpenFileAlloc(fname, mode);
             if ( !fil )
                 return NULL;
 
@@ -199,7 +191,7 @@ void *sub_4BFB60(void *mfl, const char *mode)
 
         if ( dword_515200 )
         {
-            IFFile *mfile = new IFFile(fil, dword_5B2410, true);
+            IFFile *mfile = new IFFile(fil);
             if ( mfile )
             {
                 if ( dword_5B2410 )

@@ -50,9 +50,9 @@ size_t NC_STACK_embed::LoadingFromIFF(IFFile **file)
             return 0;
         }
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
+        if ( chunk.Is(TAG_FORM, TAG_ROOT) )
         {
             obj_ok = NC_STACK_nucleus::LoadingFromIFF(file);
 
@@ -61,7 +61,7 @@ size_t NC_STACK_embed::LoadingFromIFF(IFFile **file)
 
             _resources.clear();
         }
-        else if ( chunk->TAG == TAG_EMRS )
+        else if ( chunk.Is(TAG_EMRS) )
         {
             std::string classname = mfile->readStr(255);
             mfile->parse();

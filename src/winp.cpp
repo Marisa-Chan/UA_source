@@ -70,7 +70,7 @@ Input::FF::Shake          NC_STACK_winp::_ffShake;
 
 void sdlInputResetLog()
 {
-    FSMgr::FileHandle *v0 = uaOpenFile("env/sdlInputLog.txt", "w");
+    FSMgr::FileHandle *v0 = uaOpenFileAlloc("env/sdlInputLog.txt", "w");
     if ( v0 )
     {
         v0->printf("YPA SDL Input log\n---------------------\n");
@@ -82,7 +82,7 @@ void sdlInputLog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FSMgr::FileHandle *f = uaOpenFile("env/sdlInputLog.txt", "a");
+    FSMgr::FileHandle *f = uaOpenFileAlloc("env/sdlInputLog.txt", "a");
     if ( f )
     {
         f->vprintf(format, va);
@@ -95,7 +95,7 @@ SDL_JoystickGUID NC_STACK_winp::sdlReadJoyGuid()
 {
     SDL_JoystickGUID guid;
 
-    FSMgr::FileHandle *f = uaOpenFile("env/sdlJoy.txt", "r");
+    FSMgr::FileHandle *f = uaOpenFileAlloc("env/sdlJoy.txt", "r");
     if ( f )
     {
         std::string buf;
@@ -156,7 +156,7 @@ void NC_STACK_winp::sdlJoyReadMapping(SDL_Joystick* joystick)
         _joyButtonMap[i] = i;
     }
 
-    FSMgr::FileHandle *f = uaOpenFile("joyconf.txt", "r");
+    FSMgr::FileHandle *f = uaOpenFileAlloc("joyconf.txt", "r");
 
     if ( f )
     {

@@ -499,7 +499,7 @@ bool iDir::fileExist(const std::string &path)
 }
 
 
-FileHandle *iDir::openFile(iNode *nod, const std::string &mode)
+FileHandle *iDir::openFileAlloc(iNode *nod, const std::string &mode)
 {
     if (!nod)
         return NULL;
@@ -517,7 +517,7 @@ FileHandle *iDir::openFile(iNode *nod, const std::string &mode)
     return fhnd;
 }
 
-FileHandle *iDir::openFile(const std::string &path, const std::string &mode)
+FileHandle *iDir::openFileAlloc(const std::string &path, const std::string &mode)
 {
     std::string leaved;
     iNode *node = _parseNodePath(path, &leaved);
@@ -568,6 +568,59 @@ FileHandle *iDir::openFile(const std::string &path, const std::string &mode)
     }
 
     return NULL;
+}
+
+FileHandle iDir::openFile(iNode *nod, const std::string &mode)
+{
+    if (!nod)
+        return NULL;
+
+    if ( nod->getType() != NTYPE_FILE )
+        return NULL;
+
+    return FileHandle(nod->getPath(), mode);
+}
+
+FileHandle iDir::openFile(const std::string &path, const std::string &mode)
+{
+    std::string leaved;
+    iNode *node = _parseNodePath(path, &leaved);
+
+    if (!node)
+        return FileHandle();
+
+    if ( !leaved.empty() ) // Not exists
+    {
+        if (mode.find('r') != std::string::npos) //it's must be exist for reading
+            return FileHandle();
+
+        if (node->getType() != NTYPE_DIR ) // If node not dir
+            return FileHandle();
+
+        if ( leaved.find_first_of("\\/") != std::string::npos ) // With path
+            return FileHandle();
+        
+        if (node->getType() != NTYPE_DIR)
+            return FileHandle();
+
+        iDir *dr = (iDir *)node;
+
+        std::string newPath = dr->getPath() + FSD + leaved;
+
+        FileHandle fhnd = FileHandle(newPath, mode);
+
+        if (!fhnd.OK())
+            return fhnd;
+
+        dr->addNode( new iFile(leaved, newPath, dr) );
+        return fhnd;
+    }
+    else if ( node->getType() == NTYPE_FILE ) // if exist and file
+    {
+        return FileHandle(node->getPath(), mode);
+    }
+
+    return FileHandle();    
 }
 
 
@@ -651,7 +704,46 @@ DirIter::operator bool() const
 FileHandle::FileHandle(const std::string &diskPath, const std::string &mode)
 {
     hndl = fopen(diskPath.c_str(), mode.c_str());
-    _ReadERR = false;
+    
+    if (mode.find("w") != std::string::npos)
+        _writeMode = true;
+}
+
+FileHandle::FileHandle(FileHandle &&b)
+{
+    hndl = b.hndl;
+    b.hndl = NULL;
+    
+    _writeMode = b._writeMode;
+    _ReadERR = b._ReadERR;
+}
+
+FileHandle::FileHandle(FileHandle *b, bool del)
+{
+    if (b)
+    {
+        hndl = b->hndl;
+        b->hndl = NULL;
+
+        _writeMode = b->_writeMode;
+        _ReadERR = b->_ReadERR;
+
+        if (del)
+            delete b;
+    }
+}
+
+FileHandle& FileHandle::operator=(FileHandle &&b)
+{
+    if (hndl)
+        fclose(hndl);
+    
+    hndl = b.hndl;
+    b.hndl = NULL;
+    
+    _writeMode = b._writeMode;
+    _ReadERR = b._ReadERR;
+    return *this;
 }
 
 FileHandle::~FileHandle()
@@ -660,7 +752,7 @@ FileHandle::~FileHandle()
         fclose(hndl);
 }
 
-bool FileHandle::OK()
+bool FileHandle::OK() const
 {
     if (hndl)
         return true;
@@ -668,7 +760,7 @@ bool FileHandle::OK()
         return false;
 }
 
-bool FileHandle::eof()
+bool FileHandle::eof() const
 {
     if (!hndl)
         return true;
@@ -676,12 +768,7 @@ bool FileHandle::eof()
     return feof(hndl) != 0;
 }
 
-bool FileHandle::readErr()
-{
-    bool tmp = _ReadERR;
-    _ReadERR = false;
-    return tmp;
-}
+
 
 size_t FileHandle::read(void *buf, size_t num)
 {
@@ -701,10 +788,14 @@ size_t FileHandle::write(const void *buf, size_t num)
     if (!hndl)
         return 0;
 
-    return fwrite(buf, 1, num, hndl);
+    size_t sz = fwrite(buf, 1, num, hndl);
+    if (sz != num)
+        _WriteERR = true;
+
+    return sz;
 }
 
-size_t FileHandle::tell()
+size_t FileHandle::tell() const
 {
     if (!hndl)
         return 0;
@@ -718,6 +809,15 @@ int FileHandle::seek(long int offset, int origin)
         return -100;
 
     return fseek(hndl, offset, origin);
+}
+
+void FileHandle::close()
+{
+    if (hndl)
+    {
+        fclose(hndl);
+        hndl = NULL;
+    }
 }
 
 char *FileHandle::gets(char *str, int num)
@@ -760,303 +860,6 @@ int FileHandle::vprintf(const std::string &format, va_list args)
     return num;
 }
 
-uint8_t FileHandle::readU8()
-{
-    if (!hndl)
-        return 0;
-
-    uint8_t val = 0;
-    read(&val, 1);
-    return val;
-}
-
-int8_t FileHandle::readS8()
-{
-    if (!hndl)
-        return 0;
-
-    int8_t val = 0;
-    read(&val, 1);
-    return val;
-}
-
-uint16_t FileHandle::readU16L()
-{
-    if (!hndl)
-        return 0;
-
-    uint16_t val = 0;
-    read(&val, 2);
-
-#ifdef BYTEORDER_LITTLE
-    return val;
-#else
-    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-}
-
-int16_t FileHandle::readS16L()
-{
-    if (!hndl)
-        return 0;
-
-    int16_t val = 0;
-    read(&val, 2);
-
-#ifdef BYTEORDER_LITTLE
-    return val;
-#else
-    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-}
-
-uint16_t FileHandle::readU16B()
-{
-    if (!hndl)
-        return 0;
-
-    uint16_t val = 0;
-    read(&val, 2);
-
-#ifdef BYTEORDER_LITTLE
-    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#else
-    return val;
-#endif // BYTEORDER_LITTLE
-}
-
-int16_t FileHandle::readS16B()
-{
-    if (!hndl)
-        return 0;
-
-    int16_t val = 0;
-    read(&val, 2);
-
-#ifdef BYTEORDER_LITTLE
-    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#else
-    return val;
-#endif // BYTEORDER_LITTLE
-}
-
-uint32_t FileHandle::readU32L()
-{
-    if (!hndl)
-        return 0;
-
-    uint32_t val = 0;
-    read(&val, 4);
-
-#ifdef BYTEORDER_LITTLE
-    return val;
-#else
-    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-}
-
-int32_t FileHandle::readS32L()
-{
-    if (!hndl)
-        return 0;
-
-    int32_t val = 0;
-    read(&val, 4);
-
-#ifdef BYTEORDER_LITTLE
-    return val;
-#else
-    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-}
-
-uint32_t FileHandle::readU32B()
-{
-    if (!hndl)
-        return 0;
-
-    uint32_t val = 0;
-    read(&val, 4);
-
-#ifdef BYTEORDER_LITTLE
-    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#else
-    return val;
-#endif // BYTEORDER_LITTLE
-}
-
-int32_t FileHandle::readS32B()
-{
-    if (!hndl)
-        return 0;
-
-    int32_t val = 0;
-    read(&val, 4);
-
-#ifdef BYTEORDER_LITTLE
-    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#else
-    return val;
-#endif // BYTEORDER_LITTLE
-}
-
-float FileHandle::readFloatL()
-{
-    if (!hndl)
-        return 0.0;
-
-    float val = 0.0;
-    read(&val, 4);
-
-#ifndef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&val;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return val;
-}
-
-float FileHandle::readFloatB()
-{
-    if (!hndl)
-        return 0.0;
-
-    float val = 0.0;
-    read(&val, 4);
-
-#ifdef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&val;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return val;
-}
-
-bool FileHandle::writeU8(uint8_t val)
-{
-    if (!hndl)
-        return false;
-
-    return write(&val, 1) == 1;
-}
-
-bool FileHandle::writeS8(int8_t val)
-{
-    if (!hndl)
-        return false;
-
-    return write(&val, 1) == 1;
-}
-
-bool FileHandle::writeU16L(uint16_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
-}
-
-bool FileHandle::writeS16L(int16_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
-}
-
-bool FileHandle::writeU16B(uint16_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
-}
-
-bool FileHandle::writeS16B(int16_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 2) == 2;
-}
-
-bool FileHandle::writeU32L(uint32_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool FileHandle::writeS32L(int32_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool FileHandle::writeU32B(uint32_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool FileHandle::writeS32B(int32_t val)
-{
-    if (!hndl)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool FileHandle::writeFloatL(float val)
-{
-    if (!hndl)
-        return false;
-
-#ifndef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&val;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
-
-bool FileHandle::writeFloatB(float val)
-{
-    if (!hndl)
-        return false;
-
-#ifdef BYTEORDER_LITTLE
-    uint32_t *p = (uint32_t *)&val;
-    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
-#endif // BYTEORDER_LITTLE
-    return write(&val, 4) == 4;
-}
 
 bool FileHandle::ReadLine(std::string *out)
 {
@@ -1075,6 +878,323 @@ bool FileHandle::ReadLine(std::string *out)
 			break;
 	}
 	return ok;
+}
+
+bool iFileHandle::readErr()
+{
+    bool tmp = _ReadERR;
+    _ReadERR = false;
+    return tmp;
+}
+
+uint8_t iFileHandle::readU8()
+{
+    if (!OK())
+        return 0;
+
+    uint8_t val = 0;
+    if (read(&val, 1) != 1)
+        _ReadERR = true;
+    return val;
+}
+
+int8_t iFileHandle::readS8()
+{
+    if (!OK())
+        return 0;
+
+    int8_t val = 0;
+    if (read(&val, 1) != 1)
+        _ReadERR = true;
+    return val;
+}
+
+uint16_t iFileHandle::readU16L()
+{
+    if (!OK())
+        return 0;
+
+    uint16_t val = 0;
+    if (read(&val, 2) != 2)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return val;
+#else
+    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#endif // BYTEORDER_LITTLE
+}
+
+int16_t iFileHandle::readS16L()
+{
+    if (!OK())
+        return 0;
+
+    int16_t val = 0;
+    if (read(&val, 2) != 2)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return val;
+#else
+    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#endif // BYTEORDER_LITTLE
+}
+
+uint16_t iFileHandle::readU16B()
+{
+    if (!OK())
+        return 0;
+
+    uint16_t val = 0;
+    if (read(&val, 2) != 2)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#else
+    return val;
+#endif // BYTEORDER_LITTLE
+}
+
+int16_t iFileHandle::readS16B()
+{
+    if (!OK())
+        return 0;
+
+    int16_t val = 0;
+    if (read(&val, 2) != 2)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#else
+    return val;
+#endif // BYTEORDER_LITTLE
+}
+
+uint32_t iFileHandle::readU32L()
+{
+    if (!OK())
+        return 0;
+
+    uint32_t val = 0;
+    if (read(&val, 4) != 4)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return val;
+#else
+    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+}
+
+int32_t iFileHandle::readS32L()
+{
+    if (!OK())
+        return 0;
+
+    int32_t val = 0;
+    if (read(&val, 4) != 4)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return val;
+#else
+    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+}
+
+uint32_t iFileHandle::readU32B()
+{
+    if (!OK())
+        return 0;
+
+    uint32_t val = 0;
+    if (read(&val, 4) != 4)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#else
+    return val;
+#endif // BYTEORDER_LITTLE
+}
+
+int32_t iFileHandle::readS32B()
+{
+    if (!OK())
+        return 0;
+
+    int32_t val = 0;
+    if (read(&val, 4) != 4)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    return ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#else
+    return val;
+#endif // BYTEORDER_LITTLE
+}
+
+float iFileHandle::readFloatL()
+{
+    if (!OK())
+        return 0.0;
+
+    float val = 0.0;
+    if (read(&val, 4) != 4)
+        _ReadERR = true;
+
+#ifndef BYTEORDER_LITTLE
+    uint32_t *p = (uint32_t *)&val;
+    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return val;
+}
+
+float iFileHandle::readFloatB()
+{
+    if (!OK())
+        return 0.0;
+
+    float val = 0.0;
+    if (read(&val, 4) != 4)
+        _ReadERR = true;
+
+#ifdef BYTEORDER_LITTLE
+    uint32_t *p = (uint32_t *)&val;
+    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return val;
+}
+
+bool iFileHandle::writeU8(uint8_t val)
+{
+    if (!OK())
+        return false;
+
+    return write(&val, 1) == 1;
+}
+
+bool iFileHandle::writeS8(int8_t val)
+{
+    if (!OK())
+        return false;
+
+    return write(&val, 1) == 1;
+}
+
+bool iFileHandle::writeU16L(uint16_t val)
+{
+    if (!OK())
+        return false;
+
+#ifndef BYTEORDER_LITTLE
+    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 2) == 2;
+}
+
+bool iFileHandle::writeS16L(int16_t val)
+{
+    if (!OK())
+        return false;
+
+#ifndef BYTEORDER_LITTLE
+    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 2) == 2;
+}
+
+bool iFileHandle::writeU16B(uint16_t val)
+{
+    if (!OK())
+        return false;
+
+#ifdef BYTEORDER_LITTLE
+    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 2) == 2;
+}
+
+bool iFileHandle::writeS16B(int16_t val)
+{
+    if (!OK())
+        return false;
+
+#ifdef BYTEORDER_LITTLE
+    val = ((val & 0xFF00) >> 8) | ((val & 0xFF) << 8);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 2) == 2;
+}
+
+bool iFileHandle::writeU32L(uint32_t val)
+{
+    if (!OK())
+        return false;
+
+#ifndef BYTEORDER_LITTLE
+    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 4) == 4;
+}
+
+bool iFileHandle::writeS32L(int32_t val)
+{
+    if (!OK())
+        return false;
+
+#ifndef BYTEORDER_LITTLE
+    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 4) == 4;
+}
+
+bool iFileHandle::writeU32B(uint32_t val)
+{
+    if (!OK())
+        return false;
+
+#ifdef BYTEORDER_LITTLE
+    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 4) == 4;
+}
+
+bool iFileHandle::writeS32B(int32_t val)
+{
+    if (!OK())
+        return false;
+
+#ifdef BYTEORDER_LITTLE
+    val = ((val & 0xFF000000) >> 24) | ((val & 0xFF0000) >> 8) | ((val & 0xFF00) << 8) | ((val & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 4) == 4;
+}
+
+bool iFileHandle::writeFloatL(float val)
+{
+    if (!OK())
+        return false;
+
+#ifndef BYTEORDER_LITTLE
+    uint32_t *p = (uint32_t *)&val;
+    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 4) == 4;
+}
+
+bool iFileHandle::writeFloatB(float val)
+{
+    if (!OK())
+        return false;
+
+#ifdef BYTEORDER_LITTLE
+    uint32_t *p = (uint32_t *)&val;
+    *p = ((*p & 0xFF000000) >> 24) | ((*p & 0xFF0000) >> 8) | ((*p & 0xFF00) << 8) | ((*p & 0xFF) << 24);
+#endif // BYTEORDER_LITTLE
+    return write(&val, 4) == 4;
 }
 
 }

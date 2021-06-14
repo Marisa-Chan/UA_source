@@ -10,7 +10,7 @@
 
 int read_yes_no_status(const std::string &file, int result)
 {
-    FSMgr::FileHandle *fil = uaOpenFile(file, "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(file, "r");
     if ( fil )
     {
         std::string line;
@@ -63,7 +63,7 @@ uint32_t fileCrc32(const std::string &filename, uint32_t _crc)
 {
     uint32_t crc = _crc;
 
-    FSMgr::FileHandle *fil = uaOpenFile(filename, "rb");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "rb");
     if (fil)
     {
         const size_t BUFSZ = 4 * 1024;
@@ -152,16 +152,23 @@ bool uaFileExist(const std::string &src_path)
 //    return v4;
 //}
 
-FSMgr::FileHandle *uaOpenFile(const std::string &src_path, const std::string &mode)
+FSMgr::FileHandle *uaOpenFileAlloc(const std::string &src_path, const std::string &mode)
 {
     std::string path = correctSeparatorAndExt( Common::Env.ApplyPrefix(src_path) );
 
-    FSMgr::FileHandle *v4 = FSMgr::iDir::openFile(path, mode);
+    FSMgr::FileHandle *v4 = FSMgr::iDir::openFileAlloc(path, mode);
 
     if ( !v4 )
         ypa_log_out("uaOpenFile('%s','%s') failed!\n", path.c_str(), mode.c_str());
 
     return v4;
+}
+
+FSMgr::FileHandle uaOpenFile(const std::string &src_path, const std::string &mode)
+{
+    std::string path = correctSeparatorAndExt( Common::Env.ApplyPrefix(src_path) );
+
+    return FSMgr::iDir::openFile(path, mode);
 }
 
 FSMgr::DirIter uaOpenDir(const std::string &dir)

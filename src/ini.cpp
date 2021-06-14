@@ -99,7 +99,7 @@ bool ParseIniFile(std::string iniFile, KeyList *lst)
     if ( iniFile.empty() )
         return false;
 
-    FSMgr::FileHandle *fil = FSMgr::iDir::openFile(iniFile, "r");
+    FSMgr::FileHandle *fil = FSMgr::iDir::openFileAlloc(iniFile, "r");
 
     if ( !fil )
         return false;
@@ -121,7 +121,7 @@ bool ParseIniFile(std::string iniFile, PKeyList *lst)
     if ( iniFile.empty() )
         return false;
 
-    FSMgr::FileHandle *fil = FSMgr::iDir::openFile(iniFile, "r");
+    FSMgr::FileHandle *fil = FSMgr::iDir::openFileAlloc(iniFile, "r");
 
     if ( !fil )
         return false;

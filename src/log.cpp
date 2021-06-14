@@ -6,7 +6,7 @@
 
 void ypa_log__ypa_general_log()
 {
-    FSMgr::FileHandle *v0 = FSMgr::iDir::openFile("env/ypa_log.txt", "w");
+    FSMgr::FileHandle *v0 = FSMgr::iDir::openFileAlloc("env/ypa_log.txt", "w");
     if ( v0 )
     {
         v0->printf("YPA General Log\n");
@@ -19,7 +19,7 @@ void ypa_log_out(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FSMgr::FileHandle *f = FSMgr::iDir::openFile("env/ypa_log.txt", "a");
+    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc("env/ypa_log.txt", "a");
     if ( f )
     {
         f->vprintf(format, va);
@@ -30,7 +30,7 @@ void ypa_log_out(const char *format, ...)
 
 void init_d3dlog()
 {
-    FSMgr::FileHandle *v0 = FSMgr::iDir::openFile("env/d3dlog.txt", "w");
+    FSMgr::FileHandle *v0 = FSMgr::iDir::openFileAlloc("env/d3dlog.txt", "w");
     if ( v0 )
     {
         v0->printf("YPA DD/D3D driver log\n---------------------\n");
@@ -42,7 +42,7 @@ void log_d3dlog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FSMgr::FileHandle *f = FSMgr::iDir::openFile("env/d3dlog.txt", "a");
+    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc("env/d3dlog.txt", "a");
     if ( f )
     {
         f->vprintf(format, va);
@@ -53,7 +53,7 @@ void log_d3dlog(const char *format, ...)
 
 void init_dinputlog()
 {
-    FSMgr::FileHandle *v0 = FSMgr::iDir::openFile("env/dinplog.txt", "w");
+    FSMgr::FileHandle *v0 = FSMgr::iDir::openFileAlloc("env/dinplog.txt", "w");
     if ( v0 )
     {
         v0->printf("YPA DirectInput log\n---------------------\n");
@@ -66,7 +66,7 @@ void log_netlog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FSMgr::FileHandle *f = FSMgr::iDir::openFile("env/ypa_log.txt", "a");
+    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc("env/ypa_log.txt", "a");
     if ( f )
     {
         f->printf("netlog: ");
@@ -500,7 +500,7 @@ void log_dinputlog(const char *format, ...)
 {
     va_list va;
     va_start(va, format);
-    FSMgr::FileHandle *f = FSMgr::iDir::openFile("env/dinplog.txt", "a");
+    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc("env/dinplog.txt", "a");
     if ( f )
     {
         f->vprintf(format, va);

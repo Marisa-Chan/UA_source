@@ -41,7 +41,7 @@ size_t NC_STACK_3ds::Deinit()
 
 bool NC_STACK_3ds::readFile(const char *filename)
 {
-    FSMgr::FileHandle *fil = FSMgr::iDir::openFile(filename, "rb");
+    FSMgr::FileHandle *fil = FSMgr::iDir::openFileAlloc(filename, "rb");
 
     if (!fil)
         return false;

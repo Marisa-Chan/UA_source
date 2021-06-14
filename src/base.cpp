@@ -185,47 +185,44 @@ size_t NC_STACK_base::Deinit()
 
 int NC_STACK_base::ReadIFFTagSTRC(IFFile *mfile)
 {
-    bool readOK = true;
-
     int16_t readVersion;
     vec3d pos;
     vec3d scale;
     int16_t ax;
     int16_t ay;
     int16_t az;
-    int16_t _un1;
     int32_t visLimit;
     int32_t ambientLight;
 
-    readOK &= mfile->readS16B(readVersion);
+    readVersion = mfile->readS16B();
 
-    readOK &= mfile->readFloatB(pos.x);
-    readOK &= mfile->readFloatB(pos.y);
-    readOK &= mfile->readFloatB(pos.z);
+    pos.x = mfile->readFloatB();
+    pos.y = mfile->readFloatB();
+    pos.z = mfile->readFloatB();
 
-    readOK &= mfile->readFloatB(___svdMove.x);
-    readOK &= mfile->readFloatB(___svdMove.y);
-    readOK &= mfile->readFloatB(___svdMove.z);
+    ___svdMove.x = mfile->readFloatB();
+    ___svdMove.y = mfile->readFloatB();
+    ___svdMove.z = mfile->readFloatB();
 
-    readOK &= mfile->readFloatB(scale.x);
-    readOK &= mfile->readFloatB(scale.y);
-    readOK &= mfile->readFloatB(scale.z);
+    scale.x = mfile->readFloatB();
+    scale.y = mfile->readFloatB();
+    scale.z = mfile->readFloatB();
 
-    readOK &= mfile->readS16B(ax);
-    readOK &= mfile->readS16B(ay);
-    readOK &= mfile->readS16B(az);
+    ax = mfile->readS16B();
+    ay = mfile->readS16B();
+    az = mfile->readS16B();
 
-    readOK &= mfile->readS16B(___svdRx);
-    readOK &= mfile->readS16B(___svdRy);
-    readOK &= mfile->readS16B(___svdRz);
+    ___svdRx = mfile->readS16B();
+    ___svdRy = mfile->readS16B();
+    ___svdRz = mfile->readS16B();
 
-    readOK &= mfile->readS16B(___svdFlags);
-    readOK &= mfile->readS16B(_un1);
+    ___svdFlags = mfile->readS16B();
+    mfile->readS16B();
 
-    readOK &= mfile->readS32B(visLimit);
-    readOK &= mfile->readS32B(ambientLight);
+    visLimit = mfile->readS32B();
+    ambientLight = mfile->readS32B();
 
-    if (!readOK)
+    if (mfile->readErr())
         return 0;
 
     if ( readVersion >= 1 )
@@ -252,9 +249,9 @@ int NC_STACK_base::ReadIFFTagADES(IFFile *mfile)
         if ( v5 )
             return 0;
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+        if ( chunk.Is(TAG_FORM, TAG_OBJT) )
         {
             NC_STACK_ade *ade = dynamic_cast<NC_STACK_ade *>(LoadObjectFromIFF(mfile));
             if ( !ade )
@@ -282,9 +279,9 @@ int NC_STACK_base::ReadIFFTagKIDS(IFFile *mfile)
         if ( v5 )
             return 0;
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+        if ( chunk.Is(TAG_FORM, TAG_OBJT) )
         {
             NC_STACK_base *objt = dynamic_cast<NC_STACK_base *>( LoadObjectFromIFF(mfile) );
             if ( !objt )
@@ -324,11 +321,11 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
             return 0;
         }
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
 
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ROOT )
+        if ( chunk.Is(TAG_FORM, TAG_ROOT) )
         {
             obj_ok = NC_STACK_nucleus::LoadingFromIFF(file);
 
@@ -348,7 +345,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
             _renderMsg.fadeStart = 3496.0;
             _renderMsg.fadeLength = 600.0;
         }
-        else if ( chunk->TAG == TAG_STRC )
+        else if ( chunk.Is(TAG_STRC) )
         {
             STRC_readed = 1;
 
@@ -359,7 +356,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
             }
             mfile->parse();
         }
-        else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+        else if ( chunk.Is(TAG_FORM, TAG_OBJT) )
         {
             if ( obj_ok )
             {
@@ -379,7 +376,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
                 }
             }
         }
-        else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADES )
+        else if ( chunk.Is(TAG_FORM, TAG_ADES) )
         {
             if ( !ReadIFFTagADES(mfile) )
             {
@@ -387,7 +384,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
                 return 0;
             }
         }
-        else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_KIDS )
+        else if ( chunk.Is(TAG_FORM, TAG_KIDS) )
         {
             if ( !ReadIFFTagKIDS(mfile) )
             {
@@ -801,29 +798,18 @@ NC_STACK_base *NC_STACK_base::LoadBaseFromFile(const std::string &fname)
 {
     NC_STACK_base *result = NULL;
 
-    FSMgr::FileHandle *fil = uaOpenFile(fname, "rb");
-    if ( !fil )
+    IFFile mfile = IFFile::UAOpenIFFile(fname, "rb");
+    if ( !mfile.OK() )
         return NULL;
 
-    IFFile *mfile = new IFFile(fil, false, true);
-    if ( !mfile )
+    if ( !mfile.parse() )
     {
-        delete fil;
-        return NULL;
-    }
-
-    if ( !mfile->parse() )
-    {
-        IFFile::Context *chunk = mfile->getCurrentChunk();
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_MC2 && !mfile->parse() )
+        if ( mfile.GetCurrentChunk().Is(TAG_FORM, TAG_MC2) && !mfile.parse() )
         {
-            chunk = mfile->getCurrentChunk();
-            if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
-                result = dynamic_cast<NC_STACK_base *>(LoadObjectFromIFF(mfile));
+            if ( mfile.GetCurrentChunk().Is(TAG_FORM, TAG_OBJT) )
+                result = dynamic_cast<NC_STACK_base *>(LoadObjectFromIFF(&mfile));
         }
     }
-
-    delete mfile;
 
     return result;
 }

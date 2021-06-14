@@ -152,7 +152,7 @@ bool Parser::ParseFile(const std::string &filename, HandlersList &callbacks, int
 {
     Parser parser(filename);
     parser._line = 0;
-    parser._file = uaOpenFile(filename, "r");
+    parser._file = uaOpenFileAlloc(filename, "r");
     parser._mode = MODE_FILE;
 
     if (!parser._file)

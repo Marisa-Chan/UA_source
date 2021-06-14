@@ -36,7 +36,7 @@ size_t NC_STACK_sklt::LoadingFromIFF(IFFile **file)
         if ( iff_result )
             return 0;
 
-        if ( mfile->getCurrentChunk()->TAG == TAG_NAME )
+        if ( mfile->GetCurrentChunk().Is(TAG_NAME) )
         {
             mfile->read(name, 255);
             mfile->parse();
@@ -80,7 +80,7 @@ size_t NC_STACK_sklt::func6(IFFile **file)
 
 rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int version)
 {
-    IFFile::Context *chunk = mfile->getCurrentChunk();
+    const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
     if ( version < 1 )
         return NULL;
@@ -89,11 +89,11 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int 
 
     if ( version == 1 )
     {
-        num = chunk->TAG_SIZE / 6;
+        num = chunk.TAG_SIZE / 6;
     }
     else if (version == 2)
     {
-        num = chunk->TAG_SIZE / 12;
+        num = chunk.TAG_SIZE / 12;
     }
     else
         return NULL;
@@ -110,9 +110,9 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int 
             for (int i = 0; i < num; i++)
             {
                 int16_t tmp[3];
-                mfile->readS16B(tmp[0]);
-                mfile->readS16B(tmp[1]);
-                mfile->readS16B(tmp[2]);
+                tmp[0] = mfile->readS16B();
+                tmp[1] = mfile->readS16B();
+                tmp[2] = mfile->readS16B();
 
                 sklt->POO[i].flags = 0;
                 sklt->POO[i].x = tmp[0];
@@ -125,9 +125,9 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int 
             for (int i = 0; i < num; i++)
             {
                 sklt->POO[i].flags = 0;
-                mfile->readFloatB(sklt->POO[i].x);
-                mfile->readFloatB(sklt->POO[i].y);
-                mfile->readFloatB(sklt->POO[i].z);
+                sklt->POO[i].x = mfile->readFloatB();
+                sklt->POO[i].y = mfile->readFloatB();
+                sklt->POO[i].z = mfile->readFloatB();
             }
         }
     }
@@ -136,8 +136,7 @@ rsrc * skeleton_read_pooX(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile, int 
 
 int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt)
 {
-    IFFile::Context *chunk = mfile->getCurrentChunk();
-    int32_t entrycnt = chunk->TAG_SIZE / 2;
+    int32_t entrycnt = mfile->GetCurrentChunk().TAG_SIZE / 2;
     int16_t *entries = new int16_t[entrycnt];
 
     if ( !entries )
@@ -147,7 +146,7 @@ int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
 
     for (int i = 0; i < entrycnt ; i++)
     {
-        mfile->readS16B(entries[i]);
+        entries[i] = mfile->readS16B();
         if (entries[i] == -1) // Meet end of vertex indexes for this polygon
             polyCount++;
     }
@@ -176,23 +175,23 @@ int skeleton_read_poly(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
 
 int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt)
 {
-    IFFile::Context *chunk = mfile->getCurrentChunk();
+    //IFFile::Context *chunk = mfile->GetCurrentChunk();
     int pol_count = 0;
 
-    mfile->readS32B(pol_count);
+    pol_count = mfile->readS32B();
 
     sklt->polygons.resize(pol_count);
 
     for (int i = 0; i < pol_count; i++)
     {
         uint16_t numVertex;
-        mfile->readU16B(numVertex);
+        numVertex = mfile->readU16B();
 
         sklt->polygons[i].num_vertices = numVertex;
         for(int j = 0; j < numVertex; j++)
         {
             uint16_t v;
-            mfile->readU16B(v);
+            v = mfile->readU16B();
             sklt->polygons[i].v[j] = v;
         }
     }
@@ -201,7 +200,7 @@ int skeleton_read_pol2(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
 
 int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt, int version)
 {
-    IFFile::Context *chunk = mfile->getCurrentChunk();
+    const IFFile::Context &chunk = mfile->GetCurrentChunk();
     int sen_count;
 
     if ( version < 1 )
@@ -209,11 +208,11 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
 
     if ( version == 1 )
     {
-        sen_count = chunk->TAG_SIZE / 6;
+        sen_count = chunk.TAG_SIZE / 6;
     }
     else if (version == 2)
     {
-        sen_count = chunk->TAG_SIZE / 12;
+        sen_count = chunk.TAG_SIZE / 12;
     }
     else
         return 0;
@@ -225,9 +224,9 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
         for (int i = 0; i < sen_count; i++)
         {
             int16_t tmp[3];
-            mfile->readS16B(tmp[0]);
-            mfile->readS16B(tmp[1]);
-            mfile->readS16B(tmp[2]);
+            tmp[0] = mfile->readS16B();
+            tmp[1] = mfile->readS16B();
+            tmp[2] = mfile->readS16B();
 
             sklt->SEN[i].flags = 0;
             sklt->SEN[i].x = tmp[0];
@@ -240,9 +239,9 @@ int skeleton_read_senX(NC_STACK_sklt *obj, IFFile *mfile, UAskeleton::Data *sklt
         for (int i = 0; i < sen_count; i++)
         {
             sklt->SEN[i].flags = 0;
-            mfile->readFloatB(sklt->SEN[i].x);
-            mfile->readFloatB(sklt->SEN[i].y);
-            mfile->readFloatB(sklt->SEN[i].z);
+            sklt->SEN[i].x = mfile->readFloatB();
+            sklt->SEN[i].y = mfile->readFloatB();
+            sklt->SEN[i].z = mfile->readFloatB();
         }
     }
     return 1;
@@ -319,7 +318,7 @@ rsrc * sklt_func64__sub0(NC_STACK_sklt *obj, IDVList &stak, IFFile *mfile)
             return NULL;
         }
 
-        int tag = mfile->getCurrentChunk()->TAG;
+        int tag = mfile->GetCurrentChunk().TAG;
         if ( tag != TAG_FORM )
         {
             switch ( tag )
@@ -427,7 +426,7 @@ rsrc * NC_STACK_sklt::rsrc_func64(IDVList &stak)
 
         if ( !mfile )
         {
-            mfile = IFFile::openIFFile(filename, false);
+            mfile = IFFile::RsrcOpenIFFile(filename, "rb");
 
             if ( !mfile )
                 return NULL;
@@ -460,7 +459,7 @@ size_t NC_STACK_sklt::rsrc_func66(rsrc_func66_arg *arg)
         if ( !arg->filename )
             return 0;
 
-        mfile = IFFile::openIFFile(arg->filename, true);
+        mfile = IFFile::RsrcOpenIFFile(arg->filename, "wb");
     }
     else
         mfile = arg->file;

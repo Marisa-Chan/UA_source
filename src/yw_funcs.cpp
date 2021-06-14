@@ -17,7 +17,7 @@ extern GuiList stru_5C91D0;
 
 TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
 {
-    FSMgr::FileHandle *fil = uaOpenFile("rsrc:hfonts/" + fontname, "r");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc("rsrc:hfonts/" + fontname, "r");
     if ( !fil )
         return NULL;
 
@@ -711,7 +711,7 @@ NC_STACK_base * sub_44AD8C(const std::string &fname)
     NC_STACK_base *obj = Nucleus::CInit<NC_STACK_base>();
     if ( obj )
     {
-        FSMgr::FileHandle *fil = uaOpenFile(fname, "r");
+        FSMgr::FileHandle *fil = uaOpenFileAlloc(fname, "r");
         if ( !fil )
         {
             delete_class_obj(obj);
@@ -1213,7 +1213,7 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
 
     if ( setID != 46 )
     {
-        FSMgr::FileHandle* fil = uaOpenFile("rsrc:scripts/set.sdf", "r");
+        FSMgr::FileHandle* fil = uaOpenFileAlloc("rsrc:scripts/set.sdf", "r");
         if ( !fil )
         {
             ypa_log_out("Couldn't open set description file, set %d!\n", setID);
@@ -1309,7 +1309,7 @@ int loadTOD(NC_STACK_ypaworld *yw, const char *fname)
     int tod = 0;
     if ( yw->GameShell )
     {
-        FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", yw->GameShell->UserName, fname), "r");
+        FSMgr::FileHandle *fil = uaOpenFileAlloc( fmt::sprintf("save:%s/%s", yw->GameShell->UserName, fname), "r");
 
         if ( fil )
         {
@@ -1333,7 +1333,7 @@ int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod)
     int v6 = 0;
     if ( yw->GameShell )
     {
-        FSMgr::FileHandle *fil = uaOpenFile( fmt::sprintf("save:%s/%s", yw->GameShell->UserName, fname), "w");
+        FSMgr::FileHandle *fil = uaOpenFileAlloc( fmt::sprintf("save:%s/%s", yw->GameShell->UserName, fname), "w");
 
         if ( fil )
         {

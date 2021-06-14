@@ -101,13 +101,13 @@ int NC_STACK_area::area_func5__sub0(IFFile *mfile)
         uint8_t shdVal;
     } tmp;
 
-    mfile->readS16B(tmp.version);
-    mfile->readU16B(tmp.flags);
-    mfile->readU16B(tmp.polFlags);
-    mfile->readU8(tmp._un1);
-    mfile->readU8(tmp.clrVal);
-    mfile->readU8(tmp.trcVal);
-    mfile->readU8(tmp.shdVal);
+    tmp.version = mfile->readS16B();
+    tmp.flags = mfile->readU16B();
+    tmp.polFlags = mfile->readU16B();
+    tmp._un1 = mfile->readU8();
+    tmp.clrVal = mfile->readU8();
+    tmp.trcVal = mfile->readU8();
+    tmp.shdVal = mfile->readU8();
 
     if ( tmp.version >= 1 )
     {
@@ -180,16 +180,16 @@ size_t NC_STACK_area::LoadingFromIFF(IFFile **file)
             return 0;
         }
 
-        IFFile::Context *chunk = mfile->getCurrentChunk();
+        const IFFile::Context &chunk = mfile->GetCurrentChunk();
 
-        if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_ADE )
+        if ( chunk.Is(TAG_FORM, TAG_ADE) )
         {
             obj_ok = NC_STACK_ade::LoadingFromIFF(file);
 
             if ( !obj_ok )
                 return 0;
         }
-        else if ( chunk->TAG == TAG_STRC )
+        else if ( chunk.Is(TAG_STRC) )
         {
             if ( obj_ok && !area_func5__sub0(mfile) )
             {
@@ -198,7 +198,7 @@ size_t NC_STACK_area::LoadingFromIFF(IFFile **file)
             }
             mfile->parse();
         }
-        else if ( chunk->TAG == TAG_FORM && chunk->TAG_EXTENSION == TAG_OBJT )
+        else if ( chunk.Is(TAG_FORM, TAG_OBJT) )
         {
             if ( obj_ok && !area_func5__sub1(mfile) )
             {

@@ -116,7 +116,7 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
     std::string tmpBuf = "rsrc:";
     tmpBuf += resName;
 
-    FSMgr::FileHandle *fil = uaOpenFile(tmpBuf, "rb");
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(tmpBuf, "rb");
     if (!fil)
         return NULL;
 
