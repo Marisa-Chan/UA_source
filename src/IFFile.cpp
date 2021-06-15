@@ -49,16 +49,6 @@ IFFile *IFFile::RsrcOpenIFFile(const std::string &filename, const std::string &m
     return new IFFile(f);
 }
 
-IFFile *IFFile::UAOpenIFFileAlloc(const std::string &filename, const std::string &mode)
-{
-    std::string tmpBuf = correctSeparatorAndExt( Common::Env.ApplyPrefix( filename ) );
-
-    if ( !FSMgr::iDir::fileExist(tmpBuf) )
-        return NULL;
-    
-    return new IFFile(FSMgr::iDir::openFileAlloc(tmpBuf, mode));
-}
-
 IFFile IFFile::UAOpenIFFile(const std::string &filename, const std::string &mode)
 {
     std::string tmpBuf = correctSeparatorAndExt( Common::Env.ApplyPrefix( filename ) );
