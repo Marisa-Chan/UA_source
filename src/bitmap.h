@@ -4,16 +4,6 @@
 #include "rsrc.h"
 #include "system/gfx.h"
 
-struct pixel_2d
-{
-    int x;
-    int y;
-    int32_t zbuff;
-    uint32_t color;
-    int mapx;
-    int mapy;
-    int16_t flags;
-};
 
 class NC_STACK_bitmap: public NC_STACK_rsrc
 {
