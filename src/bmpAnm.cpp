@@ -9,12 +9,6 @@
 const Nucleus::ClassDescr NC_STACK_bmpanim::description("bmpanim.class", &newinstance);
 
 
-static int dword_515200 = 0;
-static int dword_515204 = 0;
-static int dword_5B2410;
-static tUtV *dword_5A11A0[256];
-
-
 size_t NC_STACK_bmpanim::Init(IDVList &stak)
 {
 //    if (stak)
@@ -27,13 +21,13 @@ size_t NC_STACK_bmpanim::Init(IDVList &stak)
     if ( !NC_STACK_bitmap::Init(stak) )
         return 0;
 
-    bmpanm_intern = (bmpAnim_t1 *)getRsrc_pData();
-    frm_adds = 1;
-    anim_type = 0;
-    time_ovr = 0;
-    current_frame = bmpanm_intern->start_frame;
+    _pData = (ResBmpAnm *)getRsrc_pData();
+    _frmAdd = 1;
+    _animType = 0;
+    _leftTime = 0;
+    _curFrame = 0;
 
-    anim_type = stak.Get<int32_t>(BANM_ATT_ANIMTYPE, 0);
+    _animType = stak.Get<int32_t>(BANM_ATT_ANIMTYPE, 0);
 
     return 1;
 }
@@ -124,574 +118,243 @@ size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
 
     mfile->writeS16B(1); //version
     mfile->writeS16B(6); //offset of name
-    mfile->writeS16B(anim_type);
+    mfile->writeS16B(_animType);
 
     mfile->write(a3, strlen(a3) + 1);
     mfile->popChunk();
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-void *sub_4BFB60(void *mfl, const std::string &mode)
+bool NC_STACK_bmpanim::ReadClassName(FSMgr::iFileHandle *fil, ResBmpAnm *arg)
 {
-    bool writeMode = mode.find("w") != std::string::npos;
+    int16_t sz = fil->readS16B();
 
-    dword_5B2410 = writeMode;
+    if ( fil->readErr() )
+        return false;
 
-    if ( dword_515200 )
+    char *tmp = new char[sz]();
+    
+    if ( fil->read(tmp, sz) != (size_t)sz )
     {
-        IFFile *mfile = (IFFile *)mfl;
-        dword_515204 = 1;
-
-        if ( writeMode )
-        {
-            if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
-                return mfile;
-        }
-        else
-        {
-            if ( (mfile->parse() | mfile->parse()) == IFFile::IFF_ERR_OK )
-                return mfile;
-        }
-        return NULL;
+        delete[] tmp;
+        return false;
     }
-    else
+    
+    arg->ClassName.assign(tmp);
+    delete[] tmp;
+    
+    return true;
+}
+
+bool NC_STACK_bmpanim::ReadBitmapNames(FSMgr::iFileHandle *fil, ResBmpAnm *arg)
+{
+    int16_t sz = fil->readS16B();
+
+    if ( fil->readErr() )
+        return false;
+
+    char *tmp = new char[sz]();
+    
+    if ( fil->read(tmp, sz) != (size_t)sz )
     {
-        dword_515204 = dword_515200;
-        const char* fname = (const char *)mfl;
-
-        FSMgr::FileHandle *fil;
-
-        if ( writeMode )
-        {
-            dword_515200 = 1;
-            fil = uaOpenFileAlloc(fname, mode);
-            if ( !fil )
-                return NULL;
-        }
-        else
-        {
-            fil = uaOpenFileAlloc(fname, mode);
-            if ( !fil )
-                return NULL;
-
-            uint32_t tmp = fil->readU32B();
-
-            if ( tmp != TAG_FORM )
-            {
-                dword_515200 = 0;
-                fil->seek(0, SEEK_SET);
-                return fil;
-            }
-            else
-            {
-                dword_515200 = 1;
-                fil->seek(0, SEEK_SET);
-            }
-        }
-
-        if ( dword_515200 )
-        {
-            IFFile *mfile = new IFFile(fil);
-            if ( mfile )
-            {
-                if ( dword_5B2410 )
-                {
-                    if ( (mfile->pushChunk(TAG_VANM, TAG_FORM, -1) | mfile->pushChunk(0, TAG_DATA, -1)) == IFFile::IFF_ERR_OK )
-                        return mfile;
-                }
-                else
-                {
-                    if ( (mfile->parse() | mfile->parse()) == IFFile::IFF_ERR_OK )
-                        return mfile;
-                }
-                delete mfile;
-            }
-            else
-                delete fil;
-
-        }
-        else if (fil)
-            delete fil;
+        delete[] tmp;
+        return false;
     }
-    return NULL;
-}
-
-int fread_bmp(void *dst, int size, int count, void *file)
-{
-    int v5 = 0;
-
-    if ( dword_515200 )
-        v5 = ((IFFile *)file)->read(dst, size * count);
-    else
-        v5 = ((FSMgr::FileHandle *)file)->read(dst, size * count);
-
-    if ( v5 >= 0 )
-        return v5 / size;
-    else
-        return 0;
-}
-
-int fwrite_bmp(void *dst, int size, int count, void *file)
-{
-    int v5 = 0;
-
-    if ( dword_515200 )
-        v5 = ((IFFile *)file)->write(dst, size * count);
-    else
-        v5 = ((FSMgr::FileHandle *)file)->write(dst, size * count);
-
-    if ( v5 >= 0 )
-        return v5 / size;
-    else
-        return 0;
-}
-
-int bmpanim_func64__readClassName(void *fil, bmpAnim_t1 *arg)
-{
-    int16_t sz;
-
-    if ( fread_bmp(&sz, 2, 1, fil) == 1 )
+    
+    std::string buf(tmp, sz);
+    delete[] tmp;
+    
+    arg->BitmapNames = Stok::Split(buf, std::string("\0", 1));
+    
+    if (arg->BitmapNames.empty())
+        return false;
+    
+    arg->Bitmaps.resize( arg->BitmapNames.size() );
+    
+    for (size_t i = 0; i < arg->BitmapNames.size(); ++i)
     {
-        sz = SWAP16(sz);
+        arg->Bitmaps[i] = Nucleus::CTFInit<NC_STACK_bitmap>(arg->ClassName, {
+            {NC_STACK_rsrc::RSRC_ATT_NAME, arg->BitmapNames[i]},
+            {NC_STACK_rsrc::RSRC_ATT_DONTCOPY, (int32_t)1}} );
 
-        arg->className = (char *)AllocVec(sz, 1);
-        if ( arg->className )
-        {
-            if ( fread_bmp(arg->className, sz, 1, fil) == 1 )
-                return 1;
-        }
+        if ( !arg->Bitmaps[i] )
+            return false;
     }
-    return 0;
+    
+    return true;
 }
 
-int bmpanim_func64__sub1__sub2(void *fil, bmpAnim_t1 *arg)
+bool NC_STACK_bmpanim::ReadTexCoords(FSMgr::iFileHandle *fil, ResBmpAnm *arg)
 {
-    int16_t sz;
-    char *pbmpAnm_titles[256];
+    int16_t cnt = fil->readS16B();
+    
+    if ( fil->readErr() )
+        return false;
 
-    if ( fread_bmp(&sz, 2, 1, fil) == 1 )
-    {
-        sz = SWAP16(sz);
-        arg->titles_size = sz;
-
-        char *buf = (char *)AllocVec(sz, 1);
-        if ( buf )
-        {
-            arg->titles = buf;
-            if ( fread_bmp(buf, sz, 1, fil) == 1 )
-            {
-                char *v8 = buf;
-
-                int nm_cnt = -1;
-
-                for (int i = 0; i < 256; i++)
-                {
-                    if (v8 >= (buf + sz) || *v8 == 0 )
-                    {
-                        pbmpAnm_titles[i] = NULL;
-                        nm_cnt = i;
-                        break;
-                    }
-                    else
-                    {
-                        pbmpAnm_titles[i] = v8;
-                        v8 += strlen(v8) + 1;
-                    }
-                }
-
-                if (nm_cnt == -1)
-                    return 0;
-
-                arg->bitm_buff_cnt = nm_cnt;
-
-                bmpAnim_t1_objs *frames = (bmpAnim_t1_objs *)AllocVec(sizeof(bmpAnim_t1_objs) * nm_cnt, 65537);
-                if ( frames )
-                {
-                    arg->bitm_buff = frames;
-
-                    for (int i = 0; i < nm_cnt; i++)
-                    {
-                        frames[i].bitmObj = Nucleus::CTFInit<NC_STACK_bitmap>(arg->className, {
-                            {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(pbmpAnm_titles[i])},
-                            {NC_STACK_rsrc::RSRC_ATT_DONTCOPY, (int32_t)1}} );
-
-                        if ( !frames[i].bitmObj )
-                            return 0;
-
-                        frames[i].bitm_intern = frames[i].bitmObj->GetBitmap();
-                        frames[i].title = pbmpAnm_titles[i];
-                    }
-                    return 1;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-int bmpanim_func64__sub1__sub1(void *fil, bmpAnim_t1 *arg)
-{
-    int16_t cnt;
-    if ( fread_bmp(&cnt, 2, 1, fil) != 1 )
-        return 0;
-
-    cnt = SWAP16(cnt);
-
-    arg->otl_buff_cnt = cnt;
-
-    arg->otl_buff = (tUtV *)AllocVec(sizeof(tUtV) * (int)cnt, 1);
-    if ( !arg->otl_buff )
-        return 0;
-
-    tUtV *v5 = arg->otl_buff;
-
-    int k = 0;
+    if (arg->Bitmaps.size())
+        arg->TexCoords.reserve( arg->Bitmaps.size() );
 
     for (int i = 0; i < cnt; i++)
     {
-        dword_5A11A0[k] = v5;
+        arg->TexCoords.emplace_back();
+        std::vector<tUtV> &coords = arg->TexCoords.back();
 
-        uint16_t ttmp;
-        if ( fread_bmp(&ttmp, 2, 1, fil) != 1 )
-            return 0;
-
-        ttmp = SWAP16(ttmp);
-
-        for (int j = 0; j < ttmp; j++)
+        uint16_t ttmp = fil->readS16B();
+        
+        if ( fil->readErr() )
+            return false;
+        
+        coords.resize(ttmp);
+        for (size_t j = 0; j < ttmp; j++)
         {
             uint8_t uv[2];
-            if (fread_bmp(uv, 2, 1, fil) != 1)
-                return 0;
+            if (fil->read(uv, 2) != 2)
+                return false;
 
-            v5->tu = (float)uv[0] / 256.0;
-            v5->tv = (float)uv[1] / 256.0;
-            v5++;
+            coords[j].tu = (float)uv[0] / 256.0;
+            coords[j].tv = (float)uv[1] / 256.0;
         }
-
-        v5->tu = -1.0;
-        v5->tv = -1.0;
-        v5++;
-
         i += ttmp;
-        k++;
     }
 
-    return 1;
+    return true;
 }
 
-int bmpanim_func64__sub1__sub0(void *fil, bmpAnim_t1 *arg)
+bool NC_STACK_bmpanim::ReadFrameData(FSMgr::iFileHandle *fil, ResBmpAnm *arg)
 {
-    int16_t cnt;
-    if ( fread_bmp(&cnt, 2, 1, fil) != 1 )
-        return 0;
-    cnt = SWAP16(cnt);
-
-    bmpAnim_t2 *t2 = (bmpAnim_t2 *)AllocVec(sizeof(bmpAnim_t2) * (int)cnt, 1);
-
-    if ( !t2 )
-        return 0;
-
-    arg->frame_cnt = cnt;
-    arg->start_frame = t2;
-    arg->end_frame = &t2[cnt];
-
-    for (int i = 0; i < cnt; i++)
+    int16_t cnt = fil->readS16B();
+    
+    if ( fil->readErr() )
+        return false;
+    
+    arg->FrameData.resize(cnt);
+    
+    for (int16_t i = 0; i < cnt; ++i)
     {
-        bmpanm_loc v14;
-        if (fread_bmp(&v14, 8, 1, fil) != 1)
-            return 0;
-
-        v14.frm_time = SWAP32(v14.frm_time);
-        v14.frame_id = SWAP16(v14.frame_id);
-        v14.uv_id = SWAP16(v14.uv_id);
-
-        t2[i].outline = dword_5A11A0[v14.uv_id];
-        t2[i].bitm = arg->bitm_buff[v14.frame_id].bitm_intern;
-        t2[i].frm_time = v14.frm_time;
-        t2[i].bitm_index = v14.frame_id;
-        t2[i].otl_index = v14.uv_id;
+        BAnmFrameCache &frm = arg->FrameData[i];
+        
+        frm.FrameTime = fil->readS32B();
+        frm.FrameID = fil->readS16B();
+        frm.TexCoordsID = fil->readS16B();
+        
+        frm.pTexCoords = &arg->TexCoords.at( frm.TexCoordsID );
+        frm.pBitmap = arg->Bitmaps.at(frm.FrameID);
     }
-    return 1;
+    return true;
 }
 
-void sub_431608(bmpAnim_t1 *bmpAnm)
+ResBmpAnm *NC_STACK_bmpanim::LoadFromFile(const std::string &name, IFFile *iff)
 {
-    if ( bmpAnm )
-    {
-        if ( bmpAnm->titles )
-            nc_FreeMem(bmpAnm->titles);
+    IFFile iffOpened;
+    FSMgr::FileHandle fil;
+    FSMgr::iFileHandle *pfile = iff;
 
-        if ( bmpAnm->otl_buff )
-            nc_FreeMem(bmpAnm->otl_buff);
+    if ( !iff )
+    {                
+        fil = uaOpenFile( std::string("rsrc:rsrcpool/") + name, "rb" );
+        if (!fil.OK())
+            return NULL;
+        
+        uint32_t tmp = fil.readU32B();
+        fil.seek(0, SEEK_SET);
 
-        if ( bmpAnm->className )
-            nc_FreeMem(bmpAnm->className);
-
-        if ( bmpAnm->start_frame )
-            nc_FreeMem(bmpAnm->start_frame);
-
-        if ( bmpAnm->bitm_buff )
-        {
-            for (int i = 0; i < bmpAnm->bitm_buff_cnt; i++)
-            {
-                if (bmpAnm->bitm_buff[i].bitmObj)
-                    delete_class_obj(bmpAnm->bitm_buff[i].bitmObj);
-            }
-            nc_FreeMem(bmpAnm->bitm_buff);
-        }
-        nc_FreeMem(bmpAnm);
-    }
-}
-
-int sub_4BFD74(void *fil)
-{
-    if ( fil )
-    {
-        if ( dword_515200 )
-        {
-            if ( dword_5B2410 )
-            {
-                ((IFFile *)fil)->popChunk();
-                ((IFFile *)fil)->popChunk();
-            }
-            else
-            {
-                ((IFFile *)fil)->parse();
-                ((IFFile *)fil)->parse();
-            }
-
-            if ( !dword_515204 )
-            {
-                delete ((IFFile *)fil);
-            }
-        }
+        if ( tmp != TAG_FORM )
+            pfile = &fil;
         else
         {
-            delete ((FSMgr::FileHandle *)fil);
+            iffOpened = IFFile(fil);
+            pfile = &iffOpened;
+            
+            iff = &iffOpened;
         }
     }
-    return 0;
-}
-
-bmpAnim_t1 *bmpanim_func64__sub1(const std::string &name, IFFile *a2)
-{
-    char buf[256];
-    void *ldfrom = a2;
-
-    bmpAnim_t1 *v19 = NULL;
-    int v23 = 0;
-
-    if ( ldfrom )
+    
+    if (iff)
     {
-        dword_515200 = 1;
-    }
-    else
-    {
-        strcpy(buf, "rsrc:");
-        strcat(buf, "rsrcpool/");
-        strcat(buf, name.c_str());
-
-        ldfrom = buf;
-        dword_515200 = 0;
+        if ( (iff->parse() | iff->parse()) != IFFile::IFF_ERR_OK )
+            return NULL;
     }
 
-    void *fil = sub_4BFB60(ldfrom, "rb");
-    if ( fil )
+    if ( !pfile->OK() )
+        return NULL;
+
+    ResBmpAnm *pdata = new ResBmpAnm();
+    if ( pdata )
     {
-        v19 = (bmpAnim_t1 *)AllocVec(sizeof(bmpAnim_t1), 65537);
-        if ( v19 )
+        bool ReadOK = false;
+        
+        if ( ReadClassName(pfile, pdata) )
         {
-            if ( bmpanim_func64__readClassName(fil, v19) )
+            if ( ReadBitmapNames(pfile, pdata) )
             {
-                if ( bmpanim_func64__sub1__sub2(fil, v19) )
+                if ( ReadTexCoords(pfile, pdata) )
                 {
-                    if ( bmpanim_func64__sub1__sub1(fil, v19) )
-                    {
-                        if ( bmpanim_func64__sub1__sub0(fil, v19) )
-                            v23 = 1;
-                    }
+                    if ( ReadFrameData(pfile, pdata) )
+                        ReadOK = true;
                 }
             }
-            if ( !v23 )
-                sub_431608(v19);
         }
-        sub_4BFD74(fil);
+        
+        if ( !ReadOK )
+        {
+            delete pdata;
+            pdata = NULL;
+        }
     }
-    if ( v23 && v19 )
-        return v19;
+    
+    if (iff)
+    {
+        iff->parse();
+        iff->parse();
+    }
 
-    return NULL;
+    return pdata;
 }
 
-int bmpanim_func64__sub0__sub0(bmpAnim_t1 *t1, char **a2, const std::string &className)
+ResBmpAnm * NC_STACK_bmpanim::ConstructBAnm(const std::string &className, std::vector<std::string> *a2, std::vector< std::vector<tUtV> >*a3, int num, BAnmFrame *frames)
 {
-    t1->className = (char *)AllocVec(className.size() + 1, 1);
-    if ( !t1->className )
-        return 0;
+    ResBmpAnm *banm = new ResBmpAnm();
 
-    strcpy(t1->className, className.c_str());
+    if ( !banm )
+        return NULL;
 
-    int bfsz = 0;
-    int sz = 0;
+    banm->ClassName = className;
+    banm->BitmapNames = *a2;
+    
+    banm->Bitmaps.resize( banm->BitmapNames.size() );
 
-    char **pt = a2;
-
-    while(*pt)
+    for (size_t i = 0; i < banm->BitmapNames.size(); i++)
     {
-        bfsz += strlen(*pt) + 1;
-        sz++;
-        pt++;
-    }
-
-    t1->bitm_buff_cnt = sz;
-    t1->titles_size = bfsz + 1;
-
-    t1->titles = (char *)AllocVec(t1->titles_size, 1);
-    if ( !t1->titles )
-        return 0;
-
-    t1->bitm_buff = (bmpAnim_t1_objs *)AllocVec(sizeof(bmpAnim_t1_objs) * sz, 65537);
-    if (!t1->bitm_buff)
-        return 0;
-
-    pt = a2;
-
-    char *out = t1->titles;
-    for (int i = 0; i < sz; i++)
-    {
-        strcpy(out, *pt);
-
-        t1->bitm_buff[i].bitmObj = Nucleus::CTFInit<NC_STACK_bitmap>(className,
-           {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(out)},
+        banm->Bitmaps[i] = Nucleus::CTFInit<NC_STACK_bitmap>(className,
+           {{NC_STACK_rsrc::RSRC_ATT_NAME, banm->BitmapNames[i]},
             {NC_STACK_rsrc::RSRC_ATT_DONTCOPY, (int32_t)1}} );
             
-        if ( !t1->bitm_buff[i].bitmObj )
-            return 0;
-
-        t1->bitm_buff[i].bitm_intern = t1->bitm_buff[i].bitmObj->GetBitmap();
-
-        t1->bitm_buff[i].title = out;
-
-        out += strlen(out) + 1;
-        pt++;
-    }
-    *out = 0;
-
-    return 1;
-}
-
-int bmpanim_func64__sub0__sub1(bmpAnim_t1 *t1, pixel_2d **opls)
-{
-    pixel_2d **v3 = opls;
-
-    int nm = 0;
-    while (*v3)
-    {
-        int v5 = 1;
-
-        pixel_2d *v6 = *v3;
-        while ( v6->flags >= 0 )
+        if ( !banm->Bitmaps[i] )
         {
-            v6++;
-            v5++;
+            delete banm;
+            return NULL;
         }
-
-        nm += v5;
-        v3++;
     }
+    
+    banm->TexCoords = *a3;
 
-    t1->otl_buff_cnt = nm;
-
-    t1->otl_buff = (tUtV *)AllocVec(sizeof(tUtV) * nm, 1);
-
-    if ( !t1->otl_buff )
-        return 0;
-
-    v3 = opls;
-    tUtV *out = t1->otl_buff;
-    int j = 0;
-
-    while (*v3)
-    {
-        int v5 = 1;
-
-        pixel_2d *v6 = *v3;
-        while ( v6->flags >= 0 )
-        {
-            v6++;
-            v5++;
-        }
-
-        dword_5A11A0[j] = out;
-
-        for(int i = 0; i < (v5 - 1); i++)
-        {
-            out->tu = (*v3)[i].x / 256.0;
-            out->tv = (*v3)[i].y / 256.0;
-            out++;
-        }
-
-        out->tu = -1.0;
-        out->tv = -1.0;
-        out++;
-
-        nm += v5;
-        v3++;
-        j++;
-    }
-
-    return 1;
-}
-
-int bmpanim_func64__sub0__sub2(bmpAnim_t1 *t1, int num, bmpanm_loc *arg)
-{
-    t1->frame_cnt = num;
-
-    bmpAnim_t2 *t2 = (bmpAnim_t2 *)AllocVec(sizeof(bmpAnim_t2) * num, 1);
-    if ( !t2 )
-        return 0;
-
-    t1->start_frame = t2;
+    banm->FrameData.resize(num);
 
     for (int i = 0; i < num; i++)
     {
-        t2[i].outline = dword_5A11A0[ arg[i].uv_id ];
-        t2[i].bitm = t1->bitm_buff[ arg[i].frame_id ].bitm_intern;
-        t2[i].frm_time = arg[i].frm_time;
-        t2[i].bitm_index = arg[i].frame_id;
-        t2[i].otl_index = arg[i].uv_id;
-    }
-    t1->end_frame = &t2[num];
-    return 1;
-}
-
-bmpAnim_t1 * bmpanim_func64__sub0(const std::string &className, char **a2, pixel_2d **a3, int a4, bmpanm_loc *a5)
-{
-    bmpAnim_t1 *t1 = (bmpAnim_t1 *)AllocVec(sizeof(bmpAnim_t1), 65537);
-
-    if ( !t1 )
-        return NULL;
-
-    if ( !bmpanim_func64__sub0__sub0(t1, a2, className) )
-    {
-        sub_431608(t1);
-        return NULL;
+        BAnmFrameCache &out = banm->FrameData.at(i);
+        BAnmFrame &in = frames[i];
+                
+        out.FrameTime = in.FrameTime;
+        out.FrameID = in.FrameID;
+        out.TexCoordsID = in.TexCoordsID;
+        
+        out.pTexCoords = &banm->TexCoords[ out.TexCoordsID ];
+        out.pBitmap = banm->Bitmaps[ out.FrameID ];
+        
     }
 
-    if ( !bmpanim_func64__sub0__sub1(t1, a3) )
-    {
-        sub_431608(t1);
-        return NULL;
-    }
-
-    if ( !bmpanim_func64__sub0__sub2(t1, a4, a5) )
-    {
-        sub_431608(t1);
-        return NULL;
-    }
-
-
-    return t1;
+    return banm;
 }
 
 // Create bmpanim resource node and fill rsrc field data
@@ -706,20 +369,20 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(IDVList &stak)
         const std::string a1 = stak.Get<std::string>(BANM_ATT_CLASSNAME, "");
         if ( !a1.empty() )
         {
-            char **titles = stak.Get<char **>(BANM_ATT_FILE_TITLES, NULL);
-            pixel_2d **opls = stak.Get<pixel_2d **>(BANM_ATT_OUTLINES, NULL);
+            std::vector<std::string> *titles = stak.Get<std::vector<std::string> *>(BANM_ATT_FILE_TITLES, NULL);
+            std::vector< std::vector<tUtV> > *opls = stak.Get< std::vector< std::vector<tUtV> >* >(BANM_ATT_OUTLINES, NULL);
             int num = stak.Get<int32_t>(BANM_ATT_FRAMECNT, 0);
-            bmpanm_loc *v7 = stak.Get<bmpanm_loc *>(BANM_ATT_SEQDATA, NULL);
+            BAnmFrame *v7 = stak.Get<BAnmFrame *>(BANM_ATT_SEQDATA, NULL);
 
             if ( titles && opls && num && v7 )
-                res->data = bmpanim_func64__sub0(a1, titles, opls, num, v7);
+                res->data = ConstructBAnm(a1, titles, opls, num, v7);
         }
         else
         {
             const std::string v9 = stak.Get<std::string>(RSRC_ATT_NAME, "");
-            IFFile *v10 = stak.Get<IFFile *>(RSRC_ATT_PIFFFILE, NULL);
+            IFFile *iff = stak.Get<IFFile *>(RSRC_ATT_PIFFFILE, NULL);
             if ( !v9.empty() )
-                res->data = bmpanim_func64__sub1(v9, v10);
+                res->data = LoadFromFile(v9, iff);
         }
 
         if ( !res->data )
@@ -734,150 +397,133 @@ rsrc * NC_STACK_bmpanim::rsrc_func64(IDVList &stak)
 
 size_t NC_STACK_bmpanim::rsrc_func65(rsrc *res)
 {
-    bmpAnim_t1 *v5 = (bmpAnim_t1 *)res->data;
+    ResBmpAnm *v5 = (ResBmpAnm *)res->data;
 
     if ( v5 )
     {
-        sub_431608(v5);
+        delete v5;
         res->data = NULL;
     }
     return NC_STACK_bitmap::rsrc_func65(res);
 }
 
-int bmpanim_func66__sub0__sub3(void *fil, bmpAnim_t1 *t1)
+bool NC_STACK_bmpanim::WriteClassName(FSMgr::iFileHandle *fil, ResBmpAnm *t1)
 {
-    int16_t v5 = strlen(t1->className) + 1;
-    v5 = SWAP16(v5);
+    if ( !fil->writeS16B( t1->ClassName.size() + 1 ) )
+        return false;
 
-    if ( fwrite_bmp(&v5, 2, 1, fil) != 1 )
-        return 0;
-
-    v5 = SWAP16(v5);
-
-    if ( fwrite_bmp(t1->className, v5, 1, fil) != 1 )
-        return 0;
-    return 1;
+    if ( fil->write( t1->ClassName.c_str(),  t1->ClassName.size() + 1) != t1->ClassName.size() + 1 )
+        return false;
+    return true;
 }
 
-int bmpanim_func66__sub0__sub2(void *fil, bmpAnim_t1 *t1)
+bool NC_STACK_bmpanim::WriteBitmapNames(FSMgr::iFileHandle *fil, ResBmpAnm *t1)
 {
-    int16_t v7 = t1->titles_size;
-    v7 = SWAP16(v7);
+    size_t sz = 0;
+    for (std::string &n : t1->BitmapNames)
+        sz += n.size() + 1;
 
-    if ( fwrite_bmp(&v7, 2, 1, fil) != 1)
-        return 0;
+    if ( !fil->writeS16B(sz) )
+        return false;
 
-    if ( fwrite_bmp(t1->titles, t1->titles_size, 1, fil) != 1 )
-        return 0;
-
-    return 1;
-}
-
-int bmpanim_func66__sub0__sub1(void *fil, bmpAnim_t1 *t1)
-{
-    tUtV *uv_end = &t1->otl_buff[t1->otl_buff_cnt];
-
-    int16_t v17 = SWAP16(t1->otl_buff_cnt);
-
-    if ( fwrite_bmp(&v17, 2, 1, fil) != 1 )
-        return 0;
-
-    tUtV *v6 = t1->otl_buff;
-
-    while( v6 != uv_end )
+    for (std::string &n : t1->BitmapNames)
     {
-        int v7 = 1;
+        sz = n.size() + 1;
+        if ( fil->write(n.c_str(), sz) != sz )
+            return false;
+    }
 
-        while ( v6[v7 - 1].tu >= 0.0 )
-            v7++;
+    return true;
+}
 
-        v17 = SWAP16(v7);
+bool NC_STACK_bmpanim::WriteTexCoords(FSMgr::iFileHandle *fil, ResBmpAnm *t1)
+{
+    size_t num = 0;
+    for(auto &n : t1->TexCoords)
+        num += n.size();
 
-        if ( fwrite_bmp(&v17, 2, 1, fil) != 1 )
-            return 0;
-
-
-        while ( v6->tu >= 0.0)
+    if ( !fil->writeS16B(num) )
+        return false;
+    
+    for(auto &n : t1->TexCoords)
+    {
+        if ( !fil->writeS16B(n.size()) )
+            return false;
+        
+        for (tUtV uv : n)
         {
-            uint8_t uv[2];
-            uv[0] = v6->tu * 256.0;
-            uv[1] = v6->tv * 256.0;
-
-            if ( fwrite_bmp(uv, 2, 1, fil) != 1 )
-                return 0;
-            v6++;
+            if ( !(fil->writeU8(uv.tu * 256.0)
+                 && fil->writeU8(uv.tv * 256.0)) )
+                return false;
         }
-        v6++;
     }
-    return 1;
+    
+    return true;
 }
 
-int bmpanim_func66__sub0__sub0(void *fil, bmpAnim_t1 *t1)
+bool NC_STACK_bmpanim::WriteFrameData(FSMgr::iFileHandle *fil, ResBmpAnm *t1)
 {
-    int16_t cnt = SWAP16(t1->frame_cnt);
+    if ( !fil->writeS16B(t1->FrameData.size()) )
+        return false;
 
-    if ( fwrite_bmp(&cnt, 2, 1, fil) != 1 )
-        return 0;
-
-    for(int i = 0; i < t1->frame_cnt; i++)
+    for(const BAnmFrameCache &f : t1->FrameData)
     {
-        bmpanm_loc lc;
-
-        bmpAnim_t2 *v6 = &t1->start_frame[i];
-
-        lc.frm_time = SWAP32(v6->frm_time);
-        lc.frame_id = SWAP16(v6->bitm_index);
-        lc.uv_id = SWAP16(v6->otl_index);
-
-        if ( fwrite_bmp(&lc, 8, 1, fil) != 1 )
-            return 0;
+        if ( !(fil->writeS32B(f.FrameTime)
+            && fil->writeS16B(f.FrameID)
+            && fil->writeS16B(f.TexCoordsID) ) )
+            return false;
     }
-    return 1;
+    return true;
 }
 
-int bmpanim_func66__sub0(bmpAnim_t1 *t1, const char *resName, IFFile *a3)
+bool NC_STACK_bmpanim::WriteToFile(ResBmpAnm *banm, const std::string &name, IFFile *iff)
 {
-    int v22 = 0;
+    IFFile iffOpened;
+    FSMgr::iFileHandle *pfile = iff;
 
-    char buf[256];
-    void *saveto = NULL;
+    if ( !iff )
+    {                
+        iffOpened = IFFile::UAOpenIFFile( std::string("rsrc:rsrcpool/") + name, "wb" );
+        if (!iffOpened.OK())
+            return false;
 
-    if ( a3 )
-    {
-        saveto = a3;
-        dword_515200 = 1;
+        pfile = &iffOpened;
+        iff = &iffOpened;
     }
-    else
+    
+    if (iff)
     {
-        strcpy(buf, "rsrc:");
-        strcat(buf, "rsrcpool/");
-        strcat(buf, resName);
-        saveto = buf;
-        dword_515200 = 0;
+        if ( (iff->pushChunk(TAG_VANM, TAG_FORM, -1) | iff->pushChunk(0, TAG_DATA, -1)) != IFFile::IFF_ERR_OK )
+            return false;
     }
+    
+    
+    bool wok = false;
 
-    void *fil = sub_4BFB60(saveto, "wb");
-    if ( fil )
+    if ( WriteClassName(pfile, banm) )
     {
-        if ( bmpanim_func66__sub0__sub3(fil, t1) )
+        if ( WriteBitmapNames(pfile, banm) )
         {
-            if ( bmpanim_func66__sub0__sub2(fil, t1) )
+            if ( WriteTexCoords(pfile, banm) )
             {
-                if ( bmpanim_func66__sub0__sub1(fil, t1) )
-                {
-                    if ( bmpanim_func66__sub0__sub0(fil, t1) )
-                        v22 = 1;
-                }
+                if ( WriteFrameData(pfile, banm) )
+                    wok = true;
             }
         }
-        sub_4BFD74(fil);
     }
-    return v22;
+    
+    if (iff)
+    {
+        iff->popChunk();
+        iff->popChunk();
+    }
+    
+    return wok;
 }
 
 size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
 {
-    if ( !bmpanm_intern )
+    if ( !_pData )
         return 0;
 
     IFFile *mfile = NULL;
@@ -896,7 +542,7 @@ size_t NC_STACK_bmpanim::rsrc_func66(rsrc_func66_arg *sv)
         if ( !mfile )
             return 0;
     }
-    if ( bmpanim_func66__sub0(bmpanm_intern, resName, mfile) )
+    if ( WriteToFile(_pData, resName, mfile) )
         return sv->OpenedStream;
     return 0;
 }
@@ -905,62 +551,59 @@ void NC_STACK_bmpanim::SetTime(int32_t timeStamp, int32_t frameTime)
 {
     if ( frameTime == -1 )
     {
-        bmpAnim_t2 *t2 = &current_frame[ frm_adds ];
-
-        if ( t2 == bmpanm_intern->end_frame )
+        _curFrame += _frmAdd;
+        
+        if (_curFrame >= (int32_t)_pData->FrameData.size())
         {
-            if ( anim_type )
+            if ( _animType )
             {
-                t2--;
-                frm_adds = -1;
+                _curFrame = _pData->FrameData.size() - 1;
+                _frmAdd = -1;
             }
             else
             {
-                t2 = bmpanm_intern->start_frame;
+                _curFrame = 0;
             }
         }
-        else if ( t2 < bmpanm_intern->start_frame )
+        else if (_curFrame < 0)
         {
-            t2++;
-            frm_adds = 1;
+            _curFrame = 0;
+            _frmAdd = 1;
         }
-
-        current_frame = t2;
     }
-    else if ( timeStamp != time_stmp )
+    else if ( timeStamp != _timeStamp )
     {
-        time_stmp = timeStamp;
+        _timeStamp = timeStamp;
+        _leftTime += frameTime;
 
-        bmpAnim_t2 *t2 = current_frame;
-        int v8 = frameTime + time_ovr;
-
-        while ( v8 - t2->frm_time >= 0 )
+        while ( true )
         {
-            v8 = v8 - t2->frm_time;
+            BAnmFrameCache &frm = _pData->FrameData[_curFrame];
+            if (_leftTime < frm.FrameTime)
+                break;
+            
+            _leftTime -= frm.FrameTime;
 
-            t2 += frm_adds;
+            _curFrame += _frmAdd;
 
-            if ( t2 == bmpanm_intern->end_frame )
+            if (_curFrame >= (int32_t)_pData->FrameData.size())
             {
-                if ( anim_type )
+                if ( _animType )
                 {
-                    t2--;
-                    frm_adds = -1;
+                    _curFrame = _pData->FrameData.size() - 1;
+                    _frmAdd = -1;
                 }
                 else
                 {
-                    t2 = bmpanm_intern->start_frame;
+                    _curFrame = 0;
                 }
             }
-            else if ( t2 < bmpanm_intern->start_frame )
+            else if (_curFrame < 0)
             {
-                t2++;
-                frm_adds = 1;
+                _curFrame = 0;
+                _frmAdd = 1;
             }
         }
-
-        time_ovr = v8;
-        current_frame = t2;
     }
 }
 
@@ -968,17 +611,17 @@ void NC_STACK_bmpanim::SetTime(int32_t timeStamp, int32_t frameTime)
 
 void NC_STACK_bmpanim::setBANM_animType(int newType)
 {
-    anim_type = newType;
+    _animType = newType;
 }
 
 ResBitmap * NC_STACK_bmpanim::GetBitmap()
 {
-    return current_frame->bitm;
+    return _pData->FrameData[_curFrame].pBitmap->GetBitmap();
 }
 
 tUtV * NC_STACK_bmpanim::GetOutline()
 {
-    return current_frame->outline;
+    return _pData->FrameData[_curFrame].pTexCoords->data();
 }
 
 int NC_STACK_bmpanim::getBMD_width()
@@ -991,36 +634,22 @@ int NC_STACK_bmpanim::getBMD_height()
     return 0;
 }
 
-void *NC_STACK_bmpanim::getBMD_buffer()
-{
-    return NULL;
-}
-
-const char *NC_STACK_bmpanim::getBANM_name()
-{
-    return getRsrc_name();
-}
-
-const char *NC_STACK_bmpanim::getBANM_classname()
-{
-    return bmpanm_intern->className;
-}
 
 int NC_STACK_bmpanim::getBANM_framecnt()
 {
-    return bmpanm_intern->frame_cnt;
+    return _pData->FrameData.size();
 }
 
 int NC_STACK_bmpanim::getBANM_animtype()
 {
-    return anim_type;
+    return _animType;
 }
 
 void NC_STACK_bmpanim::PrepareTexture( bool force )
 {
-    if (!bmpanm_intern)
+    if (!_pData)
         return;
     
-    for(int i = 0; i < bmpanm_intern->bitm_buff_cnt; i++)
-        bmpanm_intern->bitm_buff[i].bitmObj->PrepareTexture(force);
+    for(NC_STACK_bitmap *bitm : _pData->Bitmaps)
+        bitm->PrepareTexture(force);
 }

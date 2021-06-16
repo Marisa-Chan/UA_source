@@ -5,42 +5,38 @@
 #include "system/gfx.h"
 #include "bitmap.h"
 
-struct bmpAnim_t2
+
+struct BAnmFrame
 {
-    tUtV *outline;
-    ResBitmap *bitm;
-    int frm_time;
-    int16_t bitm_index;
-    int16_t otl_index;
+    int32_t FrameTime = 0;
+    int16_t FrameID = 0;
+    int16_t TexCoordsID = 0;
 };
 
-struct bmpAnim_t1_objs
-{
-    NC_STACK_bitmap *bitmObj;
-    ResBitmap *bitm_intern;
-    char *title;
+struct BAnmFrameCache : BAnmFrame
+{   
+    std::vector<tUtV> *pTexCoords = NULL;
+    NC_STACK_bitmap *pBitmap = NULL;
 };
 
-struct bmpAnim_t1
+struct ResBmpAnm
 {
-    char *titles;
-    tUtV *otl_buff;
-    bmpAnim_t1_objs *bitm_buff;
-    char *className;
-    bmpAnim_t2 *start_frame;
-    bmpAnim_t2 *end_frame;
-    int16_t frame_cnt;
-    int16_t titles_size;
-    int16_t otl_buff_cnt;
-    int16_t bitm_buff_cnt;
+    std::vector< std::string > BitmapNames;
+    std::vector< std::vector<tUtV> > TexCoords;
+    std::vector<NC_STACK_bitmap *> Bitmaps;
+    std::string ClassName;
+    std::vector<BAnmFrameCache> FrameData;
+    
+    ~ResBmpAnm()
+    {
+        for (NC_STACK_bitmap *bitm : Bitmaps)
+        {
+            Nucleus::Delete(bitm);
+        }
+    }
 };
 
-struct __attribute__((packed)) bmpanm_loc
-{
-    int32_t frm_time;
-    int16_t frame_id;
-    int16_t uv_id;
-};
+
 
 class NC_STACK_bmpanim: public NC_STACK_bitmap
 {
@@ -84,25 +80,38 @@ public:
     virtual tUtV * GetOutline();
     virtual int getBMD_width();
     virtual int getBMD_height();
-    virtual void *getBMD_buffer();
-    virtual const char *getBANM_name();
-    virtual const char *getBANM_classname();
     virtual int getBANM_framecnt();
     virtual int getBANM_animtype();
     
     
     virtual void PrepareTexture( bool force = false );
+    
+    static ResBmpAnm *LoadFromFile(const std::string &name, IFFile *iff);
+    
+    static bool ReadClassName(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    static bool ReadBitmapNames(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    static bool ReadTexCoords(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    static bool ReadFrameData(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    
+    static ResBmpAnm * ConstructBAnm(const std::string &className, std::vector<std::string> *a2, std::vector< std::vector<tUtV> >*a3, int a4, BAnmFrame *a5);
+    
+    static bool WriteToFile(ResBmpAnm *banm, const std::string &name, IFFile *iff);
+    
+    static bool WriteClassName(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    static bool WriteBitmapNames(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    static bool WriteTexCoords(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
+    static bool WriteFrameData(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
 
     //Data
     static const Nucleus::ClassDescr description;
 
 public:
-    bmpAnim_t1 *bmpanm_intern = NULL;
-    bmpAnim_t2 *current_frame = NULL;
-    int time_stmp = 0;
-    int time_ovr = 0;
-    int16_t anim_type = 0;
-    int16_t frm_adds = 0;
+    ResBmpAnm *_pData = NULL;
+    int32_t _curFrame = 0;
+    int32_t _timeStamp = 0;
+    int32_t _leftTime = 0;
+    int8_t _animType = 0;
+    int8_t _frmAdd = 0;
 };
 
 #endif // BITMAP_H_INCLUDED

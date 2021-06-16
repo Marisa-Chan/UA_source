@@ -43,7 +43,7 @@ rsrc * NC_STACK_bitmap::rsrc_func64(IDVList &stak)
 
         if ( width && height )
         {
-            ResBitmap *intern = new ResBitmap;
+            ResBitmap *intern = new ResBitmap();
 
             if ( intern )
             {
