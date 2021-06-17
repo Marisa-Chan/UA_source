@@ -122,7 +122,7 @@ public:
     static const Nucleus::ClassDescr description;
 
 private:
-    tUtV *texCoords;
+    std::vector<tUtV> texCoords;
     d3dsMaterial **faceMaterial;
     std::list<d3dsMaterial *> materials;
 

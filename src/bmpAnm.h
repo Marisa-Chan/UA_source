@@ -77,7 +77,7 @@ public:
 
     //Get
     virtual ResBitmap * GetBitmap();
-    virtual tUtV * GetOutline();
+    virtual std::vector<tUtV> &GetOutline() override;
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual int getBANM_framecnt();

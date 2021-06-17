@@ -40,7 +40,7 @@ size_t NC_STACK_amesh::Init(IDVList &stak)
                 break;
 
             case AMESH_ATT_OTLPOOL:
-                if ( !setAMESH_otls(val.Get<tUtV **>()) )
+                if ( !setAMESH_otls(val.Get<std::vector< std::vector<tUtV> >*>()) )
                 {
                     Deinit();
                     return 0;
@@ -111,29 +111,22 @@ size_t NC_STACK_amesh::LoadingFromIFF(IFFile **file)
             if ( obj_ok )
             {
                 texCoords.resize(polyCnt);
-                texCoordsData.resize( chunk.TAG_SIZE / 2 );
+                //texCoordsData.resize( chunk.TAG_SIZE / 2 );
 
-                tUtV *uv = texCoordsData.data();
+                //tUtV *uv = texCoordsData.data();
 
-                for (int i = 0; i < polyCnt; i++)
+                for (auto &n : texCoords)
                 {
-                    texCoords[i] = uv;
+                    int16_t cnt = mfile->readS16B();
+                    n.resize(cnt);
 
-                    int16_t cnt;
-                    cnt = mfile->readS16B();
-
-                    for (int j = 0; j < cnt; j++)
+                    for (tUtV &uv : n)
                     {
                         //If you cross refernce the VBMP these are the X,Y coordinates
                         // as it is stored on disk
-                        uv->tu = mfile->readU8() / 256.0;
-                        uv->tv = mfile->readU8() / 256.0;
-                        uv++;
+                        uv.tu = mfile->readU8() / 256.0;
+                        uv.tv = mfile->readU8() / 256.0;
                     }
-
-                    uv->tu = -1;
-                    uv->tv = -1;
-                    uv++;
                 }
             }
             mfile->parse();
@@ -175,30 +168,14 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
     {
         mfile->pushChunk(0, TAG_OLPL, -1);
 
-        for (int i = 0; i < polyCnt; i++)
+        for (const std::vector<tUtV> &arr : texCoords)
         {
+            mfile->writeS16B(arr.size());
 
-            tUtV *uv = texCoords[i];
-            int16_t cnt = 0;
-            while (uv->tu >= 0.0)
+            for (tUtV uv : arr)
             {
-                cnt++;
-                uv++;
-            }
-
-            mfile->writeS16B(cnt);
-
-            uv = texCoords[i];
-
-            for (int j = 0; j < cnt; j++)
-            {
-                uint8_t x;
-                uint8_t y;
-                x = uv[j].tu * 256.0;
-                y = uv[j].tv * 256.0;
-
-                mfile->writeU8(x);
-                mfile->writeU8(y);
+                mfile->writeU8( uv.tu * 256.0 );
+                mfile->writeU8( uv.tv * 256.0 );
             }
         }
         mfile->popChunk();
@@ -293,7 +270,7 @@ size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NUL
         skel133.shadeVal = atts.at(i).shadeVal / 256.0;
 
         if ( !texCoords.empty() )
-            skel133.texCoords = texCoords[i];
+            skel133.texCoords = texCoords[i].data();
         else
             skel133.texCoords = NULL;
 
@@ -372,46 +349,9 @@ int NC_STACK_amesh::setAMESH_polys(ATTS *patts)
     return 1;
 }
 
-int NC_STACK_amesh::setAMESH_otls(tUtV **uv)
+int NC_STACK_amesh::setAMESH_otls(std::vector< std::vector<tUtV> >*uv)
 {
-    texCoords.clear();
-    texCoordsData.clear();
-
-    int olpl_cnt = 0;
-
-    for (int i = 0; i < polyCnt; i++)
-    {
-        tUtV * v6 = uv[i];
-        while( v6->tu >= 0.0)
-        {
-            olpl_cnt++;
-            v6++;
-        }
-        olpl_cnt++;
-    }
-
-    texCoords.resize(polyCnt);
-    texCoordsData.resize( olpl_cnt );
-
-    tUtV *uvv = texCoordsData.data();
-    //void *ed = ((char *)amesh->olpl + sizeof(tUtV *) * amesh->cnt + sizeof(tUtV) * olpl_cnt);
-
-    for (int i = 0; i < polyCnt; i++)
-    {
-        tUtV * inCoord = uv[i];
-        texCoords[i] = uvv;
-        while( 1 )
-        {
-            *uvv = *inCoord;
-            inCoord++;
-            uvv++;
-
-            if (inCoord->tu < 0.0)
-                break;
-        }
-        *uvv = *inCoord;
-        uvv++;
-    }
+    texCoords = *uv;
     return 1;
 }
 

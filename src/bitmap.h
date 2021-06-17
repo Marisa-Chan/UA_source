@@ -41,7 +41,7 @@ public:
 
     //Get
     virtual ResBitmap  * GetBitmap();
-    virtual tUtV       * GetOutline();
+    virtual std::vector<tUtV> &GetOutline();
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual int getBMD_hasPalette();

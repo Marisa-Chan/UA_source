@@ -9,16 +9,12 @@ const Nucleus::ClassDescr NC_STACK_3ds::description("3ds.class", &newinstance);
 
 NC_STACK_3ds::NC_STACK_3ds()
 {
-    texCoords = NULL;
     faceMaterial = NULL;
     faceNum = 0;
 }
 
 NC_STACK_3ds::~NC_STACK_3ds()
 {
-    if (texCoords)
-        delete [] texCoords;
-
     if (faceMaterial)
         delete [] faceMaterial;
 
@@ -178,15 +174,13 @@ size_t NC_STACK_3ds::readChunkTrimesh(FSMgr::FileHandle *fil, size_t sz)
             printf("tex coords\n");
             uint16_t coNum = fil->readU16L();
             readed += 2;
-            if (texCoords)
-                delete [] texCoords;
+            
+            texCoords.resize(coNum);
 
-            texCoords = new tUtV[coNum];
-
-            for(int i = 0; i < coNum; i++)
+            for(tUtV &uv : texCoords)
             {
-                texCoords[i].tu = fil->readFloatL();
-                texCoords[i].tv = fil->readFloatL();
+                uv.tu = fil->readFloatL();
+                uv.tv = fil->readFloatL();
                 readed += 8;
             }
         }
@@ -597,7 +591,7 @@ size_t NC_STACK_3ds::Render(baseRender_msg *arg, Instance * inst)
 
                 tUtV coo[3];
                 for (int j = 0; j < 3; j++)
-                    if (texCoords)
+                    if (!texCoords.empty())
                         coo[j] = texCoords[ skeldat->polygons[i].v[j] ];
                     else
                     {

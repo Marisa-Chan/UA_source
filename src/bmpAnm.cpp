@@ -619,9 +619,9 @@ ResBitmap * NC_STACK_bmpanim::GetBitmap()
     return _pData->FrameData[_curFrame].pBitmap->GetBitmap();
 }
 
-tUtV * NC_STACK_bmpanim::GetOutline()
+std::vector<tUtV> &NC_STACK_bmpanim::GetOutline()
 {
-    return _pData->FrameData[_curFrame].pTexCoords->data();
+    return *(_pData->FrameData[_curFrame].pTexCoords);
 }
 
 int NC_STACK_bmpanim::getBMD_width()

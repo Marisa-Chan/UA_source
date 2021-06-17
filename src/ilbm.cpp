@@ -55,7 +55,7 @@ size_t NC_STACK_ilbm::ilbm_func5__sub0(NC_STACK_ilbm *obj, IFFile **pmfile)
             mfile->read(&dst, 128);
 
             int opl_count = iff_chunk.TAG_SIZE / 2;
-            opls.resize(opl_count + 1);
+            opls.resize(opl_count);
 
             for (int i = 0; i < opl_count; ++i)
             {
@@ -103,7 +103,7 @@ size_t NC_STACK_ilbm::SavingIntoIFF(IFFile **pmfile)
     std::string name = getRsrc_name();
 
     SetTime(1, 1);
-    tUtV *opl2 = GetOutline();
+    const std::vector<tUtV> &opl2 = GetOutline();
 
     if ( mfile->pushChunk(TAG_CIBO, TAG_FORM, -1) )
     {
@@ -116,23 +116,16 @@ size_t NC_STACK_ilbm::SavingIntoIFF(IFFile **pmfile)
         mfile->write(name.c_str(), name.length() + 1);
         mfile->popChunk();
 
-        if ( opl2 )
+        if ( !opl2.empty() )
         {
-            uint8_t buf[128];
-            int opl_count = 0;
-
-            tUtV *tmp = opl2;
-
-            while(tmp->tu >= 0.0)
+            mfile->pushChunk(0, TAG_OTL2, opl2.size() * 2);
+            
+            for(tUtV uv : opl2)
             {
-                buf[0 + opl_count * 2] = tmp->tu * 256.0;
-                buf[1 + opl_count * 2] = tmp->tv * 256.0;
-                tmp++;
-                opl_count++;
+                mfile->writeU8(uv.tu * 256.0);
+                mfile->writeU8(uv.tv * 256.0);
             }
 
-            mfile->pushChunk(0, TAG_OTL2, opl_count * 2);
-            mfile->write(buf, opl_count * 2);
             mfile->popChunk();
         }
         return mfile->popChunk() == IFFile::IFF_ERR_OK;

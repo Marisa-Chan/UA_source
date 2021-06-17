@@ -46,7 +46,7 @@ public:
 
     virtual void setAMESH_numpoly(int);
     virtual int setAMESH_polys(ATTS *);
-    virtual int setAMESH_otls(tUtV **);
+    virtual int setAMESH_otls(std::vector< std::vector<tUtV> >*);
 
     virtual int getAMESH_numpoly();
 
@@ -56,7 +56,7 @@ public:
 public:
     int16_t polyCnt = 0;
     std::vector<ATTS> atts;       // ATTS heap
-    std::vector<tUtV *> texCoords; // Tex coords for polygons
+    std::vector< std::vector<tUtV> > texCoords; // Tex coords for polygons
     std::vector<tUtV> texCoordsData; // Tex coords heap
 };
 

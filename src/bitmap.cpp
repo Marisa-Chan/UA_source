@@ -117,11 +117,9 @@ ResBitmap * NC_STACK_bitmap::GetBitmap()
     return bitm_intern;
 }
 
-tUtV * NC_STACK_bitmap::GetOutline()
+std::vector<tUtV> &NC_STACK_bitmap::GetOutline()
 {
-    if (outline_coords.empty())
-        return NULL;
-    return outline_coords.data();
+    return outline_coords;
 }
 
 int NC_STACK_bitmap::getBMD_width()
