@@ -18,7 +18,11 @@ NC_STACK_bitmap *ProxyLoadImage(IDVList &stak)
          !StriCmp(name, "png") ||
          !StriCmp(name, "tiff") ||
          !StriCmp(name, "webp") ||
-         !StriCmp(name, "jpeg") )
+         !StriCmp(name, "jpeg") ||
+         !StriCmp(name, "bmp") ||
+         !StriCmp(name, "gif") ||
+         !StriCmp(name, "pcx") ||
+         !StriCmp(name, "svg") )
         return Nucleus::CInit<NC_STACK_image>( stak );
 
     return Nucleus::CInit<NC_STACK_ilbm>( stak );
