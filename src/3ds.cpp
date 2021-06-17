@@ -8,19 +8,10 @@
 const Nucleus::ClassDescr NC_STACK_3ds::description("3ds.class", &newinstance);
 
 NC_STACK_3ds::NC_STACK_3ds()
-{
-    faceMaterial = NULL;
-    faceNum = 0;
-}
+{}
 
 NC_STACK_3ds::~NC_STACK_3ds()
-{
-    if (faceMaterial)
-        delete [] faceMaterial;
-
-    for (std::list<d3dsMaterial *>::iterator it = materials.begin(); it != materials.end(); it++)
-        delete *it;
-}
+{}
 
 size_t NC_STACK_3ds::Init(IDVList &stak)
 {
@@ -237,10 +228,7 @@ size_t NC_STACK_3ds::readChunkFaces(FSMgr::FileHandle *fil, size_t sz)
 
     dat->polygons.resize(numfaces);
 
-    if (faceMaterial)
-        delete [] faceMaterial;
-
-    faceMaterial = new d3dsMaterial *[numfaces];
+    faceMaterial.resize(numfaces);
 
     for (int i = 0; i < numfaces; i++)
     {
@@ -276,8 +264,8 @@ size_t NC_STACK_3ds::readChunkFaces(FSMgr::FileHandle *fil, size_t sz)
         {
         case 0x4130: //FaceMaterial
         {
-            char matName[64];
-            readed += readName(fil, matName, 64);
+            std::string matName;
+            readed += readName(fil, &matName, 64);
 
             d3dsMaterial *mat = findMaterial(matName);
 
@@ -310,8 +298,8 @@ size_t NC_STACK_3ds::readChunkMaterial(FSMgr::FileHandle *fil, size_t sz)
 {
     size_t readed = 0;
 
-    d3dsMaterial *mat = new d3dsMaterial;
-    materials.push_back(mat);
+    materials.emplace_back();
+    d3dsMaterial &mat = materials.back();
 
     while (readed < sz)
     {
@@ -327,19 +315,19 @@ size_t NC_STACK_3ds::readChunkMaterial(FSMgr::FileHandle *fil, size_t sz)
         {
         case 0xA000: //Mat name
         {
-            char matName[64];
-            readed += readName(fil, matName, 64);
+            std::string matName;
+            readed += readName(fil, &matName, 64);
 
-            mat->name = matName;
+            mat.name = matName;
         }
         break;
 
         case 0xA020: //Diffuse color
-            readed += readChunkColor(mat->diffuse, fil, tagsz);
+            readed += readChunkColor(mat.diffuse, fil, tagsz);
             break;
 
         case 0xA200: //Tex map
-            readed += readChunkTexMap(mat->texture1_map, fil, tagsz);
+            readed += readChunkTexMap(mat.texture1_map, fil, tagsz);
             break;
 
         default:
@@ -370,8 +358,8 @@ size_t NC_STACK_3ds::readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *
         {
         case 0xA300: //Mat name
         {
-            char texName[64];
-            readed += readName(fil, texName, 64);
+            std::string texName;
+            readed += readName(fil, &texName, 64);
 
             texmap.name = texName;
 
@@ -385,7 +373,7 @@ size_t NC_STACK_3ds::readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *
                     {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
                 Common::Env.SetPrefix("rsrc", oldprefix);
-                printf("%s\n", texName);
+                printf("%s\n", texName.c_str());
             }
         }
         break;
@@ -476,29 +464,28 @@ size_t NC_STACK_3ds::readChunkColor(float colors[3], FSMgr::FileHandle *fil, siz
     return readed;
 }
 
-size_t NC_STACK_3ds::readName(FSMgr::FileHandle *fil, char *dst, size_t maxn)
+size_t NC_STACK_3ds::readName(FSMgr::FileHandle *fil, std::string *dst, size_t maxn)
 {
-    size_t rd = 0;
+    *dst = "";
 
-    while(rd < maxn)
+    for(size_t i = 0; i < maxn; ++i)
     {
         char c = fil->readS8();
-        dst[rd] = c;
-        rd++;
-
         if (!c)
             break;
+        
+        *dst += c;
     }
 
-    return rd;
+    return dst->size();
 }
 
-d3dsMaterial * NC_STACK_3ds::findMaterial(const char *name)
+d3dsMaterial * NC_STACK_3ds::findMaterial(const std::string &matName)
 {
-    for (std::list<d3dsMaterial *>::iterator it = materials.begin(); it != materials.end(); it++)
+    for (d3dsMaterial &mat : materials)
     {
-        if ( strcmp( (*it)->name.c_str(), name ) == 0 )
-            return *it;
+        if ( StriCmp(mat.name, matName) == 0 )
+            return &mat;
     }
     return NULL;
 }

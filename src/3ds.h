@@ -11,56 +11,51 @@
 struct d3dsTextureMap
 {
     std::string name;
-    unsigned    flags;
-    float       percent;
-    float       blur;
-    float       scale[2];
-    float       offset[2];
-    float       rotation;
-    float       tint_1[3];
-    float       tint_2[3];
-    float       tint_r[3];
-    float       tint_g[3];
-    float       tint_b[3];
+    unsigned    flags = 0;
+    float       percent = 0.0;
+    float       blur = 0.0;
+    float       scale[2] = {{0.0}};
+    float       offset[2] = {{0.0}};
+    float       rotation = 0.0;
+    float       tint_1[3] = {{0.0}};
+    float       tint_2[3] = {{0.0}};
+    float       tint_r[3] = {{0.0}};
+    float       tint_g[3] = {{0.0}};
+    float       tint_b[3] = {{0.0}};
 
-    NC_STACK_bitmap *tex;
-
-    d3dsTextureMap()
-    {
-        tex = NULL;
-    }
+    NC_STACK_bitmap *tex = NULL;
 
     ~d3dsTextureMap()
     {
         if (tex)
-            delete_class_obj(tex);
+            Nucleus::Delete(tex);
     }
 };
 
 struct d3dsMaterial
 {
     std::string         name;               /* Material name */
-    float               ambient[3];         /* Material ambient reflectivity */
-    float               diffuse[3];         /* Material diffuse reflectivity */
-    float               specular[3];        /* Material specular reflectivity */
-    float               shininess;          /* Material specular exponent */
-    float               shin_strength;
-    int                 use_blur;
-    float               blur;
-    float               transparency;
-    float               falloff;
-    int                 is_additive;
-    int                 self_illum_flag; /* bool */
-    float               self_illum;
-    int                 use_falloff;
-    int                 shading;
-    int                 soften;         /* bool */
-    int                 face_map;       /* bool */
-    int                 two_sided;      /* Material visible from back */
-    int                 map_decal;      /* bool */
-    int                 use_wire;
-    int                 use_wire_abs;
-    float               wire_size;
+    float               ambient[3] = {{0.0}};         /* Material ambient reflectivity */
+    float               diffuse[3] = {{0.0}};         /* Material diffuse reflectivity */
+    float               specular[3] = {{0.0}};        /* Material specular reflectivity */
+    float               shininess = 0.0;          /* Material specular exponent */
+    float               shin_strength = 0.0;
+    int                 use_blur = 0;
+    float               blur = 0.0;
+    float               transparency = 0.0;
+    float               falloff = 0.0;
+    int                 is_additive = 0;
+    int                 self_illum_flag = 0; /* bool */
+    float               self_illum = 0.0;
+    int                 use_falloff = 0;
+    int                 shading = 0;
+    int                 soften = 0;         /* bool */
+    int                 face_map = 0;       /* bool */
+    int                 two_sided = 0;      /* Material visible from back */
+    int                 map_decal = 0;      /* bool */
+    int                 use_wire = 0;
+    int                 use_wire_abs = 0;
+    float               wire_size  = 0.0;
     d3dsTextureMap      texture1_map;
     d3dsTextureMap      texture1_mask;
     d3dsTextureMap      texture2_map;
@@ -77,10 +72,10 @@ struct d3dsMaterial
     d3dsTextureMap      self_illum_mask;
     d3dsTextureMap      reflection_map;
     d3dsTextureMap      reflection_mask;
-    unsigned            autorefl_map_flags;
-    int                 autorefl_map_anti_alias;  /* 0=None, 1=Low, 2=Medium, 3=High */
-    int                 autorefl_map_size;
-    int                 autorefl_map_frame_step;
+    unsigned            autorefl_map_flags = 0;
+    int                 autorefl_map_anti_alias = 0;  /* 0=None, 1=Low, 2=Medium, 3=High */
+    int                 autorefl_map_size = 0;
+    int                 autorefl_map_frame_step = 0;
 };
 
 class NC_STACK_3ds: public NC_STACK_base
@@ -113,9 +108,9 @@ private:
     size_t readChunkTexMap(d3dsTextureMap &texmap, FSMgr::FileHandle *fil, size_t sz);
     size_t readChunkColor(float colors[3], FSMgr::FileHandle *fil, size_t sz);
 
-    size_t readName(FSMgr::FileHandle *fil, char *dst, size_t maxn);
+    size_t readName(FSMgr::FileHandle *fil, std::string *dst, size_t maxn);
 
-    d3dsMaterial *findMaterial(const char *matName);
+    d3dsMaterial *findMaterial(const std::string &matName);
 
 public:
     //Data
@@ -123,10 +118,10 @@ public:
 
 private:
     std::vector<tUtV> texCoords;
-    d3dsMaterial **faceMaterial;
-    std::list<d3dsMaterial *> materials;
+    std::vector<d3dsMaterial *>faceMaterial;
+    std::list<d3dsMaterial > materials;
 
-    int32_t faceNum;
+    int32_t faceNum = 0;
 };
 
 #endif // BASE_H_INCLUDED
