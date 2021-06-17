@@ -6,6 +6,7 @@
 #include "yw.h"
 
 #include "yw_internal.h"
+#include "loaders.h"
 
 #include "button.h"
 #include "font.h"
@@ -2736,7 +2737,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
         if ( !menu_map.empty() )
         {
-            ilbm_menu_map = Nucleus::CInit<NC_STACK_ilbm>({
+            ilbm_menu_map = Utils::ProxyLoadImage({
                 {NC_STACK_rsrc::RSRC_ATT_NAME, menu_map},
                 {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1} } );
             if ( !ilbm_menu_map )
@@ -2748,7 +2749,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
         if ( !rollover_map.empty() )
         {
-            ilbm_rollover_map = Nucleus::CInit<NC_STACK_ilbm>({
+            ilbm_rollover_map = Utils::ProxyLoadImage({
                 {NC_STACK_rsrc::RSRC_ATT_NAME, rollover_map},
                 {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1} });
             if ( !ilbm_rollover_map )
@@ -2760,7 +2761,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
         if ( !finished_map.empty() )
         {
-            ilbm_finished_map = Nucleus::CInit<NC_STACK_ilbm>({
+            ilbm_finished_map = Utils::ProxyLoadImage({
                 {NC_STACK_rsrc::RSRC_ATT_NAME, finished_map},
                 {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1} });
             if ( !ilbm_finished_map )
@@ -2772,7 +2773,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
 
         if ( !enabled_map.empty() )
         {
-            ilbm_enabled_map = Nucleus::CInit<NC_STACK_ilbm>({
+            ilbm_enabled_map = Utils::ProxyLoadImage({
                 {NC_STACK_rsrc::RSRC_ATT_NAME, enabled_map},
                 {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1} });
             if ( !ilbm_enabled_map )
@@ -2783,7 +2784,7 @@ void sb_0x4e75e8__sub1(NC_STACK_ypaworld *yw, int mode)
         }
         if ( !mask_map.empty() )
         {
-            ilbm_mask_map = Nucleus::CInit<NC_STACK_ilbm>({{NC_STACK_rsrc::RSRC_ATT_NAME, mask_map}});
+            ilbm_mask_map = Utils::ProxyLoadImage({{NC_STACK_rsrc::RSRC_ATT_NAME, mask_map}});
             if ( !ilbm_mask_map )
             {
                 ypa_log_out("world.ini: Could not load %s\n", mask_map.c_str());

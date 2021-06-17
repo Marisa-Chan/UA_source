@@ -63,6 +63,7 @@ OBJS =  \
 	itimer.cpp\
 	iwimp.cpp\
 	log.cpp\
+	loaders.cpp\
 	lstvw.cpp\
 	main.cpp\
 	IFFile.cpp\

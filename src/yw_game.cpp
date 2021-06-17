@@ -8,6 +8,7 @@
 #include "yw_net.h"
 #include "input.h"
 #include "windp.h"
+#include "loaders.h"
 
 #include "yparobo.h"
 #include "font.h"
@@ -32,7 +33,7 @@ NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw)
 
     std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:mc2res");
 
-    NC_STACK_bitmap *disk = Nucleus::CInit<NC_STACK_ilbm>({
+    NC_STACK_bitmap *disk = Utils::ProxyLoadImage({
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(v3)},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
@@ -133,7 +134,7 @@ void sb_0x44ca90__sub2(NC_STACK_ypaworld *yw, TLevelDescription *mapp)
     {
         if (!mapp->Palettes[0].empty())
         {
-            NC_STACK_bitmap *ilbm = Nucleus::CInit<NC_STACK_ilbm>({
+            NC_STACK_bitmap *ilbm = Utils::ProxyLoadImage({
                 {NC_STACK_rsrc::RSRC_ATT_NAME, mapp->Palettes[0]},
                 {NC_STACK_bitmap::BMD_ATT_HAS_COLORMAP, (int32_t)1}});
 

@@ -10,6 +10,7 @@
 #include "button.h"
 #include "windp.h"
 #include "env.h"
+#include "loaders.h"
 #include "system/inivals.h"
 
 extern GuiList stru_5C91D0;
@@ -51,7 +52,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadFont(const std::string &fontname)
         return NULL;
     }
 
-    tileset->img = Nucleus::CInit<NC_STACK_ilbm>({
+    tileset->img = Utils::ProxyLoadImage({
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(bitmap_name)},
         {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)0},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1},
@@ -127,7 +128,7 @@ TileMap * NC_STACK_ypaworld::yw_LoadTileSet(const std::string &bitmap, Common::P
     if ( !tileset )
         return NULL;
 
-    tileset->img = Nucleus::CInit<NC_STACK_ilbm>({
+    tileset->img = Utils::ProxyLoadImage({
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string(bitmap)},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}, // Speed up painting
         {NC_STACK_ilbm::ATT_ALPHAPALETTE, (int32_t)0} });
@@ -1131,7 +1132,7 @@ int yw_InitMouseStuff(NC_STACK_ypaworld *yw)
 
     for (int i = 0; i < 11; i++)
     {
-        yw->pointers[i] = Nucleus::CInit<NC_STACK_ilbm>({
+        yw->pointers[i] = Utils::ProxyLoadImage({
             {NC_STACK_rsrc::RSRC_ATT_NAME, pointerFiles.at(i)},
             {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
         if ( !yw->pointers[i] )
@@ -1267,14 +1268,14 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
         delete fil;
     }
 
-    tracyrmp_ilbm = Nucleus::CInit<NC_STACK_ilbm>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/tracyrmp.ilbm")}} );
+    tracyrmp_ilbm = Utils::ProxyLoadImage( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/tracyrmp.ilbm")}} );
     if ( !tracyrmp_ilbm )
     {
         ypa_log_out("Couldn't load tracy remap table, set %d.\n", setID);
         return 0;
     }
 
-    shadermp_ilbm = Nucleus::CInit<NC_STACK_ilbm>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/shadermp.ilbm")}} );
+    shadermp_ilbm = Utils::ProxyLoadImage( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/shadermp.ilbm")}} );
     if ( !shadermp_ilbm )
     {
         ypa_log_out("Couldn't load shade remap table, set %d.\n", setID);
@@ -1824,13 +1825,13 @@ bool NC_STACK_ypaworld::InitBriefing(int lvlid)
     Common::Env.SetPrefix("rsrc", "levels:");
 
     if ( _mapRegions.brief_map[0].PicName[0] )
-        brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+        brief.BriefingMapImg = Utils::ProxyLoadImage( {
             {NC_STACK_rsrc::RSRC_ATT_NAME, _mapRegions.brief_map[0].PicName},
             {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
     Common::Env.SetPrefix("rsrc", "mbpix:");
 
-    brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+    brief.MbmapImg = Utils::ProxyLoadImage( {
         {NC_STACK_rsrc::RSRC_ATT_NAME, mproto->Mbmaps[0].PicName},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}} );
 
@@ -1937,13 +1938,13 @@ bool NC_STACK_ypaworld::InitDebrief()
     Common::Env.SetPrefix("rsrc", "levels:");
 
     if ( _mapRegions.debrief_map[0].PicName[0] )
-        brief.BriefingMapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+        brief.BriefingMapImg = Utils::ProxyLoadImage( {
             {NC_STACK_rsrc::RSRC_ATT_NAME, _mapRegions.debrief_map[0].PicName},
             {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
 
     Common::Env.SetPrefix("rsrc", "mbpix:");
 
-    brief.MbmapImg = Nucleus::CInit<NC_STACK_ilbm>( {
+    brief.MbmapImg = Utils::ProxyLoadImage( {
         {NC_STACK_rsrc::RSRC_ATT_NAME, mapImg->PicName},
         {NC_STACK_bitmap::BMD_ATT_CONVCOLOR, (int32_t)1}});
     if ( !brief.MbmapImg )
