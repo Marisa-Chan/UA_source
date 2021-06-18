@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "image.h"
 #include "ilbm.h"
+#include "3ds.h"
 
 namespace Utils
 {
@@ -32,6 +33,19 @@ NC_STACK_bitmap *ProxyLoadImage(IDVList::TInitList lst)
 {
     IDVList stak(lst);
     return ProxyLoadImage(stak);
+}
+
+NC_STACK_base *ProxyLoadBase(const std::string &fname)
+{
+    std::string name = fname;
+    size_t pos = name.rfind('.');
+    if (pos != std::string::npos)
+        name = name.substr(pos + 1);
+    
+    if ( !StriCmp(name, "3ds") )
+        return NC_STACK_3ds::Load3DS(fname);
+    
+    return NC_STACK_base::LoadBaseFromFile(fname);
 }
 
 }

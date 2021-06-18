@@ -96,7 +96,10 @@ public:
         return new NC_STACK_3ds();
     };
 
-    bool readFile(const char *filename);
+    bool LoadFromFile(const std::string &filename);
+    bool LoadFromFile(FSMgr::FileHandle *file);
+    
+    static NC_STACK_3ds *Load3DS(const std::string &filename);
 
 private:
     size_t readChunkEditor(FSMgr::FileHandle *fil, size_t sz);

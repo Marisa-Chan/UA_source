@@ -26,18 +26,20 @@ size_t NC_STACK_3ds::Deinit()
     return NC_STACK_base::Deinit();
 }
 
-bool NC_STACK_3ds::readFile(const char *filename)
+bool NC_STACK_3ds::LoadFromFile(const std::string &filename)
 {
-    FSMgr::FileHandle *fil = FSMgr::iDir::openFileAlloc(filename, "rb");
+    FSMgr::FileHandle fil = FSMgr::iDir::openFile(filename, "rb");
 
-    if (!fil)
+    if (!fil.OK())
         return false;
 
+    return LoadFromFile(&fil);
+}
+
+bool NC_STACK_3ds::LoadFromFile(FSMgr::FileHandle *fil)
+{
     if (fil->readU16L() != 0x4D4D)
-    {
-        delete fil;
         return false;
-    }
 
     size_t datSz = fil->readU32L() - 6;
     size_t readed = 0;
@@ -62,8 +64,21 @@ bool NC_STACK_3ds::readFile(const char *filename)
         }
     }
 
-
     return true;
+}
+
+NC_STACK_3ds *NC_STACK_3ds::Load3DS(const std::string &filename)
+{
+    FSMgr::FileHandle fil = uaOpenFile(filename, "rb");
+    if (!fil.OK())
+        return NULL;
+    
+    NC_STACK_3ds *tmp = Nucleus::CInit<NC_STACK_3ds>();
+    if(tmp->LoadFromFile(&fil))
+        return tmp;
+    
+    Nucleus::Delete(tmp);
+    return NULL;
 }
 
 size_t NC_STACK_3ds::readChunkEditor(FSMgr::FileHandle *fil, size_t sz)

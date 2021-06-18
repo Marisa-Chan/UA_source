@@ -731,7 +731,7 @@ NC_STACK_base * sub_44AD8C(const std::string &fname)
 
             std::string basName = fmt::sprintf("rsrc:objects/%s", line);
 
-            NC_STACK_base *kid = NC_STACK_base::LoadBaseFromFile(basName);
+            NC_STACK_base *kid = Utils::ProxyLoadBase(basName);
 
             if ( !kid )
             {
