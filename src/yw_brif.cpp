@@ -163,6 +163,8 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
         }
 
         delete fil;
+        
+        yw->LoadOverrideModels();
     }
 
     Common::Env.SetPrefix("rsrc", oldRsrc);

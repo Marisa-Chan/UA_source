@@ -1266,6 +1266,8 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
         }
 
         delete fil;
+        
+        LoadOverrideModels();
     }
 
     tracyrmp_ilbm = Utils::ProxyLoadImage( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string("remap/tracyrmp.ilbm")}} );
@@ -1410,6 +1412,7 @@ void NC_STACK_ypaworld::FreeBriefDataSet()
     vhcls_models.clear();
     FreeLegos();
     FreeFillers();
+    ClearOverrideModels();
     
     for (subSec &ssec : subSectors)
         ssec = subSec();
@@ -2997,6 +3000,9 @@ void sb_0x44ac24(NC_STACK_ypaworld *yw)
     yw->FreeLegos();
 
     yw->FreeFillers();
+    
+    yw->ClearOverrideModels();
+    
 
     for (subSec &ssec : yw->subSectors)
         ssec = subSec();
@@ -3228,4 +3234,75 @@ void UserData::clear()
     net_packet_max = 0;
     net_packet_cnt = 0;
     net_packet_avr = 0;
+}
+
+
+void NC_STACK_ypaworld::ClearOverrideModels()
+{
+    while(!_Override.empty())
+    {
+        Nucleus::Delete(_Override.front());
+        _Override.pop_front();
+    }
+}
+
+void NC_STACK_ypaworld::LoadOverrideModels()
+{
+    FSMgr::FileHandle fil = uaOpenFile("rsrc:scripts/override.lst", "r");
+    if ( !fil.OK() )
+        return;
+
+    std::string line;
+    while ( fil.ReadLine(&line) && !line.empty() )
+    {
+        size_t pos = line.find_first_of(";#\n\r");
+        if ( pos != std::string::npos )
+            line.erase(pos);
+
+        if (line.empty())
+            continue;
+        
+        std::vector<std::string> tokens = Stok::Split(line, " \t");
+        
+        if (tokens.size() < 3)
+            continue;
+        
+        std::string basName = fmt::sprintf("rsrc:objects/%s", tokens[2]);
+
+        NC_STACK_base *model = Utils::ProxyLoadBase(basName);
+
+        if ( !model )
+            continue;
+        
+        uint32_t id = std::stoi(tokens[1]);
+        
+        if (!StriCmp(tokens[0], "vhcl"))
+        {
+            if (id < vhcls_models.size())
+                vhcls_models[id] = model;
+            else if (id == vhcls_models.size())
+                vhcls_models.push_back(model);
+        }
+        else if (!StriCmp(tokens[0], "lego"))
+        {
+            if (id < legos.size())
+                legos[id].base = model;
+        }
+        else if (!StriCmp(tokens[0], "slurp"))
+        {
+            if (id < 6 * 6 * 2)
+            {
+                int32_t i = id / (6 * 6);
+                id = id % (6 * 6);
+                
+                if (i == 0)
+                    FillersHorizontal(id / 6 , id % 6) = model;
+                else if (i == 1)
+                    FillersVertical(id / 6 , id % 6) = model;
+                
+            }
+        }
+        else
+            Nucleus::Delete(model);
+    }
 }

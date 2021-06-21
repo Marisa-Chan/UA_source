@@ -2241,6 +2241,9 @@ public:
     
     int32_t GetLegoBld(const cellArea *cell, int bldX, int bldY);
     int32_t GetLegoBld(const Common::Point &cell, int bldX, int bldY);
+    
+    void ClearOverrideModels();
+    void LoadOverrideModels();
 
 public:
     //Data
@@ -2271,6 +2274,7 @@ public:
     std::vector<World::TWeapProto> WeaponProtos;
     std::vector<World::TBuildingProto> BuildProtos;
     std::vector<World::TRoboProto> RoboProtos;
+    std::list<NC_STACK_base *> _Override;
     yw_f80 field_80[8];
     int16_t build_hp_ref[256];
     uint8_t sqrt_table[64][64];

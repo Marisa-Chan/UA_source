@@ -516,6 +516,7 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
 //		}
 
     vhcls_models.clear();
+    ClearOverrideModels();
 
     if ( !ProtosInit() )
     {
