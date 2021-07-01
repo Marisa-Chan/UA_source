@@ -19,45 +19,14 @@ typedef std::list<NC_STACK_base *> BaseList;
 
 
 
-
-
-class RenderStack
-{
-public:
-    RenderStack();
-    ~RenderStack();
-
-    typedef  bool (*tCompare) (polysDat *, polysDat *);
-
-    polysDat *get();
-    void commit();
-    size_t getSize();
-    void clear(bool dealloc = false);
-    void render(bool sorting = true, tCompare _func = NULL, bool Clear = true);
-
-    static bool comparePrio(polysDat *a, polysDat *b);
-
-private:
-    static bool compare(polysDat *a, polysDat *b);
-
-private:
-    static const size_t heapSize = 10000;
-    size_t currentElement;
-    std::deque<polysDat *> heaps;
-
-    std::deque<polysDat *> que;
-};
-
 struct area_arg_65
 {
-    int ownerID;
     //polys *rndrSTK_cur;
     //polysDat *argSTK_cur;
-    RenderStack *rndrStack;
     int timeStamp;
     int frameTime;
-    TF::TForm3D *view;
-    TF::TForm3D *owner;
+    TF::TForm3D *ViewTForm;
+    TF::TForm3D *OwnerTForm;
     NC_STACK_skeleton *OBJ_SKELETON;
     UAskeleton::Data *sklt;
     float minZ;
@@ -65,25 +34,20 @@ struct area_arg_65
     float fadeStart;
     float fadeLength;
     int ambientLight;
-    int adeCount;
     uint32_t flags;
 
     area_arg_65()
     {
-        ownerID = 0;
-        rndrStack = NULL;
         timeStamp = 0;
         frameTime = 0;
-        view = NULL;
-        owner = NULL;
-        OBJ_SKELETON = NULL;
+        ViewTForm = NULL;
+        OwnerTForm = NULL;
         sklt = NULL;
         minZ = 0.0;
         maxZ = 0.0;
         fadeStart = 0.0;
         fadeLength = 0.0;
         ambientLight = 0;
-        adeCount = 0;
         flags = 0;
     }
 };
@@ -92,9 +56,7 @@ struct baseRender_msg
 {
     int frameTime = 0;
     int globTime = 0;
-    RenderStack *rndrStack = NULL;
     int adeCount = 0;
-    int ownerID = 0;
     float minZ = 0.;
     float maxZ = 0.;
     uint32_t flags = 0;
@@ -133,7 +95,7 @@ public:
     public:
         NC_STACK_base *Bas = NULL;
         std::vector<Instance *> KidsOpts;
-        std::vector<NC_STACK_ade::InstanceOpts *> AdeOpts;
+        std::vector<NC_STACK_ade::InstanceOpts *> Particles;
     };
     
 public:
@@ -153,7 +115,10 @@ public:
     virtual void SetScale(const vec3d &v, int flag = UF_XYZ);
     virtual void ChangeScale(const vec3d &v, int flag = UF_XYZ);
     
-    virtual size_t Render(baseRender_msg *arg, Instance * inst = NULL);
+    virtual size_t Render(baseRender_msg *arg, Instance * inst = NULL, bool doCopy = false);
+    virtual size_t RenderImmediately(baseRender_msg *arg, Instance * inst = NULL);
+    
+    virtual void RecalcInternal(bool kids = false);
 
     virtual ~NC_STACK_base() {};
     
@@ -197,8 +162,6 @@ public:
 
     virtual int32_t GetFadeLength();
     virtual bool IsStatic();
-
-    RenderStack *GetRenderStack();
     
     vec3d GetPos();
     vec3d GetScale();
@@ -207,11 +170,15 @@ public:
     
     virtual Instance *GenRenderInstance();
     static void CheckOpts(Instance **vpOpts, NC_STACK_base *bas);
+    
+    static GFX::TMesh *FindMeshByRenderParams(std::list<GFX::TMesh> *list, const GFX::TRenderParams &p);
 
 protected:
     int ReadIFFTagSTRC(IFFile *mfile);
     int ReadIFFTagADES(IFFile *mfile);
     int ReadIFFTagKIDS(IFFile *mfile);
+    
+    
 
 public:
     static NC_STACK_base *LoadBaseFromFile(const std::string &fname);
@@ -221,9 +188,9 @@ public:
     //Data
     static const Nucleus::ClassDescr description;
 
-    static RenderStack renderStack;
-
 public:
+    
+    std::list<GFX::TMesh> Meshes;
 
     NC_STACK_skeleton *_skeleton = NULL;
     AdeList _ADES;

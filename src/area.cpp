@@ -262,138 +262,164 @@ size_t NC_STACK_area::SaveIntoIFF(IFFile **file)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-// Add area to list
-size_t NC_STACK_area::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
+void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton * skelet)
 {
-    polysDat *data = arg->rndrStack->get();
-    polysDatSub *datSub = &data->datSub;
-
-    int renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
+    uint32_t renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (renderFlags == 0)
         renderFlags = 0;
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP;
+        renderFlags = GFX::RFLAGS_TEXTURED;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP;
+        renderFlags = GFX::RFLAGS_TEXTURED;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP | GFX::RFLAGS_GRADSHD;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP | GFX::RFLAGS_GRADSHD | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_LUMTRACY;
-    else
-        return 1;
-
-    datSub->renderFlags = renderFlags;
-    datSub->r = 1.0;
-    datSub->g = 1.0;
-    datSub->b = 1.0;
-
-    skeleton_arg133 skel133;
-
-    skel133.polyID = _polyID;
-    skel133.field_4 = 0;
-
-    if ( datSub->renderFlags & (GFX::RFLAGS_LINMAP | GFX::RFLAGS_PERSPMAP ) )
-        skel133.field_4 |= 1;
-    if ( datSub->renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
-        skel133.field_4 |= 2;
-    if ( flags & ADE_FLAG_DPTHFADE )
-        skel133.field_4 |= 4;
-
-    skel133.rndrArg = datSub;
-    skel133.minZ = arg->minZ;
-    skel133.maxZ = arg->maxZ;
-    skel133.shadeVal = _shadeVal / 256.0;
-    skel133.fadeStart = arg->fadeStart;
-    skel133.fadeLength = arg->fadeLength;
-
-    if ( _texImg )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_LUMTRACY;
+    
+    if (flags & ADE_FLAG_DPTHFADE)
+        renderFlags |= GFX::RFLAGS_FOG;
+    
+    float alpha = 1.0;
+        
+    if (renderFlags & GFX::RFLAGS_LUMTRACY)
+        alpha = GFX::Engine.GetAlpha();
+    
+    float clr = 1.0;
+    if (renderFlags & GFX::RFLAGS_SHADED)
     {
-        _texImg->SetTime(arg->timeStamp, arg->frameTime);
-        datSub->pbitm = _texImg->GetBitmap();
-        skel133.texCoords = _texImg->GetOutline().data();
+        clr = (1.0 - _shadeVal / 256.0);
+        if (clr < 0.0)
+            clr = 0.0;
+        if (clr > 1.0)
+            clr = 1.0;
     }
-    else
+    
+    if (!_texImg)
+        clr = 0.0;
+    
+    GFX::TRenderParams mat = GFX::TRenderParams(_texImg, renderFlags);
+
+    GFX::TMesh *msh = NC_STACK_base::FindMeshByRenderParams(meshList, mat);
+    
+    if (!msh)
     {
-        datSub->pbitm = NULL;
-        skel133.texCoords = NULL;
+        meshList->emplace_back();
+        msh = &(meshList->back());
+        
+        msh->Mat = mat;
+        
+        if (_texImg)
+            msh->Mat.TexCoords = true;
     }
+    
+    UAskeleton::Data *dat = skelet->GetSkelet();
+    UAskeleton::Polygon &pol = dat->polygons[_polyID];
 
-    if ( arg->OBJ_SKELETON->skeleton_func133(&skel133) )
+    uint32_t fid = msh->Vertexes.size();
+    
+    if (pol.num_vertices >= 3)
     {
-        arg->adeCount++;
-
-        if ( datSub->renderFlags & ( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD ) )
+        for(int i = 0; i < pol.num_vertices; ++i)
         {
-            int v6 = 0;
-            int v8 = 0;
-
-            for (int i = 0; i < datSub->vertexCount; i++)
-            {
-                float clr = datSub->color[i];
-                if (clr < 0.01)
-                    v6++;
-                else if (clr > 0.99)
-                    v8++;
-            }
-
-            if ( v6 == datSub->vertexCount )
-            {
-                datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
-            }
-            else if ( v8 == datSub->vertexCount && !System::IniConf::GfxNewSky.Get<bool>())
-            {
-                datSub->renderFlags = 0;
-            }
+            msh->Vertexes.emplace_back();
+            msh->Vertexes.back().Pos = dat->POO[ pol.v[i] ];
+            msh->Vertexes.back().TexCoordId = i;
+            msh->Vertexes.back().Color = GFX::TGLColor(clr, clr, clr, alpha);
+            
+            msh->BoundBox.Add( dat->POO[ pol.v[i] ] );
         }
-
-        datSub->renderFlags |= (arg->flags & GFX::RFLAGS_SKY);
-
-        float maxz = 0.0;
-
-        for (int i = 0; i < datSub->vertexCount; i++)
-            if (datSub->vertexes[i].z > maxz)
-                maxz = datSub->vertexes[i].z;
-
-        if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && System::IniConf::GfxNewSky.Get<bool>() )
-        {
-            float maxln = 0.0;
-
-            for (int i = 0; i < datSub->vertexCount; i++)
+        
+        for(int j = 2; j < pol.num_vertices; ++j)
             {
-                datSub->distance[i] = datSub->vertexes[i].XZ().length();
-                if (datSub->distance[i] > maxln)
-                    maxln = datSub->distance[i];
+                msh->Indixes.push_back(fid + 0);
+                msh->Indixes.push_back(fid + j);
+                msh->Indixes.push_back(fid + j - 1);
             }
-
-            if (maxln > System::IniConf::GfxSkyDistance.Get<int>())
-                datSub->renderFlags |= GFX::RFLAGS_FALLOFF;
-        }
-
-        data->range = maxz;
-
-        arg->rndrStack->commit();
     }
-    return 1;
 }
+
+GFX::TRenderParams NC_STACK_area::GetRenderParams( size_t ) 
+{ 
+    uint32_t renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
+
+    if (renderFlags == 0)
+        renderFlags = 0;
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED;
+
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED;
+
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED;
+
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED;
+
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_ZEROTRACY;
+
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_ZEROTRACY;
+
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED | GFX::RFLAGS_ZEROTRACY;
+
+    else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED | GFX::RFLAGS_ZEROTRACY;
+
+    else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_LUMTRACY;
+    
+    if (flags & ADE_FLAG_DPTHFADE)
+        renderFlags |= GFX::RFLAGS_FOG;
+    
+    float clr = 1.0;
+    if (renderFlags & GFX::RFLAGS_SHADED)
+    {
+        clr = (1.0 - _shadeVal / 256.0);
+        if (clr < 0.0)
+            clr = 0.0;
+        if (clr > 1.0)
+            clr = 1.0;
+    }
+    
+    GFX::TRenderParams params;
+    params.Tex = _texImg;
+    params.Flags = renderFlags;
+    
+    if (_texImg)
+    {
+        params.Color = GFX::TGLColor(clr, clr, clr, 1.0);
+        params.TexCoords = true;
+    }
+    else
+    {
+        params.Color = GFX::TGLColor(0.0, 0.0, 0.0, 1.0);
+        params.TexCoords = false;
+    }
+    
+    return params; 
+};
 
 void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
 {

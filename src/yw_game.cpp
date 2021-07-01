@@ -1596,8 +1596,7 @@ void NC_STACK_ypaworld::yw_renderSky(baseRender_msg *rndr_params)
         sky_loaded_base->SetPosition( current_bact->_position + vec3d::OY(field_15f4) );
 
         rndr_params->maxZ = 32000.0;
-        if (System::IniConf::GfxNewSky.Get<bool>())
-            rndr_params->flags = GFX::RFLAGS_SKY;
+        rndr_params->flags = GFX::RFLAGS_SKY;
 
         sky_loaded_base->Render(rndr_params, NULL);
 
@@ -1782,7 +1781,10 @@ void NC_STACK_ypaworld::RenderFillers(baseRender_msg *arg)
 
             NC_STACK_base *bs = PrepareVFiller(sct, sct2, h, h2);
             if ( bs )
-                bs->Render(arg, NULL);
+            {
+                bs->RecalcInternal(true);
+                bs->Render(arg, NULL, true);
+            }
         }
     }
 
@@ -1798,8 +1800,10 @@ void NC_STACK_ypaworld::RenderFillers(baseRender_msg *arg)
 
             NC_STACK_base *bs = PrepareHFiller(sct, sct2, h, h2);
             if ( bs )
-                bs->Render(arg, NULL);
-
+            {
+                bs->RecalcInternal(true);
+                bs->Render(arg, NULL, true);
+            }
         }
     }
 }
@@ -1820,8 +1824,6 @@ void NC_STACK_ypaworld::RenderGame(base_64arg *bs64, int a2)
     rndrs.frameTime = bs64->DTime;
     rndrs.globTime = bs64->TimeStamp;
     rndrs.adeCount = 0;
-    rndrs.ownerID = 1;
-    rndrs.rndrStack = &NC_STACK_base::renderStack;
 
     rndrs.minZ = 1.0;
 
@@ -1873,40 +1875,35 @@ void NC_STACK_ypaworld::RenderGame(base_64arg *bs64, int a2)
         }
     }
 
-    RenderFillers(&rndrs);
+    
     RenderSuperItems(&rndrs);
 
-    if ( field_15f8 )
-        yw_renderSky(&rndrs);
+    RenderFillers(&rndrs);
 
     bs64->field_C = rndrs.adeCount;
 
     field_1B6A = rndrs.adeCount;
-    field_1b6c = rndrs.rndrStack->getSize();
+    field_1b6c = 7777;
 
 
     area_arg_65 rrg;
-    rrg.ownerID = 0;
     rrg.timeStamp = bs64->TimeStamp;
     rrg.frameTime = bs64->DTime;
     rrg.minZ = 1.0;
     rrg.maxZ = rndrs.maxZ;
-    rrg.rndrStack = &NC_STACK_base::renderStack;
-    rrg.view = TF::Engine.GetViewPoint();
-    rrg.owner = NULL;
+    rrg.ViewTForm = TF::Engine.GetViewPoint();
+    rrg.OwnerTForm = NULL;
     rrg.flags = 0;
 
-    rrg.OBJ_SKELETON = NULL;
-    rrg.adeCount = 0;
 
     ParticleSystem().UpdateRender(&rrg, bs64->DTime);
 
     GFX::Engine.BeginScene();
+    
+    if ( field_15f8 )
+        yw_renderSky(&rndrs);
 
-    if (System::IniConf::GfxNewSky.Get<bool>())
-        rndrs.rndrStack->render(true, RenderStack::comparePrio);
-    else
-        rndrs.rndrStack->render(false);
+    GFX::Engine.Rasterize();
 
     GFX::Engine.EndScene();
 

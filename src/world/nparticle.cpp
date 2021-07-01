@@ -26,6 +26,13 @@ ParticleSystem::ParticleSystem()
     v3.v[1] = 2;
     v3.v[2] = 3;
     v3.v[3] = 4;
+    
+    _mesh.Vertexes.resize(4);
+    _mesh.Vertexes[0].TexCoordId = 0;
+    _mesh.Vertexes[1].TexCoordId = 1;
+    _mesh.Vertexes[2].TexCoordId = 2;
+    _mesh.Vertexes[3].TexCoordId = 3;
+    _mesh.Indixes.assign( {0, 2, 1, 0, 3, 2} );
 }
     
 void ParticleSystem::AddParticle(NC_STACK_particle *base, const vec3d& pos, const vec3d& vec, int32_t age)
@@ -73,7 +80,7 @@ void ParticleSystem::UpdateRender(area_arg_65 *rndrParams, int32_t delta)
 
 void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
 {
-    TF::TForm3D *view = rndrParams->view;
+    TF::TForm3D *view = rndrParams->ViewTForm;
 
     int v27 = -1;
 
@@ -131,7 +138,6 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
     if ( !v27 )
     {
         rndrParams->sklt = _skltData;
-        rndrParams->OBJ_SKELETON = _sklt;
 
         if ( p->pParticleGen->_lifePerAde )
         {
@@ -144,7 +150,37 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
             {
                 NC_STACK_ade *ade = p->pParticleGen->_lifeStagesAdes.at(id);
                 if ( ade )
-                    ade->ade_func65(rndrParams);
+                {
+                    //ade->ade_func65(rndrParams);
+                    GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
+                    rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_PARTICLE );
+                    
+                    vec3d pos = view->CalcSclRot.Transform(p->Pos - view->CalcPos);
+
+                    rend.Distance = pos.length();
+                    rend.Mat = ade->GetRenderParams(0);
+
+                    rend.Mat.Flags |= rndrParams->flags;
+
+                    /*if (newsky)
+                    {
+                        if ( distance >= transDist ||
+                             skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
+                             skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
+                            rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
+                    }*/
+
+                    rend.Mesh = &_mesh;            
+
+                    rend.TForm = mat4x4(view->CalcSclRot) * mat4x4(p->Pos - view->CalcPos);
+                    rend.TimeStamp = rndrParams->timeStamp;
+                    rend.FrameTime = rndrParams->frameTime;
+                    rend.FogStart = rndrParams->fadeStart;
+                    rend.FogLength = rndrParams->fadeLength;
+                    rend.Sz = scale;
+
+                    GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
+                }
             }
         }
     }

@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <vector>
 #include <array>
+#include <deque>
 #include <SDL2/SDL.h>
 
 #ifdef ABS
@@ -832,6 +833,27 @@ public:
     BitMan Xor(uint32_t bit) const;    
     BitMan Xor(std::initializer_list<uint32_t> bits) const;
     BitMan Xor(const BitMan &bits) const;
+};
+
+template <typename T, std::size_t BLKSZ = 10000>
+struct CacheStorage
+{
+    typedef std::array<T, BLKSZ> _TBLOCK;
+    
+    std::deque<_TBLOCK> Blocks;
+    size_t NextPos = 0;
+    
+    T& GetNext()
+    {
+        while(NextPos >= Blocks.size() * BLKSZ)
+            Blocks.emplace_back();
+        
+        T& tmp = Blocks.at( NextPos / BLKSZ ).at( NextPos % BLKSZ );
+        NextPos++;
+        return tmp;
+    }
+    
+    void Rewind() { NextPos = 0; }
 };
 
 }

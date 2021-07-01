@@ -32,7 +32,7 @@ public:
     virtual size_t Deinit();
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SavingIntoIFF(IFFile **file);
-    virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
+    virtual size_t Emit(area_arg_65 *arg, InstanceOpts * opts = NULL);
     virtual void SetAccel(const vec3d &start, const vec3d &end);
     virtual void SetMagnify(const vec3d &start, const vec3d &end);
     virtual void AddLifeStage(NC_STACK_area *ade);
@@ -51,6 +51,8 @@ public:
     {
         return new NC_STACK_particle();
     };
+    
+    
 
     enum PRTCL_ATT
     {
@@ -99,6 +101,7 @@ public:
     int ReadIFFAtts(IFFile *mfile);
     
     virtual InstanceOpts *GenRenderInstance() override;
+    virtual bool IsParticle() const override { return true; };
 
 private:
     void UpdateScaleDelta();

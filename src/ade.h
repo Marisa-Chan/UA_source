@@ -2,6 +2,7 @@
 #define ADE_H_INCLUDED
 
 #include "nucleas.h"
+#include "system/gfx.h"
 
 class NC_STACK_ade;
 struct area_arg_65;
@@ -37,7 +38,6 @@ public:
     virtual size_t LoadingFromIFF(IFFile **file);
     virtual size_t SavingIntoIFF(IFFile **file);
     virtual size_t ade_func64(AdeList &lst);
-    virtual size_t ade_func65(area_arg_65 *arg, InstanceOpts * opts = NULL);
 
     NC_STACK_ade() {};
     virtual ~NC_STACK_ade() {};
@@ -78,6 +78,12 @@ public:
     virtual void setADE_poly(int);
     
     virtual InstanceOpts *GenRenderInstance();
+    virtual bool IsParticle() const { return false; };
+    
+    virtual void GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton * skelet) {};
+    
+    virtual GFX::TRenderParams GetRenderParams( size_t polyID = 0 ) { return GFX::TRenderParams(); };
+    virtual std::vector<tUtV> *GetOutline( size_t polyID = 0 ) { return NULL; };
 
     //Data
     static const Nucleus::ClassDescr description;

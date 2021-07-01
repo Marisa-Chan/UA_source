@@ -40,8 +40,8 @@ struct Vertex: public vec3d
 
 struct Polygon
 {
-    int16_t num_vertices = 0;
-    std::array<int16_t, GFX_MAX_VERTEX> v {{0}};
+    int8_t num_vertices = 0;
+    std::array<int32_t, GFX_MAX_VERTEX> v {{0}};
 
     // Geometry plane Ax + Bx + Cz + D = 0
     // A,B,C plane vector normal n
@@ -79,7 +79,6 @@ struct skeleton_arg133
 {
     int polyID;
     int field_4;
-    polysDatSub *rndrArg;
     tUtV *texCoords;
     float minZ;
     float maxZ;

@@ -12,6 +12,7 @@
 #include "../matrix.h"
 #include "../IFFile.h"
 #include "../nucleas.h"
+#include "../common.h"
 
 
 #define GFX_MAX_VERTEX 12
@@ -79,31 +80,6 @@ struct tUtV
     float tv = -1.0;
 };
 
-struct polysDatSub
-{
-    int renderFlags;
-    int vertexCount;
-    vec3d vertexes[GFX_MAX_VERTEX];
-    tUtV tu_tv[GFX_MAX_VERTEX];
-    float color[GFX_MAX_VERTEX];
-    float r;
-    float g;
-    float b;
-    float distance[GFX_MAX_VERTEX];
-    ResBitmap *pbitm;
-};
-
-struct polysDat
-{
-    int32_t range;
-    polysDatSub datSub;
-};
-
-
-
-
-
-
 
 struct windd_arg256
 {
@@ -117,6 +93,147 @@ struct windd_arg256
 
 namespace GFX
 {
+struct __attribute__((packed)) TGLColor
+{
+    float r = 1.0;
+    float g = 1.0;
+    float b = 1.0;
+    float a = 1.0;
+    
+    TGLColor() = default;
+    TGLColor(float _r, float _g, float _b, float _a = 1.0)
+        : r(_r), g(_g), b(_b), a(_a) {};
+};
+
+struct TBoundBox
+{
+    vec3d Min;
+    vec3d Max;
+    
+    bool Inited = false;
+    
+    void Add(const vec3d &pt) 
+    {
+        if (Inited)
+        {
+            if (pt.x < Min.x) Min.x = pt.x;
+            if (pt.y < Min.y) Min.y = pt.y;
+            if (pt.z < Min.z) Min.z = pt.z;
+            if (pt.x > Max.x) Max.x = pt.x;
+            if (pt.y > Max.y) Max.y = pt.y;
+            if (pt.z > Max.z) Max.z = pt.z;
+        }
+        else
+        {
+            Inited = true;
+            Min = pt;
+            Max = pt;
+        }
+    }
+    
+    void Add(const TBoundBox &box) 
+    {
+        Add(box.Min);
+        Add(box.Max);
+    }
+};
+
+struct TRenderParams
+{
+    NC_STACK_bitmap *Tex = NULL;    
+    uint32_t Flags = 0;
+    bool TexCoords = false;
+    TGLColor Color;
+    
+    TRenderParams() = default;
+    TRenderParams(const TRenderParams &) = default;
+    TRenderParams(TRenderParams &&) = default;
+    
+    TRenderParams(NC_STACK_bitmap *tex, uint32_t flags, bool texcoords = false)
+        : Tex(tex), Flags(flags), TexCoords(texcoords) {};
+    
+    TRenderParams& operator=(const TRenderParams &) = default;
+    TRenderParams& operator=(TRenderParams &&) = default;
+    
+    bool operator==(const TRenderParams &b)
+    {
+        return Flags == b.Flags && Tex == b.Tex && TexCoords == b.TexCoords;
+    }
+};
+
+struct TVertex
+{
+    vec3d Pos;
+    vec3d Normal;
+    tUtV  TexCoord;
+    TGLColor Color;
+    TGLColor ComputedColor;
+    uint32_t TexCoordId = 0;
+};
+
+class TMesh
+{
+public:
+    TRenderParams Mat;
+    std::vector<TVertex> Vertexes;
+    std::vector<uint32_t> Indixes;
+    
+    TBoundBox BoundBox;
+    
+    TMesh() = default;
+    TMesh(const TMesh&) = default;
+    TMesh(TMesh&&) = default;
+    
+    TMesh &operator=(const TMesh&) = default;
+    TMesh &operator=(TMesh&&) = default;
+    
+    void RecalcBoundBox()
+    {
+        BoundBox = TBoundBox();
+        for (const TVertex &v : Vertexes)
+            BoundBox.Add(v.Pos);
+    }
+};
+
+struct TRenderNode
+{
+    enum
+    {
+        TYPE_MESH,
+        TYPE_PARTICLE
+    };
+    
+    uint8_t Type = TYPE_MESH;
+    
+    TMesh *Mesh = NULL;
+    TMesh LocalMesh;
+    
+    TRenderParams Mat;
+    
+    mat4x4 TForm;
+    int32_t TimeStamp = 0; 
+    int32_t FrameTime = 0;
+    
+    float FogStart = 0.0;
+    float FogLength = 0.0;
+    
+    float Distance = 0.0;
+    
+    float Sz = 0.0;
+    
+    TRenderNode() = default;
+    TRenderNode(TRenderNode &&) = default;
+    TRenderNode(const TRenderNode &) = default;
+    
+    TRenderNode& operator=(const TRenderNode &) = default;
+    TRenderNode& operator=(TRenderNode &&) = default;
+    
+    TRenderNode(uint8_t tp): Type(tp) {};
+    
+    static bool CompareSolid(TRenderNode *a, TRenderNode *b);
+    static bool CompareTransparent(TRenderNode *a, TRenderNode *b);
+    static bool CompareDistance(TRenderNode *a, TRenderNode *b);
+};
     
 enum
 {
@@ -139,6 +256,8 @@ enum W3D_STATES
     ZWRITEENABLE,
     TEXTUREMAG,
     TEXTUREMIN,
+    FOG_STATE,
+    ALPHATEST,
     W3D_STATES_MAX
 };
 
@@ -278,15 +397,26 @@ enum DISP_ATT
 
 enum RFLAGS
 {
-    RFLAGS_LINMAP = 0x1,
-    RFLAGS_PERSPMAP = 0x2,
-    RFLAGS_FLATSHD = 0x4,
-    RFLAGS_GRADSHD = 0x8,
+    RFLAGS_TEXTURED = 0x1,
+    RFLAGS_LOCALMESH = 0x2,
+    RFLAGS_SHADED = 0x4,
+    RFLAGS_FOG = 0x8,
     RFLAGS_ZEROTRACY = 0x10,
     RFLAGS_LUMTRACY = 0x20,
     RFLAGS_SKY = 0x40,
     RFLAGS_FALLOFF = 0x80,
     RFLAGS_IGNORE_FALLOFF = 0x1000,
+};
+
+enum RASTER
+{
+    RASTER_SOLID   = (1 << 0),
+    RASTER_SKY     = (1 << 1),
+    RASTER_ZEROTR  = (1 << 2),
+    RASTER_LUMATR  = (1 << 3),
+    RASTER_PARTICL = (1 << 4),
+    
+    RASTER_ALL = (RASTER_SOLID | RASTER_SKY | RASTER_ZEROTR | RASTER_LUMATR | RASTER_PARTICL)
 };
     
 class GFXEngine
@@ -382,7 +512,6 @@ public:
     virtual size_t raster_func201(const Common::Line &r);
     virtual size_t raster_func202(rstr_arg204 *arg);
     virtual size_t raster_func204(rstr_arg204 *arg);
-    virtual size_t raster_func206(polysDat *arg);
     virtual void raster_func207(int id, TileMap *tiles);
     virtual TileMap *raster_func208(int id);
     virtual int raster_func208(TileMap *tiles);
@@ -452,8 +581,6 @@ public:
 
     void setFrustumClip(float near, float far);
 
-    static bool compare(polysDat *a, polysDat *b);
-
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
     virtual SDL_PixelFormat *GetScreenFormat();
     virtual SDL_Surface *CreateSurfaceScreenFormat(int width, int height);
@@ -466,13 +593,22 @@ public:
     float GetColorEffectPower(int id);
     
     Common::Point ConvertPosTo2DStuff(const Common::Point &pos);
-
+    
+    void RenderingMesh(TRenderNode *mesh);
+    void RenderNode(TRenderNode *node);
+    void PrepareParticle(TRenderNode *node);
+    void Rasterize(uint32_t RasterEtapes = RASTER_ALL);
+    
+    void QueueRenderMesh(TRenderNode *mesh);
+    TRenderNode &AllocRenderNode() { return _renderNodesCache.GetNext(); };
+    
+    float GetAlpha() const { return _alpha / 255.0; };
+    
 protected:
     void initPolyEngine();
     void initPixelFormats();
     void SetRenderStates(int arg);
-    void Rendering3DStuff(polysDat *polysDat, bool renderTransparent);
-    void RenderTransparent();
+    
     void DrawScreenText();
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
     void DrawTextEntry(const ScreenText *txt);
@@ -520,7 +656,6 @@ public:
     int _flags;
 
     // From bigdata
-    std::deque<polysDat *> _pending;
     // \From bigdata
 
     int _dither;
@@ -535,7 +670,17 @@ public:
     GLint _glPixfmt, _glPixtype;
 
     uint32_t _rendStates[W3D_STATES_MAX];
-    uint32_t _rendStates2[W3D_STATES_MAX];
+    uint32_t _newRenderStates[W3D_STATES_MAX];
+    
+    float _fogStart = 0.0;
+    float _fogLength = 0.0;
+    
+    std::list<TRenderNode *> _renderSolidList;
+    std::list<TRenderNode *> _renderSkyBoxList;
+    std::list<TRenderNode *> _renderZeroTracyList;
+    std::list<TRenderNode *> _renderLumaTracyList;
+    
+    Common::CacheStorage<TRenderNode> _renderNodesCache;
 
     int _sceneBeginned;
 

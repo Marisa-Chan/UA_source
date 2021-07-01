@@ -380,6 +380,9 @@ struct Tmat4x4
     {
         identity();
     }
+    
+    Tmat4x4(Tmat4x4 &&) = default;
+    Tmat4x4(const Tmat4x4 &) = default;
 
     Tmat4x4(const Tvec3d<K> &t)
     {
@@ -551,6 +554,8 @@ struct Tmat4x4
         tmp -= t;
         return tmp;
     }
+    
+    Tmat4x4 &operator=(const Tmat4x4 &b) = default;
 
     Tvec3d<K> operator*(const Tvec3d<K> &v) const
     {

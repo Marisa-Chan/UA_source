@@ -14,118 +14,10 @@
 #include "embed.h"
 
 #include "system/gfx.h"
+#include "system/inivals.h"
+#include "particle.h"
 
 const Nucleus::ClassDescr NC_STACK_base::description("base.class", &NewInstance);
-RenderStack NC_STACK_base::renderStack;
-
-RenderStack::RenderStack()
-{
-    heaps.clear();
-    que.clear();
-
-    currentElement = 0;
-}
-
-RenderStack::~RenderStack()
-{
-    for(size_t i = 0; i < heaps.size(); i++)
-        delete[] heaps[i];
-
-    heaps.clear();
-    que.clear();
-}
-
-polysDat *RenderStack::get()
-{
-    if (currentElement >= heaps.size() * heapSize)
-    {
-        heaps.push_back( new polysDat[heapSize] );
-        que.resize(heaps.size() * heapSize);
-    }
-
-    int heapID = currentElement / heapSize;
-    int elmID = currentElement % heapSize;
-
-    que[currentElement] = &(heaps[heapID])[elmID];
-
-    return &(heaps[heapID])[elmID];
-}
-
-void RenderStack::commit()
-{
-    currentElement++;
-
-    if (currentElement >= heaps.size() * heapSize)
-    {
-        heaps.push_back( new polysDat[heapSize] );
-        que.resize(heaps.size() * heapSize);
-    }
-}
-
-size_t RenderStack::getSize()
-{
-    return currentElement;
-}
-
-void RenderStack::clear(bool dealloc)
-{
-    if (dealloc)
-    {
-        for (size_t i = 0; i < heaps.size(); i++)
-            delete[] heaps[i];
-
-        heaps.clear();
-        que.clear();
-    }
-
-    currentElement = 0;
-}
-
-bool RenderStack::compare(polysDat *a, polysDat *b)
-{
-    return a->range < b->range;
-}
-
-bool RenderStack::comparePrio(polysDat *a, polysDat *b)
-{
-    if ((a->datSub.renderFlags | b->datSub.renderFlags) & GFX::RFLAGS_SKY )
-    {
-        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & GFX::RFLAGS_SKY )
-            return a->range > b->range;
-        else if ( b->datSub.renderFlags & GFX::RFLAGS_SKY )
-            return false;
-    }
-    else if ((a->datSub.renderFlags | b->datSub.renderFlags) & GFX::RFLAGS_FALLOFF )
-    {
-        if ( (a->datSub.renderFlags & b->datSub.renderFlags) & GFX::RFLAGS_FALLOFF )
-            return a->range > b->range;
-        else if ( b->datSub.renderFlags & GFX::RFLAGS_FALLOFF )
-            return false;
-    }
-
-    return true;
-}
-
-void RenderStack::render(bool sorting, tCompare _func, bool Clear)
-{
-    std::deque<polysDat *>::iterator qEnd = que.begin() + currentElement;
-
-    if (sorting && currentElement > 1)
-    {
-        if (_func)
-            std::stable_sort(que.begin(), qEnd, _func);
-        else
-            std::stable_sort(que.begin(), qEnd, compare);
-
-        qEnd = que.begin() + currentElement;
-    }
-
-    for(std::deque<polysDat *>::iterator it = que.begin(); it != qEnd; it++)
-        GFX::Engine.raster_func206( *it );
-
-    if (Clear)
-        clear();
-}
 
 size_t NC_STACK_base::Init(IDVList &stak)
 {
@@ -397,6 +289,9 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
             mfile->skipChunk();
         }
     }
+    
+    RecalcInternal();
+    
     return obj_ok;
 }
 
@@ -584,7 +479,112 @@ void NC_STACK_base::ChangeScale(const vec3d &v, int flag)
     }
 }
 
-size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst)
+size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst, bool doCopy /* = false */)
+{
+    int isVisible = 0;
+
+    if ( _skeleton )
+    {
+        _transform.CalcGlobal();
+
+        TF::TForm3D *view = TF::Engine.GetViewPoint();
+
+        skeleton_arg_132 skel132;
+        skel132.minZ = arg->minZ;
+        skel132.maxZ = arg->maxZ;
+        skel132.tform = view->CalcSclRot;
+
+        if ( !(_transform.flags & TF::TForm3D::FLAG_NO_WRLD_ROT) )
+            skel132.tform *= (_transform.TForm - view->CalcPos);
+        else
+            skel132.tform *= mat4x4(_transform.CalcPos - view->CalcPos);
+        
+        
+        _renderMsg.timeStamp = arg->globTime;
+        _renderMsg.frameTime = arg->frameTime;
+        _renderMsg.minZ = arg->minZ;
+        _renderMsg.maxZ = arg->maxZ;
+        _renderMsg.ViewTForm = view;
+        _renderMsg.OwnerTForm = &_transform;
+        _renderMsg.flags = arg->flags;
+        
+        if (!inst)
+            isVisible = _skeleton->skeleton_func132(&skel132);
+        else
+            isVisible = 1;
+        
+        float distance = skel132.tform.getTranslate().length();
+        
+        bool newsky = System::IniConf::GfxNewSky.Get<bool>();
+        float transDist = System::IniConf::GfxSkyDistance.Get<int>();
+        
+        for(GFX::TMesh &msh : Meshes)
+        {
+            GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
+            rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_MESH );
+
+            rend.Distance = distance;
+            rend.Mat = msh.Mat;
+            
+            rend.Mat.Flags |= arg->flags;
+            
+            if (newsky && !(rend.Mat.Flags & GFX::RFLAGS_IGNORE_FALLOFF))
+            {
+                if ( distance >= transDist ||
+                     skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
+                     skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
+                    rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
+            }
+
+            if (doCopy)
+            {
+                rend.LocalMesh = msh;
+                rend.Mesh = &rend.LocalMesh;
+                rend.Mat.Flags |= GFX::RFLAGS_LOCALMESH;
+            }
+            else
+                rend.Mesh = &msh;            
+            
+            rend.TForm = skel132.tform;
+            rend.TimeStamp = arg->globTime;
+            rend.FrameTime = arg->frameTime;
+            rend.FogStart = _renderMsg.fadeStart;
+            rend.FogLength = _renderMsg.fadeLength;
+
+            GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
+        }
+
+        if (inst)
+        {
+            for (NC_STACK_ade::InstanceOpts *ade : inst->Particles)
+            {
+                if (ade)
+                    (static_cast<NC_STACK_particle*>(ade->Ade))->Emit(&_renderMsg, ade);
+            }
+        }
+    }
+
+    if (!inst || inst->Bas != this)
+    {
+        for (NC_STACK_base *kd : _KIDS)
+        {
+            if ( kd->Render(arg) )
+                isVisible = 1;
+        }
+    }
+    else
+    {
+        for (NC_STACK_base::Instance *kd : inst->KidsOpts)
+        {
+            if ( kd->Bas->Render(arg, kd) )
+                isVisible = 1;
+        }
+    }
+
+    return isVisible;
+}
+
+size_t NC_STACK_base::RenderImmediately(baseRender_msg *arg, Instance * inst)
 {
     int v12 = 0;
 
@@ -603,39 +603,52 @@ size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst)
             skel132.tform *= (_transform.TForm - view->CalcPos);
         else
             skel132.tform *= mat4x4(_transform.CalcPos - view->CalcPos);
-
-        v12 = _skeleton->skeleton_func132(&skel132);
-
-        if ( v12 )
+        
+        _renderMsg.timeStamp = arg->globTime;
+        _renderMsg.frameTime = arg->frameTime;
+        _renderMsg.minZ = arg->minZ;
+        _renderMsg.maxZ = arg->maxZ;
+        _renderMsg.ViewTForm = view;
+        _renderMsg.OwnerTForm = &_transform;
+        _renderMsg.flags = arg->flags;
+        
+        float distance = skel132.tform.Transform( _transform.Pos ).length();
+        
+        bool newsky = System::IniConf::GfxNewSky.Get<bool>();
+        float transDist = System::IniConf::GfxSkyDistance.Get<int>();
+        
+        for(GFX::TMesh &msh : Meshes)
         {
-            _renderMsg.ownerID = arg->ownerID;
-            _renderMsg.timeStamp = arg->globTime;
-            _renderMsg.frameTime = arg->frameTime;
-            _renderMsg.minZ = arg->minZ;
-            _renderMsg.maxZ = arg->maxZ;
-            _renderMsg.rndrStack = arg->rndrStack;
-            _renderMsg.view = view;
-            _renderMsg.owner = &_transform;
-            _renderMsg.flags = arg->flags;
-
-            _renderMsg.OBJ_SKELETON = _skeleton;
-            _renderMsg.adeCount = 0;
-
-            if (!inst || inst->Bas != this)
+            GFX::TRenderNode rend( GFX::TRenderNode::TYPE_MESH );
+            rend.Distance = distance;
+            rend.Mat = msh.Mat;
+            
+            rend.Mat.Flags |= arg->flags;
+            
+            if (newsky)
             {
-                for (NC_STACK_ade *ade : _ADES)
-                    ade->ade_func65(&_renderMsg);
-            }
-            else
-            {
-                for (NC_STACK_ade::InstanceOpts *ade : inst->AdeOpts)
-                {
-                    if (ade)
-                        ade->Ade->ade_func65(&_renderMsg, ade);
-                }
+                if ( skel132.tform.Transform(msh.BoundBox.Min + _transform.Pos).XZ().length() >= transDist ||
+                     skel132.tform.Transform(msh.BoundBox.Max + _transform.Pos).XZ().length() >= transDist )
+                    rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
             }
 
-            arg->adeCount += _renderMsg.adeCount;
+            rend.Mesh = &msh;            
+            rend.TForm = skel132.tform;
+            rend.TimeStamp = arg->globTime;
+            rend.FrameTime = arg->frameTime;
+            rend.FogStart = _renderMsg.fadeStart;
+            rend.FogLength = _renderMsg.fadeLength;
+
+            GFX::GFXEngine::Instance.RenderingMesh(&rend);
+        }
+        
+        if (inst)
+        {
+            for (NC_STACK_ade::InstanceOpts *ade : inst->Particles)
+            {
+                if (ade)
+                    (static_cast<NC_STACK_particle*>(ade->Ade))->Emit(&_renderMsg, ade);
+            }
         }
     }
 
@@ -643,7 +656,7 @@ size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst)
     {
         for (NC_STACK_base *kd : _KIDS)
         {
-            if ( kd->Render(arg) )
+            if ( kd->RenderImmediately(arg) )
                 v12 = 1;
         }
     }
@@ -651,7 +664,7 @@ size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst)
     {
         for (NC_STACK_base::Instance *kd : inst->KidsOpts)
         {
-            if ( kd->Bas->Render(arg, kd) )
+            if ( kd->Bas->RenderImmediately(arg, kd) )
                 v12 = 1;
         }
     }
@@ -778,11 +791,6 @@ area_arg_65 *NC_STACK_base::GetRenderParams()
     return &_renderMsg;
 }
 
-RenderStack *NC_STACK_base::GetRenderStack()
-{
-    return &renderStack;
-}
-
 int32_t NC_STACK_base::GetFadeLength()
 {
     return _renderMsg.fadeLength;
@@ -819,14 +827,17 @@ NC_STACK_base::Instance *NC_STACK_base::GenRenderInstance()
 {
     Instance *tmp = new Instance(this);
     
-    tmp->AdeOpts.reserve(_ADES.size());
+    tmp->Particles.reserve(_ADES.size());
     tmp->KidsOpts.reserve(_KIDS.size());
     
     for(NC_STACK_base *bs : _KIDS)
         tmp->KidsOpts.emplace_back(bs->GenRenderInstance());
     
     for(NC_STACK_ade *ade : _ADES)
-        tmp->AdeOpts.emplace_back(ade->GenRenderInstance());
+    {
+        if (ade->IsParticle())
+            tmp->Particles.emplace_back(ade->GenRenderInstance());
+    }
         
     return tmp;
 }
@@ -849,12 +860,43 @@ void NC_STACK_base::CheckOpts(Instance **vpOpts, NC_STACK_base *bas)
     }
 }
 
+void NC_STACK_base::RecalcInternal(bool kids)
+{
+    Meshes.clear();
+    
+    if (_skeleton)
+    {
+        for(NC_STACK_ade *ade : _ADES)
+        {
+            if (!ade->IsParticle())
+                ade->GenMesh(&Meshes, _skeleton);
+        }
+        
+        if (kids)
+        {
+            for(NC_STACK_base *bs : _KIDS)
+                bs->RecalcInternal(true);
+        }
+    }
+}
+
 
 NC_STACK_base::Instance::~Instance()
 {
     for(Instance *kd : KidsOpts)
         delete kd;
     
-    for(NC_STACK_ade::InstanceOpts *opt : AdeOpts)
+    for(NC_STACK_ade::InstanceOpts *opt : Particles)
         delete opt;
+}
+
+GFX::TMesh *NC_STACK_base::FindMeshByRenderParams(std::list<GFX::TMesh> *list, const GFX::TRenderParams &p)
+{
+    for(GFX::TMesh &m : *list)
+    {
+        if (m.Mat == p)
+            return &m;
+    }
+    
+    return NULL;
 }

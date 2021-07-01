@@ -149,12 +149,6 @@ size_t NC_STACK_ade::ade_func64(AdeList &lst)
     return 1;
 }
 
-size_t NC_STACK_ade::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
-{
-    return 1;
-}
-
-
 
 int NC_STACK_ade::getADE_bkCheck()
 {

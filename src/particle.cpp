@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "system/tform.h"
 #include "world/nparticle.h"
+#include "amesh.h"
 
 #include <math.h>
 
@@ -264,7 +265,7 @@ void NC_STACK_particle::_SetLifeStages(const std::vector<NC_STACK_ade *> &ades)
         if (ade)
             Nucleus::Delete(ade);
     }
-    
+
     _lifeStagesAdes = ades;
     
     UpdateLifeStages();
@@ -530,7 +531,7 @@ size_t NC_STACK_particle::SavingIntoIFF(IFFile **file)
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }
 
-size_t NC_STACK_particle::ade_func65(area_arg_65 *arg, InstanceOpts * uopts)
+size_t NC_STACK_particle::Emit(area_arg_65 *arg, InstanceOpts * uopts)
 {
     if (!uopts)
         return 1;
@@ -559,9 +560,9 @@ size_t NC_STACK_particle::ade_func65(area_arg_65 *arg, InstanceOpts * uopts)
     
     if (opts->Time >= 0)
     {
-        vec3d v44 = arg->owner->CalcSclRot.Transform( _magnifyStart + _magnifyDelta * opts->Age );
+        vec3d v44 = arg->OwnerTForm->CalcSclRot.Transform( _magnifyStart + _magnifyDelta * opts->Age );
 
-        vec3d v45 = arg->owner->TForm * ( arg->sklt->POO[_pointID] );
+        vec3d v45 = arg->OwnerTForm->TForm * ( arg->sklt->POO[_pointID] );
 
         float timeDelta = 0.0;
         float delta = _genPause * 0.001;

@@ -67,7 +67,29 @@ PFNGLUNIFORM4IPROC GLUniform4i = NULL;
 
 PFNGLGETSHADERIVPROC GLGetShaderiv = NULL;
 PFNGLGETSHADERINFOLOGPROC GLGetShaderInfoLog = NULL;
+
+bool TRenderNode::CompareSolid(TRenderNode *a, TRenderNode *b)
+{
+    if ( !a->Mesh )
+        return true;
     
+    if ( !b->Mesh )
+        return false;
+        
+    return a->Mat.Tex < b->Mat.Tex;
+}
+
+bool TRenderNode::CompareTransparent(TRenderNode* a, TRenderNode* b)
+{
+    return a->Distance > b->Distance;
+}
+
+bool TRenderNode::CompareDistance(TRenderNode* a, TRenderNode* b)
+{
+    return a->Distance < b->Distance;
+}
+
+
 
 GFXEngine::GFXEngine()
 {
@@ -84,8 +106,6 @@ GFXEngine::GFXEngine()
     _disable_lowres = 0;
     _export_window_mode = 0;
     _flags = 0;
-
-    _pending.clear();
 
     _dither = 0;
     _filter = 0;
@@ -325,9 +345,11 @@ void GFXEngine::initPolyEngine()
     _rendStates[ZWRITEENABLE] = 1; /* TRUE to enable z writes */
     _rendStates[TEXTUREMAG] = (_filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
     _rendStates[TEXTUREMIN] = (_filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
+    _rendStates[FOG_STATE] = 0;
+    _rendStates[ALPHATEST] = 0;
 
     for (int i = 0; i < W3D_STATES_MAX; i++)
-        _rendStates2[i] = _rendStates[i];
+        _newRenderStates[i] = _rendStates[i];
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -336,7 +358,7 @@ void GFXEngine::initPolyEngine()
     glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
     glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
 
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
 
     if (_dither)
         glEnable(GL_DITHER);
@@ -352,8 +374,6 @@ void GFXEngine::initPolyEngine()
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEDALPHA, can_stippling); /* TRUE to enable stippled alpha */
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
     //win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
-
-    _pending.clear();
 
     //glAlphaFunc ( GL_GREATER, 0.1 ) ;
     //glEnable ( GL_ALPHA_TEST );
@@ -533,8 +553,6 @@ size_t GFXEngine::func0(IDVList &stak)
         _alpha = 192;
     else
         _alpha = 128;
-
-    _pending.clear();
 
     ApplyResolution();
 
@@ -732,12 +750,15 @@ void GFXEngine::SetRenderStates(int setAll)
     if (setAll)
         changeStates = 0xFFFFFFFF;
 
-    for (int i = 0; i < W3D_STATES_MAX; i++)
+    if (setAll < 2)
     {
-        if (_rendStates2[i] != _rendStates[i])
-            changeStates |= 1 << i;
+        for (int i = 0; i < W3D_STATES_MAX; i++)
+        {
+            if (_newRenderStates[i] != _rendStates[i])
+                changeStates |= 1 << i;
 
-        _rendStates[i] = _rendStates2[i];
+            _rendStates[i] = _newRenderStates[i];
+        }
     }
 
     if ( changeStates & MSK(TEXTUREHANDLE))
@@ -858,208 +879,386 @@ void GFXEngine::SetRenderStates(int setAll)
         else
             glDepthMask(GL_FALSE);
     }
+    
+    if ( changeStates & MSK(FOG_STATE) )
+    {
+        if (_rendStates[FOG_STATE])
+        {
+            glEnable(GL_FOG);
+            glFogf(GL_FOG_DENSITY, 1.0);
+            glFogi(GL_FOG_MODE, GL_LINEAR);
+            glHint(GL_FOG_HINT, GL_DONT_CARE);
+            
+            float fcolors[4] = {0.0, 0.0, 0.0, 1.0};
+            
+            glFogfv(GL_FOG_COLOR, fcolors);
+        }
+        else
+        {
+            glDisable(GL_FOG);
+        }
+    }
+    
+    if ( changeStates & MSK(ALPHATEST) )
+    {
+        if (_rendStates[ALPHATEST] == 0)
+        {
+            glDisable(GL_ALPHA_TEST);
+        }
+        else
+        {
+            glEnable(GL_ALPHA_TEST);
+            glAlphaFunc(GL_GREATER, 0.0);
+        }
+    }
 }
 
-
-void GFXEngine::Rendering3DStuff(polysDat *in, bool renderTransparent)
+void GFXEngine::RenderingMesh(TRenderNode *nod)
 {
-    polysDatSub *polysDat = &in->datSub;
-
-    struct vtxOut
-    {
-        float x, y, z;
-        float tu, tv;
-        float r, g, b, a;
-    };
-
     if ( !_sceneBeginned )
         return;
-
-    if ( polysDat->vertexCount < 3 || polysDat->vertexCount > 12 )
+    
+    if (!nod)
         return;
+    
+    TMesh *mesh = nod->Mesh;
+    if (nod->Mat.Flags & RFLAGS_LOCALMESH)
+        mesh = &nod->LocalMesh;
+    
+    if (!mesh)
+        return;
+    
+    uint32_t flags = nod->Mat.Flags;
 
-    //Store for rendering later ( from 214 method )
-    if ( !(polysDat->renderFlags & RFLAGS_FALLOFF) )
-        if ( (polysDat->renderFlags & (RFLAGS_ZEROTRACY | RFLAGS_LUMTRACY)) && !renderTransparent )
-        {
-            _pending.push_back( in );
-            return;
-        }
+    _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+    _newRenderStates[STIPPLEENABLE] = 0;
+    _newRenderStates[SRCBLEND] = 1;//D3DBLEND_ONE;
+    _newRenderStates[DESTBLEND] = 0;//D3DBLEND_ZERO;
+    _newRenderStates[TEXTUREMAPBLEND] = 0;//D3DTBLEND_COPY;
+    _newRenderStates[ALPHABLENDENABLE] = 0;
+    _newRenderStates[ZWRITEENABLE] = 1;
+    _newRenderStates[TEXTUREHANDLE] = 0;
 
-    vtxOut vtx[24];
+    _newRenderStates[TEXTUREMAG] = (_filter != 0);
+    _newRenderStates[TEXTUREMIN] = (_filter != 0);
+    
+    _newRenderStates[FOG_STATE] = 0;
+    _newRenderStates[ALPHATEST] = 0;
+    
+    bool useComputedColor = false;
+    
 
-    for (int i = 0; i < polysDat->vertexCount; i++)
+    if ( flags & RFLAGS_TEXTURED )
     {
-        vtx[i].x = polysDat->vertexes[i].x;
-        vtx[i].y = polysDat->vertexes[i].y;
-        vtx[i].z = polysDat->vertexes[i].z;
-        vtx[i].tu = 0.0;
-        vtx[i].tv = 0.0;
-        vtx[i].r = polysDat->r;
-        vtx[i].g = polysDat->g;
-        vtx[i].b = polysDat->b;
-        vtx[i].a = 1.0;
-    }
-
-    _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
-    _rendStates2[STIPPLEENABLE] = 0;
-    _rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
-    _rendStates2[DESTBLEND] = 0;//D3DBLEND_ZERO;
-    _rendStates2[TEXTUREMAPBLEND] = 0;//D3DTBLEND_COPY;
-    _rendStates2[ALPHABLENDENABLE] = 0;
-    _rendStates2[ZWRITEENABLE] = 1;
-    _rendStates2[TEXTUREHANDLE] = 0;
-
-    _rendStates2[TEXTUREMAG] = (_filter != 0);
-    _rendStates2[TEXTUREMIN] = (_filter != 0);
-
-    if ( polysDat->renderFlags & (RFLAGS_LINMAP | RFLAGS_PERSPMAP) )
-    {
-        if (in->datSub.pbitm)
-            _rendStates2[TEXTUREHANDLE] = in->datSub.pbitm->hwTex;
-
-        for (int i = 0; i < polysDat->vertexCount; i++)
+        if (nod->Mat.Tex)
         {
-            vtx[i].tu = polysDat->tu_tv[i].tu;
-            vtx[i].tv = polysDat->tu_tv[i].tv;
-        }
-    }
-    else
-    {
-        for (int i = 0; i < polysDat->vertexCount; i++)
-        {
-            vtx[i].r = 0;
-            vtx[i].g = 0;
-            vtx[i].b = 0;
-            vtx[i].a = 1.0;
-        }
-
-    }
-
-    if ( polysDat->renderFlags & (RFLAGS_FLATSHD | RFLAGS_GRADSHD) )
-    {
-        _rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
-        _rendStates2[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
-
-        for (int i = 0; i < polysDat->vertexCount; i++)
-        {
-            float comp = (1.0 - polysDat->color[i]);
-            vtx[i].r *= comp;
-            vtx[i].g *= comp;
-            vtx[i].b *= comp;
-            vtx[i].a = 1.0;
-        }
-    }
-
-    if ( polysDat->renderFlags & RFLAGS_LUMTRACY )
-    {
-        if ( !_zbuf_when_tracy )
-            _rendStates2[ZWRITEENABLE] = 0;
-
-        if ( can_destblend )
-        {
-            _rendStates2[ALPHABLENDENABLE] = 1;
-            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _rendStates2[SRCBLEND] = 1;//D3DBLEND_ONE;
-            _rendStates2[DESTBLEND] = 1;//D3DBLEND_ONE;
-            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
-        }
-        else if ( can_srcblend )
-        {
-            _rendStates2[ALPHABLENDENABLE] = 1;
-            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
-        }
-        else if ( can_stippling )
-        {
-            _rendStates2[ALPHABLENDENABLE] = 1;
-            _rendStates2[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _rendStates2[STIPPLEENABLE] = 1;
-            _rendStates2[SHADEMODE] = 0;//D3DSHADE_FLAT;
-        }
-
-        for (int i = 0; i < polysDat->vertexCount; i++)
-            vtx[i].a = (float)_alpha / 255.0;
-    }
-    else if ( polysDat->renderFlags & RFLAGS_ZEROTRACY )
-    {
-        if ( !_zbuf_when_tracy )
-            _rendStates2[ZWRITEENABLE] = 0;
-
-        if ( _pixfmt->BytesPerPixel != 1 )
-        {
-            _rendStates2[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _rendStates2[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-        }
-
-        _rendStates2[ALPHABLENDENABLE] = 1;
-        _rendStates2[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
-        _rendStates2[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
-        _rendStates2[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
-    }
-
-    if (System::IniConf::GfxNewSky.Get<bool>())
-    {
-        if (polysDat->renderFlags & RFLAGS_SKY)
-        {
-            _rendStates2[ZWRITEENABLE] = 0;
-        }
-        else if (polysDat->renderFlags & RFLAGS_FALLOFF)
-        {
-            _rendStates2[ZWRITEENABLE] = 1;
-            _rendStates2[ALPHABLENDENABLE] = 1;
-            _rendStates2[TEXTUREMAPBLEND] = 2;
-            _rendStates2[SRCBLEND] = 2;
+            nod->Mat.Tex->SetTime(nod->TimeStamp, nod->FrameTime);
+            ResBitmap *bitm = nod->Mat.Tex->GetBitmap();
+            _newRenderStates[TEXTUREHANDLE] = bitm->hwTex;
             
-            if (polysDat->renderFlags & RFLAGS_LUMTRACY)
-                _rendStates2[DESTBLEND] = 1;
-            else
-                _rendStates2[DESTBLEND] = 3;
-            
-            _rendStates2[SHADEMODE] = 1;
-            _rendStates2[STIPPLEENABLE] = 0;
-
-            float transDist = System::IniConf::GfxSkyDistance.Get<int>();
-            float transLen = System::IniConf::GfxSkyLength.Get<int>();
-
-            for (int i = 0; i < polysDat->vertexCount; i++)
+            if (nod->Mat.TexCoords)
             {
-                if (polysDat->distance[i] > transDist)
-                {
-                    float prc = (polysDat->distance[i] - transDist) / transLen;
-                    if (prc > 1.0)
-                        prc = 1.0;
-
-                    vtx[i].a = (1.0 - prc);
-                }
+                std::vector<tUtV> &coords = nod->Mat.Tex->GetOutline();
+                for(TVertex &v : mesh->Vertexes)
+                    v.TexCoord = coords.at( v.TexCoordId );
             }
         }
     }
 
-    SetRenderStates(0);
-
-    glBegin(GL_TRIANGLE_FAN);
+    if ( flags & RFLAGS_SHADED )
     {
-        for (int i = 0; i < polysDat->vertexCount; i++)
+        _newRenderStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+        _newRenderStates[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
+    }
+    
+    if ( flags & RFLAGS_FOG )
+    {
+        _newRenderStates[FOG_STATE] = 1;
+
+        _fogStart = nod->FogStart;
+        _fogLength = nod->FogLength;
+    }
+    
+    if ( flags & RFLAGS_LUMTRACY )
+    {
+        if ( !_zbuf_when_tracy )
+            _newRenderStates[ZWRITEENABLE] = 0;
+
+        if ( can_destblend )
         {
-            glColor4f(vtx[i].r, vtx[i].g, vtx[i].b, vtx[i].a);
-            glTexCoord2f(vtx[i].tu, vtx[i].tv);
-            glVertex3d(vtx[i].x, -vtx[i].y, vtx[i].z);
+            _newRenderStates[ALPHABLENDENABLE] = 1;
+            _newRenderStates[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _newRenderStates[SRCBLEND] = 1;//D3DBLEND_ONE;
+            _newRenderStates[DESTBLEND] = 1;//D3DBLEND_ONE;
+            _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+        }
+        else if ( can_srcblend )
+        {
+            _newRenderStates[ALPHABLENDENABLE] = 1;
+            _newRenderStates[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _newRenderStates[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _newRenderStates[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+        }
+        else if ( can_stippling )
+        {
+            _newRenderStates[ALPHABLENDENABLE] = 1;
+            _newRenderStates[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
+            _newRenderStates[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _newRenderStates[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _newRenderStates[STIPPLEENABLE] = 1;
+            _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+        }
+
+//        for (int i = 0; i < polysDat->vertexCount; i++)
+//            vtx[i].a = (float)_alpha / 255.0;
+    }
+    else if ( flags & RFLAGS_ZEROTRACY )
+    {
+        _newRenderStates[ALPHATEST] = 1;
+        
+
+        if ( _pixfmt->BytesPerPixel != 1 )
+        {
+            _newRenderStates[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
+            _newRenderStates[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+        }
+
+        _newRenderStates[ALPHABLENDENABLE] = 1;
+        _newRenderStates[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
+        _newRenderStates[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
+        _newRenderStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+    }
+
+    if (flags & RFLAGS_SKY)
+    {
+        _newRenderStates[ZWRITEENABLE] = 0;
+    }
+    else if (flags & RFLAGS_FALLOFF)
+    {
+        float transDist = System::IniConf::GfxSkyDistance.Get<int>();
+        float transLen = System::IniConf::GfxSkyLength.Get<int>();
+
+        for(TVertex &v : mesh->Vertexes)
+        {
+            v.ComputedColor = v.Color;
+
+            float distance = nod->TForm.Transform( v.Pos ).XZ().length();
+
+            if (distance > transDist)
+            {
+                float prc = (distance - transDist) / transLen;
+                if (prc > 1.0)
+                    prc = 1.0;
+                if (prc < 0.0)
+                    prc = 0.0;
+
+                prc = (1.0 - prc);
+
+                v.ComputedColor.a *= prc;
+
+                useComputedColor = true;
+            }
+        }
+
+        if (useComputedColor)
+        {
+            _newRenderStates[ZWRITEENABLE] = 1;
+            _newRenderStates[ALPHABLENDENABLE] = 1;
+            _newRenderStates[TEXTUREMAPBLEND] = 2;
+            _newRenderStates[SRCBLEND] = 2;
+
+            if (flags & RFLAGS_LUMTRACY)
+                _newRenderStates[DESTBLEND] = 1;
+            else
+                _newRenderStates[DESTBLEND] = 3;
+
+            _newRenderStates[SHADEMODE] = 1;
+            _newRenderStates[STIPPLEENABLE] = 0;
+
+            //_newRenderStates[FOG_STATE] = 0;
+        }
+
+//            for (int i = 0; i < polysDat->vertexCount; i++)
+//            {
+//                if (polysDat->distance[i] > transDist)
+//                {
+//                    float prc = (polysDat->distance[i] - transDist) / transLen;
+//                    if (prc > 1.0)
+//                        prc = 1.0;
+//
+//                    vtx[i].a = (1.0 - prc);
+//                }
+//            }
+    }
+
+    SetRenderStates(0);
+    
+    if (_rendStates[FOG_STATE])
+    {
+        glFogf(GL_FOG_START, _fogStart);
+        glFogf(GL_FOG_END, _fogStart + _fogLength);
+    }
+    
+    int tmp = glGetError();
+    if (tmp != GL_NO_ERROR)
+        printf("glDisable %x\n", tmp);
+    
+    glMatrixMode(GL_MODELVIEW);
+    
+    double mm[16] {
+    nod->TForm.m00, nod->TForm.m10, nod->TForm.m20, nod->TForm.m30,
+    nod->TForm.m01, nod->TForm.m11, nod->TForm.m21, nod->TForm.m31,
+    nod->TForm.m02, nod->TForm.m12, nod->TForm.m22, nod->TForm.m32,
+    nod->TForm.m03, nod->TForm.m13, nod->TForm.m23, nod->TForm.m33 };
+    
+    glLoadMatrixd(mm);
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    
+    glVertexPointer(3, GL_DOUBLE, sizeof(TVertex), &mesh->Vertexes[0].Pos);
+    
+    if (useComputedColor)
+        glColorPointer(4, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].ComputedColor);
+    else
+        glColorPointer(4, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].Color);
+    
+    tmp = glGetError();
+    if (tmp != GL_NO_ERROR)
+        printf("glColorPointer %x\n", tmp);
+    
+    if (nod->Mat.Tex)
+    {
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].TexCoord);
+    }
+    
+    glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GL_UNSIGNED_INT, mesh->Indixes.data());
+    tmp = glGetError();
+    if (tmp != GL_NO_ERROR)
+        printf("glDrawElements %x\n", tmp);
+    
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+void GFXEngine::RenderNode(TRenderNode *node)
+{
+    if (!node)
+        return;
+    
+    switch(node->Type)
+    {
+        case TRenderNode::TYPE_MESH:
+            RenderingMesh(node);
+            break;
+            
+        case TRenderNode::TYPE_PARTICLE:
+        {
+            PrepareParticle(node);
+            RenderingMesh(node);
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void GFXEngine::PrepareParticle(TRenderNode *node)
+{
+    if (!node->Mesh)
+        return;
+    
+    vec3d pos = node->TForm.getTranslate();
+    
+    node->TForm.identity();
+    
+    float ssz = node->Sz / 2.0;
+    
+    node->Mesh->Vertexes[0].Pos = pos + vec3d(-ssz, ssz, 0.0);
+    node->Mesh->Vertexes[0].Color = node->Mat.Color;
+    node->Mesh->Vertexes[1].Pos = pos + vec3d(-ssz, -ssz, 0.0);
+    node->Mesh->Vertexes[1].Color = node->Mat.Color;
+    node->Mesh->Vertexes[2].Pos = pos + vec3d(ssz, -ssz, 0.0);
+    node->Mesh->Vertexes[2].Color = node->Mat.Color;
+    node->Mesh->Vertexes[3].Pos = pos + vec3d(ssz, ssz, 0.0);
+    node->Mesh->Vertexes[3].Color = node->Mat.Color;
+}
+
+void GFXEngine::QueueRenderMesh(TRenderNode *nod)
+{
+    if (!nod)
+        return;
+    
+    TMesh *mesh = nod->Mesh;
+    if (nod->Mat.Flags & RFLAGS_LOCALMESH)
+        mesh = &nod->LocalMesh;
+    
+    if (!mesh)
+        return;
+    
+    uint32_t flags = nod->Mat.Flags;
+    
+    if (flags & RFLAGS_SKY)
+        _renderSkyBoxList.push_back(nod);
+    else if (flags & RFLAGS_ZEROTRACY)
+        _renderZeroTracyList.push_back(nod);
+    else if (flags & RFLAGS_LUMTRACY)
+        _renderLumaTracyList.push_back(nod);
+    else
+        _renderSolidList.push_back(nod);
+}
+
+void GFXEngine::Rasterize(uint32_t RasterEtapes)
+{
+    if (RasterEtapes & RASTER_SKY)
+    {
+        _renderSkyBoxList.sort(TRenderNode::CompareSolid);
+        
+        while(!_renderSkyBoxList.empty())
+        {
+            RenderNode( _renderSkyBoxList.front() );
+            _renderSkyBoxList.pop_front();
         }
     }
-    glEnd();
+    
+    if (RasterEtapes & RASTER_SOLID)
+    {
+        _renderSolidList.sort(TRenderNode::CompareSolid);
+        
+        while(!_renderSolidList.empty())
+        {
+            RenderNode( _renderSolidList.front() );
+            _renderSolidList.pop_front();
+        }
+    }
+    
+    if (RasterEtapes & RASTER_ZEROTR)
+    {
+        _renderZeroTracyList.sort(TRenderNode::CompareSolid);
+        
+        while(!_renderZeroTracyList.empty())
+        {
+            RenderNode( _renderZeroTracyList.front() );
+            _renderZeroTracyList.pop_front();
+        }
+    }
+    
+    if (RasterEtapes & RASTER_LUMATR)
+    {
+        _renderLumaTracyList.sort(TRenderNode::CompareTransparent);
+        
+        while(!_renderLumaTracyList.empty())
+        {
+            RenderNode( _renderLumaTracyList.front() );
+            _renderLumaTracyList.pop_front();
+        }
+    }
 }
 
-size_t GFXEngine::raster_func206(polysDat *arg)
-{
-    Rendering3DStuff(arg, false);
-
-    return 1;
-}
 
 void GFXEngine::raster_func207(int id, TileMap *t)
 {
@@ -1382,43 +1581,26 @@ void GFXEngine::raster_func211(const Common::Rect &arg)
 void GFXEngine::BeginScene()
 {
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
     glLoadMatrixd(_frustum);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    SetRenderStates(2);
+    
     _sceneBeginned = 1;
-}
-
-bool GFXEngine::compare(polysDat *a, polysDat *b)
-{
-    return a->range > b->range;
-}
-
-void GFXEngine::RenderTransparent()
-{
-    if ( _sceneBeginned )
-    {
-        if ( _pending.size() )
-        {
-            std::stable_sort(_pending.begin(), _pending.end(), compare);
-
-            for (std::deque<polysDat *>::iterator it = _pending.begin(); it != _pending.end(); it++)
-            {
-                Rendering3DStuff((*it), true);
-            }
-
-            _pending.clear();
-        }
-    }
 }
 
 // Draw transparent
 void GFXEngine::EndScene()
 {
-    RenderTransparent();
-
     _sceneBeginned = 0;
+    
+    _renderSkyBoxList.clear();
+    _renderSolidList.clear();
+    _renderZeroTracyList.clear();
+    _renderLumaTracyList.clear();
+    
+    _renderNodesCache.Rewind();
 }
 
 size_t GFXEngine::raster_func217(SDL_Color color)
@@ -1476,6 +1658,8 @@ void GFXEngine::BeginFrame()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPopAttrib();
+    
+    
 }
 
 void GFXEngine::EndFrame()
@@ -1841,7 +2025,7 @@ void GFXEngine::_setFrustumClip(float _near, float _far)
     _frustum[3] = 0.0;
 
     _frustum[4] = 0.0;
-    _frustum[5] = 1.0;
+    _frustum[5] = -1.0;
     _frustum[6] = 0.0;
     _frustum[7] = 0.0;
 

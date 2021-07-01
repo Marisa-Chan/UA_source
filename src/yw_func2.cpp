@@ -128,7 +128,6 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc,
 {
     brf->ObjRenderParams.frameTime = struc->Period;
     brf->ObjRenderParams.globTime = brf->CurrTime;
-    brf->ObjRenderParams.ownerID = 1;
 
     TF::TForm3D v14;
     memset(&v14, 0, sizeof(TF::TForm3D));
@@ -197,11 +196,9 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, 
     brf->ObjRenderParams.frameTime = 1;
     brf->ObjRenderParams.globTime = 1;
     brf->ObjRenderParams.adeCount = 0;
-    brf->ObjRenderParams.ownerID = 1;
     brf->ObjRenderParams.minZ = 17.0;
     brf->ObjRenderParams.maxZ = 32000.0;
     brf->ObjRenderParams.flags = GFX::RFLAGS_IGNORE_FALLOFF;
-    brf->ObjRenderParams.rndrStack = &NC_STACK_base::renderStack;
 
     if ( brf->ViewingObject ) // Not none
     {
@@ -209,8 +206,8 @@ void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, 
         if ( v7 > 50 )
             sb_0x4eb94c(yw, brf, struc, v7 - 50);
     }
-
-    brf->ObjRenderParams.rndrStack->render();
+    
+    GFX::Engine.Rasterize();
 
     GFX::Engine.EndScene();
     GFX::Engine.SetFBOBlending(0);

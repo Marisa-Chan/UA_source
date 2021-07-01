@@ -3,6 +3,7 @@
 
 #include <deque>
 #include "../system/tform.h"
+#include "../system/gfx.h"
 #include "../vectors.h"
 
 class NC_STACK_particle;
@@ -49,6 +50,8 @@ protected:
     std::deque<Frak> _particles;
     NC_STACK_skeleton *_sklt;
     UAskeleton::Data *_skltData;
+    
+    GFX::TMesh _mesh;
     
     bool _disableAdd = false;
 };

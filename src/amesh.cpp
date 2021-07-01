@@ -184,154 +184,106 @@ size_t NC_STACK_amesh::SaveIntoIFF(IFFile **file)
     return 1;
 }
 
-// Add amesh to list
-size_t NC_STACK_amesh::ade_func65(area_arg_65 *arg, InstanceOpts * opts /* = NULL */)
+void NC_STACK_amesh::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton * skelet)
 {
-    //v5 = *(_uint16_t *)(amesh->field_14 + 6) & 0xFEF6;
-    int renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
+    uint32_t renderFlags = _polflags & ~(AREA_POL_FLAG_SCANLN | AREA_POL_FLAG_TEXBIT | AREA_POL_FLAG_TRACYBIT3);
 
     if (renderFlags == 0)
         renderFlags = 0;
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP;
+        renderFlags = GFX::RFLAGS_TEXTURED;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP;
+        renderFlags = GFX::RFLAGS_TEXTURED;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_NOTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP | GFX::RFLAGS_GRADSHD;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_GRADSHD | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_DEPTHMAPPED | AREA_POL_FLAG_GRADIENTSHADE | AREA_POL_FLAG_CLEARTRACY) )
-        renderFlags = GFX::RFLAGS_PERSPMAP | GFX::RFLAGS_GRADSHD | GFX::RFLAGS_ZEROTRACY;
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_SHADED | GFX::RFLAGS_ZEROTRACY;
 
     else if (renderFlags == (AREA_POL_FLAG_LINEARMAPPED | AREA_POL_FLAG_NOSHADE | AREA_POL_FLAG_FLATTRACY) )
-        renderFlags = GFX::RFLAGS_LINMAP | GFX::RFLAGS_LUMTRACY;
-    else
-        return 1;
-
-
-    skeleton_arg133 skel133;
-
-    skel133.field_4 = 0;
-
-    if ( renderFlags & (GFX::RFLAGS_LINMAP | GFX::RFLAGS_PERSPMAP ) )
-        skel133.field_4 |= 1;
-    if ( renderFlags & (GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD) )
-        skel133.field_4 |= 2;
-    if ( flags & ADE_FLAG_DPTHFADE )
-        skel133.field_4 |= 4;
-
-    skel133.minZ = arg->minZ;
-    skel133.maxZ = arg->maxZ;
-    skel133.fadeStart = arg->fadeStart;
-    skel133.fadeLength = arg->fadeLength;
-
-
-    ResBitmap *v21;
-
-    if ( _texImg )
-    {
-        _texImg->SetTime(arg->timeStamp, arg->frameTime);
-        v21 = _texImg->GetBitmap();
-    }
-    else
-    {
-        v21 = NULL;
-    }
-
+        renderFlags = GFX::RFLAGS_TEXTURED | GFX::RFLAGS_LUMTRACY;
+    
+    if (flags & ADE_FLAG_DPTHFADE)
+        renderFlags |= GFX::RFLAGS_FOG;
+    
+    UAskeleton::Data *dat = skelet->GetSkelet();
+    
+    float alpha = 1.0;
+        
+    if (renderFlags & GFX::RFLAGS_LUMTRACY)
+        alpha = GFX::Engine.GetAlpha();
+    
     for (int i = 0; i < polyCnt; i++)
     {
-        polysDat *data = arg->rndrStack->get();
-        polysDatSub *datSub = &data->datSub;
-
-        datSub->renderFlags = renderFlags;
-        datSub->r = 1.0;
-        datSub->g = 1.0;
-        datSub->b = 1.0;
-
-        datSub->pbitm = v21;
-
-        skel133.polyID = atts.at(i).polyID;
-
-        skel133.rndrArg = datSub;
-
-        skel133.shadeVal = atts.at(i).shadeVal / 256.0;
-
-        if ( !texCoords.empty() )
-            skel133.texCoords = texCoords[i].data();
-        else
-            skel133.texCoords = NULL;
-
-        if (arg->OBJ_SKELETON->skeleton_func133(&skel133))
+        ATTS &att = atts.at(i);
+        
+        float clr = 1.0;
+        if (renderFlags & GFX::RFLAGS_SHADED)
         {
-            arg->adeCount++;
+            clr = (1.0 - att.shadeVal / 256.0);
+            if (clr < 0.0)
+                clr = 0.0;
+            if (clr > 1.0)
+                clr = 1.0;
+        }
+        
+        if (!_texImg)
+            clr = 0.0;
+        
+        GFX::TRenderParams mat = GFX::TRenderParams(_texImg, renderFlags);
 
-            if ( datSub->renderFlags & ( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD ) )
+        GFX::TMesh *msh = NC_STACK_base::FindMeshByRenderParams(meshList, mat);
+        
+        if (!msh)
+        {
+            meshList->emplace_back();
+            msh = &(meshList->back());
+
+            msh->Mat = mat;
+        }
+        
+        
+        UAskeleton::Polygon &pol = dat->polygons[att.polyID];
+
+        uint32_t fid = msh->Vertexes.size();
+
+        if (pol.num_vertices >= 3)
+        {
+            for(int j = 0; j < pol.num_vertices; ++j)
             {
-                int v6 = 0;
-                int v8 = 0;
-
-                for (int j = 0; j < datSub->vertexCount; j++)
-                {
-                    float clr = datSub->color[j];
-                    if (clr < 0.01)
-                        v6++;
-                    else if (clr > 0.99)
-                        v8++;
-                }
-
-                if ( v6 == datSub->vertexCount )
-                {
-                    datSub->renderFlags &= ~( GFX::RFLAGS_FLATSHD | GFX::RFLAGS_GRADSHD );
-                }
-                else if ( v8 == datSub->vertexCount && !System::IniConf::GfxNewSky.Get<bool>() )
-                {
-                    datSub->renderFlags = 0;
-                }
+                msh->Vertexes.emplace_back();
+                msh->Vertexes.back().Pos = dat->POO[ pol.v[j] ];
+                msh->Vertexes.back().TexCoordId = j;
+                msh->Vertexes.back().Color = GFX::TGLColor(clr, clr, clr, alpha);
+                
+                msh->BoundBox.Add( dat->POO[ pol.v[j] ] );
+                
+                if (!texCoords.empty())
+                    msh->Vertexes.back().TexCoord = texCoords.at(i).at(j);
             }
-
-            datSub->renderFlags |= (arg->flags & GFX::RFLAGS_SKY);
-
-            float maxz = 0.0;
-
-            for (int j = 0; j < datSub->vertexCount; j++)
-                if (datSub->vertexes[j].z > maxz)
-                    maxz = datSub->vertexes[j].z;
-
-            if ( !(arg->flags & GFX::RFLAGS_IGNORE_FALLOFF) && System::IniConf::GfxNewSky.Get<bool>() )
+            
+            for(int j = 2; j < pol.num_vertices; ++j)
             {
-                float maxln = 0.0;
-
-                for (int j = 0; j < datSub->vertexCount; j++)
-                {
-                    datSub->distance[j] = datSub->vertexes[j].XZ().length();
-                    if (datSub->distance[j] > maxln)
-                        maxln = datSub->distance[j];
-                }
-
-                if (maxln > System::IniConf::GfxSkyDistance.Get<int>())
-                    datSub->renderFlags |= GFX::RFLAGS_FALLOFF;
+                msh->Indixes.push_back(fid + 0);
+                msh->Indixes.push_back(fid + j);
+                msh->Indixes.push_back(fid + j - 1);
             }
-
-            data->range = maxz;
-
-            arg->rndrStack->commit();
         }
     }
-
-    return 1;
 }
 
 void NC_STACK_amesh::setAMESH_numpoly(int num)

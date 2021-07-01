@@ -37,12 +37,6 @@ rsrc * NC_STACK_skeleton::rsrc_func64(IDVList &stak)
 
     int elm_num = stak.Get<int32_t>(SKEL_ATT_POINTSCNT, 0);
 
-    if (!elm_num)
-    {
-        rsrc_func65(res);
-        return NULL;
-    }
-
     UAskeleton::Data *sklt = new UAskeleton::Data;
 
     if (!sklt)
@@ -218,18 +212,18 @@ bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
     if ( !PolygonCheckInvisible(_resData->tformedVertex, pol, &PolyVertex) )
         return false;
 
-    arg->rndrArg->vertexCount = pol.num_vertices;
+//    arg->rndrArg->vertexCount = pol.num_vertices;
     int vtxCnt = pol.num_vertices;
 
-    for (int i = 0; i < vtxCnt; i++ )
-        arg->rndrArg->vertexes[i] = PolyVertex[i];
+//    for (int i = 0; i < vtxCnt; i++ )
+//        arg->rndrArg->vertexes[i] = PolyVertex[i];
 
     if ( arg->field_4 & 1 )
     {
         if (arg->texCoords)
         {
-            for (int i = 0; i < vtxCnt; i++)
-                arg->rndrArg->tu_tv[i] = arg->texCoords[i];
+//            for (int i = 0; i < vtxCnt; i++)
+//                arg->rndrArg->tu_tv[i] = arg->texCoords[i];
         }
     }
 
@@ -249,13 +243,13 @@ bool NC_STACK_skeleton::skeleton_func133(skeleton_arg133 *arg)
                 if ( tsq > 1.0 )
                     tsq = 1.0;
 
-                arg->rndrArg->color[i] = tsq;
+//                arg->rndrArg->color[i] = tsq;
             }
         }
         else
         {
-            for (int i = 0; i < vtxCnt; i++ )
-                arg->rndrArg->color[i] = arg->shadeVal;
+//            for (int i = 0; i < vtxCnt; i++ )
+//                arg->rndrArg->color[i] = arg->shadeVal;
         }
     }
 

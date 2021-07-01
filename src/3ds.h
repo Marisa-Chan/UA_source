@@ -83,7 +83,6 @@ class NC_STACK_3ds: public NC_STACK_base
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t Render(baseRender_msg *arg, Instance * inst);
 
     NC_STACK_3ds();
     virtual ~NC_STACK_3ds();
@@ -100,6 +99,8 @@ public:
     bool LoadFromFile(FSMgr::FileHandle *file);
     
     static NC_STACK_3ds *Load3DS(const std::string &filename);
+    
+    virtual void RecalcInternal(bool kids = false) override;
 
 private:
     size_t readChunkEditor(FSMgr::FileHandle *fil, size_t sz);
@@ -114,6 +115,7 @@ private:
     size_t readName(FSMgr::FileHandle *fil, std::string *dst, size_t maxn);
 
     d3dsMaterial *findMaterial(const std::string &matName);
+    GFX::TRenderParams GenRenderParams(d3dsMaterial *);
 
 public:
     //Data
