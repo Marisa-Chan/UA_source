@@ -77,6 +77,7 @@ OBJS =  \
 	netlib/single_threads.cpp\
 	netlib/zndNet.cpp\
 	nucleas.cpp\
+	obj3d.cpp\
 	particle.cpp\
 	rsrc.cpp\
 	sample.cpp\

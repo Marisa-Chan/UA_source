@@ -4,6 +4,7 @@
 #include "image.h"
 #include "ilbm.h"
 #include "3ds.h"
+#include "obj3d.h"
 
 namespace Utils
 {
@@ -44,6 +45,8 @@ NC_STACK_base *ProxyLoadBase(const std::string &fname)
     
     if ( !StriCmp(name, "3ds") )
         return NC_STACK_3ds::Load3DS(fname);
+    else if ( !StriCmp(name, "obj") )
+        return NC_STACK_Obj3D::LoadObj3D(fname);
     
     return NC_STACK_base::LoadBaseFromFile(fname);
 }

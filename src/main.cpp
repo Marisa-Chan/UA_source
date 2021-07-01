@@ -40,6 +40,7 @@
 #include "gui/uaempty.h"
 #include "system/movie.h"
 #include "system/inivals.h"
+#include "obj3d.h"
 
 
 int dword_513638 = 0;
@@ -541,6 +542,7 @@ int init_classesLists_and_variables()
     Nucleus::ClassList.push_back(NC_STACK_ypagun::description);
     Nucleus::ClassList.push_back(NC_STACK_3ds::description);
     Nucleus::ClassList.push_back(NC_STACK_image::description);
+    Nucleus::ClassList.push_back(NC_STACK_Obj3D::description);
 
     return 1;
 }
