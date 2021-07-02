@@ -117,14 +117,6 @@ size_t NC_STACK_rsrc::rsrc_func65(rsrc *res)
     return 1;
 }
 
-const char * NC_STACK_rsrc::getRsrc_name()
-{
-    if ( resource )
-        return resource->name.c_str();
-
-    return NULL;
-}
-
 const std::string NC_STACK_rsrc::getRsrc_name() const
 {
     if ( resource )

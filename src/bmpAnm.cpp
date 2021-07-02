@@ -91,16 +91,16 @@ size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
 {
     IFFile *mfile = *file;
 
-    const char *a3 = getRsrc_name();
+    std::string a3 = getRsrc_name();
 
-    if ( !a3 )
+    if ( a3.empty() )
     {
         return 0;
     }
 
     rsrc_func66_arg sv;
     sv.OpenedStream = 1;
-    sv.filename = a3;
+    sv.filename = a3.c_str();
     sv.file = NULL;
 
     if ( rsrc_func66(&sv) != 1 )
@@ -120,7 +120,7 @@ size_t NC_STACK_bmpanim::SavingIntoIFF(IFFile **file)
     mfile->writeS16B(6); //offset of name
     mfile->writeS16B(_animType);
 
-    mfile->write(a3, strlen(a3) + 1);
+    mfile->write(a3.c_str(), a3.size() + 1);
     mfile->popChunk();
     return mfile->popChunk() == IFFile::IFF_ERR_OK;
 }

@@ -71,8 +71,8 @@ size_t NC_STACK_sklt::func6(IFFile **file)
     else
     {
         mfile->pushChunk(0, TAG_NAME, -1);
-        const char *name = getRsrc_name();
-        mfile->write(name, strlen(name) + 1);
+        std::string name = getRsrc_name();
+        mfile->write(name.c_str(), name.size() + 1);
         mfile->popChunk();
         return mfile->popChunk() == IFFile::IFF_ERR_OK;
     }
