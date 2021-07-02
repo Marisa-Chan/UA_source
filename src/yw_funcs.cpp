@@ -3270,9 +3270,12 @@ void NC_STACK_ypaworld::LoadOverrideModels()
         std::string basName = fmt::sprintf("rsrc:objects/%s", tokens[2]);
 
         NC_STACK_base *model = Utils::ProxyLoadBase(basName);
-
+        
         if ( !model )
             continue;
+        
+        model->SetVizLimit(field_15e4);
+        model->SetFadeLength(field_15e8);
         
         uint32_t id = std::stoi(tokens[1]);
         

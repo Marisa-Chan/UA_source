@@ -141,6 +141,8 @@ bool NC_STACK_Obj3D::ParseObj(FSMgr::FileHandle *fil)
                 GFX::TRenderParams prm;
                 if (_currentMtl)
                     prm = _currentMtl->GenParams();
+                else
+                    prm.Flags |= GFX::RFLAGS_FOG | GFX::RFLAGS_SHADED;
 
                 GFX::TMesh *msh = FindMeshByRenderParams(&Meshes, prm);
                 if (!msh)
@@ -370,7 +372,7 @@ NC_STACK_Obj3D::Mtl *NC_STACK_Obj3D::FindMtl(const std::string &mtlname)
 GFX::TRenderParams NC_STACK_Obj3D::Mtl::GenParams() const
 {
     GFX::TRenderParams tmp;
-    tmp.Flags = GFX::RFLAGS_SHADED;
+    tmp.Flags = GFX::RFLAGS_SHADED | GFX::RFLAGS_FOG;
     
     if (diffuseMap)
     {
