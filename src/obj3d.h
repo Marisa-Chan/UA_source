@@ -22,6 +22,22 @@ protected:
         FaceVT(int32_t v, int32_t t, int32_t n)
         : V(v), T(t), N(n) {};
     };
+    
+    struct Mtl
+    {
+        std::string name;
+        float diffuse[3];
+        NC_STACK_bitmap *diffuseMap = NULL;
+        float d = 1.0;
+        
+        ~Mtl()
+        {
+            if (diffuseMap)
+                Nucleus::Delete(diffuseMap);
+        }
+        
+        GFX::TRenderParams GenParams() const;
+    };
         
 public:
     virtual size_t Init(IDVList &stak);
@@ -46,6 +62,8 @@ public:
 private:
     bool ParseObj(FSMgr::FileHandle *fil);
     FaceVT ParseFaceVT(const std::string &l);
+    bool ParseMtl(const std::string &filename);
+    Mtl *FindMtl(const std::string &filename);
 
 public:
     //Data
@@ -56,6 +74,11 @@ private:
     std::vector<vec3d> _vt;
     std::vector<vec3d> _vn;
     std::vector< std::array<FaceVT, GFX_MAX_VERTEX> > _f;
+    std::list<Mtl> _mtls;
+    
+    std::string fname;
+    
+    Mtl *_currentMtl = NULL;
     
     int32_t faceNum = 0;
 };

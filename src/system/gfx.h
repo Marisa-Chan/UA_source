@@ -78,6 +78,9 @@ struct tUtV
 {
     float tu = -1.0;
     float tv = -1.0;
+    
+    tUtV() = default;
+    tUtV(float u, float v): tu(u), tv(v) {};
 };
 
 
