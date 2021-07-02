@@ -5848,45 +5848,44 @@ void NC_STACK_ypabact::HandleVisChildrens(int *arg)
     }
 }
 
-size_t NC_STACK_ypabact::GetFightMotivation(float *arg)
+bool NC_STACK_ypabact::GetFightMotivation(float *arg)
 {
     if ( _aggr == 100 )
-        return 1;
+        return true;
 
-    if ( _aggr )
+    if ( _aggr == 0 )
+        return false;
+
+    bact_arg81 arg81;
+    arg81.enrg_sum = 0;
+    arg81.enrg_type = 1;
+
+    GetSummary(&arg81);
+
+    float v11 = arg81.enrg_sum;
+
+    arg81.enrg_sum = 0;
+    arg81.enrg_type = 4;
+
+    GetSummary(&arg81);
+
+    if (arg81.enrg_sum == 0) // Possible devision by zero
+        arg81.enrg_sum = 1;
+
+    v11 = v11 / (float)arg81.enrg_sum;
+
+    if ( arg )
+        *arg = v11;
+
+    if ( (_status_flg & BACT_STFLAG_ESCAPE) && v11 > 0.5 )
     {
-        bact_arg81 arg81;
-        arg81.enrg_sum = 0;
-        arg81.enrg_type = 1;
-
-        GetSummary(&arg81);
-
-        float v11 = arg81.enrg_sum;
-
-        arg81.enrg_sum = 0;
-        arg81.enrg_type = 4;
-
-        GetSummary(&arg81);
-
-        if (arg81.enrg_sum == 0) // Possible devision by zero
-            arg81.enrg_sum = 1;
-
-        v11 = v11 / (float)arg81.enrg_sum;
-
-        if ( arg )
-            *arg = v11;
-
-        if ( _status_flg & BACT_STFLAG_ESCAPE )
-        {
-            if ( v11 > 0.5 )
-                return 1;
-        }
-        else if ( v11 > 0.2 )
-        {
-            return 1;
-        }
+        return true;
     }
-    return 0;
+    else if ( v11 > 0.2 )
+    {
+        return true;
+    }
+    return false;
 }
 
 NC_STACK_ypabact *sb_0x493984__sub1(NC_STACK_ypabact *bact)
@@ -8079,4 +8078,21 @@ void NC_STACK_ypabact::CleanAttackersTarget()
 bool NC_STACK_ypabact::IsParentMyRobo() const
 {
     return (_host_station) && (_parent) && (_host_station == _parent);
+}
+
+void NC_STACK_ypabact::ChangeEscapeFlag(bool escape)
+{
+    if ( escape )
+        _status_flg |= BACT_STFLAG_ESCAPE;
+    else
+        _status_flg &= ~BACT_STFLAG_ESCAPE;
+
+    // May be do it in recursion?
+    for( NC_STACK_ypabact* &node : _kidList ) 
+    {
+        if ( escape )
+            node->_status_flg |= BACT_STFLAG_ESCAPE;
+        else
+            node->_status_flg &= ~BACT_STFLAG_ESCAPE;
+    }
 }

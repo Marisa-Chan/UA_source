@@ -286,7 +286,7 @@ protected:
     
     void sub_4A4538(NC_STACK_ypabact *bact);
     void sub_4A448C(NC_STACK_ypabact *bact);
-    void sub_4AB69C(NC_STACK_ypabact *bact, char a2);
+    
     int sb_0x4a45cc__sub0(NC_STACK_ypabact *bact);
     void sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2);
     void sb_0x4a7010__sub1(NC_STACK_ypabact *unit, robo_t1 *rbt);

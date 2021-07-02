@@ -428,7 +428,7 @@ public:
     virtual size_t FireMinigun(bact_arg105 *arg);
     virtual size_t UserTargeting(bact_arg106 *arg);
     virtual void HandleVisChildrens(int *arg);
-    virtual size_t GetFightMotivation(float *arg);
+    virtual bool GetFightMotivation(float *arg);
     virtual void ReorganizeGroup(bact_arg109 *arg);
     virtual size_t TargetAssess(bact_arg110 *arg);
     virtual size_t TestTargetSector(NC_STACK_ypabact *);
@@ -507,6 +507,8 @@ public:
     virtual World::rbcolls *getBACT_collNodes();
     virtual int getBACT_extraViewer();
     virtual int getBACT_alwaysRender();
+    
+    void ChangeEscapeFlag(bool escape);
     
     virtual bool IsGroundUnit() { return false; };
     

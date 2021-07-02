@@ -1274,21 +1274,7 @@ void NC_STACK_yparobo::sub_4A448C(NC_STACK_ypabact *bact)
     }
 }
 
-void NC_STACK_yparobo::sub_4AB69C(NC_STACK_ypabact *bact, char a2)
-{
-    if ( a2 )
-        bact->_status_flg |= BACT_STFLAG_ESCAPE;
-    else
-        bact->_status_flg &= ~BACT_STFLAG_ESCAPE;
 
-    for( NC_STACK_ypabact* &node : bact->_kidList )
-    {
-        if ( a2 )
-            node->_status_flg |= BACT_STFLAG_ESCAPE;
-        else
-            node->_status_flg &= ~BACT_STFLAG_ESCAPE;
-    }
-}
 
 int NC_STACK_yparobo::sb_0x4a45cc__sub0(NC_STACK_ypabact *bact)
 {
@@ -1416,7 +1402,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             }
         }
         sub_4A4538(arg->selectBact);
-        sub_4AB69C(arg->selectBact, 0);
+        arg->selectBact->ChangeEscapeFlag(false);
         break;
 
     case World::DOACTION_ADD_UNIT1:
@@ -1675,7 +1661,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
         sub_4A448C(arg->selectBact);
         sub_4A4538(arg->selectBact);
-        sub_4AB69C(arg->selectBact, 0);
+        arg->selectBact->ChangeEscapeFlag(false);
     }
     break;
 
@@ -2595,10 +2581,7 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
 
         _roboDockTime = newUnit->_scale_time + 2000;
 
-        newUnit->_status_flg &= ~BACT_STFLAG_ESCAPE;
-
-        for (NC_STACK_ypabact* &nnode : newUnit->_kidList )
-            nnode->_status_flg &= ~BACT_STFLAG_ESCAPE;
+        newUnit->ChangeEscapeFlag(false);
 
         setState_msg arg78;
         arg78.newStatus = BACT_STATUS_CREATE;
@@ -3443,219 +3426,215 @@ void NC_STACK_yparobo::checkCommander()
 
     for ( NC_STACK_ypabact* &commander : _kidList )
     {
-        if ( commander->_status != BACT_STATUS_DEAD )
+        if ( commander->_status == BACT_STATUS_DEAD )
+            continue;
+
+        if ( _roboDockUser == commander->_commandID && _roboDockUser )
         {
-            if ( _roboDockUser == commander->_commandID && _roboDockUser )
+            InitForce(commander);
+            continue;
+        }
+        
+        if ( commander->_bact_type == BACT_TYPES_GUN )
+            continue;
+
+        if ( commander->_status_flg & BACT_STFLAG_ESCAPE )
+        {
+            if ( commander->GetFightMotivation(&v31) )
             {
-                InitForce(commander);
+                if ( commander->_owner == commander->_pSector->owner && commander->_pSector->energy_power )
+                {
+                    setTarget_msg arg67;
+                    arg67.tgt_type = BACT_TGT_TYPE_CELL;
+                    arg67.priority = 0;
+                    arg67.tgt_pos = commander->_position;
+
+                    commander->SetTarget(&arg67);
+                }
+
+                commander->ChangeEscapeFlag(false);
+
+                if ( userRobo )
+                {
+                    robo_arg134 arg134;
+                    arg134.field_8 = commander->_commandID;
+                    arg134.field_4 = 10;
+                    arg134.field_10 = 0;
+                    arg134.field_C = 0;
+                    arg134.unit = commander;
+                    arg134.field_14 = 28;
+
+                    placeMessage(&arg134);
+                }
+            }
+            continue;
+        }
+
+        if ( commander->GetFightMotivation(&v31) )
+        {
+            if ( v31 < 0.5 && userRobo )
+            {
+                bact_arg81 arg81;
+                arg81.enrg_sum = 0;
+                arg81.enrg_type = 3;
+
+                commander->GetSummary(&arg81);
+
+                int v18 = arg81.enrg_sum;
+
+                arg81.enrg_sum = 0;
+                arg81.enrg_type = 5;
+                commander->GetSummary(&arg81);
+
+                if ( v18 < arg81.enrg_sum )
+                {
+                    robo_arg134 arg134;
+                    arg134.field_8 = 20000;
+                    arg134.field_10 = 0;
+                    arg134.field_C = 0;
+                    arg134.field_4 = 18;
+                    arg134.unit = commander;
+                    arg134.field_14 = 42;
+
+                    placeMessage(&arg134);
+                }
+            }
+
+            if ( !userRobo )
+            {
+                if ( _clock - _roboAttackersTime > 1000 )
+                {
+                    _roboAttackersTime = _clock;
+
+                    for (int i = 0; i < 16; i++)
+                    {
+                        if ( _roboAttackers[i].field_0 == commander->_commandID)
+                        {
+                            sb_0x4a7010__sub1(commander, &_roboAttackers[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            commander->ChangeEscapeFlag(true);
+
+
+            commander->_status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
+            commander->_waypoints_count = 0;
+            commander->_status_flg &= ~BACT_STFLAG_UNUSE;
+
+
+            for (NC_STACK_ypabact* &nod : commander->_kidList)
+                nod->_status_flg &= ~BACT_STFLAG_UNUSE;
+
+            if ( IsNeedsWaypoints(commander) )
+            {
+                bact_arg124 arg124;
+                arg124.steps_cnt = 32;
+                arg124.from = commander->_position.XZ();
+                arg124.to = _position.XZ();
+                arg124.field_12 = 1;
+
+                if ( ! commander->PathFinder(&arg124) )
+                    break;
+
+                if ( arg124.steps_cnt > 1 )
+                {
+                    arg124.steps_cnt = 32;
+                    commander->SetPath(&arg124);
+
+                    commander->_m_cmdID = _commandID;
+                    commander->_m_owner = _owner;
+                }
+                else
+                {
+                    setTarget_msg arg67;
+                    arg67.tgt.pbact = this;
+                    arg67.priority = 0;
+                    arg67.tgt_type = BACT_TGT_TYPE_UNIT;
+                    commander->SetTarget(&arg67);
+                }
             }
             else
             {
-                if ( commander->_bact_type != BACT_TYPES_GUN )
+                setTarget_msg arg67;
+                arg67.tgt.pbact = this;
+                arg67.tgt_type = BACT_TGT_TYPE_UNIT;
+                arg67.priority = 0;
+                commander->SetTarget(&arg67);
+            }
+
+            if ( userRobo )
+            {
+                robo_arg134 arg134;
+                arg134.field_8 = commander->_commandID;
+                arg134.field_10 = 0;
+                arg134.field_C = 0;
+                arg134.field_4 = 9;
+                arg134.unit = commander;
+                arg134.field_14 = 40;
+
+                placeMessage(&arg134);
+
+                if ( _world->isNetGame  )
                 {
-                    if ( !(commander->_status_flg & BACT_STFLAG_ESCAPE) )
+                    bact_arg90 arg90;
+                    arg90.unit = commander;
+                    arg90.field_8 = 1;
+                    arg90.ret_unit = NULL;
+                    GetSectorTarget(&arg90);
+
+                    if ( arg90.ret_unit )
                     {
-                        if ( commander->GetFightMotivation(&v31) )
-                        {
-                            if ( v31 < 0.5 && userRobo )
-                            {
-                                bact_arg81 arg81;
-                                arg81.enrg_sum = 0;
-                                arg81.enrg_type = 3;
+                        uamessage_logmsg logMsg;
+                        logMsg.msgID = UAMSG_LOGMSG;
+                        logMsg.owner = _owner;
+                        logMsg.sender = arg90.ret_unit->_gid;
+                        logMsg.senderOwner = arg90.ret_unit->_owner;
+                        logMsg.pr1 = 0;
+                        logMsg.pr2 = 0;
+                        logMsg.pr3 = 0;
+                        logMsg.pri = 34;
+                        logMsg.id = 19;
 
-                                commander->GetSummary(&arg81);
-
-                                int v18 = arg81.enrg_sum;
-
-                                arg81.enrg_sum = 0;
-                                arg81.enrg_type = 5;
-                                commander->GetSummary(&arg81);
-
-                                if ( v18 < arg81.enrg_sum )
-                                {
-                                    robo_arg134 arg134;
-                                    arg134.field_8 = 20000;
-                                    arg134.field_10 = 0;
-                                    arg134.field_C = 0;
-                                    arg134.field_4 = 18;
-                                    arg134.unit = commander;
-                                    arg134.field_14 = 42;
-
-                                    placeMessage(&arg134);
-                                }
-                            }
-
-                            if ( !userRobo )
-                            {
-                                if ( _clock - _roboAttackersTime > 1000 )
-                                {
-                                    _roboAttackersTime = _clock;
-
-                                    for (int i = 0; i < 16; i++)
-                                    {
-                                        if ( _roboAttackers[i].field_0 == commander->_commandID)
-                                        {
-                                            sb_0x4a7010__sub1(commander, &_roboAttackers[i]);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            commander->_status_flg |= BACT_STFLAG_ESCAPE;
-
-                            for (NC_STACK_ypabact* &nod : commander->_kidList)
-                                nod->_status_flg |= BACT_STFLAG_ESCAPE;
-
-                            commander->_status_flg &= ~(BACT_STFLAG_WAYPOINT | BACT_STFLAG_WAYPOINTCCL);
-                            commander->_waypoints_count = 0;
-                            commander->_status_flg &= ~BACT_STFLAG_UNUSE;
-
-                            
-                            for (NC_STACK_ypabact* &nod : commander->_kidList)
-                                nod->_status_flg &= ~BACT_STFLAG_UNUSE;
-
-                            if ( IsNeedsWaypoints(commander) )
-                            {
-                                bact_arg124 arg124;
-                                arg124.steps_cnt = 32;
-                                arg124.from = commander->_position.XZ();
-                                arg124.to = _position.XZ();
-                                arg124.field_12 = 1;
-
-                                if ( ! commander->PathFinder(&arg124) )
-                                    break;
-
-                                if ( arg124.steps_cnt > 1 )
-                                {
-                                    arg124.steps_cnt = 32;
-                                    commander->SetPath(&arg124);
-
-                                    commander->_m_cmdID = _commandID;
-                                    commander->_m_owner = _owner;
-                                }
-                                else
-                                {
-                                    setTarget_msg arg67;
-                                    arg67.tgt.pbact = this;
-                                    arg67.priority = 0;
-                                    arg67.tgt_type = BACT_TGT_TYPE_UNIT;
-                                    commander->SetTarget(&arg67);
-                                }
-                            }
-                            else
-                            {
-                                setTarget_msg arg67;
-                                arg67.tgt.pbact = this;
-                                arg67.tgt_type = BACT_TGT_TYPE_UNIT;
-                                arg67.priority = 0;
-                                commander->SetTarget(&arg67);
-                            }
-
-                            if ( userRobo )
-                            {
-                                robo_arg134 arg134;
-                                arg134.field_8 = commander->_commandID;
-                                arg134.field_10 = 0;
-                                arg134.field_C = 0;
-                                arg134.field_4 = 9;
-                                arg134.unit = commander;
-                                arg134.field_14 = 40;
-
-                                placeMessage(&arg134);
-
-                                if ( _world->isNetGame  )
-                                {
-                                    bact_arg90 arg90;
-                                    arg90.unit = commander;
-                                    arg90.field_8 = 1;
-                                    arg90.ret_unit = NULL;
-                                    GetSectorTarget(&arg90);
-
-                                    if ( arg90.ret_unit )
-                                    {
-                                        uamessage_logmsg logMsg;
-                                        logMsg.msgID = UAMSG_LOGMSG;
-                                        logMsg.owner = _owner;
-                                        logMsg.sender = arg90.ret_unit->_gid;
-                                        logMsg.senderOwner = arg90.ret_unit->_owner;
-                                        logMsg.pr1 = 0;
-                                        logMsg.pr2 = 0;
-                                        logMsg.pr3 = 0;
-                                        logMsg.pri = 34;
-                                        logMsg.id = 19;
-
-                                        yw_arg181 arg181;
-                                        arg181.recvID = 0;
-                                        arg181.recvFlags = 2;
-                                        arg181.data = &logMsg;
-                                        arg181.dataSize = sizeof(logMsg);
-                                        arg181.garant = 1;
-                                        _world->ypaworld_func181(&arg181);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                for ( NC_STACK_ypabact *v33 : commander->_attackersList )
-                                {
-                                    if (_world->UserRobo->_owner == v33->_owner)
-                                    {                                       
-                                        if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
-                                        {
-                                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
-                                            v33 = miss->getMISS_launcher(); //Get emitter bact
-                                        }
-
-                                        if ( v33->_host_station != v33->_parent &&
-                                             v33->_parent )
-                                            v33 = v33->_parent;
-
-                                        robo_arg134 arg134;
-                                        arg134.field_8 = 0;
-                                        arg134.field_10 = 0;
-                                        arg134.field_C = 0;
-                                        arg134.field_4 = 19;
-                                        arg134.unit = v33;
-                                        arg134.field_14 = 34;
-                                        placeMessage(&arg134);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        yw_arg181 arg181;
+                        arg181.recvID = 0;
+                        arg181.recvFlags = 2;
+                        arg181.data = &logMsg;
+                        arg181.dataSize = sizeof(logMsg);
+                        arg181.garant = 1;
+                        _world->ypaworld_func181(&arg181);
                     }
-                    else if ( commander->GetFightMotivation(&v31) )
-                    {
-                        if ( commander->_owner == commander->_pSector->owner && commander->_pSector->energy_power )
+                }
+            }
+            else
+            {
+                for ( NC_STACK_ypabact *v33 : commander->_attackersList )
+                {
+                    if (_world->UserRobo->_owner == v33->_owner)
+                    {                                       
+                        if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
                         {
-                            setTarget_msg arg67;
-                            arg67.tgt_type = BACT_TGT_TYPE_CELL;
-                            arg67.priority = 0;
-                            arg67.tgt_pos = commander->_position;
-
-                            commander->SetTarget(&arg67);
+                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
+                            v33 = miss->getMISS_launcher(); //Get emitter bact
                         }
 
-                        commander->_status_flg &= ~BACT_STFLAG_ESCAPE;
+                        if ( v33->_host_station != v33->_parent &&
+                             v33->_parent )
+                            v33 = v33->_parent;
 
-                        for (NC_STACK_ypabact* &nod : commander->_kidList)
-                            nod->_status_flg &= ~BACT_STFLAG_ESCAPE;
-
-                        if ( userRobo )
-                        {
-                            robo_arg134 arg134;
-                            arg134.field_8 = commander->_commandID;
-                            arg134.field_4 = 10;
-                            arg134.field_10 = 0;
-                            arg134.field_C = 0;
-                            arg134.unit = commander;
-                            arg134.field_14 = 28;
-
-                            placeMessage(&arg134);
-                        }
+                        robo_arg134 arg134;
+                        arg134.field_8 = 0;
+                        arg134.field_10 = 0;
+                        arg134.field_C = 0;
+                        arg134.field_4 = 19;
+                        arg134.unit = v33;
+                        arg134.field_14 = 34;
+                        placeMessage(&arg134);
+                        break;
                     }
                 }
             }
