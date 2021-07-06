@@ -198,6 +198,7 @@ Common::Ini::Key IniConf::ParticlesLimit("particles.limit", Common::Ini::KT_DIGI
 
 Common::Ini::Key IniConf::MenuWindowed("menu.windowed", Common::Ini::KT_BOOL, false);
 
+Common::Ini::Key IniConf::GameHideBlacksect("game.hideblacksect", Common::Ini::KT_BOOL, true);
 
 void IniConf::Init()
 {
@@ -383,6 +384,8 @@ void IniConf::Init()
         , &ParticlesLimit
                   
         , &MenuWindowed
+                  
+        , &GameHideBlacksect
     };
 }
     

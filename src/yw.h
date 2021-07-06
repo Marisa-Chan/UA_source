@@ -667,6 +667,8 @@ public:
     uint32_t net_packet_max;
     uint32_t net_packet_cnt;
     uint32_t net_packet_avr;
+    
+    bool HideBlackSect = true;
 
 public:
     void clear();

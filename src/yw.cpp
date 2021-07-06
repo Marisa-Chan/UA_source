@@ -2549,6 +2549,8 @@ bool NC_STACK_ypaworld::InitGameShell(UserData *usr)
     usr->InputConfig[World::INPUT_BIND_LAST_SEAT]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 44, Input::KC_NONE);
     usr->InputConfig[World::INPUT_BIND_SET_COMM]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 45, Input::KC_NONE);
     usr->InputConfig[World::INPUT_BIND_ANALYZER]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 46, Input::KC_NONE);
+    
+    usr->HideBlackSect = System::IniConf::GameHideBlacksect.Get<bool>();
 
     usr->sub_46D2B4();
     

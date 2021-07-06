@@ -197,6 +197,8 @@ public:
     static Common::Ini::Key ParticlesLimit;
     static Common::Ini::Key MenuWindowed;
     
+    static Common::Ini::Key GameHideBlacksect;
+    
 private:
     static Common::Ini::PKeyList _varList;    
 };
