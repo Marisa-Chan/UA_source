@@ -317,6 +317,9 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
         clr = 0.0;
     
     GFX::TRenderParams mat = GFX::TRenderParams(_texImg, renderFlags);
+    
+    if (_texImg)
+        mat.TexCoords = true;
 
     GFX::TMesh *msh = NC_STACK_base::FindMeshByRenderParams(meshList, mat);
     
@@ -326,9 +329,6 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
         msh = &(meshList->back());
         
         msh->Mat = mat;
-        
-        if (_texImg)
-            msh->Mat.TexCoords = true;
     }
     
     UAskeleton::Data *dat = skelet->GetSkelet();
