@@ -1032,7 +1032,8 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
 
     if (flags & RFLAGS_SKY)
     {
-        _newRenderStates[ZWRITEENABLE] = 0;
+        _newRenderStates[FOG_STATE] = 0;
+        _newRenderStates[SHADEMODE] = 1;
     }
     else if (flags & RFLAGS_FALLOFF)
     {
@@ -1091,6 +1092,12 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
 //                }
 //            }
     }
+    
+    if (flags & RFLAGS_COMPUTED_COLOR)
+        useComputedColor = true;
+    
+    if (flags & RFLAGS_DISABLE_ZWRITE)
+        _newRenderStates[ZWRITEENABLE] = 0;
 
     SetRenderStates(0);
     

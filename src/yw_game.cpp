@@ -1596,7 +1596,9 @@ void NC_STACK_ypaworld::yw_renderSky(baseRender_msg *rndr_params)
         sky_loaded_base->SetPosition( current_bact->_position + vec3d::OY(field_15f4) );
 
         rndr_params->maxZ = 32000.0;
-        rndr_params->flags = GFX::RFLAGS_SKY;
+        rndr_params->flags = GFX::RFLAGS_SKY | GFX::RFLAGS_COMPUTED_COLOR;
+        if ( System::IniConf::GfxNewSky.Get<bool>() )
+            rndr_params->flags |= GFX::RFLAGS_DISABLE_ZWRITE;
 
         sky_loaded_base->Render(rndr_params, NULL);
 

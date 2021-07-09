@@ -400,15 +400,17 @@ enum DISP_ATT
 
 enum RFLAGS
 {
-    RFLAGS_TEXTURED = 0x1,
-    RFLAGS_LOCALMESH = 0x2,
-    RFLAGS_SHADED = 0x4,
-    RFLAGS_FOG = 0x8,
-    RFLAGS_ZEROTRACY = 0x10,
-    RFLAGS_LUMTRACY = 0x20,
-    RFLAGS_SKY = 0x40,
-    RFLAGS_FALLOFF = 0x80,
-    RFLAGS_IGNORE_FALLOFF = 0x1000,
+    RFLAGS_TEXTURED  =      (1 << 0),
+    RFLAGS_LOCALMESH =      (1 << 1),
+    RFLAGS_SHADED    =      (1 << 2),
+    RFLAGS_FOG       =      (1 << 3),
+    RFLAGS_ZEROTRACY =      (1 << 4),
+    RFLAGS_LUMTRACY  =      (1 << 5),
+    RFLAGS_SKY       =      (1 << 6),
+    RFLAGS_FALLOFF   =      (1 << 7),
+    RFLAGS_IGNORE_FALLOFF = (1 << 8),
+    RFLAGS_COMPUTED_COLOR = (1 << 9),
+    RFLAGS_DISABLE_ZWRITE = (1 << 10),
 };
 
 enum RASTER

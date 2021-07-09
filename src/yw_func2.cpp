@@ -467,10 +467,11 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
         ypa_log_out("Couldn't create %s\n", skyfilename.c_str());
         return 0;
     }
-
+    
     sky->SetStatic(true); // Don't rotate sky
     sky->SetVizLimit(yw->field_15ec);
     sky->SetFadeLength(yw->field_15f0);
+    sky->ComputeStaticFog();
     return 1;
 }
 

@@ -172,6 +172,8 @@ public:
     static void CheckOpts(Instance **vpOpts, NC_STACK_base *bas);
     
     static GFX::TMesh *FindMeshByRenderParams(std::list<GFX::TMesh> *list, const GFX::TRenderParams &p);
+    
+    void ComputeStaticFog();
 
 protected:
     int ReadIFFTagSTRC(IFFile *mfile);

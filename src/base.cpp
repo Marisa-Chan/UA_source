@@ -880,6 +880,28 @@ void NC_STACK_base::RecalcInternal(bool kids)
     }
 }
 
+void NC_STACK_base::ComputeStaticFog()
+{
+    const float fend = _visLimit;
+    const float fstrt = _renderMsg.fadeStart;
+    
+    for (GFX::TMesh &m : Meshes)
+    {
+        for (GFX::TVertex &v : m.Vertexes)
+        {
+            float dist = v.Pos.length();
+            float f = (fend - dist) / (fend - fstrt);
+            if (f > 1.0) f = 1.0;
+            if (f < 0.0) f = 0.0;
+            
+            v.ComputedColor.a = v.Color.a;
+            v.ComputedColor.r = v.Color.r * f;
+            v.ComputedColor.g = v.Color.g * f;
+            v.ComputedColor.b = v.Color.b * f;        
+        }
+    }
+}
+
 
 NC_STACK_base::Instance::~Instance()
 {
