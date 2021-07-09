@@ -16,6 +16,7 @@
 #include "env.h"
 #include "system/movie.h"
 #include "system/inivals.h"
+#include "loaders.h"
 
 extern int word_5A50C2;
 extern int word_5A50AC;
@@ -460,7 +461,7 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
 {
     std::string skyfilename = fmt::sprintf("data:%s", skyname);
 
-    NC_STACK_base *sky = NC_STACK_base::LoadBaseFromFile(skyfilename);
+    NC_STACK_base *sky = Utils::ProxyLoadBase(skyfilename);
     yw->sky_loaded_base = sky;
     if ( !sky )
     {
