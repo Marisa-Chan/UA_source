@@ -459,6 +459,8 @@ void NC_STACK_ypaworld::LoadKeyNames()
 
 int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
 {
+    std::string tmprsrc = Common::Env.SetPrefix("rsrc", "data:");
+    
     std::string skyfilename = fmt::sprintf("data:%s", skyname);
 
     NC_STACK_base *sky = Utils::ProxyLoadBase(skyfilename);
@@ -468,6 +470,8 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
         ypa_log_out("Couldn't create %s\n", skyfilename.c_str());
         return 0;
     }
+    
+    Common::Env.SetPrefix("rsrc", tmprsrc);
     
     sky->SetStatic(true); // Don't rotate sky
     sky->SetVizLimit(yw->field_15ec);
