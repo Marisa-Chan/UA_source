@@ -17,6 +17,7 @@
 #include "system/movie.h"
 #include "system/inivals.h"
 #include "loaders.h"
+#include "obj3d.h"
 
 extern int word_5A50C2;
 extern int word_5A50AC;

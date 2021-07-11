@@ -180,3 +180,22 @@ rsrc * NC_STACK_image::rsrc_func64(IDVList &stak)
 
     return res;
 }
+
+bool NC_STACK_image::SavePng(ResBitmap *bitm, const std::string &fname)
+{
+    if (!bitm)
+        return false;
+    
+    if (!bitm->swTex)
+        return false;
+    
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(fname, "wb");
+    if (!fil || !fil->OK())
+        return false;
+
+    SDL_RWops *rwops = MyCustomRWop(fil);
+    if (!rwops)
+        return false;
+
+    return IMG_SavePNG_RW(bitm->swTex, rwops, 1) == 0;
+}

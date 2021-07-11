@@ -58,6 +58,8 @@ public:
     bool LoadFromFile(FSMgr::FileHandle *file);
     
     static NC_STACK_Obj3D *LoadObj3D(const std::string &filename);
+    
+    static bool ExportObj(NC_STACK_base *base, const std::string &fname);
 
 private:
     bool ParseObj(FSMgr::FileHandle *fil);

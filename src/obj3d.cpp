@@ -3,6 +3,7 @@
 #include "env.h"
 #include "system/inivals.h"
 #include "loaders.h"
+#include "fmtlib/printf.h"
 
 
 
@@ -393,4 +394,77 @@ GFX::TRenderParams NC_STACK_Obj3D::Mtl::GenParams() const
         tmp.Flags |= GFX::RFLAGS_LUMTRACY;
     
     return tmp;
+}
+
+
+bool NC_STACK_Obj3D::ExportObj(NC_STACK_base *base, const std::string &fname)
+{
+    if (!base)
+        return false;
+    
+    if (base->Meshes.empty())
+        return false;
+    
+    FSMgr::FileHandle mtl = uaOpenFile(fname + ".mtl", "w");
+    
+    
+    FSMgr::FileHandle obj = uaOpenFile(fname, "w");
+    
+    obj.puts(std::string("mtllib ") + fname + ".mtl\n\n");
+    
+    int vid = 1;
+    
+    int matID = 0;
+    for( GFX::TMesh &m : base->Meshes )
+    {
+        mtl.printf("newmtl Mat%d\n", matID);
+        mtl.printf("Kd %f %f %f\n", m.Mat.Color.r, m.Mat.Color.g, m.Mat.Color.b);
+        mtl.puts("\
+Ka 1.000000 1.000000 1.000000\n\
+Ks 0.500000 0.500000 0.500000\n\
+Ke 0.000000 0.000000 0.000000\n\
+Ni 1.450000\n");
+        mtl.printf("d %f\n", m.Mat.Color.a);
+        mtl.puts("illum 2\n");
+        
+        if (m.Mat.DynamicTex || m.Mat.Tex)
+        {
+            std::string texName = fmt::sprintf("Tex%d.png", matID);
+            if (m.Mat.Tex)
+                NC_STACK_image::SavePng(m.Mat.Tex, texName);
+            else
+                NC_STACK_image::SavePng(m.Mat.DynamicTex->GetBitmap(), texName);
+            
+            mtl.printf("map_Kd %s\n\n", texName.c_str());
+        }
+        else
+            mtl.puts("\n");
+        
+        for(GFX::TVertex &v : m.Vertexes)
+            obj.printf("v %f %f %f\n", v.Pos.x, -v.Pos.y, v.Pos.z);
+        
+        if (m.Mat.Flags & GFX::RFLAGS_TEXTURED)
+        {
+            for(GFX::TVertex &v : m.Vertexes)
+                obj.printf("vt %f %f\n", v.TexCoord.tu, v.TexCoord.tv);
+        }
+        
+        obj.printf("usemtl Mat%d\n", matID);
+        
+        for (uint32_t i = 0; i < m.Indixes.size(); i += 3)
+        {
+            if (m.Mat.Flags & GFX::RFLAGS_TEXTURED)
+                obj.printf("f %d/%d %d/%d %d/%d\n", vid + m.Indixes[i], vid + m.Indixes[i],
+                        vid + m.Indixes[i + 2], vid + m.Indixes[i + 2],
+                        vid + m.Indixes[i + 1], vid + m.Indixes[i + 1]);
+            else
+                obj.printf("f %d %d %d\n", vid + m.Indixes[i],
+                        vid + m.Indixes[i + 2],
+                        vid + m.Indixes[i + 1]);
+        }
+        
+        vid += m.Vertexes.size();        
+        ++matID;
+    }
+    return true;
 }
