@@ -86,6 +86,8 @@ public:
     
     virtual void PrepareTexture( bool force = false );
     
+    virtual bool IsDynamic() const override { return true; };
+    
     static ResBmpAnm *LoadFromFile(const std::string &name, IFFile *iff);
     
     static bool ReadClassName(FSMgr::iFileHandle *fil, ResBmpAnm *arg);

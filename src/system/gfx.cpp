@@ -75,8 +75,21 @@ bool TRenderNode::CompareSolid(TRenderNode *a, TRenderNode *b)
     
     if ( !b->Mesh )
         return false;
+    
+    if (a->Mat.Tex)
+    {
+        if (!b->Mat.Tex)
+            return true;
         
-    return a->Mat.Tex < b->Mat.Tex;
+        return a->Mat.Tex < b->Mat.Tex;
+    }
+    else
+    {
+        if (b->Mat.Tex)
+            return false;
+    }
+    
+    return a->Mat.DynamicTex < b->Mat.DynamicTex;
 }
 
 bool TRenderNode::CompareTransparent(TRenderNode* a, TRenderNode* b)
@@ -950,18 +963,23 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
 
     if ( flags & RFLAGS_TEXTURED )
     {
-        if (nod->Mat.Tex)
+        if (flags & RFLAGS_DYNAMIC_TEXTURE)
         {
-            nod->Mat.Tex->SetTime(nod->TimeStamp, nod->FrameTime);
-            ResBitmap *bitm = nod->Mat.Tex->GetBitmap();
-            _newRenderStates[TEXTUREHANDLE] = bitm->hwTex;
-            
-            if (nod->Mat.TexCoords)
+            if (nod->Mat.DynamicTex)
             {
-                std::vector<tUtV> &coords = nod->Mat.Tex->GetOutline();
+                nod->Mat.DynamicTex->SetTime(nod->TimeStamp, nod->FrameTime);
+                ResBitmap *bitm = nod->Mat.DynamicTex->GetBitmap();
+                _newRenderStates[TEXTUREHANDLE] = bitm->hwTex;
+
+                std::vector<tUtV> &coords = nod->Mat.DynamicTex->GetOutline();
                 for(TVertex &v : mesh->Vertexes)
                     v.TexCoord = coords.at( v.TexCoordId );
             }
+        }
+        else
+        {
+            if (nod->Mat.Tex)
+                _newRenderStates[TEXTUREHANDLE] = nod->Mat.Tex->hwTex;
         }
     }
 
@@ -1135,7 +1153,7 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     if (tmp != GL_NO_ERROR)
         printf("glColorPointer %x\n", tmp);
     
-    if (nod->Mat.Tex)
+    if (flags & RFLAGS_TEXTURED)
     {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].TexCoord);

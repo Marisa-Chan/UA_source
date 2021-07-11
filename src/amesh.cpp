@@ -243,8 +243,19 @@ void NC_STACK_amesh::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton 
         
         if (!_texImg)
             clr = 0.0;
+
+        GFX::TRenderParams mat = GFX::TRenderParams(renderFlags);
         
-        GFX::TRenderParams mat = GFX::TRenderParams(_texImg, renderFlags);
+        if (_texImg)
+        {
+            if ( _texImg->IsDynamic() )
+            {
+                mat.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
+                mat.DynamicTex = _texImg;
+            }
+            else
+                mat.Tex = _texImg->GetBitmap();
+        }
 
         GFX::TMesh *msh = NC_STACK_base::FindMeshByRenderParams(meshList, mat);
         

@@ -316,10 +316,18 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
     if (!_texImg)
         clr = 0.0;
     
-    GFX::TRenderParams mat = GFX::TRenderParams(_texImg, renderFlags);
+    GFX::TRenderParams mat(renderFlags);
     
     if (_texImg)
-        mat.TexCoords = true;
+    {
+        if ( _texImg->IsDynamic() )
+        {
+            mat.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
+            mat.DynamicTex = _texImg;
+        }
+        else
+            mat.Tex = _texImg->GetBitmap();
+    }
 
     GFX::TMesh *msh = NC_STACK_base::FindMeshByRenderParams(meshList, mat);
     
@@ -336,6 +344,10 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
 
     uint32_t fid = msh->Vertexes.size();
     
+    std::vector<tUtV> *coords = NULL;
+    if (_texImg && !(flags & GFX::RFLAGS_DYNAMIC_TEXTURE))
+        coords = &(_texImg->GetOutline());
+    
     if (pol.num_vertices >= 3)
     {
         for(int i = 0; i < pol.num_vertices; ++i)
@@ -344,6 +356,9 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
             msh->Vertexes.back().Pos = dat->POO[ pol.v[i] ];
             msh->Vertexes.back().TexCoordId = i;
             msh->Vertexes.back().Color = GFX::TGLColor(clr, clr, clr, alpha);
+            
+            if (coords)
+                msh->Vertexes.back().TexCoord = coords->at(i);
             
             msh->BoundBox.Add( dat->POO[ pol.v[i] ] );
         }
@@ -404,18 +419,24 @@ GFX::TRenderParams NC_STACK_area::GetRenderParams( size_t )
     }
     
     GFX::TRenderParams params;
-    params.Tex = _texImg;
+    
     params.Flags = renderFlags;
     
     if (_texImg)
     {
         params.Color = GFX::TGLColor(clr, clr, clr, 1.0);
-        params.TexCoords = true;
+        
+        if (_texImg->IsDynamic())
+        {
+            params.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
+            params.DynamicTex = _texImg;
+        }
+        else
+            params.Tex = _texImg->GetBitmap();
     }
     else
     {
         params.Color = GFX::TGLColor(0.0, 0.0, 0.0, 1.0);
-        params.TexCoords = false;
     }
     
     return params; 

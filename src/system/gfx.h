@@ -143,24 +143,31 @@ struct TBoundBox
 
 struct TRenderParams
 {
-    NC_STACK_bitmap *Tex = NULL;    
+    NC_STACK_bitmap *DynamicTex = NULL;
+    ResBitmap *Tex = NULL;
+    
     uint32_t Flags = 0;
-    bool TexCoords = false;
     TGLColor Color;
     
     TRenderParams() = default;
     TRenderParams(const TRenderParams &) = default;
     TRenderParams(TRenderParams &&) = default;
     
-    TRenderParams(NC_STACK_bitmap *tex, uint32_t flags, bool texcoords = false)
-        : Tex(tex), Flags(flags), TexCoords(texcoords) {};
+    TRenderParams(uint32_t flags)
+        : Flags(flags){};
+    
+    TRenderParams(NC_STACK_bitmap *tex, uint32_t flags)
+        : DynamicTex(tex), Flags(flags){};
+        
+    TRenderParams(ResBitmap *tex, uint32_t flags)
+        : Tex(tex), Flags(flags){};
     
     TRenderParams& operator=(const TRenderParams &) = default;
     TRenderParams& operator=(TRenderParams &&) = default;
     
     bool operator==(const TRenderParams &b)
     {
-        return Flags == b.Flags && Tex == b.Tex && TexCoords == b.TexCoords;
+        return Flags == b.Flags && Tex == b.Tex && DynamicTex == b.DynamicTex;
     }
 };
 
@@ -411,6 +418,7 @@ enum RFLAGS
     RFLAGS_IGNORE_FALLOFF = (1 << 8),
     RFLAGS_COMPUTED_COLOR = (1 << 9),
     RFLAGS_DISABLE_ZWRITE = (1 << 10),
+    RFLAGS_DYNAMIC_TEXTURE = (1 << 11),
 };
 
 enum RASTER

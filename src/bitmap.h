@@ -51,7 +51,8 @@ public:
 
     
     virtual void PrepareTexture( bool force = false );
-
+    
+    virtual bool IsDynamic() const { return false; };
 public:
     //Data
     static const Nucleus::ClassDescr description;

@@ -376,8 +376,15 @@ GFX::TRenderParams NC_STACK_Obj3D::Mtl::GenParams() const
     
     if (diffuseMap)
     {
-        tmp.Tex = diffuseMap;
         tmp.Flags |= GFX::RFLAGS_TEXTURED;
+        
+        if (diffuseMap->IsDynamic())
+        {
+            tmp.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
+            tmp.DynamicTex = diffuseMap;
+        }
+        else
+            tmp.Tex = diffuseMap->GetBitmap();
     }
     
     tmp.Color = GFX::TGLColor(diffuse[0], diffuse[1], diffuse[2], d);
