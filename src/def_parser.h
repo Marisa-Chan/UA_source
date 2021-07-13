@@ -83,6 +83,11 @@ public:
 public:
     /** Useable from handlers **/
     bool ReadLine(std::string *out);
+    
+    long stol(const std::string& str, std::size_t* __idx = 0, int __base = 10);
+    int stoi(const std::string& str, std::size_t* __idx = 0, int __base = 10);
+    float stof(const std::string& str, std::size_t* __idx = 0);
+    double stod(const std::string& str, std::size_t* __idx = 0);
 
 private:
     Parser(const std::string &name) : _Name(name), _file(NULL), _line(0), _mode(MODE_NO) {};
@@ -97,6 +102,7 @@ private:
     Engine::StringList::const_iterator _strlistIt;
     Engine::StringList::const_iterator _strlistEnd;
     int _mode;
+    std::string _lastLine;
 };
 
 /** Sort of sugar **/

@@ -1,6 +1,10 @@
+#include <limits>
+#include <SDL2/SDL_messagebox.h>
+
 #include "def_parser.h"
 #include "utils.h"
 #include "log.h"
+#include "fmtlib/printf.h"
 
 namespace ScriptParser
 {
@@ -128,13 +132,13 @@ bool Parser::ReadLine(std::string *out)
     switch(_mode)
     {
         case MODE_FILE:
-            ok = _file->ReadLine(out);
+            ok = _file->ReadLine(&_lastLine);
             break;
 
         case MODE_SLIST:
             if (_strlistIt != _strlistEnd)
             {
-                (*out) = *_strlistIt;
+                _lastLine = *_strlistIt;
                 _strlistIt++;
                 ok = true;
             }
@@ -144,7 +148,8 @@ bool Parser::ReadLine(std::string *out)
         default:
             break;
     }
-	_line++;
+    *out = _lastLine;
+    _line++;
     return ok;
 }
 
@@ -189,6 +194,98 @@ bool Parser::ParseStringList(const Engine::StringList &slist, HandlersList &call
         return false;
 
     return true;
+}
+
+long Parser::stol(const std::string& str, std::size_t* __idx, int __base)
+{
+    try {
+        return std::stol(str, __idx, __base);
+    }
+    catch(const std::out_of_range &err) {
+        std::string errmsg = fmt::sprintf("Idiotic modify detected in %s, line %d:\n%s\nvalue %s overflow integer: %d - %d:\n",
+                     _Name.c_str(), _line, _lastLine.c_str(), str.c_str(), std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max());
+        
+        ypa_log_out(errmsg.c_str());
+        
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error parsing file", errmsg.c_str(), NULL);
+                
+        if (str[0] == '-')
+            return std::numeric_limits<int32_t>::min();
+        return std::numeric_limits<int32_t>::max();
+    }
+    catch(...) {
+        std::string errmsg = fmt::sprintf("Idiotic modify detected in %s, line %d:\n%s\ninvalid long value: %s\n",
+                     _Name.c_str(), _line, _lastLine.c_str(), str.c_str());
+        
+        ypa_log_out(errmsg.c_str());
+        
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error parsing file", errmsg.c_str(), NULL);
+        
+        return 0;
+    }
+}
+
+int Parser::stoi(const std::string& str, std::size_t* __idx, int __base)
+{
+    try {
+        return std::stoi(str, __idx, __base);
+    }
+    catch(const std::out_of_range &err) {
+        std::string errmsg = fmt::sprintf("Idiotic modify detected in %s, line %d:\n%s\nvalue %s overflow integer: %d - %d:\n",
+                     _Name.c_str(), _line, _lastLine.c_str(), str.c_str(), std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max());
+        
+        ypa_log_out(errmsg.c_str());
+        
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error parsing file", errmsg.c_str(), NULL);
+                
+        if (str[0] == '-')
+            return std::numeric_limits<int32_t>::min();
+        return std::numeric_limits<int32_t>::max();
+    }
+    catch(...) {
+        std::string errmsg = fmt::sprintf("Idiotic modify detected in %s, line %d:\n%s\ninvalid integer value: %s\n",
+                     _Name.c_str(), _line, _lastLine.c_str(), str.c_str());
+        
+        ypa_log_out(errmsg.c_str());
+        
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error parsing file", errmsg.c_str(), NULL);
+        
+        return 0;
+    }
+}
+
+float Parser::stof(const std::string& str, std::size_t* __idx)
+{
+    try {
+        return std::stof(str, __idx);
+    }
+    catch(...) {
+        std::string errmsg = fmt::sprintf("Idiotic modify detected in %s, line %d:\n%s\ninvalid float value: %s\n",
+                     _Name.c_str(), _line, _lastLine.c_str(), str.c_str());
+        
+        ypa_log_out(errmsg.c_str());
+        
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error parsing file", errmsg.c_str(), NULL);
+        
+        return 0.0;
+    }
+}
+
+double Parser::stod(const std::string& str, std::size_t* __idx)
+{
+    try {
+        return std::stod(str, __idx);
+    }
+    catch(...) {
+        std::string errmsg = fmt::sprintf("Idiotic modify detected in %s, line %d:\n%s\ninvalid double value: %s\n",
+                     _Name.c_str(), _line, _lastLine.c_str(), str.c_str());
+        
+        ypa_log_out(errmsg.c_str());
+        
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error parsing file", errmsg.c_str(), NULL);
+        
+        return 0.0;
+    }
 }
 
 }

@@ -12,7 +12,7 @@ namespace Parsers
 class SaveBact
 {
 protected:
-    bool SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const std::string &p2);
+    bool SaveBactParser(ScriptParser::Parser &parser, NC_STACK_ypabact *b, const std::string &p1, const std::string &p2);
 
     static NC_STACK_ypabact *_lastCommander;
     static NC_STACK_yparobo *_lastRobo;
@@ -25,7 +25,7 @@ public:
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
-    bool RoboParser(const std::string &p1, const std::string &p2);
+    bool RoboParser(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
 
     NC_STACK_ypaworld &_o;
     NC_STACK_yparobo *_r;

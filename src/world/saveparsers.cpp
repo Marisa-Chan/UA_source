@@ -18,11 +18,11 @@ NC_STACK_yparobo *SaveBact::_lastRobo = NULL;
 NC_STACK_ypabact *SaveBact::_lastCommander = NULL;
 
 
-bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
+bool SaveRoboParser::RoboParser(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
 {
     if ( !StriCmp(p1, "owner") )
     {
-        _r->_owner = std::stoi(p2);
+        _r->_owner = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "is_user_robo") )
     {
@@ -31,31 +31,31 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
     }
     else if ( !StriCmp(p1, "robostate") )
     {
-        _r->_roboState = std::stoi(p2);
+        _r->_roboState = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "dockenergy") )
     {
-        _r->_roboDockEnerg = std::stoi(p2);
+        _r->_roboDockEnerg = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "dockcount") )
     {
-        _r->_roboDockCnt = std::stoi(p2);
+        _r->_roboDockCnt = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "dockuser") )
     {
-        _r->_roboDockUser = std::stoi(p2);
+        _r->_roboDockUser = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "docktime") )
     {
-        _r->_roboDockTime = std::stoi(p2);
+        _r->_roboDockTime = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "docktargettype") )
     {
-        _r->_roboDockTargetType = std::stoi(p2);
+        _r->_roboDockTargetType = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "dockaggr") )
     {
-        _r->_roboDockAggr = std::stoi(p2);
+        _r->_roboDockAggr = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "docktargetpos") )
     {
@@ -63,45 +63,45 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            _r->_roboDockTargetPos.x = std::stod(tmp, 0);
+            _r->_roboDockTargetPos.x = parser.stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
-                _r->_roboDockTargetPos.z = std::stod(tmp, 0);
+                _r->_roboDockTargetPos.z = parser.stod(tmp, 0);
         }
     }
     else if ( !StriCmp(p1, "docktargetID") )
     {
-        _r->_roboDockTargetCommandID = std::stoi(p2);
+        _r->_roboDockTargetCommandID = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "fillmodus") )
     {
-        _r->_roboFillMode = std::stoi(p2);
+        _r->_roboFillMode = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "battbuilding") )
     {
     }
     else if ( !StriCmp(p1, "battvehicle") )
     {
-        _r->_roboEnergyLife = std::stoi(p2);
+        _r->_roboEnergyLife = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "buildspare") )
     {
-        _r->_roboBuildSpare = std::stoi(p2);
+        _r->_roboBuildSpare = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "battbeam") )
     {
-        _r->_roboEnergyMove = std::stoi(p2);
+        _r->_roboEnergyMove = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "vhoriz") )
     {
-        _r->_viewer_horiz_angle = std::stod(p2, 0);
+        _r->_viewer_horiz_angle = parser.stod(p2, 0);
     }
     else if ( !StriCmp(p1, "vvert") )
     {
-        _r->_viewer_vert_angle = std::stod(p2, 0);
+        _r->_viewer_vert_angle = parser.stod(p2, 0);
     }
     else if ( !StriCmp(p1, "maximum") )
     {
-        _r->_energy_max = std::stoi(p2);
+        _r->_energy_max = parser.stoi(p2);
 
         if ( _o.UserRobo == _r )
         {
@@ -114,72 +114,72 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
     }
     else if ( !StriCmp(p1, "con_budget") )
     {
-        _r->_roboEpConquer = std::stoi(p2);
+        _r->_roboEpConquer = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "def_budget") )
     {
-        _r->_roboEpDefense = std::stoi(p2);
+        _r->_roboEpDefense = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "rec_budget") )
     {
-        _r->_roboEpRecon = std::stoi(p2);
+        _r->_roboEpRecon = parser.stoi(p2);
     }
     else  if ( !StriCmp(p1, "rob_budget") )
     {
-        _r->_roboEpRobo = std::stoi(p2);
+        _r->_roboEpRobo = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "rad_budget") )
     {
-        _r->_roboEpRadar = std::stoi(p2);
+        _r->_roboEpRadar = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "pow_budget") )
     {
-        _r->_roboEpPower = std::stoi(p2);
+        _r->_roboEpPower = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "saf_budget") )
     {
-        _r->_roboEpSafety = std::stoi(p2);
+        _r->_roboEpSafety = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "cpl_budget") )
     {
-        _r->_roboEpChangePlace = std::stoi(p2);
+        _r->_roboEpChangePlace = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "saf_delay") )
     {
-        _r->_roboSafetyDelay = std::stoi(p2);
+        _r->_roboSafetyDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "pow_delay") )
     {
-        _r->_roboPowerDelay = std::stoi(p2);
+        _r->_roboPowerDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "rad_delay") )
     {
-        _r->_roboRadarDelay = std::stoi(p2);
+        _r->_roboRadarDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "cpl_delay") )
     {
-        _r->_roboPositionDelay = std::stoi(p2);
+        _r->_roboPositionDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "def_delay") )
     {
-        _r->_roboEnemyDelay = std::stoi(p2);
+        _r->_roboEnemyDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "con_delay") )
     {
-        _r->_roboConqDelay = std::stoi(p2);
+        _r->_roboConqDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "rec_delay") )
     {
-        _r->_roboExploreDelay = std::stoi(p2);
+        _r->_roboExploreDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "rob_delay") )
     {
-        _r->_roboDangerDelay = std::stoi(p2);
+        _r->_roboDangerDelay = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "reload_const") )
     {
         if ( !_r->_reload_const )
-            _r->_reload_const = std::stoi(p2);
+            _r->_reload_const = parser.stoi(p2);
     }
     else
         return false;
@@ -188,7 +188,7 @@ bool SaveRoboParser::RoboParser(const std::string &p1, const std::string &p2)
 }
 
 
-bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const std::string &p2)
+bool SaveBact::SaveBactParser(ScriptParser::Parser &parser, NC_STACK_ypabact *b, const std::string &p1, const std::string &p2)
 {
     if ( !StriCmp(p1, "viewer") )
     {
@@ -207,30 +207,30 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
     }
     else if ( !StriCmp(p1, "commandid") )
     {
-        b->_commandID = (std::stoi(p2) & 0xFFFFFF);
+        b->_commandID = (parser.stoi(p2) & 0xFFFFFF);
 
         if ( dword_5A7A80 < b->_commandID )
             dword_5A7A80 = b->_commandID;
     }
     else if ( !StriCmp(p1, "aggression") )
     {
-        b->_aggr = std::stoi(p2);
+        b->_aggr = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "mainstate") )
     {
-        b->_status = std::stoi(p2);
+        b->_status = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "extrastate") )
     {
-        b->_status_flg = std::stoi(p2);
+        b->_status_flg = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "killerowner") )
     {
-        b->_killer_owner = std::stoi(p2);
+        b->_killer_owner = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "ident") )
     {
-        b->_gid = std::stoi(p2);
+        b->_gid = parser.stoi(p2);
 
         if ( bact_id < b->_gid )
         {
@@ -243,18 +243,18 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->_primTtype = std::stoi(tmp);
+            b->_primTtype = parser.stoi(tmp);
             if ( stok.GetNext(&tmp) )
             {
-                b->_primT.pbact = (NC_STACK_ypabact *)(size_t)std::stoi(tmp);
+                b->_primT.pbact = (NC_STACK_ypabact *)(size_t)parser.stoi(tmp);
                 if ( stok.GetNext(&tmp) )
                 {
-                    b->_primTpos.x = std::stod(tmp, 0);
+                    b->_primTpos.x = parser.stod(tmp, 0);
                     if ( stok.GetNext(&tmp) )
                     {
-                        b->_primTpos.z = std::stod(tmp, 0);
+                        b->_primTpos.z = parser.stod(tmp, 0);
                         if ( stok.GetNext(&tmp) )
-                            b->_primT_cmdID = std::stoi(tmp);
+                            b->_primT_cmdID = parser.stoi(tmp);
                     }
                 }
             }
@@ -266,22 +266,22 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->_fly_dir.x = std::stod(tmp, 0);
+            b->_fly_dir.x = parser.stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                b->_fly_dir.y = std::stod(tmp, 0);
+                b->_fly_dir.y = parser.stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
                 {
-                    b->_fly_dir.z = std::stod(tmp, 0);
+                    b->_fly_dir.z = parser.stod(tmp, 0);
                     if ( stok.GetNext(&tmp) )
-                        b->_fly_dir_length = std::stod(tmp, 0);
+                        b->_fly_dir_length = parser.stod(tmp, 0);
                 }
             }
         }
     }
     else if ( !StriCmp(p1, "energy") )
     {
-        b->_energy = std::stoi(p2);
+        b->_energy = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "matrix") )
     {
@@ -289,30 +289,30 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->_rotation.m00 = std::stod(tmp, 0);
+            b->_rotation.m00 = parser.stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                b->_rotation.m01 = std::stod(tmp, 0);
+                b->_rotation.m01 = parser.stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
                 {
-                    b->_rotation.m02 = std::stod(tmp, 0);
+                    b->_rotation.m02 = parser.stod(tmp, 0);
                     if ( stok.GetNext(&tmp) )
                     {
-                        b->_rotation.m10 = std::stod(tmp, 0);
+                        b->_rotation.m10 = parser.stod(tmp, 0);
                         if ( stok.GetNext(&tmp) )
                         {
-                            b->_rotation.m11 = std::stod(tmp, 0);
+                            b->_rotation.m11 = parser.stod(tmp, 0);
                             if ( stok.GetNext(&tmp) )
                             {
-                                b->_rotation.m12 = std::stod(tmp, 0);
+                                b->_rotation.m12 = parser.stod(tmp, 0);
                                 if ( stok.GetNext(&tmp) )
                                 {
-                                    b->_rotation.m20 = std::stod(tmp, 0);
+                                    b->_rotation.m20 = parser.stod(tmp, 0);
                                     if ( stok.GetNext(&tmp) )
                                     {
-                                        b->_rotation.m21 = std::stod(tmp, 0);
+                                        b->_rotation.m21 = parser.stod(tmp, 0);
                                         if ( stok.GetNext(&tmp) )
-                                            b->_rotation.m22 = std::stod(tmp, 0);
+                                            b->_rotation.m22 = parser.stod(tmp, 0);
                                     }
                                 }
                             }
@@ -328,22 +328,22 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            b->_position.x = std::stod(tmp, 0);
+            b->_position.x = parser.stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                b->_position.y = std::stod(tmp, 0);
+                b->_position.y = parser.stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
-                    b->_position.z = std::stod(tmp, 0);
+                    b->_position.z = parser.stod(tmp, 0);
             }
         }
     }
     else if ( !StriCmp(p1, "force") )
     {
-        b->_thraction = std::stod(p2, 0);
+        b->_thraction = parser.stod(p2, 0);
     }
     else if ( !StriCmp(p1, "gunangle") )
     {
-        b->_gun_angle_user = std::stod(p2, 0);
+        b->_gun_angle_user = parser.stod(p2, 0);
     }
     else if ( !StriCmp(p1, "gunbasis") )
     {
@@ -353,12 +353,12 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            guno->_gunBasis.x = std::stod(tmp, 0);
+            guno->_gunBasis.x = parser.stod(tmp, 0);
             if ( stok.GetNext(&tmp) )
             {
-                guno->_gunBasis.y = std::stod(tmp, 0);
+                guno->_gunBasis.y = parser.stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
-                    guno->_gunBasis.z = std::stod(tmp, 0);
+                    guno->_gunBasis.z = parser.stod(tmp, 0);
             }
         }
     }
@@ -368,22 +368,22 @@ bool SaveBact::SaveBactParser(NC_STACK_ypabact *b, const std::string &p1, const 
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            int id = std::stoi(tmp);
+            int id = parser.stoi(tmp);
             if ( stok.GetNext(&tmp) )
             {
-                b->_waypoints[id].x = std::stod(tmp, 0);
+                b->_waypoints[id].x = parser.stod(tmp, 0);
                 if ( stok.GetNext(&tmp) )
-                    b->_waypoints[id].z = std::stod(tmp, 0);
+                    b->_waypoints[id].z = parser.stod(tmp, 0);
             }
         }
     }
     else if ( !StriCmp(p1, "num_wp") )
     {
-        b->_waypoints_count = std::stoi(p2);
+        b->_waypoints_count = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "count_wp") )
     {
-        b->_current_waypoint = std::stoi(p2);
+        b->_current_waypoint = parser.stoi(p2);
     }
     else
         return false;
@@ -401,7 +401,7 @@ bool SaveRoboParser::IsScope(ScriptParser::Parser &parser, const std::string &wo
     v5.pos.x = 600;
     v5.pos.z = -600.0;
     v5.pos.y = 0;
-    v5.vehicle_id = std::stoi(opt);
+    v5.vehicle_id = parser.stoi(opt);
 
     _r = dynamic_cast<NC_STACK_yparobo *> ( _o.ypaworld_func146(&v5) );
 
@@ -426,7 +426,7 @@ int SaveRoboParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
         return ScriptParser::RESULT_SCOPE_END;
     }
 
-    if ( SaveBactParser(_r, p1, p2) || RoboParser(p1, p2) )
+    if ( SaveBactParser(parser, _r, p1, p2) || RoboParser(parser, p1, p2) )
         return ScriptParser::RESULT_OK;
 
     return ScriptParser::RESULT_UNKNOWN;
@@ -440,7 +440,7 @@ bool SaveSquadParser::IsScope(ScriptParser::Parser &parser, const std::string &w
         v5.pos.x = 600.0;
         v5.pos.z = -600.0;
         v5.pos.y = 0;
-        v5.vehicle_id = std::stoi(opt);
+        v5.vehicle_id = parser.stoi(opt);
 
         _c = _o.ypaworld_func146(&v5);
 
@@ -456,7 +456,7 @@ bool SaveSquadParser::IsScope(ScriptParser::Parser &parser, const std::string &w
         v5.pos.x = 600.0;
         v5.pos.z = -600.0;
         v5.pos.y = 0;
-        v5.vehicle_id = std::stoi(opt);
+        v5.vehicle_id = parser.stoi(opt);
 
         _c = _o.ypaworld_func146(&v5);
 
@@ -476,7 +476,7 @@ int SaveSquadParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     if ( !StriCmp(p1, "end") )
         return ScriptParser::RESULT_SCOPE_END;
 
-    if ( SaveBactParser(_c, p1, p2) )
+    if ( SaveBactParser(parser, _c, p1, p2) )
         return ScriptParser::RESULT_OK;
 
     return ScriptParser::RESULT_UNKNOWN;
@@ -499,7 +499,7 @@ int SaveGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, c
 
     if ( !StriCmp(p1, "disablegem") )
     {
-        int gemId = std::stoi(p2);
+        int gemId = parser.stoi(p2);
 
         if ( gemId >= 0 && gemId < (int)_o._Gems.size() )
             _o.GetSector(_o._Gems[gemId])->w_type = 0;
@@ -522,7 +522,7 @@ int SaveExtraViewParser::Handle(ScriptParser::Parser &parser, const std::string 
             _o._extraViewEnable = true;
     }
     else if ( !StriCmp(p1, "number") )
-        _o._extraViewNumber = std::stoi(p2);
+        _o._extraViewNumber = parser.stoi(p2);
     else
         return ScriptParser::RESULT_UNKNOWN;
     return ScriptParser::RESULT_OK;
@@ -540,13 +540,13 @@ int SaveKwFactorParser::Handle(ScriptParser::Parser &parser, const std::string &
         std::string tmp;
         if ( stok.GetNext(&tmp) )
         {
-            int secX = std::stoi(tmp);
+            int secX = parser.stoi(tmp);
             if ( stok.GetNext(&tmp) )
             {
-                int secY = std::stoi(tmp);
+                int secY = parser.stoi(tmp);
                 if ( stok.GetNext(&tmp) )
                 {
-                    int pwr = std::stoi(tmp);
+                    int pwr = parser.stoi(tmp);
 
                     for (PowerStationRef &kw : _o._powerStations)
                     {
@@ -574,7 +574,7 @@ int SaveGlobalsParser::Handle(ScriptParser::Parser &parser, const std::string &p
         return ScriptParser::RESULT_SCOPE_END;
 
     if ( !StriCmp(p1, "time") )
-        _o.timeStamp = std::stoi(p2);
+        _o.timeStamp = parser.stoi(p2);
     else
         return ScriptParser::RESULT_UNKNOWN;
     return ScriptParser::RESULT_OK;
@@ -695,7 +695,7 @@ int SaveLevelNumParser::Handle(ScriptParser::Parser &parser, const std::string &
         return ScriptParser::RESULT_SCOPE_END;
 
     if ( !StriCmp(p1, "levelnum") )
-        _levelNum = std::stoi(p2);
+        _levelNum = parser.stoi(p2);
     else
         return ScriptParser::RESULT_UNKNOWN;
     return ScriptParser::RESULT_OK;
@@ -715,10 +715,10 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
         std::string tmp;
 
         stok.GetNext(&tmp);
-        int w = std::stol(tmp, NULL, 0);
+        int w = parser.stol(tmp, NULL, 0);
 
         stok.GetNext(&tmp);
-        int h = std::stol(tmp, NULL, 0);
+        int h = parser.stol(tmp, NULL, 0);
 
         std::vector<uint8_t> hh( w * h );
         size_t k = 0;
@@ -731,7 +731,7 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
             {
                 stok.GetNext(&tmp);
 
-                hh[k] = std::stol(tmp, 0, 16);
+                hh[k] = parser.stol(tmp, 0, 16);
                 k++;
             }
         }
@@ -758,11 +758,11 @@ int SaveMasksParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "ownermask") )
     {
-        _o._levelInfo.OwnerMask = std::stoi(p2);
+        _o._levelInfo.OwnerMask = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "usermask") )
     {
-        _o._levelInfo.UserMask = std::stoi(p2);
+        _o._levelInfo.UserMask = parser.stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -776,7 +776,7 @@ int SaveSuperBombParser::Handle(ScriptParser::Parser &parser, const std::string 
 
     if ( !StriCmp(p1, "status") )
     {
-        switch( std::stoi(p2) )
+        switch( parser.stoi(p2) )
         {
         case 1:
             _o.sub_4D12D8(_id, 0);
@@ -793,39 +793,39 @@ int SaveSuperBombParser::Handle(ScriptParser::Parser &parser, const std::string 
     }
     else if ( !StriCmp(p1, "num") )
     {
-        _id = std::stoi(p2);
+        _id = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "activated_by") )
     {
-        _o._levelInfo.SuperItems[_id].ActivateOwner = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].ActivateOwner = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "active_timestamp") )
     {
-        _o._levelInfo.SuperItems[_id].ActiveTime = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].ActiveTime = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "trigger_timestamp") )
     {
-        _o._levelInfo.SuperItems[_id].TriggerTime = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].TriggerTime = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "countdown") )
     {
-        _o._levelInfo.SuperItems[_id].CountDown = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].CountDown = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "last_ten_sec") )
     {
-        _o._levelInfo.SuperItems[_id].LastTenSec = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].LastTenSec = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "last_sec") )
     {
-        _o._levelInfo.SuperItems[_id].LastSec = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].LastSec = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "radius") )
     {
-        _o._levelInfo.SuperItems[_id].CurrentRadius = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].CurrentRadius = parser.stoi(p2);
     }
     else if ( !StriCmp(p1, "last_radius") )
     {
-        _o._levelInfo.SuperItems[_id].LastRadius = std::stoi(p2);
+        _o._levelInfo.SuperItems[_id].LastRadius = parser.stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

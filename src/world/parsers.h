@@ -158,7 +158,7 @@ public:
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "new_shell"); };
 protected:
-    void ParseStatus(save_status *status, const std::string &p2);
+    void ParseStatus(ScriptParser::Parser &parser, save_status *status, const std::string &p2);
 
     NC_STACK_ypaworld &_o;
 };
@@ -168,8 +168,8 @@ class FxParser
 protected:
     virtual TVhclSound *GetSndFxByName(const std::string &sndname) = 0;
 
-    bool ParseExtSampleDef(TVhclSound *sndfx, const std::string &p2);
-    int ParseSndFX(const std::string &p1, const std::string &p2);
+    bool ParseExtSampleDef(ScriptParser::Parser &parser, TVhclSound *sndfx, const std::string &p2);
+    int ParseSndFX(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
 };
 
 class VhclProtoParser : public ScriptParser::DataHandler, public FxParser
