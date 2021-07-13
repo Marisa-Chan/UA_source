@@ -614,14 +614,20 @@ void NC_STACK_bmpanim::setBANM_animType(int newType)
     _animType = newType;
 }
 
-ResBitmap * NC_STACK_bmpanim::GetBitmap()
+ResBitmap * NC_STACK_bmpanim::GetBitmap(int frameid)
 {
-    return _pData->FrameData[_curFrame].pBitmap->GetBitmap();
+    if (frameid == -1)
+        return _pData->FrameData[_curFrame].pBitmap->GetBitmap();
+    
+    return _pData->FrameData.at(frameid).pBitmap->GetBitmap();
 }
 
-std::vector<tUtV> &NC_STACK_bmpanim::GetOutline()
+std::vector<tUtV> &NC_STACK_bmpanim::GetOutline(int frameid /* = -1 */)
 {
-    return *(_pData->FrameData[_curFrame].pTexCoords);
+    if (frameid == -1)
+        return *(_pData->FrameData[_curFrame].pTexCoords);
+    
+    return *(_pData->FrameData.at(frameid).pTexCoords);
 }
 
 int NC_STACK_bmpanim::getBMD_width()
@@ -635,11 +641,6 @@ int NC_STACK_bmpanim::getBMD_height()
 }
 
 
-int NC_STACK_bmpanim::getBANM_framecnt()
-{
-    return _pData->FrameData.size();
-}
-
 int NC_STACK_bmpanim::getBANM_animtype()
 {
     return _animType;
@@ -652,4 +653,14 @@ void NC_STACK_bmpanim::PrepareTexture( bool force )
     
     for(NC_STACK_bitmap *bitm : _pData->Bitmaps)
         bitm->PrepareTexture(force);
+}
+
+uint32_t NC_STACK_bmpanim::GetFramesCount() const 
+{ 
+    return _pData->FrameData.size();
+}
+
+uint32_t NC_STACK_bmpanim::GetCurrentFrameID() const
+{
+    return _curFrame;
 }

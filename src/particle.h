@@ -108,6 +108,8 @@ private:
     void UpdateLifeStages();
     void UpdateAccelMagnify();
     void _SetLifeStages(const std::vector<NC_STACK_ade *> &);
+    
+    void MakeMeshCache();
 
 public:
     static float Rand();
@@ -126,6 +128,7 @@ public:
     size_t _onVerticeID = 0;
     int _lifePerAde = 1;
     std::vector<NC_STACK_ade *> _lifeStagesAdes;
+    std::vector<GFX::TMesh> _meshCache;
     vec3d _accelStart;
     vec3d _accelEnd;
     vec3d _accelDelta;

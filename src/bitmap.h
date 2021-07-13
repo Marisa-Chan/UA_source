@@ -38,21 +38,24 @@ public:
 
     //Set
     virtual void setBMD_palette(UA_PALETTE *);
-
+    
     //Get
-    virtual ResBitmap  * GetBitmap();
-    virtual std::vector<tUtV> &GetOutline();
+    virtual ResBitmap  * GetBitmap(int frameid = -1);
+    virtual std::vector<tUtV> &GetOutline(int frameid = -1);
     virtual int getBMD_width();
     virtual int getBMD_height();
     virtual int getBMD_hasPalette();
     virtual UA_PALETTE *getBMD_palette();
     
     virtual SDL_Surface * GetSwTex();
+    
+    virtual bool IsDynamic() const { return false; };
+    virtual uint32_t GetFramesCount() const { return 1; };
+    virtual uint32_t GetCurrentFrameID() const { return 0; };
 
     
     virtual void PrepareTexture( bool force = false );
-    
-    virtual bool IsDynamic() const { return false; };
+
 public:
     //Data
     static const Nucleus::ClassDescr description;

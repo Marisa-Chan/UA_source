@@ -10,29 +10,6 @@ namespace World
 
 ParticleSystem::ParticleSystem()
 {
-    _sklt = Nucleus::CInit<NC_STACK_skeleton>( {
-        {NC_STACK_rsrc::RSRC_ATT_NAME, std::string("ParticleSystemSklt")},
-        {NC_STACK_rsrc::RSRC_ATT_TRYSHARED, (int32_t)2},
-        {NC_STACK_skeleton::SKEL_ATT_POINTSCNT, (int32_t)5},
-        {NC_STACK_skeleton::SKEL_ATT_POLYCNT, (int32_t)1},
-        {NC_STACK_skeleton::SKEL_ATT_POLYPNTCNT, (int32_t)4} } );
-
-    _skltData = _sklt->GetSkelet();
-
-    UAskeleton::Polygon &v3 = _skltData->polygons[0];
-
-    v3.num_vertices = 4;
-    v3.v[0] = 1;
-    v3.v[1] = 2;
-    v3.v[2] = 3;
-    v3.v[3] = 4;
-    
-    _mesh.Vertexes.resize(4);
-    _mesh.Vertexes[0].TexCoordId = 0;
-    _mesh.Vertexes[1].TexCoordId = 1;
-    _mesh.Vertexes[2].TexCoordId = 2;
-    _mesh.Vertexes[3].TexCoordId = 3;
-    _mesh.Indixes.assign( {0, 2, 1, 0, 3, 2} );
 }
     
 void ParticleSystem::AddParticle(NC_STACK_particle *base, const vec3d& pos, const vec3d& vec, int32_t age)
@@ -130,57 +107,67 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
         if ( -v30.z > v30.y )
             flags |= 4;
 
-        _skltData->tformedVertex[i] = UAskeleton::Vertex(v30, flags);
+        //_skltData->tformedVertex[i] = UAskeleton::Vertex(v30, flags);
 
         v27 &= flags;
     }
 
     if ( !v27 )
     {
-        rndrParams->sklt = _skltData;
+        //rndrParams->sklt = _skltData;
 
         if ( p->pParticleGen->_lifePerAde )
         {
             size_t id = p->Age / p->pParticleGen->_lifePerAde;
             
-            if (id == p->pParticleGen->_lifeStagesAdes.size()) // fix little overlap
-                id = p->pParticleGen->_lifeStagesAdes.size() - 1;
+            if (id == p->pParticleGen->_meshCache.size()) // fix little overlap
+                id = p->pParticleGen->_meshCache.size() - 1;
             
-            if ( id < p->pParticleGen->_lifeStagesAdes.size() )
+            if ( id < p->pParticleGen->_meshCache.size() )
             {
-                NC_STACK_ade *ade = p->pParticleGen->_lifeStagesAdes.at(id);
-                if ( ade )
+                GFX::TMesh &mesh = p->pParticleGen->_meshCache.at(id);
+                
+                GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
+                rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_PARTICLE );
+
+                vec3d pos = view->CalcSclRot.Transform(p->Pos - view->CalcPos);
+
+                rend.Distance = pos.length();
+                rend.Flags = mesh.Mat.Flags | rndrParams->flags;
+                rend.Color = mesh.Mat.Color;
+
+                /*if (newsky)
                 {
-                    //ade->ade_func65(rndrParams);
-                    GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
-                    rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_PARTICLE );
-                    
-                    vec3d pos = view->CalcSclRot.Transform(p->Pos - view->CalcPos);
+                    if ( distance >= transDist ||
+                         skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
+                         skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
+                        rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
+                }*/
+                
+                if ((mesh.Mat.Flags & GFX::RFLAGS_DYNAMIC_TEXTURE) && mesh.Mat.TexSource)
+                {
+                    mesh.Mat.TexSource->SetTime(rndrParams->timeStamp, rndrParams->frameTime);
+                    uint32_t frameid = mesh.Mat.TexSource->GetCurrentFrameID();
 
-                    rend.Distance = pos.length();
-                    rend.Mat = ade->GetRenderParams(0);
-
-                    rend.Mat.Flags |= rndrParams->flags;
-
-                    /*if (newsky)
+                    if (frameid < mesh.CoordsCache.size())
                     {
-                        if ( distance >= transDist ||
-                             skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
-                             skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
-                            rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
-                    }*/
-
-                    rend.Mesh = &_mesh;            
-
-                    rend.TForm = mat4x4(view->CalcSclRot) * mat4x4(p->Pos - view->CalcPos);
-                    rend.TimeStamp = rndrParams->timeStamp;
-                    rend.FrameTime = rndrParams->frameTime;
-                    rend.FogStart = rndrParams->fadeStart;
-                    rend.FogLength = rndrParams->fadeLength;
-                    rend.Sz = scale;
-
-                    GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
+                        rend.Tex = mesh.CoordsCache.at(frameid).Tex;
+                        rend.pCoords = &mesh.CoordsCache.at(frameid).Coords;                    
+                    }
                 }
+                else
+                    rend.Tex = mesh.Mat.Tex;
+
+                rend.Mesh = &mesh;            
+
+                rend.TForm = mat4x4(view->CalcSclRot) * mat4x4(p->Pos - view->CalcPos);
+                rend.TimeStamp = rndrParams->timeStamp;
+                rend.FrameTime = rndrParams->frameTime;
+                rend.FogStart = rndrParams->fadeStart;
+                rend.FogLength = rndrParams->fadeLength;
+                rend.ParticleSize = scale;
+
+                GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
             }
         }
     }

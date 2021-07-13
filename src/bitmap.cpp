@@ -112,12 +112,12 @@ void NC_STACK_bitmap::setBMD_palette(UA_PALETTE *newPal)
 
 
 
-ResBitmap * NC_STACK_bitmap::GetBitmap()
+ResBitmap * NC_STACK_bitmap::GetBitmap(int frameid)
 {
     return bitm_intern;
 }
 
-std::vector<tUtV> &NC_STACK_bitmap::GetOutline()
+std::vector<tUtV> &NC_STACK_bitmap::GetOutline(int frameid /* = -1 */)
 {
     return outline_coords;
 }

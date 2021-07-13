@@ -174,6 +174,9 @@ public:
     static GFX::TMesh *FindMeshByRenderParams(std::list<GFX::TMesh> *list, const GFX::TRenderParams &p);
     
     void ComputeStaticFog();
+    
+    static void GenerateMeshCoordsCache(GFX::TMesh *mesh);
+    void MakeCoordsCache();
 
 protected:
     int ReadIFFTagSTRC(IFFile *mfile);

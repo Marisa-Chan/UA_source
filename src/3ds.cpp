@@ -65,6 +65,7 @@ bool NC_STACK_3ds::LoadFromFile(FSMgr::FileHandle *fil)
     }
     
     RecalcInternal();
+    MakeCoordsCache();
 
     return true;
 }
@@ -572,12 +573,10 @@ GFX::TRenderParams NC_STACK_3ds::GenRenderParams(d3dsMaterial *mat)
     if (mat->texture1_map.tex)
     {
         tmp.Flags |= GFX::RFLAGS_TEXTURED;
+        tmp.TexSource = mat->texture1_map.tex;
         
         if (mat->texture1_map.tex->IsDynamic())
-        {
             tmp.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
-            tmp.DynamicTex = mat->texture1_map.tex;
-        }
         else
             tmp.Tex = mat->texture1_map.tex->GetBitmap();
     }

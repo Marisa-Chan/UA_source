@@ -76,20 +76,7 @@ bool TRenderNode::CompareSolid(TRenderNode *a, TRenderNode *b)
     if ( !b->Mesh )
         return false;
     
-    if (a->Mat.Tex)
-    {
-        if (!b->Mat.Tex)
-            return true;
-        
-        return a->Mat.Tex < b->Mat.Tex;
-    }
-    else
-    {
-        if (b->Mat.Tex)
-            return false;
-    }
-    
-    return a->Mat.DynamicTex < b->Mat.DynamicTex;
+    return a->Tex < b->Tex;
 }
 
 bool TRenderNode::CompareTransparent(TRenderNode* a, TRenderNode* b)
@@ -935,13 +922,11 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
         return;
     
     TMesh *mesh = nod->Mesh;
-    if (nod->Mat.Flags & RFLAGS_LOCALMESH)
-        mesh = &nod->LocalMesh;
     
     if (!mesh)
         return;
     
-    uint32_t flags = nod->Mat.Flags;
+    uint32_t flags = nod->Flags;
 
     _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
     _newRenderStates[STIPPLEENABLE] = 0;
@@ -963,24 +948,8 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
 
     if ( flags & RFLAGS_TEXTURED )
     {
-        if (flags & RFLAGS_DYNAMIC_TEXTURE)
-        {
-            if (nod->Mat.DynamicTex)
-            {
-                nod->Mat.DynamicTex->SetTime(nod->TimeStamp, nod->FrameTime);
-                ResBitmap *bitm = nod->Mat.DynamicTex->GetBitmap();
-                _newRenderStates[TEXTUREHANDLE] = bitm->hwTex;
-
-                std::vector<tUtV> &coords = nod->Mat.DynamicTex->GetOutline();
-                for(TVertex &v : mesh->Vertexes)
-                    v.TexCoord = coords.at( v.TexCoordId );
-            }
-        }
-        else
-        {
-            if (nod->Mat.Tex)
-                _newRenderStates[TEXTUREHANDLE] = nod->Mat.Tex->hwTex;
-        }
+        if (nod->Tex)
+            _newRenderStates[TEXTUREHANDLE] = nod->Tex->hwTex;
     }
 
     if ( flags & RFLAGS_SHADED )
@@ -1156,7 +1125,10 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     if (flags & RFLAGS_TEXTURED)
     {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].TexCoord);
+        if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->pCoords )
+            glTexCoordPointer(2, GL_FLOAT, sizeof(tUtV), nod->pCoords->data());
+        else
+            glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].TexCoord);
     }
     
     glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GL_UNSIGNED_INT, mesh->Indixes.data());
@@ -1201,16 +1173,16 @@ void GFXEngine::PrepareParticle(TRenderNode *node)
     
     node->TForm.identity();
     
-    float ssz = node->Sz / 2.0;
+    float ssz = node->ParticleSize / 2.0;
     
     node->Mesh->Vertexes[0].Pos = pos + vec3d(-ssz, ssz, 0.0);
-    node->Mesh->Vertexes[0].Color = node->Mat.Color;
+    node->Mesh->Vertexes[0].Color = node->Color;
     node->Mesh->Vertexes[1].Pos = pos + vec3d(-ssz, -ssz, 0.0);
-    node->Mesh->Vertexes[1].Color = node->Mat.Color;
+    node->Mesh->Vertexes[1].Color = node->Color;
     node->Mesh->Vertexes[2].Pos = pos + vec3d(ssz, -ssz, 0.0);
-    node->Mesh->Vertexes[2].Color = node->Mat.Color;
+    node->Mesh->Vertexes[2].Color = node->Color;
     node->Mesh->Vertexes[3].Pos = pos + vec3d(ssz, ssz, 0.0);
-    node->Mesh->Vertexes[3].Color = node->Mat.Color;
+    node->Mesh->Vertexes[3].Color = node->Color;
 }
 
 void GFXEngine::QueueRenderMesh(TRenderNode *nod)
@@ -1218,14 +1190,11 @@ void GFXEngine::QueueRenderMesh(TRenderNode *nod)
     if (!nod)
         return;
     
-    TMesh *mesh = nod->Mesh;
-    if (nod->Mat.Flags & RFLAGS_LOCALMESH)
-        mesh = &nod->LocalMesh;
-    
+    TMesh *mesh = nod->Mesh;    
     if (!mesh)
         return;
     
-    uint32_t flags = nod->Mat.Flags;
+    uint32_t flags = nod->Flags;
     
     if (flags & RFLAGS_SKY)
         _renderSkyBoxList.push_back(nod);

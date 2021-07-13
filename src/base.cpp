@@ -291,6 +291,7 @@ size_t NC_STACK_base::LoadingFromIFF(IFFile **file)
     }
     
     RecalcInternal();
+    MakeCoordsCache();
     
     return obj_ok;
 }
@@ -524,23 +525,37 @@ size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst, bool doCopy /
             rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_MESH );
 
             rend.Distance = distance;
-            rend.Mat = msh.Mat;
+            rend.Color = msh.Mat.Color;
+            rend.Flags = msh.Mat.Flags;
             
-            rend.Mat.Flags |= arg->flags;
+            if ((msh.Mat.Flags & GFX::RFLAGS_DYNAMIC_TEXTURE) && msh.Mat.TexSource)
+            {
+                msh.Mat.TexSource->SetTime(arg->globTime, arg->frameTime);
+                uint32_t frameid = msh.Mat.TexSource->GetCurrentFrameID();
+                
+                if (frameid < msh.CoordsCache.size())
+                {
+                    rend.Tex = msh.CoordsCache.at(frameid).Tex;
+                    rend.pCoords = &msh.CoordsCache.at(frameid).Coords;                    
+                }
+            }
+            else
+                rend.Tex = msh.Mat.Tex;
             
-            if (newsky && !(rend.Mat.Flags & GFX::RFLAGS_IGNORE_FALLOFF))
+            rend.Flags |= arg->flags;
+            
+            if (newsky && !(rend.Flags & GFX::RFLAGS_IGNORE_FALLOFF))
             {
                 if ( distance >= transDist ||
                      skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
                      skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
-                    rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
+                    rend.Flags |= GFX::RFLAGS_FALLOFF;
             }
 
             if (doCopy)
             {
                 rend.LocalMesh = msh;
                 rend.Mesh = &rend.LocalMesh;
-                rend.Mat.Flags |= GFX::RFLAGS_LOCALMESH;
             }
             else
                 rend.Mesh = &msh;            
@@ -621,15 +636,14 @@ size_t NC_STACK_base::RenderImmediately(baseRender_msg *arg, Instance * inst)
         {
             GFX::TRenderNode rend( GFX::TRenderNode::TYPE_MESH );
             rend.Distance = distance;
-            rend.Mat = msh.Mat;
-            
-            rend.Mat.Flags |= arg->flags;
+            rend.Color = msh.Mat.Color;
+            rend.Flags = msh.Mat.Flags | arg->flags;
             
             if (newsky)
             {
                 if ( skel132.tform.Transform(msh.BoundBox.Min + _transform.Pos).XZ().length() >= transDist ||
                      skel132.tform.Transform(msh.BoundBox.Max + _transform.Pos).XZ().length() >= transDist )
-                    rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
+                    rend.Flags |= GFX::RFLAGS_FALLOFF;
             }
 
             rend.Mesh = &msh;            
@@ -921,4 +935,35 @@ GFX::TMesh *NC_STACK_base::FindMeshByRenderParams(std::list<GFX::TMesh> *list, c
     }
     
     return NULL;
+}
+
+void NC_STACK_base::GenerateMeshCoordsCache(GFX::TMesh *mesh)
+{
+    if (!mesh)
+        return;
+    
+    mesh->CoordsCache.clear();
+ 
+    if ( !(mesh->Mat.Flags & GFX::RFLAGS_DYNAMIC_TEXTURE) || !mesh->Mat.TexSource )
+        return;
+    
+    mesh->CoordsCache.resize( mesh->Mat.TexSource->GetFramesCount() );
+    
+    for (uint32_t i = 0; i < mesh->CoordsCache.size(); ++i)
+    {
+        mesh->CoordsCache[i].Tex = mesh->Mat.TexSource->GetBitmap(i);
+        std::vector<tUtV> &srcCoords = mesh->Mat.TexSource->GetOutline(i);
+        
+        std::vector<tUtV> &cache = mesh->CoordsCache[i].Coords;
+        cache.resize( mesh->Vertexes.size() );
+        
+        for(uint32_t j = 0; j < cache.size(); ++j)
+            cache[j] = srcCoords.at( mesh->Vertexes[j].TexCoordId );
+    }
+}
+
+void NC_STACK_base::MakeCoordsCache()
+{
+    for(GFX::TMesh &m : Meshes)
+        GenerateMeshCoordsCache( &m );
 }

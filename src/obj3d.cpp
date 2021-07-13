@@ -44,6 +44,8 @@ bool NC_STACK_Obj3D::LoadFromFile(FSMgr::FileHandle *fil)
 {
     if (!ParseObj(fil))
         return false;
+    
+    MakeCoordsCache();
         
     _skeleton = Nucleus::CInit<NC_STACK_skeleton>( {
         {NC_STACK_rsrc::RSRC_ATT_NAME, std::string("Obj3D_sklt")},
@@ -382,7 +384,7 @@ GFX::TRenderParams NC_STACK_Obj3D::Mtl::GenParams() const
         if (diffuseMap->IsDynamic())
         {
             tmp.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
-            tmp.DynamicTex = diffuseMap;
+            tmp.TexSource = diffuseMap;
         }
         else
             tmp.Tex = diffuseMap->GetBitmap();
@@ -427,13 +429,13 @@ Ni 1.450000\n");
         mtl.printf("d %f\n", m.Mat.Color.a);
         mtl.puts("illum 2\n");
         
-        if (m.Mat.DynamicTex || m.Mat.Tex)
+        if (m.Mat.TexSource || m.Mat.Tex)
         {
             std::string texName = fmt::sprintf("Tex%d.png", matID);
             if (m.Mat.Tex)
                 NC_STACK_image::SavePng(m.Mat.Tex, texName);
             else
-                NC_STACK_image::SavePng(m.Mat.DynamicTex->GetBitmap(), texName);
+                NC_STACK_image::SavePng(m.Mat.TexSource->GetBitmap(), texName);
             
             mtl.printf("map_Kd %s\n\n", texName.c_str());
         }

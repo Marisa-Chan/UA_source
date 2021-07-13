@@ -269,6 +269,7 @@ void NC_STACK_particle::_SetLifeStages(const std::vector<NC_STACK_ade *> &ades)
     _lifeStagesAdes = ades;
     
     UpdateLifeStages();
+    MakeMeshCache();
 }
 
 
@@ -776,4 +777,56 @@ std::vector<NC_STACK_ade *> &NC_STACK_particle::GetParticlesStages()
 NC_STACK_ade::InstanceOpts *NC_STACK_particle::GenRenderInstance()
 {
     return new SpawnOpts(this);
+}
+
+void NC_STACK_particle::MakeMeshCache()
+{
+    _meshCache.clear();
+    _meshCache.resize( _lifeStagesAdes.size() );
+    
+    for(uint32_t i = 0; i < _meshCache.size(); ++i)
+    {
+        NC_STACK_ade *ade = _lifeStagesAdes.at(i);
+        GFX::TMesh &mesh = _meshCache.at(i);
+        
+        mesh.Vertexes.resize(4);
+        mesh.Vertexes[0].TexCoordId = 0;
+        mesh.Vertexes[1].TexCoordId = 1;
+        mesh.Vertexes[2].TexCoordId = 2;
+        mesh.Vertexes[3].TexCoordId = 3;
+        mesh.Indixes.assign( {0, 2, 1, 0, 3, 2} );
+        
+        if ( !ade->IsParticle() )
+        {
+            mesh.Mat = ade->GetRenderParams(0);
+            if (mesh.Mat.TexSource)
+            {
+                if (mesh.Mat.TexSource->IsDynamic())
+                {
+                    mesh.CoordsCache.resize(mesh.Mat.TexSource->GetFramesCount());
+                    for(uint32_t k = 0; k < mesh.CoordsCache.size(); ++k)
+                    {
+                        GFX::TCoordsCache &cache = mesh.CoordsCache[k];
+                        cache.Tex = mesh.Mat.TexSource->GetBitmap(k);
+                        
+                        std::vector<tUtV> &coords = mesh.Mat.TexSource->GetOutline(k);
+                        cache.Coords.resize( mesh.Vertexes.size() );
+                        
+                        for(uint32_t j = 0; j < mesh.Vertexes.size(); ++j)
+                            cache.Coords[j] = coords.at( mesh.Vertexes[j].TexCoordId );
+                    }
+                }
+                else
+                {
+                    std::vector<tUtV> &coords = mesh.Mat.TexSource->GetOutline();
+                    for(uint32_t j = 0; j < mesh.Vertexes.size(); ++j)
+                        mesh.Vertexes[j].TexCoord = coords.at( mesh.Vertexes[j].TexCoordId );
+                }
+            }
+        }
+        else
+        {
+            printf("Error! Particle ade in particle ade!\n");
+        }
+    }
 }

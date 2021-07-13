@@ -48,10 +48,6 @@ protected:
     
 protected:
     std::deque<Frak> _particles;
-    NC_STACK_skeleton *_sklt;
-    UAskeleton::Data *_skltData;
-    
-    GFX::TMesh _mesh;
     
     bool _disableAdd = false;
 };

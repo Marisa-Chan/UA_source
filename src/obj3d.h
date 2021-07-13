@@ -53,6 +53,8 @@ public:
     static NC_STACK_nucleus * newinstance() {
         return new NC_STACK_Obj3D();
     };
+    
+    virtual void RecalcInternal(bool kids = false) override {};
 
     bool LoadFromFile(const std::string &filename);
     bool LoadFromFile(FSMgr::FileHandle *file);

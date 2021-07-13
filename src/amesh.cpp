@@ -248,11 +248,10 @@ void NC_STACK_amesh::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton 
         
         if (_texImg)
         {
+            mat.TexSource = _texImg;
+            
             if ( _texImg->IsDynamic() )
-            {
                 mat.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
-                mat.DynamicTex = _texImg;
-            }
             else
                 mat.Tex = _texImg->GetBitmap();
         }

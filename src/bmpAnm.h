@@ -76,17 +76,19 @@ public:
     virtual void setBANM_animType(int newType);
 
     //Get
-    virtual ResBitmap * GetBitmap();
-    virtual std::vector<tUtV> &GetOutline() override;
+    virtual ResBitmap * GetBitmap(int frameid = -1) override;
+    virtual std::vector<tUtV> &GetOutline(int frameid = -1) override;
     virtual int getBMD_width();
     virtual int getBMD_height();
-    virtual int getBANM_framecnt();
     virtual int getBANM_animtype();
     
+    virtual bool IsDynamic() const override { return true; };
+    virtual uint32_t GetFramesCount() const override;
+    virtual uint32_t GetCurrentFrameID() const override;
     
     virtual void PrepareTexture( bool force = false );
     
-    virtual bool IsDynamic() const override { return true; };
+    
     
     static ResBmpAnm *LoadFromFile(const std::string &name, IFFile *iff);
     

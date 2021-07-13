@@ -96,6 +96,22 @@ struct windd_arg256
 
 namespace GFX
 {
+
+enum RFLAGS
+{
+    RFLAGS_TEXTURED  =      (1 << 0),
+    RFLAGS_DYNAMIC_TEXTURE = (1 << 1),
+    RFLAGS_SHADED    =      (1 << 2),
+    RFLAGS_FOG       =      (1 << 3),
+    RFLAGS_ZEROTRACY =      (1 << 4),
+    RFLAGS_LUMTRACY  =      (1 << 5),
+    RFLAGS_SKY       =      (1 << 6),
+    RFLAGS_FALLOFF   =      (1 << 7),
+    RFLAGS_IGNORE_FALLOFF = (1 << 8),
+    RFLAGS_COMPUTED_COLOR = (1 << 9),
+    RFLAGS_DISABLE_ZWRITE = (1 << 10),
+};    
+
 struct __attribute__((packed)) TGLColor
 {
     float r = 1.0;
@@ -143,7 +159,7 @@ struct TBoundBox
 
 struct TRenderParams
 {
-    NC_STACK_bitmap *DynamicTex = NULL;
+    NC_STACK_bitmap *TexSource = NULL;
     ResBitmap *Tex = NULL;
     
     uint32_t Flags = 0;
@@ -157,7 +173,7 @@ struct TRenderParams
         : Flags(flags){};
     
     TRenderParams(NC_STACK_bitmap *tex, uint32_t flags)
-        : DynamicTex(tex), Flags(flags){};
+        : TexSource(tex), Flags(flags){};
         
     TRenderParams(ResBitmap *tex, uint32_t flags)
         : Tex(tex), Flags(flags){};
@@ -167,8 +183,20 @@ struct TRenderParams
     
     bool operator==(const TRenderParams &b)
     {
-        return Flags == b.Flags && Tex == b.Tex && DynamicTex == b.DynamicTex;
+        if (Flags != b.Flags)
+            return false;
+        
+        if (Flags & RFLAGS_DYNAMIC_TEXTURE)
+            return TexSource == b.TexSource;
+        
+        return Tex == b.Tex;
     }
+};
+
+struct TCoordsCache
+{
+    ResBitmap *Tex = NULL;
+    std::vector<tUtV> Coords;
 };
 
 struct TVertex
@@ -187,6 +215,8 @@ public:
     TRenderParams Mat;
     std::vector<TVertex> Vertexes;
     std::vector<uint32_t> Indixes;
+    
+    std::vector<TCoordsCache> CoordsCache;
     
     TBoundBox BoundBox;
     
@@ -218,7 +248,12 @@ struct TRenderNode
     TMesh *Mesh = NULL;
     TMesh LocalMesh;
     
-    TRenderParams Mat;
+    std::vector<tUtV> *pCoords = NULL;
+    
+    ResBitmap *Tex = NULL;
+    
+    uint32_t Flags = 0;
+    TGLColor Color;
     
     mat4x4 TForm;
     int32_t TimeStamp = 0; 
@@ -229,7 +264,7 @@ struct TRenderNode
     
     float Distance = 0.0;
     
-    float Sz = 0.0;
+    float ParticleSize = 0.0;
     
     TRenderNode() = default;
     TRenderNode(TRenderNode &&) = default;
@@ -403,22 +438,6 @@ enum DISP_ATT
     ATT_DISPLAY_ID  = 0x80001008,
     ATT_DISPLAY_INF = 0x80001009,
     ATT_DISPLAY_WIN = 0x8000100A,
-};
-
-enum RFLAGS
-{
-    RFLAGS_TEXTURED  =      (1 << 0),
-    RFLAGS_LOCALMESH =      (1 << 1),
-    RFLAGS_SHADED    =      (1 << 2),
-    RFLAGS_FOG       =      (1 << 3),
-    RFLAGS_ZEROTRACY =      (1 << 4),
-    RFLAGS_LUMTRACY  =      (1 << 5),
-    RFLAGS_SKY       =      (1 << 6),
-    RFLAGS_FALLOFF   =      (1 << 7),
-    RFLAGS_IGNORE_FALLOFF = (1 << 8),
-    RFLAGS_COMPUTED_COLOR = (1 << 9),
-    RFLAGS_DISABLE_ZWRITE = (1 << 10),
-    RFLAGS_DYNAMIC_TEXTURE = (1 << 11),
 };
 
 enum RASTER

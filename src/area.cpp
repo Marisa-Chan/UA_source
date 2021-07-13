@@ -320,11 +320,10 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
     
     if (_texImg)
     {
+        mat.TexSource = _texImg;
+        
         if ( _texImg->IsDynamic() )
-        {
             mat.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
-            mat.DynamicTex = _texImg;
-        }
         else
             mat.Tex = _texImg->GetBitmap();
     }
@@ -345,7 +344,7 @@ void NC_STACK_area::GenMesh(std::list<GFX::TMesh> *meshList, NC_STACK_skeleton *
     uint32_t fid = msh->Vertexes.size();
     
     std::vector<tUtV> *coords = NULL;
-    if (_texImg && !(flags & GFX::RFLAGS_DYNAMIC_TEXTURE))
+    if (_texImg && !_texImg->IsDynamic())
         coords = &(_texImg->GetOutline());
     
     if (pol.num_vertices >= 3)
@@ -425,12 +424,10 @@ GFX::TRenderParams NC_STACK_area::GetRenderParams( size_t )
     if (_texImg)
     {
         params.Color = GFX::TGLColor(clr, clr, clr, 1.0);
+        params.TexSource = _texImg;
         
         if (_texImg->IsDynamic())
-        {
             params.Flags |= GFX::RFLAGS_DYNAMIC_TEXTURE;
-            params.DynamicTex = _texImg;
-        }
         else
             params.Tex = _texImg->GetBitmap();
     }
