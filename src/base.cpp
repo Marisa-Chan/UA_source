@@ -901,17 +901,25 @@ void NC_STACK_base::ComputeStaticFog()
     
     for (GFX::TMesh &m : Meshes)
     {
-        for (GFX::TVertex &v : m.Vertexes)
+        if (m.Mat.Flags & GFX::RFLAGS_FOG)
         {
-            float dist = v.Pos.length();
-            float f = (fend - dist) / (fend - fstrt);
-            if (f > 1.0) f = 1.0;
-            if (f < 0.0) f = 0.0;
-            
-            v.ComputedColor.a = v.Color.a;
-            v.ComputedColor.r = v.Color.r * f;
-            v.ComputedColor.g = v.Color.g * f;
-            v.ComputedColor.b = v.Color.b * f;        
+            for (GFX::TVertex &v : m.Vertexes)
+            {
+                float dist = v.Pos.length();
+                float f = (fend - dist) / (fend - fstrt);
+                if (f > 1.0) f = 1.0;
+                if (f < 0.0) f = 0.0;
+
+                v.ComputedColor.a = v.Color.a;
+                v.ComputedColor.r = v.Color.r * f;
+                v.ComputedColor.g = v.Color.g * f;
+                v.ComputedColor.b = v.Color.b * f;        
+            }
+        }
+        else
+        {
+            for (GFX::TVertex &v : m.Vertexes)
+                v.ComputedColor = v.Color;
         }
     }
 }
