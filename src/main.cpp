@@ -768,15 +768,17 @@ int WinMain__sub0__sub1()
     return 1;
 }
 
-int WinMain__sub0(int argc, char *argv[])
+int WinMain__sub0()
 {
     if ( WinMain__sub0__sub0() )
     {
-        for (int i = 1; i < argc; i++)
+        std::vector<std::string> &cmdl = System::GetCmdLineArray();
+        for (size_t i = 1; i < cmdl.size(); i++)
         {
-            if (strcasecmp(argv[i], "-env") == 0 && i + 1 < argc)
+            if (StriCmp(cmdl[i], "-env") == 0 && i + 1 < cmdl.size())
             {
-                Common::Env.SetPrefix("env", argv[i + 1]);
+                Common::Env.SetPrefix("env", cmdl[i + 1]);
+                break;
             }
         }
 
@@ -793,6 +795,8 @@ uint32_t maxTicks = 1000/60; // init on 60FPS
 
 int main(int argc, char *argv[])
 {
+    for(int i = 0; i < argc; ++i)
+        System::GetCmdLineArray().push_back( std::string(argv[i]) );
 //	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
 //
 //	if ( UAMUTEX && GetLastError() == ERROR_ALREADY_EXISTS )
@@ -810,7 +814,7 @@ int main(int argc, char *argv[])
     
     Gui::UA::Init();
 
-    if ( !WinMain__sub0(argc, argv) )
+    if ( !WinMain__sub0() )
         return 0;
 
     System::IniConf::ReadFromNucleusIni();

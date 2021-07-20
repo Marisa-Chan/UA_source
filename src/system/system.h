@@ -58,6 +58,8 @@ namespace System
     // Return drawable area sizes
     ResRatio GetRResolution();
     Common::Point GetResolution();
+    
+    std::vector<std::string>& GetCmdLineArray();
 
 }
 #endif

@@ -11,6 +11,8 @@
 
 namespace System
 {
+static std::vector<std::string> CommandLine;
+
     
 struct FontNode
 {
@@ -398,6 +400,11 @@ void PostQuitMessage()
     SDL_Event event;
     event.type = SDL_QUIT;
     SDL_PushEvent(&event);
+}
+
+std::vector<std::string>& GetCmdLineArray()
+{
+    return CommandLine;
 }
 
 }
