@@ -2477,12 +2477,13 @@ void GFXEngine::Init()
     SDL_DisplayMode deskMode;
     SDL_GetDesktopDisplayMode(0, &deskMode);
 
-    std::array<Common::Point, 14> checkModes
+    std::array<Common::Point, 17> checkModes
     {{
         {640, 480},     {800, 600},     {1024, 768},    {1280, 1024}, 
         {1440, 1050},   {1600, 1200},   {720, 480},     {852, 480}, 
         {1280, 720},    {1366, 768},    {1600, 900},    {1920, 1080}, 
-        {1920, 1200},   {2560, 1440}
+        {1920, 1200},   {2560, 1080},   {2560, 1440},   {3440, 1440},
+        {3840, 2160}
      }};
     
     graphicsModes.reserve(checkModes.size());
