@@ -768,6 +768,58 @@ int WinMain__sub0__sub1()
     return 1;
 }
 
+void HandleMods()
+{
+    std::string modname;
+    
+    std::vector<std::string> &cmdl = System::GetCmdLineArray();
+    for (size_t i = 1; i < cmdl.size(); i++)
+    {
+        if (StriCmp(cmdl[i], "-mod") == 0 && i + 1 < cmdl.size())
+            modname = cmdl[i + 1];
+    }
+    
+    if (modname.empty())
+        return;
+    
+    FSMgr::iNode *node = FSMgr::iDir::findNode("mods");
+    
+    if (!node || node->getType() != FSMgr::iNode::NTYPE_DIR)
+        return;
+    
+    node->Detach();
+    
+    FSMgr::iNode *imod = ((FSMgr::iDir *)node)->getNode(modname);
+    
+    if (!imod || imod->getType() != FSMgr::iNode::NTYPE_DIR)
+    {
+        delete node;
+        return;
+    }
+    
+    imod->Detach();
+    delete node;
+    
+    FSMgr::iDir *mod = dynamic_cast<FSMgr::iDir *>(imod);
+    if (!mod)
+    {
+        delete imod;
+        return;
+    }
+
+    // Detach original basepath "save" and "env" dirs
+    FSMgr::iDir::GetRoot()->Detach("save");
+    FSMgr::iDir::GetRoot()->Detach("env");
+    
+    // Make sure save and env created in mod dir and complete replace it
+    FSMgr::iDir::GetRoot()->addNode( mod->MakeDir("save") );
+    FSMgr::iDir::GetRoot()->addNode( mod->MakeDir("env") );
+    
+    FSMgr::iDir::GetRoot()->Override( mod );
+    
+    delete mod;
+}
+
 int WinMain__sub0()
 {
     if ( WinMain__sub0__sub0() )
@@ -776,10 +828,7 @@ int WinMain__sub0()
         for (size_t i = 1; i < cmdl.size(); i++)
         {
             if (StriCmp(cmdl[i], "-env") == 0 && i + 1 < cmdl.size())
-            {
                 Common::Env.SetPrefix("env", cmdl[i + 1]);
-                break;
-            }
         }
 
 
@@ -800,6 +849,9 @@ int main(int argc, char *argv[])
     
     System::IniConf::Init();
     FSMgr::iDir::setBaseDir("");
+    
+    HandleMods();
+    
     System::Init();
     GFX::Engine.Init();
     System::Movie.Init();

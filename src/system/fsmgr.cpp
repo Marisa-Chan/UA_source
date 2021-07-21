@@ -15,6 +15,7 @@
 #endif
 
 #include "fsmgr.h"
+#include "../utils.h"
 
 
 namespace FSMgr
@@ -25,13 +26,12 @@ const static std::string FSD("\\");
 const static std::string FSD("/");
 #endif
 
-static iDir directories("", "", NULL);
+static iDir directories("", "");
 
-iNode::iNode(const std::string &_name, const std::string &filepath, iDir *_parent)
+iNode::iNode(const std::string &_name, const std::string &filepath)
 {
     name = _name;
     path = filepath;
-    parent = _parent;
 }
 
 int iNode::getType()
@@ -52,23 +52,31 @@ std::string iNode::getName() const
 std::string iNode::getVPath() const
 {
     if (parent != NULL)
-        return parent->getVPath() + FSD + getName();
+        return parent->getVPath() + FSD + name;
     else
-        return getName();
+        return name;
+}
+
+bool iNode::Detach()
+{
+    if (!parent)
+        return true;
+
+    return parent->Detach(this);
 }
 
 
 
 
-iFile::iFile(const std::string &_name, const std::string &filepath, iDir *_parent):
-    iNode(_name, filepath, _parent)
+iFile::iFile(const std::string &_name, const std::string &filepath):
+    iNode(_name, filepath)
 {
     type = NTYPE_FILE;
 }
 
 
-iDir::iDir(const std::string &_name, const std::string &filepath, iDir *_parent):
-    iNode(_name, filepath, _parent)
+iDir::iDir(const std::string &_name, const std::string &filepath):
+    iNode(_name, filepath)
 {
     type = NTYPE_DIR;
 }
@@ -78,8 +86,15 @@ iDir::~iDir()
     flush();
 }
 
+iDir *iDir::GetRoot()
+{
+    return &directories;
+}
+
 void iDir::addNode(iNode *nw)
 {
+    nw->Detach();
+    nw->parent = this;
     nodes.push_back(nw);
 }
 
@@ -93,7 +108,7 @@ iNode *iDir::getNode(const std::string &n)
     {
         for (const auto &i : nodes)
         {
-            if ( !strcasecmp(n.c_str(), i->getName().c_str()) )
+            if ( !StriCmp(n, i->name) )
                 return i;
         }
     }
@@ -103,10 +118,14 @@ iNode *iDir::getNode(const std::string &n)
 
 void iDir::flush()
 {
-    for (auto &i : nodes)
-        delete i;
-
-    nodes.clear();
+    while(!nodes.empty())
+    {
+        iNode *n = nodes.front();
+        nodes.pop_front();
+        
+        n->parent = NULL;
+        delete n;
+    }
 }
 
 
@@ -148,7 +167,10 @@ iDir *iDir::_scanDir(iDir *_node, const std::string &_name, const std::string &_
     iDir *ndr;
 
     if ( !_node )
-        ndr = new iDir(_name, _path, _parent);
+    {
+        ndr = new iDir(_name, _path);
+        ndr->parent = _parent;
+    }
     else
     {
         _node->name = _name;
@@ -172,7 +194,7 @@ iDir *iDir::_scanDir(iDir *_node, const std::string &_name, const std::string &_
             }
             else
             {
-                ndr->addNode(new iFile(fdata.cFileName, tmp2, ndr));
+                ndr->addNode(new iFile(fdata.cFileName, tmp2));
             }
         }
     }
@@ -192,7 +214,10 @@ iDir *iDir::_scanDir(iDir *_node, const std::string &_name, const std::string &_
     iDir *ndr;
 
     if ( !_node )
-        ndr = new iDir(_name, _path, _parent);
+    {
+        ndr = new iDir(_name, _path);
+        ndr->parent = _parent;
+    }
     else
     {
         _node->name = _name;
@@ -214,7 +239,7 @@ iDir *iDir::_scanDir(iDir *_node, const std::string &_name, const std::string &_
 
                 if (ent->d_type == DT_REG)
                 {
-                    ndr->addNode(new iFile(ent->d_name, tmp2, ndr) );
+                    ndr->addNode(new iFile(ent->d_name, tmp2) );
                 }
                 else
                 {
@@ -273,7 +298,7 @@ iNode *iDir::_createNodeFromPath(const std::string &diskPath)
         if ( attr & FILE_ATTRIBUTE_DIRECTORY )
             node = _scanDir(NULL, tmpName, tmp, NULL);
         else
-            node = new iFile(tmpName, tmp, NULL);
+            node = new iFile(tmpName, tmp);
     }
 #else
     struct stat attr;
@@ -283,7 +308,7 @@ iNode *iDir::_createNodeFromPath(const std::string &diskPath)
         if ( S_ISDIR(attr.st_mode) )
             node = _scanDir(NULL, tmpName, tmp, NULL);
         else if ( S_ISREG(attr.st_mode) )
-            node = new iFile(tmpName, tmp, NULL);
+            node = new iFile(tmpName, tmp);
     }
 #endif // WIN32
 
@@ -294,7 +319,7 @@ iNode *iDir::_createNodeFromPath(const std::string &diskPath)
 bool iDir::replacePath(const std::string &path, const std::string &diskPath)
 {
     std::string leaved;
-    iNode *oldNode = _parseNodePath(path, &leaved);
+    iNode *oldNode = directories._parseNodePath(path, &leaved);
 
     if (!oldNode || !leaved.empty())
         return false;
@@ -313,7 +338,7 @@ bool iDir::replacePath(const std::string &path, const std::string &diskPath)
     {
         if ( *it == oldNode )
         {
-            newNode->name = oldNode->getName();
+            newNode->name = oldNode->name;
             newNode->parent = upNode;
             *it = newNode;
 
@@ -330,34 +355,34 @@ bool iDir::replacePath(const std::string &path, const std::string &diskPath)
 
 
 
-iNode *iDir::_parseNodePath(const std::string &path, std::string *out)
+iNode *iDir::_parseNodePath(const std::string &vpath, std::string *out)
 {
-    iDir *curdir = &directories;
-    iNode *node = curdir;
+    iDir *curdir = this;
+    iNode *node = this;
     out->clear();
 
     size_t pos = 0;
     while(pos != std::string::npos)
     {
         size_t start = pos;
-        pos = path.find_first_of("/\\", start);
+        pos = vpath.find_first_of("/\\", start);
 
-        std::string name;
+        std::string vname;
         if (pos == std::string::npos)
-            name = path.substr(start);
+            vname = vpath.substr(start);
         else
         {
-            name = path.substr(start, pos - start);
+            vname = vpath.substr(start, pos - start);
             pos++; //Next symbol
         }
 
-        if (!name.empty())
+        if (!vname.empty())
         {
-            iNode *nd = curdir->getNode( name );
+            iNode *nd = curdir->getNode( vname );
 
             if (!nd)
             {
-                *out = path.substr(start);
+                *out = vpath.substr(start);
                 return node;
             }
             else
@@ -380,7 +405,7 @@ iNode *iDir::_parseNodePath(const std::string &path, std::string *out)
 bool iDir::createDir(const std::string &path)
 {
     std::string leaved;
-    iNode *node = _parseNodePath(path, &leaved);
+    iNode *node = directories._parseNodePath(path, &leaved);
 
     if (node)
     {
@@ -394,15 +419,15 @@ bool iDir::createDir(const std::string &path)
 
             if ( leaved.find_first_of("\\/") == std::string::npos )
             {
-                std::string newPath = node->getPath() + FSD + leaved;
+                std::string newPath = node->path + FSD + leaved;
 
                 iDir *newDir = NULL;
 #if defined(WIN32) && !defined(__WINE__)
                 if (CreateDirectory(newPath.c_str(), NULL))
-                    newDir = new iDir(leaved, newPath, (iDir *)node);
+                    newDir = new iDir(leaved, newPath);
 #else
                 if (mkdir(newPath.c_str(), 0755) == 0)
-                    newDir = new iDir(leaved, newPath, (iDir *)node);
+                    newDir = new iDir(leaved, newPath);
 #endif // WIN32
 
                 if (!newDir)
@@ -420,10 +445,41 @@ bool iDir::createDir(const std::string &path)
     return true;
 }
 
+iDir *iDir::MakeDir(const std::string &vname)
+{
+    if (vname.empty() || vname.find_first_of("\\/") != std::string::npos)
+        return NULL;
+    
+    iNode *node = getNode(vname);
+    if (node)
+    {
+        if ( node->getType() != NTYPE_DIR )
+            return NULL;
+        return (iDir *)node;
+    }
+    
+    std::string newPath = path + FSD + vname;
+    
+    iDir *newDir = NULL;
+#if defined(WIN32) && !defined(__WINE__)
+    if (CreateDirectory(newPath.c_str(), NULL))
+        newDir = new iDir(vname, newPath);
+#else
+    if (mkdir(newPath.c_str(), 0755) == 0)
+        newDir = new iDir(vname, newPath);
+#endif // WIN32
+
+    if (!newDir)
+        return NULL;
+
+    addNode(newDir);
+    return newDir;
+}
+
 bool iDir::deleteDir(const std::string &path)
 {
     std::string leaved;
-    iNode *node = _parseNodePath(path, &leaved);
+    iNode *node = directories._parseNodePath(path, &leaved);
 
     if (node)
     {
@@ -437,10 +493,10 @@ bool iDir::deleteDir(const std::string &path)
             return false;
 
 #if defined(WIN32) && !defined(__WINE__)
-        if ( !RemoveDirectory(node->getPath().c_str()) )
+        if ( !RemoveDirectory(node->path.c_str()) )
             return false;
 #else
-        if (rmdir(node->getPath().c_str()) == -1)
+        if (rmdir(node->path.c_str()) == -1)
             return false;
 #endif // WIN32
 
@@ -456,7 +512,7 @@ bool iDir::deleteDir(const std::string &path)
 DirIter iDir::readDir(const std::string &path)
 {
     std::string leaved;
-    iNode *node = _parseNodePath(path, &leaved);
+    iNode *node = directories._parseNodePath(path, &leaved);
 
     if (!node)
         return DirIter();
@@ -470,11 +526,49 @@ DirIter iDir::readDir(const std::string &path)
     return DirIter( (iDir *)node );
 }
 
+void iDir::Override(iDir *nod)
+{
+    path = nod->path;
+            
+    for(std::list<iNode *>::iterator it = nod->nodes.begin(); 
+        it != nod->nodes.end(); 
+        it = nodes.erase(it))
+    {
+        iNode *nev = *it;
+        // Will be erased from list, so do silent detach
+        nev->parent = NULL;
+        
+        iNode *old = getNode((*it)->name);
+        
+        if (old)
+        {
+            // Do mix by override
+            if ( nev->type == NTYPE_DIR &&
+                 nev->type == old->type )
+            {
+                dynamic_cast<iDir *>(old)->Override( dynamic_cast<iDir *>(nev) );
+                delete nev;
+            }
+            else // Replace
+            {
+                delete old;
+                
+                addNode(nev);
+            }
+        }
+        else
+            addNode(nev);
+    }
+}
+
 
 iNode *iDir::findNode(const std::string &path)
 {
+    if (path.empty())
+        return &directories;
+        
     std::string leaved;
-    iNode *node = _parseNodePath(path, &leaved);
+    iNode *node = directories._parseNodePath(path, &leaved);
 
     if (!node)
         return NULL;
@@ -507,7 +601,7 @@ FileHandle *iDir::openFileAlloc(iNode *nod, const std::string &mode)
     if ( nod->getType() != NTYPE_FILE )
         return NULL;
 
-    FileHandle * fhnd = new FileHandle(nod->getPath(), mode);
+    FileHandle * fhnd = new FileHandle(nod->path, mode);
     if (!fhnd->OK())
     {
         delete fhnd;
@@ -520,7 +614,7 @@ FileHandle *iDir::openFileAlloc(iNode *nod, const std::string &mode)
 FileHandle *iDir::openFileAlloc(const std::string &path, const std::string &mode)
 {
     std::string leaved;
-    iNode *node = _parseNodePath(path, &leaved);
+    iNode *node = directories._parseNodePath(path, &leaved);
 
     if (!node)
         return NULL;
@@ -541,7 +635,7 @@ FileHandle *iDir::openFileAlloc(const std::string &path, const std::string &mode
 
         iDir *dr = (iDir *)node;
 
-        std::string newPath = dr->getPath() + FSD + leaved;
+        std::string newPath = dr->path + FSD + leaved;
 
         FileHandle * fhnd = new FileHandle(newPath, mode);
 
@@ -551,12 +645,12 @@ FileHandle *iDir::openFileAlloc(const std::string &path, const std::string &mode
             return NULL;
         }
 
-        dr->addNode( new iFile(leaved, newPath, dr) );
+        dr->addNode( new iFile(leaved, newPath) );
         return fhnd;
     }
     else if ( node->getType() == NTYPE_FILE ) // if exist and file
     {
-        FileHandle * fhnd = new FileHandle(node->getPath(), mode);
+        FileHandle * fhnd = new FileHandle(node->path, mode);
 
         if (!fhnd->OK())
         {
@@ -578,13 +672,13 @@ FileHandle iDir::openFile(iNode *nod, const std::string &mode)
     if ( nod->getType() != NTYPE_FILE )
         return NULL;
 
-    return FileHandle(nod->getPath(), mode);
+    return FileHandle(nod->path, mode);
 }
 
 FileHandle iDir::openFile(const std::string &path, const std::string &mode)
 {
     std::string leaved;
-    iNode *node = _parseNodePath(path, &leaved);
+    iNode *node = directories._parseNodePath(path, &leaved);
 
     if (!node)
         return FileHandle();
@@ -605,19 +699,19 @@ FileHandle iDir::openFile(const std::string &path, const std::string &mode)
 
         iDir *dr = (iDir *)node;
 
-        std::string newPath = dr->getPath() + FSD + leaved;
+        std::string newPath = dr->path + FSD + leaved;
 
         FileHandle fhnd = FileHandle(newPath, mode);
 
         if (!fhnd.OK())
             return fhnd;
 
-        dr->addNode( new iFile(leaved, newPath, dr) );
+        dr->addNode( new iFile(leaved, newPath) );
         return fhnd;
     }
     else if ( node->getType() == NTYPE_FILE ) // if exist and file
     {
-        return FileHandle(node->getPath(), mode);
+        return FileHandle(node->path, mode);
     }
 
     return FileHandle();    
@@ -635,10 +729,10 @@ bool iDir::deleteFile(const std::string &path)
         return false;
 
 #if defined(WIN32) && !defined(__WINE__)
-    if (DeleteFile(node->getPath().c_str()) == 0)
+    if (DeleteFile(node->path.c_str()) == 0)
         return false;
 #else
-    if (remove(node->getPath().c_str()) != 0)
+    if (remove(node->path.c_str()) != 0)
         return false;
 #endif // WIN32
 
@@ -650,9 +744,36 @@ bool iDir::deleteFile(const std::string &path)
     return true;
 }
 
+bool iDir::Detach(iNode *node)
+{
+    for(std::list<iNode *>::iterator nod = nodes.begin(); nod != nodes.end(); nod++)
+    {
+        if (*nod == node)
+        {
+            if (node->parent == this)
+                node->parent = NULL;
+            nodes.erase(nod);
+            return true;
+        }
+    }
+    
+    return false;
+}
 
-
-
+bool iDir::Detach(const std::string &vname)
+{
+    for(std::list<iNode *>::iterator nod = nodes.begin(); nod != nodes.end(); nod++)
+    {
+        if (!StriCmp((*nod)->name, vname))
+        {
+            (*nod)->parent = NULL;
+            delete *nod;
+            nodes.erase(nod);
+            return true;
+        }
+    }
+    return false;
+}
 
 void dumpDir()
 {

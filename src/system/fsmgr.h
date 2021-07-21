@@ -21,8 +21,10 @@ class iNode
     friend class iDir;
 
 public:
-    iNode(const std::string &name, const std::string &path, iDir *parent = NULL);
-    virtual ~iNode() {};
+    iNode(const std::string &name, const std::string &path);
+    virtual ~iNode() { Detach(); };
+    
+    iDir *GetParent() const { return parent; }
 
     int getType();
     std::string getPath() const;
@@ -30,9 +32,12 @@ public:
     std::string getVPath() const;
     std::string getName() const;
     //const std::string &getName();
+    
+    bool Detach();
 
     enum NTYPE
     {
+        NTYPE_NONE = 0,
         NTYPE_DIR = 1,
         NTYPE_FILE = 2
     };
@@ -40,16 +45,16 @@ public:
 protected:
     std::string path;
     std::string name;
-    int type;
+    int type = NTYPE_NONE;
 
-    iDir *parent;
+    iDir *parent = NULL;
 };
 
 
 class iFile: public iNode
 {
 public:
-    iFile(const std::string &name, const std::string &path, iDir *parent = NULL);
+    iFile(const std::string &name, const std::string &path);
 };
 
 
@@ -58,7 +63,7 @@ class iDir: public iNode
     friend class DirIter;
 
 public:
-    iDir(const std::string &name, const std::string &path, iDir *parent = NULL);
+    iDir(const std::string &name, const std::string &path);
     virtual ~iDir();
 
     void addNode(iNode *nw);
@@ -68,6 +73,12 @@ public:
     void _dumpdir();
 
     void flush();
+    
+    iDir *MakeDir(const std::string &name);
+    
+    void Override(iDir *nod);
+    
+    static iDir *GetRoot();
 
     static iNode *findNode(const std::string &path);
     static bool fileExist(const std::string &path);
@@ -83,6 +94,10 @@ public:
     static FileHandle openFile(const std::string &path, const std::string &mode);
     static FileHandle openFile(iNode *nod, const std::string &mode);
     static bool deleteFile(const std::string &path);
+    
+    bool Detach(iNode *node);
+    
+    bool Detach(const std::string &name);
 
 
 protected:
@@ -90,7 +105,8 @@ protected:
 
     static iDir *_scanDir(iDir *_node, const std::string &_name, const std::string &_path, iDir *_parent);
     static iNode *_createNodeFromPath(const std::string &diskPath);
-    static iNode *_parseNodePath(const std::string &path, std::string *out);
+    
+    iNode *_parseNodePath(const std::string &path, std::string *out);
 };
 
 
