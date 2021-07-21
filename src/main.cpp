@@ -797,16 +797,8 @@ int main(int argc, char *argv[])
 {
     for(int i = 0; i < argc; ++i)
         System::GetCmdLineArray().push_back( std::string(argv[i]) );
-//	HANDLE UAMUTEX = CreateMutex(0, 0, "UA Running Test Mutex");
-//
-//	if ( UAMUTEX && GetLastError() == ERROR_ALREADY_EXISTS )
-//	{
-//		CloseHandle(UAMUTEX);
-//		return 0;
-//	}
     
     System::IniConf::Init();
-    
     FSMgr::iDir::setBaseDir("");
     System::Init();
     GFX::Engine.Init();
