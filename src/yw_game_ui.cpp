@@ -10894,7 +10894,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         bzda.field_1D0 = 1;
         break;
 
-    case 19:
+    case World::DOACTION_19:
         current_bact->setBACT_viewer(0);
         current_bact->setBACT_inputting(0);
         field_1a98->setBACT_viewer(1);
@@ -11118,7 +11118,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(InputState *arg)
             {
                 if ( field_1a58 & 0x20 )
                 {
-                    if ( arg->KbdLastDown == Input::KC_F7 && arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD )
+                    if ( arg->KbdLastDown == Input::KC_F7 && (arg->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD) )
                     {
                         v8 = World::DOACTION_19;
                         v6 = 8;
