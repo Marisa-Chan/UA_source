@@ -57,7 +57,7 @@ void UAEmpty::Update()
     if (_filling)
     {
         Common::Point parentSz = GetSpace();
-        if (!parentSz)
+        if (parentSz)
             Resize(parentSz);
     }
 }
