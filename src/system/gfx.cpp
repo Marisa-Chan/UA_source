@@ -2832,7 +2832,7 @@ void GFXEngine::SetResolution(const Common::Point &res, bool windowed)
         delete fil;
     }
     
-    Gui::Instance.SetScreenSize(System::GetResolution());
+    Gui::Instance.SetScreenSize(GetSize());
     
     UpdateFBOSizes();
 }
