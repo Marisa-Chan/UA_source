@@ -207,6 +207,10 @@ struct TVertex
     TGLColor Color;
     TGLColor ComputedColor;
     uint32_t TexCoordId = 0;
+    
+    TVertex() = default;
+    TVertex(const vec3d &p): Pos(p) {};
+    TVertex(const vec3d &p, const tUtV &uv): Pos(p), TexCoord(uv) {};
 };
 
 class TMesh

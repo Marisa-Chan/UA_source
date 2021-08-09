@@ -770,19 +770,26 @@ void Root::HwRenderWidget(Widget *w)
         SDL_UnlockSurface(w->_hwSurface);
         
         glColor4ub(255, 255, 255, w->_alpha);
+        
+        GFX::TVertex vtx[4] = {
+            GFX::TVertex( vec3d(w->_rect.left,  w->_rect.top,    0.0), tUtV(0.0, 0.0) ),
+            GFX::TVertex( vec3d(w->_rect.left,  w->_rect.bottom, 0.0), tUtV(0.0, 1.0) ),
+            GFX::TVertex( vec3d(w->_rect.right, w->_rect.bottom, 0.0), tUtV(1.0, 1.0) ),
+            GFX::TVertex( vec3d(w->_rect.right, w->_rect.top,    0.0), tUtV(1.0, 0.0) ),
+        };
 
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2i(0, 0);
-            glVertex3i(w->_rect.left, w->_rect.top, 0);
-            glTexCoord2i(0, 1);
-            glVertex3i(w->_rect.left, w->_rect.bottom, 0);
-            glTexCoord2i(1, 1);
-            glVertex3i(w->_rect.right, w->_rect.bottom, 0);
-            glTexCoord2i(1, 0);
-            glVertex3i(w->_rect.right, w->_rect.top, 0);
-        }
-        glEnd();
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glVertexPointer(3, GL_DOUBLE, sizeof(GFX::TVertex), &vtx[0].Pos);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
+
+        uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indexes);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 }
 
