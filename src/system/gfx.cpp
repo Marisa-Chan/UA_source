@@ -2512,6 +2512,41 @@ void GFXEngine::Init()
             AddGfxMode(mode);
         }
     }
+    
+    // Force to add custom resolutions
+    std::vector<std::string> customModes = Stok::Split(System::IniConf::GfxAdditionalModes.Get<std::string>(), ",");
+    for (std::string mod : customModes)
+    {
+        std::vector<std::string> vals = Stok::Split(mod, ":-x \t");
+        if (vals.size() >= 2)
+        {
+            SDL_DisplayMode target, closest;
+            
+            target.w = std::stoi(vals[0]);
+            target.h = std::stoi(vals[1]);
+            target.format = corrected;
+            target.refresh_rate = 0;
+            target.driverdata   = 0;
+
+            GfxMode mode;
+            mode.w = target.w;
+            mode.h = target.h;
+            mode.mode = target;
+            mode.bpp = SDL_BYTESPERPIXEL(corrected) * 8;
+            mode.name = GfxMode::GenName(mode.w, mode.h);
+                
+            if (SDL_GetClosestDisplayMode(0, &target, &closest) )
+            {
+                mode.mode = closest;
+                mode.bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
+                mode.name = GfxMode::GenName(mode.w, mode.h);
+            }
+            
+            AddGfxMode(mode);
+        }
+    }
+    
+    
 
     std::sort(graphicsModes.begin(), graphicsModes.end(), GfxMode::SortCompare);
     
