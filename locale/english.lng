@@ -84,7 +84,7 @@
 83  = Input Settings
 84  = Options
 85  = Save/Load
-86  = <OBSOLETE>
+86  = Language
 87  = Help
 88  = Exit
 89  = <>
@@ -344,10 +344,10 @@
 392  = <>
 393  = <>
 394  = <>
-395  = <OBSOLETE>
-396  = <OBSOLETE>
-397  = <OBSOLETE>
-398  = <OBSOLETE>
+395  = Language
+396  = Select a language in the list.
+397  = 
+398  = 
 399  = >>> Multiplayer Dialog <<<
 400  = Next
 401  = Change Level
@@ -834,7 +834,7 @@
 921  = Go to Options Screen
 922  = Go to Options Screen
 923  = Go to Save/Load Screen
-924  = <OBSOLETE>
+924  = Go To Language Select Screen
 925  = <OBSOLETE>
 926  = <OBSOLETE>
 927  = Load Last Game You Saved In-Game
