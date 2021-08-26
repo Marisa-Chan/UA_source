@@ -2038,6 +2038,8 @@ void UserData::sub_46C914()
             it++;
 
         std::string a1a = fmt::sprintf("%s/user.txt", it->name);
+        
+        EnvMode = ENVMODE_SINGLEPLAY;
 
         yw_arg172 arg172;
 
@@ -2059,8 +2061,6 @@ void UserData::sub_46C914()
         disk_button->Hide();
 
         p_YW->GuiWinClose( &disk_listvw );
-
-        EnvMode = ENVMODE_SINGLEPLAY;
 
         sub_bar_button->Show();
     }
