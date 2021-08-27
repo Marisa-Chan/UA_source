@@ -631,7 +631,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
         }
 
         int v34 = brf->CurrTime - brf->TextTime;
-        int v33 = 100 * v34;
+        int v33 = 150 * v34;
 
         stru_5C91D0.numEntries = numLines;
 
