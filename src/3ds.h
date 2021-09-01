@@ -14,14 +14,14 @@ struct d3dsTextureMap
     unsigned    flags = 0;
     float       percent = 0.0;
     float       blur = 0.0;
-    float       scale[2] = {{0.0}};
-    float       offset[2] = {{0.0}};
+    float       scale[2] = {0.0};
+    float       offset[2] = {0.0};
     float       rotation = 0.0;
-    float       tint_1[3] = {{0.0}};
-    float       tint_2[3] = {{0.0}};
-    float       tint_r[3] = {{0.0}};
-    float       tint_g[3] = {{0.0}};
-    float       tint_b[3] = {{0.0}};
+    float       tint_1[3] = {0.0};
+    float       tint_2[3] = {0.0};
+    float       tint_r[3] = {0.0};
+    float       tint_g[3] = {0.0};
+    float       tint_b[3] = {0.0};
 
     NC_STACK_bitmap *tex = NULL;
 
@@ -35,9 +35,9 @@ struct d3dsTextureMap
 struct d3dsMaterial
 {
     std::string         name;               /* Material name */
-    float               ambient[3] = {{0.0}};         /* Material ambient reflectivity */
-    float               diffuse[3] = {{0.0}};         /* Material diffuse reflectivity */
-    float               specular[3] = {{0.0}};        /* Material specular reflectivity */
+    float               ambient[3] = {0.0};         /* Material ambient reflectivity */
+    float               diffuse[3] = {0.0};         /* Material diffuse reflectivity */
+    float               specular[3] = {0.0};        /* Material specular reflectivity */
     float               shininess = 0.0;          /* Material specular exponent */
     float               shin_strength = 0.0;
     int                 use_blur = 0;

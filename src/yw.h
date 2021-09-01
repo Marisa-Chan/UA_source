@@ -2294,8 +2294,8 @@ public:
     NC_STACK_bitmap *shadermp_ilbm;
     int field_138c;
     int str17_NOT_FALSE;
-    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersHorizontal = {{NULL}};
-    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersVertical = {{NULL}};
+    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersHorizontal = {NULL};
+    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersVertical = {NULL};
     NC_STACK_skeleton *FillerSide = NULL;
     NC_STACK_skeleton *FillerCross = NULL;
     int field_15e4;
