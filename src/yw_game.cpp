@@ -822,11 +822,11 @@ void NC_STACK_ypaworld::CellSetOwner(cellArea *cell, char secX, char secY, uint8
     }
 }
 
-void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_arg129 *a5, int newOwner)
+void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, NC_STACK_ypabact *a5, int newOwner)
 {
     int energon[World::FRACTION_MAXCOUNT];
 
-    if ( newOwner == 255 )
+    if ( newOwner < World::OWNER_UNKNOW )
     {
         newOwner = cell->owner;
 
@@ -851,10 +851,10 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
         {
             if ( UserRobo->_owner == newOwner )
             {
-                if ( a5 && a5->unit )
+                if ( a5 )
                 {
                     yw_arg159 v21;
-                    v21.unit = a5->unit;
+                    v21.unit = a5;
                     v21.Priority = 78;
                     v21.MsgID = 45;
 
@@ -906,7 +906,7 @@ void NC_STACK_ypaworld::CellSetNewOwner(int secX, int secY, cellArea *cell, yw_a
     CellSetOwner(cell, secX, secY, newOwner);
 }
 
-void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6)
+void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int newOwner, NC_STACK_ypabact *a6)
 {
     if ( IsGamePlaySector( {secX, secY} ) )
     {
@@ -934,14 +934,19 @@ void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int 
             }
         }
 
-        if ( cell->comp_type == 1 )
+        /* Fix for vanilla game bug that recalc sector owner after loading
+         * saved game. */
+        if (newOwner != World::OWNER_NOCHANGE)
         {
-            if ( helth < 224 )
-                CellSetNewOwner(secX, secY, cell, a6, a5);
-        }
-        else if ( helth < 1728 )
-        {
-            CellSetNewOwner(secX, secY, cell, a6, a5);
+            if ( cell->comp_type == 1 )
+            {
+                if ( helth < 224 )
+                    CellSetNewOwner(secX, secY, cell, a6, newOwner);
+            }
+            else if ( helth < 1728 )
+            {
+                CellSetNewOwner(secX, secY, cell, a6, newOwner);
+            }
         }
     }
     else
@@ -3200,7 +3205,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
                     arg129.pos.y = sitem.PCell->height;
                     arg129.pos.z = v21;
                     arg129.field_10 = 200000;
-                    arg129.field_14 = sitem.ActivateOwner;
+                    arg129.OwnerID = sitem.ActivateOwner;
                     arg129.unit = 0;
 
                     ypaworld_func129(&arg129);

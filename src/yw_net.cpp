@@ -1808,7 +1808,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         arg129.pos = seMsg->pos;
         arg129.field_10 = seMsg->energy;
-        arg129.field_14 = seMsg->sectOwner;
+        arg129.OwnerID = seMsg->sectOwner;
 
         yw->ypaworld_func129(&arg129);
     }
@@ -3860,7 +3860,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
                             {
                                 for (int x = 0; x < _mapSize.x; x++)
                                 {
-                                    CellCheckHealth(&_cells(x, y), x, y, 255, NULL);
+                                    CellCheckHealth(&_cells(x, y), x, y, World::OWNER_RECALC, NULL);
                                 }
                             }
 

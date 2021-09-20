@@ -74,6 +74,13 @@ enum BLIST_TYPES
     BLIST_KIDS  = 3, // Used in bact class for store kid units
 };
 
+enum OWNERID
+{
+    OWNER_NOCHANGE  = -2,
+    OWNER_RECALC    = -1,
+    OWNER_UNKNOW    = 0,
+};
+
 enum COLOR_IDS
 {
 	COLOR_OWNER_0 = 0,
@@ -1757,7 +1764,7 @@ struct yw_arg129
     int field_0;
     vec3d pos;
     int field_10;
-    int field_14;
+    int OwnerID;
     NC_STACK_ypabact *unit;
 };
 
@@ -2193,8 +2200,8 @@ public:
     void InitGates();
     void UpdatePowerEnergy();
     void PowerStationErase(size_t id);
-    void CellSetNewOwner(int secX, int secY, cellArea *cell, yw_arg129 *a5, int newOwner);
-    void CellCheckHealth(cellArea *cell, int secX, int secY, int a5, yw_arg129 *a6);
+    void CellSetNewOwner(int secX, int secY, cellArea *cell, NC_STACK_ypabact *a5, int newOwner);
+    void CellCheckHealth(cellArea *cell, int secX, int secY, int a5, NC_STACK_ypabact *a6);
     void InitBuddies();
     void InitSuperItems();
     bool LoadBlgMap(const std::string &mapName);

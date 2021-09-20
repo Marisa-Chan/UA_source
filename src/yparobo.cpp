@@ -901,7 +901,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                         yw_arg129 v60;
                         v60.pos = arg136.isectPos;
                         v60.unit = NULL;
-                        v60.field_14 = 255;
+                        v60.OwnerID = World::OWNER_RECALC;
                         v60.field_10 = v82 * 15000.0 / a2;
 
                         ChangeSectorEnergy(&v60);
@@ -974,7 +974,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
                         yw_arg129 v60;
                         v60.pos = clzn->pos1;
                         v60.unit = NULL;
-                        v60.field_14 = 255;
+                        v60.OwnerID = World::OWNER_RECALC;
                         v60.field_10 = v89 / a2;
 
                         ChangeSectorEnergy(&v60);

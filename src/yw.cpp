@@ -1318,7 +1318,7 @@ void NC_STACK_ypaworld::ypaworld_func129(yw_arg129 *arg)
 
             ypaworld_func129__sub0(this, cell, arg);
 
-            CellCheckHealth(&cell, sec.x, sec.y, arg->field_14, arg);
+            CellCheckHealth(&cell, sec.x, sec.y, arg->OwnerID, arg->unit);
 
             if ( cell.w_type == 4 )
             {
@@ -5922,7 +5922,7 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
                                 {
                                     for (int xx = 0; xx < _mapSize.x; xx++)
                                     {
-                                        CellCheckHealth(&_cells(xx, yy), xx, yy, 255, NULL);
+                                        CellCheckHealth(&_cells(xx, yy), xx, yy, World::OWNER_RECALC, NULL);
                                     }
                                 }
 
@@ -6575,7 +6575,7 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
     {
         for(int x = 0; x < _mapSize.x; x++)
         {
-            CellCheckHealth(&_cells(x, y), x, y, 255, NULL);
+            CellCheckHealth(&_cells(x, y), x, y, World::OWNER_NOCHANGE, NULL);
         }
     }
 

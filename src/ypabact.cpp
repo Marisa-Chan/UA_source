@@ -7245,7 +7245,7 @@ size_t NC_STACK_ypabact::SetStateInternal(setState_msg *arg)
 
 void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
 {
-    arg->field_14 = 255;
+    arg->OwnerID = World::OWNER_RECALC;
 
     _world->ypaworld_func129(arg);
 
