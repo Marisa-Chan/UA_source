@@ -919,7 +919,7 @@ void NC_STACK_ypaworld::CellCheckHealth(cellArea *cell, int secX, int secY, int 
         {
             if ( helth )
             {
-                int effPower = (helth * _powerStations.at( cell->w_id ).Power) / 256 ;
+                int effPower = (helth * _powerStations.at( cell->w_id ).Power) / 255 ;
 
                 if ( effPower < 0 )
                     effPower = 0;
