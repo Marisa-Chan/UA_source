@@ -408,10 +408,10 @@ int LuaEvents::Lua_WrldGetSectorInfo(lua_State *l)
         lua_pushinteger(l, area->w_type);
         lua_setfield(l, -2, "w_type");
 
-        lua_pushinteger(l, area->Pos.x);
+        lua_pushinteger(l, area->PosID.x);
         lua_setfield(l, -2, "x");
 
-        lua_pushinteger(l, area->Pos.y);
+        lua_pushinteger(l, area->PosID.y);
         lua_setfield(l, -2, "y");
 
         lua_pushinteger(l, area->type_id);

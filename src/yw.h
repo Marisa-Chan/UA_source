@@ -791,7 +791,7 @@ enum CELL_PFLAGS
 struct cellArea
 {
     int32_t Id = 0;
-    Common::Point Pos;
+    Common::Point PosID;
 
     char addit_cost; // Additional cost for ground units
     char pf_flags; // Pathfind flags

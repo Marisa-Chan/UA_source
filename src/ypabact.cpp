@@ -4527,7 +4527,7 @@ void NC_STACK_ypabact::GetSectorTarget(bact_arg90 *arg)
         {
             for (int y = -1; y < 2; y++)
             {
-                Common::Point pt = arg130.pcell->Pos + Common::Point(x, y);
+                Common::Point pt = arg130.pcell->PosID + Common::Point(x, y);
                 NC_STACK_ypabact *v7 = GetSectorTarget__sub0( _world->SectorAt(pt), arg->unit, &rad, &job);
 
                 if ( v7 )
@@ -4591,7 +4591,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
     if ( _world->GetSectorInfo(&arg130) )
     {
         cellArea *cell = arg130.pcell;
-        Common::Point pt = cell->Pos;
+        Common::Point pt = cell->PosID;
 
         if ( arg130.sec_x != 0 &&  arg130.sec_z != 0 )
         {
@@ -7536,8 +7536,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     cellArea *current_pcell = start_pcell;
 
-    int v23 = Common::ABS(target_pcell->Pos.x - current_pcell->Pos.x);
-    int v24 = Common::ABS(target_pcell->Pos.y - current_pcell->Pos.y);
+    int v23 = Common::ABS(target_pcell->PosID.x - current_pcell->PosID.x);
+    int v24 = Common::ABS(target_pcell->PosID.y - current_pcell->PosID.y);
 
     float sq2 = sqrt(2.0);
 
@@ -7553,7 +7553,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 if ( dx == 0.0 && dz == 0.0 )
                     continue;
 
-                Common::Point currentSec = current_pcell->Pos;
+                Common::Point currentSec = current_pcell->PosID;
                 Common::Point t = currentSec + Common::Point(dx, dz);
 
                 if ( _world->IsGamePlaySector(t) )
@@ -7593,8 +7593,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
                     float new_cost_to_this = sqrt(POW2(dx) + POW2(dz)) + cell_tzx->addit_cost + current_pcell->cost_to_this;
 
-                    int v40 = Common::ABS(target_pcell->Pos.x - t.x);
-                    int v41 = Common::ABS(target_pcell->Pos.y - t.y);
+                    int v40 = Common::ABS(target_pcell->PosID.x - t.x);
+                    int v41 = Common::ABS(target_pcell->PosID.y - t.y);
 
                     float new_cost_to_target = Common::MIN(v40, v41) * sq2 + Common::ABS(v40 - v41);
 
@@ -7664,8 +7664,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     
     cellArea *nextcell = pathCells.top();
 
-    int v61 = nextcell->Pos.x - curcell->Pos.x;
-    int v62 = nextcell->Pos.y - curcell->Pos.y;
+    int v61 = nextcell->PosID.x - curcell->PosID.x;
+    int v62 = nextcell->PosID.y - curcell->PosID.y;
 
     int step_id = 0;
 
@@ -7683,7 +7683,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         pathCells.pop();
         nextcell = pathCells.top();
 
-        if ( nextcell->Pos.x - curcell->Pos.x != v61 || nextcell->Pos.y - curcell->Pos.y != v62 )
+        if ( nextcell->PosID.x - curcell->PosID.x != v61 || nextcell->PosID.y - curcell->PosID.y != v62 )
         {
             float tx, tz;
 
@@ -7714,10 +7714,10 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 }
             }
 
-            v61 = nextcell->Pos.x - curcell->Pos.x;
-            v62 = nextcell->Pos.y - curcell->Pos.y;
+            v61 = nextcell->PosID.x - curcell->PosID.x;
+            v62 = nextcell->PosID.y - curcell->PosID.y;
             
-            arg->waypoints[ step_id ] = World::SectorIDToCenterPos3(curcell->Pos) + vec3d(tx, 0.0, tz);
+            arg->waypoints[ step_id ] = World::SectorIDToCenterPos3(curcell->PosID) + vec3d(tx, 0.0, tz);
             maxsteps--;
             step_id++;
         }

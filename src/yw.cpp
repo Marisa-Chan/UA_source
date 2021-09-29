@@ -7658,7 +7658,7 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
         for (int x = 0; x < sz.x; x++)
         {
             _cells(x, y).Id = id;
-            _cells(x, y).Pos = Common::Point(x, y);
+            _cells(x, y).PosID = Common::Point(x, y);
             id++;
         }
     }

@@ -333,7 +333,7 @@ bool NC_STACK_ypaworld::LoadTypeMap(const std::string &mapName)
             cell.clear();
            
             cell.Id = id;
-            cell.Pos = Common::Point(x, y);
+            cell.PosID = Common::Point(x, y);
            
             secType *sectp = &secTypes[ typ_map->At(x, y) ];
 
