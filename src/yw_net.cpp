@@ -3868,6 +3868,8 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
                             InitGates();
                             InitSuperItems();
                             UpdatePowerEnergy();
+                            
+                            PrepareAllFillers();
 
                             if ( sb_0x451034(this) )
                                 loadOK = true;

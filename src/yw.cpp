@@ -5931,6 +5931,8 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
                                 InitSuperItems();
                                 UpdatePowerEnergy();
                             }
+                            
+                            PrepareAllFillers();
 
                             if ( sb_0x451034(this) )
                                 ok = 1;
@@ -6581,6 +6583,8 @@ size_t NC_STACK_ypaworld::LoadGame(const std::string &saveFile)
 
     InitGates();
     UpdatePowerEnergy();
+    
+    PrepareAllFillers();
 
     if ( !sb_0x451034(this) )
         return 0;
@@ -7662,6 +7666,12 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
             id++;
         }
     }
+    
+    _cellsVFCache.Clear();
+    _cellsVFCache.Resize(sz.x, sz.y);
+    
+    _cellsHFCache.Clear();
+    _cellsHFCache.Resize(sz.x, sz.y);
     
     _energyAccumMap.Clear();
     _energyAccumMap.Resize(sz);

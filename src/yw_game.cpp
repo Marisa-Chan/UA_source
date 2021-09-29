@@ -1717,55 +1717,85 @@ void NC_STACK_ypaworld::RenderSuperItems(baseRender_msg *arg)
     }
 }
 
-
-NC_STACK_base * NC_STACK_ypaworld::PrepareVFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5)
+void NC_STACK_ypaworld::PrepareFiller(cellArea *sct, cellArea *sct2, float v9h, float v8h, bool vertical, TCellFillerCh *out, bool force)
 {
-    if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
-        return 0;
+    int x = secTypes[ sct->type_id ].field_1;
+    int y = secTypes[ sct2->type_id ].field_1;
+    
+    if (!force && (out->Id1 == x && out->Id2 == y && 
+        out->Heights[0] == sct->height && out->Heights[1] == sct2->height && 
+        out->Heights[2] == v8h && out->Heights[3] == v9h))
+        return;
 
-    int x = secTypes[ sct->p_cell->type_id ].field_1;
-    int y = secTypes[ sct2->p_cell->type_id ].field_1;
-
-    NC_STACK_base *bs = FillersVertical(x, y);
+    NC_STACK_base *bs;
+    if (vertical)
+        bs = FillersVertical(x, y);
+    else
+        bs = FillersHorizontal(x, y);
+    
     UAskeleton::Data *skel = bs->GetSkeleton()->GetSkelet();
+    
+    vec2d pos = World::SectorIDToCenterPos2( sct2->PosID );
 
-    bs->SetPosition( vec3d(sct2->x, 0, sct2->z), NC_STACK_base::UF_XZ);
+    bs->SetPosition( vec3d::X0Z( pos ), NC_STACK_base::UF_XZ );
 
     for (int i = 0; i < 4; i++)
-        skel->POO[i].y = sct->y;
+        skel->POO[i].y = sct->height;
 
     for (int i = 4; i < 8; i++)
-        skel->POO[i].y = sct2->y;
+        skel->POO[i].y = sct2->height;
 
-    skel->POO[8].y = a5;
-    skel->POO[9].y = a4;
-
-    return bs;
+    skel->POO[8].y = v8h;
+    skel->POO[9].y = v9h;
+    
+    bs->RecalcInternal(true);
+    bs->MakeCoordsCache();
+    
+    bs->MakeCache(out);
+    
+    out->Id1 = x;
+    out->Id2 = y;
+    out->Heights[0] = sct->height;
+    out->Heights[1] = sct2->height;
+    out->Heights[2] = v8h;
+    out->Heights[3] = v9h;
 }
 
-NC_STACK_base * NC_STACK_ypaworld::PrepareHFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5)
+void NC_STACK_ypaworld::PrepareAllFillers()
 {
-    if ( sct->dword4 != 1 || sct2->dword4 != 1 || (sct->dword8 != 1 && sct2->dword8 != 1) )
-        return NULL;
-
-    int x = secTypes[ sct->p_cell->type_id ].field_1;
-    int y = secTypes[ sct2->p_cell->type_id ].field_1;
-
-    NC_STACK_base *bs = FillersHorizontal(x, y);
-    UAskeleton::Data *skel = bs->GetSkeleton()->GetSkelet();
-
-    bs->SetPosition( vec3d(sct2->x, 0, sct2->z), NC_STACK_base::UF_XZ );
-
-    for (int i = 0; i < 4; i++)
-        skel->POO[i].y = sct->y;
-
-    for (int i = 4; i < 8; i++)
-        skel->POO[i].y = sct2->y;
-
-    skel->POO[8].y = a5;
-    skel->POO[9].y = a4;
-
-    return bs;
+    for (int i = 0; i < _mapSize.x - 1; i++)
+    {
+        for (int j = 0; j < _mapSize.y - 2; j++)
+        {
+            cellArea *sct = &_cells(i, j);
+            cellArea *sct2 = &_cells(i, j + 1);
+            
+            float h;
+            if (i == _mapSize.x - 1)
+                h = sct2->averg_height;
+            else
+                h = _cells(i + 1, j + 1).averg_height;
+            
+            PrepareFiller(sct, sct2, sct2->averg_height, h, false, &_cellsHFCache(i, j), true);
+        }
+    }
+    
+    for (int i = 0; i < _mapSize.x - 2; i++)
+    {
+        for (int j = 0; j < _mapSize.y - 1; j++)
+        {
+            cellArea *sct = &_cells(i, j);
+            cellArea *sct2 = &_cells(i + 1, j);
+            
+            float h;
+            if (i == _mapSize.x - 1)
+                h = sct2->averg_height;
+            else
+                h = _cells(i + 1, j + 1).averg_height;
+            
+            PrepareFiller(sct, sct2, sct2->averg_height, h, true, &_cellsVFCache(i, j), true);
+        }
+    }
 }
 
 
@@ -1775,22 +1805,25 @@ TRenderingSector rendering_sectors[YW_RENDER_SECTORS_DEF * 2][ YW_RENDER_SECTORS
 
 void NC_STACK_ypaworld::RenderFillers(baseRender_msg *arg)
 {
-    //Render empty sectors and modify landscape linking parts
+    //Render landscape linking parts
     for (int i = 0; i < field_1368; i++)
     {
         for (int j = 0; j < field_1368 - 1; j++)
         {
-            TRenderingSector *sct = &rendering_sectors[j][i];
-            TRenderingSector *sct2 = &rendering_sectors[j + 1][i];
-
-            float h = rendering_sectors[j + 1][i].smooth_height;
-            float h2 = rendering_sectors[j + 1][i + 1].smooth_height;
-
-            NC_STACK_base *bs = PrepareVFiller(sct, sct2, h, h2);
-            if ( bs )
+            TRenderingSector &sct = rendering_sectors[j][i];
+            TRenderingSector &sct2 = rendering_sectors[j + 1][i];
+            
+            if (sct.dword4 == 1 && sct2.dword4 == 1 && (sct.dword8 == 1 || sct2.dword8 == 1))
             {
-                bs->RecalcInternal(true);
-                bs->Render(arg, NULL, true);
+                float h;
+                if (rendering_sectors[j + 1][i + 1].dword4 == 1)
+                    h = rendering_sectors[j + 1][i + 1].p_cell->averg_height;
+                else
+                    h = sct2.p_cell->averg_height;
+                    
+                TCellFillerCh &filler = _cellsVFCache( sct2.p_cell->PosID.x - 1, sct2.p_cell->PosID.y );
+                PrepareFiller(sct.p_cell, sct2.p_cell, sct2.p_cell->averg_height, h, true, &filler);
+                filler.Render(arg);
             }
         }
     }
@@ -1799,17 +1832,20 @@ void NC_STACK_ypaworld::RenderFillers(baseRender_msg *arg)
     {
         for (int j = 0; j < field_1368; j++)
         {
-            TRenderingSector *sct = &rendering_sectors[j][i];
-            TRenderingSector *sct2 = &rendering_sectors[j][i + 1];
-
-            float h = rendering_sectors[j][i + 1].smooth_height;
-            float h2 = rendering_sectors[j + 1][i + 1].smooth_height;
-
-            NC_STACK_base *bs = PrepareHFiller(sct, sct2, h, h2);
-            if ( bs )
+            TRenderingSector &sct = rendering_sectors[j][i];
+            TRenderingSector &sct2 = rendering_sectors[j][i + 1];
+            
+            if (sct.dword4 == 1 && sct2.dword4 == 1 && (sct.dword8 == 1 || sct2.dword8 == 1))
             {
-                bs->RecalcInternal(true);
-                bs->Render(arg, NULL, true);
+                float h;
+                if (rendering_sectors[j + 1][i + 1].dword4 == 1)
+                    h = rendering_sectors[j + 1][i + 1].p_cell->averg_height;
+                else
+                    h = sct2.p_cell->averg_height;
+                    
+                TCellFillerCh &filler = _cellsHFCache( sct2.p_cell->PosID.x, sct2.p_cell->PosID.y - 1 );
+                PrepareFiller(sct.p_cell, sct2.p_cell, sct2.p_cell->averg_height, h, false, &filler);
+                filler.Render(arg);
             }
         }
     }

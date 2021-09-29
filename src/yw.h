@@ -887,6 +887,13 @@ struct cellArea
     }
 };
 
+struct TCellFillerCh : TObjectCache
+{
+    int8_t Id1 = -1;
+    int8_t Id2 = -1;
+    float  Heights[4] = {0.};
+};
+
 struct MapKeySector
 {
     int x;
@@ -2065,8 +2072,8 @@ public:
     void RenderSuperWave(vec2d pos, vec2d fromPos, baseRender_msg *arg);
     void RenderFillers(baseRender_msg *arg);
     
-    NC_STACK_base * PrepareVFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5);
-    NC_STACK_base * PrepareHFiller(TRenderingSector *sct, TRenderingSector *sct2, float a4, float a5);
+    void PrepareFiller(cellArea *sct, cellArea *sct2, float v9h, float v8h, bool vertical, TCellFillerCh *out, bool force = false);
+    void PrepareAllFillers();
     
     bool IsVisibleMapPos(vec2d pos);
     
@@ -2265,6 +2272,8 @@ public:
     Common::Point _mapSize;
 
     Common::PlaneVector<cellArea> _cells;
+    Common::PlaneVector<TCellFillerCh> _cellsVFCache;
+    Common::PlaneVector<TCellFillerCh> _cellsHFCache;
 
     vec2d _mapLength;
 
