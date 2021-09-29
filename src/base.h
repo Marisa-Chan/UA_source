@@ -72,6 +72,17 @@ struct base_64arg
     int field_10;
 };
 
+
+struct TObjectCache 
+{
+    std::list<GFX::TMesh> Meshes;
+    TF::TForm3D Transform;
+    float fadeStart = 0.;
+    float fadeLength = 0.;
+    
+    void Render(baseRender_msg *arg);
+};
+
 class NC_STACK_base: public NC_STACK_nucleus
 {
 public:
@@ -119,6 +130,9 @@ public:
     virtual size_t RenderImmediately(baseRender_msg *arg, Instance * inst = NULL);
     
     virtual void RecalcInternal(bool kids = false);
+    
+    TObjectCache *MakeCache(); 
+    virtual void MakeCache(TObjectCache *);
 
     virtual ~NC_STACK_base() {};
     

@@ -975,3 +975,86 @@ void NC_STACK_base::MakeCoordsCache()
     for(GFX::TMesh &m : Meshes)
         GenerateMeshCoordsCache( &m );
 }
+
+TObjectCache *NC_STACK_base::MakeCache()
+{
+    TObjectCache *cache = new TObjectCache();
+    MakeCache(cache);
+    return cache;
+}
+
+void NC_STACK_base::MakeCache(TObjectCache *cache)
+{
+    cache->Meshes = Meshes;
+    cache->Transform = _transform;
+    cache->Transform.Parent = NULL;
+    
+    cache->fadeStart = _renderMsg.fadeStart;
+    cache->fadeLength = _renderMsg.fadeLength;
+}
+
+
+void TObjectCache::Render(baseRender_msg *arg)
+{
+    if (Meshes.empty())
+        return;
+    
+    Transform.CalcGlobal();
+    
+    TF::TForm3D *view = TF::Engine.GetViewPoint();
+    
+    mat4x4 tf = view->CalcSclRot;
+    
+    if ( !(Transform.flags & TF::TForm3D::FLAG_NO_WRLD_ROT) )
+        tf *= (Transform.TForm - view->CalcPos);
+    else
+        tf *= mat4x4(Transform.CalcPos - view->CalcPos);
+
+    float distance = tf.Transform( Transform.Pos ).length();
+
+    bool newsky = System::IniConf::GfxNewSky.Get<bool>();
+    float transDist = System::IniConf::GfxSkyDistance.Get<int>();
+        
+    for(GFX::TMesh &msh : Meshes)
+    {
+        GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
+        rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_MESH );
+
+        rend.Distance = distance;
+        rend.Color = msh.Mat.Color;
+        rend.Flags = msh.Mat.Flags;
+
+        if ((msh.Mat.Flags & GFX::RFLAGS_DYNAMIC_TEXTURE) && msh.Mat.TexSource)
+        {
+            msh.Mat.TexSource->SetTime(arg->globTime, arg->frameTime);
+            uint32_t frameid = msh.Mat.TexSource->GetCurrentFrameID();
+
+            if (frameid < msh.CoordsCache.size())
+            {
+                rend.Tex = msh.CoordsCache.at(frameid).Tex;
+                rend.pCoords = &msh.CoordsCache.at(frameid).Coords;                    
+            }
+        }
+        else
+            rend.Tex = msh.Mat.Tex;
+
+        rend.Flags |= arg->flags;
+
+        if (newsky && !(rend.Flags & GFX::RFLAGS_IGNORE_FALLOFF))
+        {
+            if ( distance >= transDist ||
+                 tf.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
+                 tf.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
+                rend.Flags |= GFX::RFLAGS_FALLOFF;
+        }
+
+        rend.Mesh = &msh;
+        rend.TForm = tf;
+        rend.TimeStamp = arg->globTime;
+        rend.FrameTime = arg->frameTime;
+        rend.FogStart = fadeStart;
+        rend.FogLength = fadeLength;
+
+        GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
+    }
+}
