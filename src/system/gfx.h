@@ -243,7 +243,7 @@ struct TRenderNode
     TMesh *Mesh = NULL;
     TMesh LocalMesh;
     
-    std::vector<tUtV> *pCoords = NULL;
+    int32_t coordsID = -1;
     
     ResBitmap *Tex = NULL;
     

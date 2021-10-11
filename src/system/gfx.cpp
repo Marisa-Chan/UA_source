@@ -1136,8 +1136,8 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     if (flags & RFLAGS_TEXTURED)
     {
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->pCoords )
-            glTexCoordPointer(2, GL_FLOAT, sizeof(tUtV), nod->pCoords->data());
+        if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->coordsID >= 0 )
+            glTexCoordPointer(2, GL_FLOAT, sizeof(tUtV), nod->Mesh->CoordsCache.at( nod->coordsID ).Coords.data());
         else
             glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].TexCoord);
     }

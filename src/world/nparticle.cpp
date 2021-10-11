@@ -152,7 +152,7 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
                     if (frameid < mesh.CoordsCache.size())
                     {
                         rend.Tex = mesh.CoordsCache.at(frameid).Tex;
-                        rend.pCoords = &mesh.CoordsCache.at(frameid).Coords;                    
+                        rend.coordsID = frameid;                    
                     }
                 }
                 else

@@ -536,7 +536,7 @@ size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst, bool doCopy /
                 if (frameid < msh.CoordsCache.size())
                 {
                     rend.Tex = msh.CoordsCache.at(frameid).Tex;
-                    rend.pCoords = &msh.CoordsCache.at(frameid).Coords;                    
+                    rend.coordsID = frameid;                    
                 }
             }
             else
@@ -1032,7 +1032,7 @@ void TObjectCache::Render(baseRender_msg *arg)
             if (frameid < msh.CoordsCache.size())
             {
                 rend.Tex = msh.CoordsCache.at(frameid).Tex;
-                rend.pCoords = &msh.CoordsCache.at(frameid).Coords;                    
+                rend.coordsID = frameid;                    
             }
         }
         else
