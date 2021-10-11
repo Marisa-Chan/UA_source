@@ -1182,18 +1182,10 @@ void GFXEngine::PrepareParticle(TRenderNode *node)
     
     vec3d pos = node->TForm.getTranslate();
     
-    node->TForm.identity();
-    
-    float ssz = node->ParticleSize / 2.0;
-    
-    node->Mesh->Vertexes[0].Pos = pos + vec3d(-ssz, ssz, 0.0);
-    node->Mesh->Vertexes[0].Color = node->Color;
-    node->Mesh->Vertexes[1].Pos = pos + vec3d(-ssz, -ssz, 0.0);
-    node->Mesh->Vertexes[1].Color = node->Color;
-    node->Mesh->Vertexes[2].Pos = pos + vec3d(ssz, -ssz, 0.0);
-    node->Mesh->Vertexes[2].Color = node->Color;
-    node->Mesh->Vertexes[3].Pos = pos + vec3d(ssz, ssz, 0.0);
-    node->Mesh->Vertexes[3].Color = node->Color;
+    node->TForm = mat4x4( mat3x3(node->ParticleSize, 0, 0,
+                                 0, node->ParticleSize, 0,
+                                 0, 0, 1.0) );
+    node->TForm.setTranslate( pos );
 }
 
 void GFXEngine::QueueRenderMesh(TRenderNode *nod)

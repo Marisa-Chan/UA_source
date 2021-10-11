@@ -791,9 +791,14 @@ void NC_STACK_particle::MakeMeshCache()
         
         mesh.Vertexes.resize(4);
         mesh.Vertexes[0].TexCoordId = 0;
+        mesh.Vertexes[0].Pos = vec3f(-0.5,  0.5, 0.0);
         mesh.Vertexes[1].TexCoordId = 1;
+        mesh.Vertexes[1].Pos = vec3f(-0.5, -0.5, 0.0);
         mesh.Vertexes[2].TexCoordId = 2;
+        mesh.Vertexes[2].Pos = vec3f( 0.5, -0.5, 0.0);
         mesh.Vertexes[3].TexCoordId = 3;
+        mesh.Vertexes[3].Pos = vec3f( 0.5,  0.5, 0.0);
+        
         mesh.Indixes.assign( {0, 2, 1, 0, 3, 2} );
         
         if ( !ade->IsParticle() )
@@ -801,6 +806,9 @@ void NC_STACK_particle::MakeMeshCache()
             mesh.Mat = ade->GetRenderParams(0);
             if (mesh.Mat.TexSource)
             {
+                for (GFX::TVertex &v : mesh.Vertexes)
+                    v.Color = mesh.Mat.Color;
+                
                 if (mesh.Mat.TexSource->IsDynamic())
                 {
                     mesh.CoordsCache.resize(mesh.Mat.TexSource->GetFramesCount());
