@@ -1122,7 +1122,7 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     
-    glVertexPointer(3, GL_DOUBLE, sizeof(TVertex), &mesh->Vertexes[0].Pos);
+    glVertexPointer(3, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].Pos);
     
     if (useComputedColor)
         glColorPointer(4, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].ComputedColor);
@@ -3753,7 +3753,7 @@ void GFXEngine::DrawScreenSurface()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
-    glVertexPointer(3, GL_DOUBLE, sizeof(GFX::TVertex), &vtx[0].Pos);
+    glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
     glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
     
     uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
@@ -3878,7 +3878,7 @@ void GFXEngine::DrawFBO()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
-    glVertexPointer(3, GL_DOUBLE, sizeof(GFX::TVertex), &vtx[0].Pos);
+    glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
     glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
     
     uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};

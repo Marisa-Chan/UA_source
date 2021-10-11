@@ -456,7 +456,7 @@ void TMovie::ProcessFrame(uint32_t tm)
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
-    glVertexPointer(3, GL_DOUBLE, sizeof(GFX::TVertex), &vtx[0].Pos);
+    glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
     glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
     
     uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};

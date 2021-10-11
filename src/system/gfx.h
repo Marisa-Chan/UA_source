@@ -192,16 +192,16 @@ struct TCoordsCache
 
 struct TVertex
 {
-    vec3d Pos;
-    vec3d Normal;
+    vec3f Pos;
+    vec3f Normal;
     tUtV  TexCoord;
     TGLColor Color;
     TGLColor ComputedColor;
     uint32_t TexCoordId = 0;
     
     TVertex() = default;
-    TVertex(const vec3d &p): Pos(p) {};
-    TVertex(const vec3d &p, const tUtV &uv): Pos(p), TexCoord(uv) {};
+    TVertex(const vec3f &p): Pos(p) {};
+    TVertex(const vec3f &p, const tUtV &uv): Pos(p), TexCoord(uv) {};
 };
 
 class TMesh
