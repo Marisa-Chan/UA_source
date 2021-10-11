@@ -520,7 +520,8 @@ size_t NC_STACK_base::Render(baseRender_msg *arg, Instance * inst, bool doCopy /
         float transDist = System::IniConf::GfxSkyDistance.Get<int>();
         
         for(GFX::TMesh &msh : Meshes)
-        {
+        {       
+            arg->adeCount += msh.Indixes.size() / 3;
             GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
             rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_MESH );
 
@@ -1017,6 +1018,8 @@ void TObjectCache::Render(baseRender_msg *arg)
         
     for(GFX::TMesh &msh : Meshes)
     {
+        arg->adeCount += msh.Indixes.size() / 3;
+                
         GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
         rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_MESH );
 

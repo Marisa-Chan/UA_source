@@ -2399,8 +2399,8 @@ public:
     int field_1b22; // saved mouse y
     update_msg field_1b24;
     int8_t _showDebugMode = 0; // debug info draw
-    int16_t field_1B6A;
-    int16_t field_1b6c;
+    int32_t field_1B6A;
+    int32_t field_1b6c;
     uint16_t field_1B6E;
     int field_1b70;
     int field_1b74;
