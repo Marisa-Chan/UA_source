@@ -23,29 +23,20 @@ typedef std::array<SDL_Color, 256> UA_PALETTE;
 
 struct ResBitmap
 {    
-    int16_t width;
-    int16_t height;
-    UA_PALETTE *palette;
-    SDL_Surface *swTex;
-    GLuint hwTex;
-    
-    ResBitmap()
-    {
-        width = 0;
-        height = 0;
-        palette = NULL;
-        swTex = NULL;
-        hwTex = 0;
-    }
+    int16_t width = 0;
+    int16_t height = 0;
+    UA_PALETTE *palette = NULL;
+    SDL_Surface *swTex = NULL;
+    GLuint hwTex = 0;
 };
 
 
 
 struct TileMap
 {
-    NC_STACK_bitmap *img;
+    NC_STACK_bitmap *img = NULL;
     std::array<Common::PointRect, 256> map;
-    int h;
+    int h = 0;
     
     TileMap();  
     ~TileMap();
@@ -68,10 +59,8 @@ struct TileMap
 
 struct w3d_a209
 {
-    char *cmdbuf;
-    char **includ;
-
-    w3d_a209() : cmdbuf(NULL), includ(NULL) {};
+    char *cmdbuf = NULL;
+    char **includ = NULL;
 };
 
 struct tUtV
