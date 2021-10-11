@@ -82,6 +82,11 @@ public:
 
     static RSRCList *getRsrc_sharedList();
     static RSRCList *getRsrc_privateList();
+    
+    virtual bool IsSameRes(NC_STACK_rsrc *res)
+    {
+        return resource == res->resource;
+    }
 
     //Data
 public:

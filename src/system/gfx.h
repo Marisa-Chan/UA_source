@@ -181,16 +181,7 @@ struct TRenderParams
     TRenderParams& operator=(const TRenderParams &) = default;
     TRenderParams& operator=(TRenderParams &&) = default;
     
-    bool operator==(const TRenderParams &b)
-    {
-        if (Flags != b.Flags)
-            return false;
-        
-        if (Flags & RFLAGS_DYNAMIC_TEXTURE)
-            return TexSource == b.TexSource;
-        
-        return Tex == b.Tex;
-    }
+    bool operator==(const TRenderParams &b);
 };
 
 struct TCoordsCache

@@ -89,6 +89,17 @@ bool TRenderNode::CompareDistance(TRenderNode* a, TRenderNode* b)
     return a->Distance < b->Distance;
 }
 
+bool TRenderParams::operator==(const TRenderParams &b)
+{
+    if (Flags != b.Flags)
+        return false;
+
+    if (Flags & RFLAGS_DYNAMIC_TEXTURE)
+        return TexSource->IsSameRes( b.TexSource );
+
+    return Tex == b.Tex;
+}
+
 
 
 GFXEngine::GFXEngine()
