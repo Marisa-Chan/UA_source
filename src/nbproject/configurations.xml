@@ -28,6 +28,8 @@
       <df name="system">
         <in>fsmgr.cpp</in>
         <in>gfx.cpp</in>
+        <in>glfuncs.cpp</in>
+        <in>glfuncs.h</in>
         <in>inivals.cpp</in>
         <in>inpt.cpp</in>
         <in>luascript.cpp</in>

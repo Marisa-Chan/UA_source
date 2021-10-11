@@ -17,6 +17,7 @@
 #include "../log.h"
 #include "../font.h"
 #include "inivals.h"
+#include "glfuncs.h"
 
 namespace GFX
 {   
@@ -37,36 +38,6 @@ const std::array<vec3d, 8> GFXEngine::_clrEff
 ,   vec3d(1.4,  1.08,  1.12)
 ,   vec3d(0.3,  0.60, 0.7)};
 
-PFNGLGENFRAMEBUFFERSPROC GLGenFramebuffers = NULL;
-PFNGLBINDFRAMEBUFFERPROC GLBindFramebuffer = NULL;
-PFNGLGENRENDERBUFFERSPROC GLGenRenderbuffers = NULL;
-PFNGLBINDRENDERBUFFERPROC GLBindRenderbuffer = NULL;
-PFNGLFRAMEBUFFERTEXTUREPROC GLFrameBufferTexture = NULL;
-PFNGLFRAMEBUFFERTEXTURE2DPROC GLFrameBufferTexture2D = NULL;
-PFNGLRENDERBUFFERSTORAGEPROC GLRenderbufferStorage = NULL;
-PFNGLFRAMEBUFFERRENDERBUFFERPROC GLFramebufferRenderbuffer = NULL;
-PFNGLCHECKFRAMEBUFFERSTATUSPROC GLCheckFramebufferStatus = NULL;
-PFNGLGENERATEMIPMAPPROC GLGenerateMipmap = NULL;
-PFNGLCREATESHADERPROC GLCreateShader = NULL;
-PFNGLSHADERSOURCEPROC GLShaderSource = NULL;
-PFNGLDELETESHADERPROC GLDeleteShader = NULL;
-PFNGLCOMPILESHADERPROC GLCompileShader = NULL;
-PFNGLCREATEPROGRAMPROC GLCreateProgram = NULL;
-PFNGLATTACHSHADERPROC GLAttachShader = NULL;
-PFNGLLINKPROGRAMPROC GLLinkProgram = NULL;
-PFNGLUSEPROGRAMPROC GLUseProgram = NULL;
-PFNGLGETUNIFORMLOCATIONPROC GLGetUniformLocation = NULL;
-PFNGLUNIFORM1FPROC GLUniform1f = NULL;
-PFNGLUNIFORM1IPROC GLUniform1i = NULL;
-PFNGLUNIFORM2FPROC GLUniform2f = NULL;
-PFNGLUNIFORM2IPROC GLUniform2i = NULL;
-PFNGLUNIFORM3FPROC GLUniform3f = NULL;
-PFNGLUNIFORM3IPROC GLUniform3i = NULL;
-PFNGLUNIFORM4FPROC GLUniform4f = NULL;
-PFNGLUNIFORM4IPROC GLUniform4i = NULL;
-
-PFNGLGETSHADERIVPROC GLGetShaderiv = NULL;
-PFNGLGETSHADERINFOLOGPROC GLGetShaderInfoLog = NULL;
 
 bool TRenderNode::CompareSolid(TRenderNode *a, TRenderNode *b)
 {
@@ -1643,12 +1614,12 @@ void GFXEngine::BeginFrame()
     
     if (_colorEffects)
     {
-        GLBindFramebuffer(GL_FRAMEBUFFER, 0);
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);
     
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-        GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
     }
 
     glClearColor(0, 0, 0, 0);
@@ -1663,17 +1634,17 @@ void GFXEngine::EndFrame()
 {   
     if (_colorEffects > 1)
     {
-        GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
         DrawFBO();
     }    
-    
+
     Gui::Root::Instance.Draw(Screen());
     DrawScreenSurface();
     Gui::Root::Instance.HwCompose();
     
     if (_colorEffects == 1)
     {
-        GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
         DrawFBO();
     }
     
@@ -1957,7 +1928,7 @@ int16_t GFXEngine::GetHeight()
 void GFXEngine::draw2DandFlush()
 {
     if (_colorEffects)
-        GLBindFramebuffer(GL_FRAMEBUFFER, 0);
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);
     
     Gui::Root::Instance.Draw(Screen());
     DrawScreenSurface();
@@ -1966,7 +1937,7 @@ void GFXEngine::draw2DandFlush()
     SDL_FillRect(Screen(), NULL, SDL_MapRGBA(Screen()->format, 0, 0, 0, 0) );
     
     if (_colorEffects)
-        GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 }
 
 void GFXEngine::matrixAspectCorrection(mat3x3 &inout, bool invert)
@@ -2473,6 +2444,8 @@ SDL_Cursor *GFXEngine::LoadCursor(const std::string &name)
 
 void GFXEngine::Init()
 {
+    _glext = Glext::init();
+    
     System::EventsAddHandler(EventsWatcher);
     
     System::IniConf::ReadFromNucleusIni();
@@ -2574,45 +2547,22 @@ void GFXEngine::Init()
     
     LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
     
+    if (_glext)
+    {
+        
+        
+        
+    }
+    
     _colorEffects = System::IniConf::GfxColorEffects.Get<int32_t>();
+    
+    if (!_glext)
+        _colorEffects = 0;
     
     if (_colorEffects > 0)
     {
-        GLGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)SDL_GL_GetProcAddress("glGenFramebuffers");
-        GLBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)SDL_GL_GetProcAddress("glBindFramebuffer");
-        GLGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)SDL_GL_GetProcAddress("glGenRenderbuffers");
-        GLBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)SDL_GL_GetProcAddress("glBindRenderbuffer");
-        GLFrameBufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)SDL_GL_GetProcAddress("glFramebufferTexture");
-        GLFrameBufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)SDL_GL_GetProcAddress("glFramebufferTexture2D");
-        GLRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)SDL_GL_GetProcAddress("glRenderbufferStorage");
-        GLFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)SDL_GL_GetProcAddress("glFramebufferRenderbuffer");
-        GLCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatus");
-        GLGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)SDL_GL_GetProcAddress("glGenerateMipmap");
-        GLCreateShader = (PFNGLCREATESHADERPROC)SDL_GL_GetProcAddress("glCreateShader");
-        GLShaderSource = (PFNGLSHADERSOURCEPROC)SDL_GL_GetProcAddress("glShaderSource");
-        GLCompileShader = (PFNGLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
-        GLDeleteShader = (PFNGLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
-        GLCreateProgram = (PFNGLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
-        GLAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
-        GLLinkProgram = (PFNGLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
-        GLUseProgram = (PFNGLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
-        GLGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)SDL_GL_GetProcAddress("glGetUniformLocation");
-        
-        GLUniform1f = (PFNGLUNIFORM1FPROC)SDL_GL_GetProcAddress("glUniform1f");
-        GLUniform1i = (PFNGLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
-        GLUniform2f = (PFNGLUNIFORM2FPROC)SDL_GL_GetProcAddress("glUniform2f");
-        GLUniform2i = (PFNGLUNIFORM2IPROC)SDL_GL_GetProcAddress("glUniform2i");
-        GLUniform3f = (PFNGLUNIFORM3FPROC)SDL_GL_GetProcAddress("glUniform3f");
-        GLUniform3i = (PFNGLUNIFORM3IPROC)SDL_GL_GetProcAddress("glUniform3i");
-        GLUniform4f = (PFNGLUNIFORM4FPROC)SDL_GL_GetProcAddress("glUniform4f");
-        GLUniform4i = (PFNGLUNIFORM4IPROC)SDL_GL_GetProcAddress("glUniform4i");
-        
-        GLGetShaderiv = (PFNGLGETSHADERIVPROC)SDL_GL_GetProcAddress("glGetShaderiv");
-        GLGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)SDL_GL_GetProcAddress("glGetShaderInfoLog");
-        
-        
-        GLGenFramebuffers(1, &_fbo);
-        GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+        Glext::GLGenFramebuffers(1, &_fbo);
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, _fbo);
 
         glGenTextures(1, &_fboTex);
         glBindTexture(GL_TEXTURE_2D, _fboTex);
@@ -2623,33 +2573,33 @@ void GFXEngine::Init()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 
-        GLGenRenderbuffers(1, &_fbod);
-        GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
-        GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 640, 480);
+        Glext::GLGenRenderbuffers(1, &_fbod);
+        Glext::GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
+        Glext::GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 640, 480);
 
         
-        GLFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _fbod);
+        Glext::GLFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _fbod);
 
-        GLFrameBufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _fboTex, 0);
+        Glext::GLFrameBufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _fboTex, 0);
 
-        GLBindRenderbuffer(GL_RENDERBUFFER, 0);
+        Glext::GLBindRenderbuffer(GL_RENDERBUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
-        GLBindFramebuffer(GL_FRAMEBUFFER, 0);
+        Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
         _psShader = LoadShader(GL_FRAGMENT_SHADER, "res/clreff.ps");
         _vsShader = LoadShader(GL_VERTEX_SHADER, "res/clreff.vs");
 
-        _shaderProg = GLCreateProgram();
-        GLAttachShader(_shaderProg, _psShader);
-        GLAttachShader(_shaderProg, _vsShader);
-        GLLinkProgram(_shaderProg);
+        _shaderProg = Glext::GLCreateProgram();
+        Glext::GLAttachShader(_shaderProg, _psShader);
+        Glext::GLAttachShader(_shaderProg, _vsShader);
+        Glext::GLLinkProgram(_shaderProg);
         
-        _shdrIDNorm = GLGetUniformLocation(_shaderProg, "normclr");
-        _shdrIDInv = GLGetUniformLocation(_shaderProg, "invclr");
-        _shdrIDrand = GLGetUniformLocation(_shaderProg, "randval");
-        _shdrIDscrsize = GLGetUniformLocation(_shaderProg, "screenSize");
-        _shdrIDmillisecs = GLGetUniformLocation(_shaderProg, "millisecs");
+        _shdrIDNorm = Glext::GLGetUniformLocation(_shaderProg, "normclr");
+        _shdrIDInv = Glext::GLGetUniformLocation(_shaderProg, "invclr");
+        _shdrIDrand = Glext::GLGetUniformLocation(_shaderProg, "randval");
+        _shdrIDscrsize = Glext::GLGetUniformLocation(_shaderProg, "screenSize");
+        _shdrIDmillisecs = Glext::GLGetUniformLocation(_shaderProg, "millisecs");
     }
     
 }
@@ -3758,18 +3708,43 @@ void GFXEngine::DrawScreenSurface()
     glPopAttrib();
 }
 
-uint32_t GFXEngine::LoadShader(int32_t type, const std::string &fl)
+uint32_t GFXEngine::CompileShader(int32_t type, const std::string &string)
 {
-    GLuint sh = GLCreateShader(type);
+    GLuint sh = Glext::GLCreateShader(type);
     if (!sh)
         return 0;
     
-    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc(fl, "rb");
-    if (!f)
+    const GLchar *source = (const GLchar *)string.c_str();
+    
+    Glext::GLShaderSource(sh, 1, &source, 0);
+    Glext::GLCompileShader(sh);
+    
+    GLint tmpvar;
+    Glext::GLGetShaderiv(sh, GL_COMPILE_STATUS, &tmpvar);
+    
+    if (tmpvar == GL_FALSE)
     {
-        GLDeleteShader(sh);
+        Glext::GLGetShaderiv(sh, GL_INFO_LOG_LENGTH, &tmpvar);
+        if (tmpvar > 0)
+        {
+            char *logbuff = new char[tmpvar + 2];
+            Glext::GLGetShaderInfoLog(sh, tmpvar, NULL, logbuff);
+            printf("%s\n", logbuff);
+            delete[] logbuff;
+        }
+        Glext::GLDeleteShader(sh);
         return 0;
     }
+    
+    return sh;
+}
+
+
+uint32_t GFXEngine::LoadShader(int32_t type, const std::string &fl)
+{
+    FSMgr::FileHandle *f = FSMgr::iDir::openFileAlloc(fl, "rb");
+    if (!f)
+        return 0;
 
     f->seek(0, SEEK_END);
     size_t sz = f->tell();
@@ -3785,51 +3760,29 @@ uint32_t GFXEngine::LoadShader(int32_t type, const std::string &fl)
 
     delete f;
     
-    const GLchar *source = (const GLchar *)b.c_str();
-    
-    GLShaderSource(sh, 1, &source, 0);
-    GLCompileShader(sh);
-    
-    GLint tmpvar;
-    GLGetShaderiv(sh, GL_COMPILE_STATUS, &tmpvar);
-    
-    if (tmpvar == GL_FALSE)
-    {
-        GLGetShaderiv(sh, GL_INFO_LOG_LENGTH, &tmpvar);
-        if (tmpvar > 0)
-        {
-            char *logbuff = new char[tmpvar + 2];
-            GLGetShaderInfoLog(sh, tmpvar, NULL, logbuff);
-            printf("%s\n", logbuff);
-            delete[] logbuff;
-        }
-        GLDeleteShader(sh);
-        return 0;
-    }
-    
-    return sh;
+    return CompileShader(type, b);
 }
 
 void GFXEngine::DrawFBO()
 {
-    GLUseProgram(_shaderProg);
+    Glext::GLUseProgram(_shaderProg);
     
     Common::Point scrSz = System::GetResolution();
     
     if (_shdrIDNorm >= 0)
-        GLUniform3f(_shdrIDNorm, _normClr.x, _normClr.y, _normClr.z);
+        Glext::GLUniform3f(_shdrIDNorm, _normClr.x, _normClr.y, _normClr.z);
     
     if (_shdrIDInv >= 0)
-        GLUniform3f(_shdrIDInv, _invClr.x, _invClr.y, _invClr.z);
+        Glext::GLUniform3f(_shdrIDInv, _invClr.x, _invClr.y, _invClr.z);
     
     if (_shdrIDrand >= 0)
-        GLUniform1i(_shdrIDrand, rand());
+        Glext::GLUniform1i(_shdrIDrand, rand());
     
     if (_shdrIDscrsize >= 0)
-        GLUniform2i(_shdrIDscrsize, scrSz.x, scrSz.y);
+        Glext::GLUniform2i(_shdrIDscrsize, scrSz.x, scrSz.y);
     
     if (_shdrIDmillisecs >= 0)
-        GLUniform1i(_shdrIDmillisecs, SDL_GetTicks());
+        Glext::GLUniform1i(_shdrIDmillisecs, SDL_GetTicks());
     
     
     glViewport(0, 0, scrSz.x, scrSz.y);
@@ -3883,7 +3836,7 @@ void GFXEngine::DrawFBO()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glPopAttrib();
-    GLUseProgram(0);
+    Glext::GLUseProgram(0);
 }
  
 void GFXEngine::SetFBOBlending(int mode)
@@ -3901,9 +3854,9 @@ void GFXEngine::UpdateFBOSizes()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scrSz.x, scrSz.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
-        GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, scrSz.x, scrSz.y);
-        GLBindRenderbuffer(GL_RENDERBUFFER, 0);
+        Glext::GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
+        Glext::GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, scrSz.x, scrSz.y);
+        Glext::GLBindRenderbuffer(GL_RENDERBUFFER, 0);
     }
 }
 

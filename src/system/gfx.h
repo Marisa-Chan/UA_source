@@ -453,6 +453,7 @@ public:
     void DrawScreenSurface();
     
     uint32_t LoadShader(int32_t type, const std::string &fl);
+    uint32_t CompileShader(int32_t type, const std::string &string);
     
     void SetFBOBlending(int mode);
     void DrawFBO();
@@ -705,6 +706,8 @@ public:
     float _corrW, _corrIW;
     float _corrH, _corrIH;
     bool _solidFont;
+    
+    bool _glext = false;
     
     // Display class
     SDL_Color _field_4 = {0}; // Color?

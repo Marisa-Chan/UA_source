@@ -85,6 +85,7 @@ OBJS =  \
 	sklt.cpp\
 	system/fsmgr.cpp\
 	system/gfx.cpp\
+	system/glfuncs.cpp\
 	system/inivals.cpp\
 	system/inpt.cpp\
 	system/luascript.cpp\
