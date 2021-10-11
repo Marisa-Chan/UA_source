@@ -9,6 +9,7 @@ template <typename T> struct Tvec3d;
 
 typedef Tvec2d<double> vec2d;
 typedef Tvec3d<double> vec3d;
+typedef Tvec3d<float>  vec3f;
 typedef Tvec3d<int32_t> vec3i;
 
 template <typename T>
@@ -216,6 +217,14 @@ struct Tvec3d
 
     Tvec3d() = default;    
     Tvec3d(const Tvec3d<T> &b) = default;
+    
+    template <typename K>
+    Tvec3d(const Tvec3d<K> &b)
+    {
+        x = b.x;
+        y = b.y;
+        z = b.z;
+    }
 
     Tvec3d(T _x, T _y, T _z)
     {
@@ -269,6 +278,16 @@ struct Tvec3d
 
     // xyz = another xyz
     Tvec3d &operator=(const Tvec3d &b) = default;
+    
+    template <typename K>
+    Tvec3d &operator=(const Tvec3d<K> &b)
+    {
+        x = b.x;
+        y = b.y;
+        z = b.z;
+        
+        return *this;
+    }
 
     // xyz = float
     Tvec3d &operator=(T b)

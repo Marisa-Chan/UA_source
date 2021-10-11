@@ -423,6 +423,14 @@ struct Tmat4x4
         tmp.z = m20 * b.x + m21 * b.y + m22 * b.z + m23;
         return tmp;
     }
+    
+    const Tmat4x4 Transpose() const
+    {
+        return Tmat4x4(m00, m10, m20, m30,
+                       m01, m11, m21, m31,
+                       m02, m12, m22, m32,
+                       m03, m13, m23, m33);
+    }
 
     Tmat4x4 &operator*=(const Tmat3x3<T, K> &b)
     {
