@@ -654,7 +654,7 @@ size_t NC_STACK_base::RenderImmediately(baseRender_msg *arg, Instance * inst)
             rend.FogStart = _renderMsg.fadeStart;
             rend.FogLength = _renderMsg.fadeLength;
 
-            GFX::GFXEngine::Instance.RenderingMesh(&rend);
+            GFX::GFXEngine::Instance.RenderNode(&rend);
         }
         
         if (inst)
@@ -877,8 +877,9 @@ void NC_STACK_base::CheckOpts(Instance **vpOpts, NC_STACK_base *bas)
 
 void NC_STACK_base::RecalcInternal(bool kids)
 {
+    FreeVBO();
     Meshes.clear();
-    
+
     if (_skeleton)
     {
         for(NC_STACK_ade *ade : _ADES)
@@ -994,6 +995,29 @@ void NC_STACK_base::MakeCache(TObjectCache *cache)
     cache->fadeLength = _renderMsg.fadeLength;
 }
 
+
+void NC_STACK_base::FreeVBO()
+{
+    for (GFX::TMesh &m : Meshes)
+        GFX::Engine.MeshFreeVBO(&m);
+    
+    for (NC_STACK_base * &kid : _KIDS)
+        kid->FreeVBO();
+}
+
+void NC_STACK_base::MakeVBO()
+{
+    for (GFX::TMesh &m : Meshes)
+        GFX::Engine.MeshMakeVBO(&m);
+    
+    for (NC_STACK_base * &kid : _KIDS)
+        kid->MakeVBO();
+}
+
+NC_STACK_base::~NC_STACK_base()
+{
+    FreeVBO();
+}
 
 void TObjectCache::Render(baseRender_msg *arg)
 {

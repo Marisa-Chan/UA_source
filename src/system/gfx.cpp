@@ -317,28 +317,10 @@ void GFXEngine::initPixelFormats()
 
 void GFXEngine::initPolyEngine()
 {
-    _rendStates[TEXTUREHANDLE] = 0;
-    _rendStates[SHADEMODE] = 1; //Smooth
-    _rendStates[STIPPLEENABLE] = 0;
-    _rendStates[SRCBLEND] = 1;//D3DBLEND_ONE;
-    _rendStates[DESTBLEND] = 0;//D3DBLEND_ZERO;
-    _rendStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
-    _rendStates[ALPHABLENDENABLE] = 0; /* TRUE to enable alpha blending */
-    _rendStates[ZWRITEENABLE] = 1; /* TRUE to enable z writes */
-    _rendStates[TEXTUREMAG] = (_filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
-    _rendStates[TEXTUREMIN] = (_filter != 0); // D3DFILTER_NEAREST Or D3DFILTER_LINEAR
-    _rendStates[FOG_STATE] = 0;
-    _rendStates[ALPHATEST] = 0;
+    _states = GfxStates();
+    _states.LinearFilter = (_filter != 0);
 
-    for (int i = 0; i < W3D_STATES_MAX; i++)
-        _newRenderStates[i] = _rendStates[i];
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
+    SetRenderStates(1);
 
     glEnable(GL_CULL_FACE);
 
@@ -346,35 +328,6 @@ void GFXEngine::initPolyEngine()
         glEnable(GL_DITHER);
     else
         glDisable(GL_DITHER);
-
-    glDisable(GL_BLEND);
-    glDisable(GL_FOG);
-
-    //win3d__SetRenderState(w3d, D3DRENDERSTATE_TEXTUREMAG, (w3d->filter != 0) + D3DFILTER_NEAREST); // Or D3DFILTER_LINEAR
-
-    //win3d__SetRenderState(w3d, D3DRENDERSTATE_SUBPIXEL, 1); /* TRUE to enable subpixel correction */
-    //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEDALPHA, can_stippling); /* TRUE to enable stippled alpha */
-    //win3d__SetRenderState(w3d, D3DRENDERSTATE_STIPPLEENABLE, 0); /* TRUE to enable stippling */
-    //win3d__SetRenderState(w3d, D3DRENDERSTATE_COLORKEYENABLE, 1); /* TRUE to enable source colorkeyed textures */
-
-    //glAlphaFunc ( GL_GREATER, 0.1 ) ;
-    //glEnable ( GL_ALPHA_TEST );
-
-
-
-//	for(int y = 0; y < 32; y++)
-//    {
-//        for(int x = 0; x < 4; x++)
-//        {
-//            if (y & 1)
-//                stpl[x + y * 4] = 0x55;
-//            else
-//                stpl[x + y * 4] = 0xAA;
-//        }
-//    }
-
-//	if (can_stippling)
-//        glPolygonStipple(stpl);
 }
 
 int GFXEngine::LoadFontByDescr(const std::string &fontname)
@@ -727,163 +680,242 @@ size_t GFXEngine::raster_func204(rstr_arg204 *arg)
 
 void GFXEngine::SetRenderStates(int setAll)
 {
-    uint32_t changeStates = 0;
-
-    if (setAll)
-        changeStates = 0xFFFFFFFF;
-
+//    static const std::array<int, 4> blends = {GL_ZERO, GL_ONE, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA};
+    GfxStates *newStates;
+    
     if (setAll < 2)
+        newStates = &_states;
+    else
+        newStates = &_lastStates;
+    
+    bool forceSetShader = false;
+    if (setAll)
+        forceSetShader = true;
+    
+    if (_glext)
     {
-        for (int i = 0; i < W3D_STATES_MAX; i++)
+        if (setAll || (newStates->Prog.ID != _lastStates.Prog.ID))
         {
-            if (_newRenderStates[i] != _rendStates[i])
-                changeStates |= 1 << i;
-
-            _rendStates[i] = _newRenderStates[i];
+            if (_vbo && _lastStates.Prog.ID)
+            {
+                if (_lastStates.Prog.PosLoc != -1)
+                    Glext::GLDisableVertexAttribArray(_lastStates.Prog.PosLoc);
+                
+                if (_lastStates.Prog.ColorLoc != -1)
+                    Glext::GLDisableVertexAttribArray(_lastStates.Prog.ColorLoc);
+                
+                if (_lastStates.Prog.UVLoc != -1)
+                    Glext::GLDisableVertexAttribArray(_lastStates.Prog.UVLoc);
+            }
+            
+            Glext::GLUseProgram(newStates->Prog.ID);
+            
+            if (_vbo && newStates->Prog.ID)
+            {
+                if (newStates->Prog.PosLoc != -1)
+                    Glext::GLEnableVertexAttribArray(newStates->Prog.PosLoc);
+                
+                if (newStates->Prog.ColorLoc != -1)
+                    Glext::GLEnableVertexAttribArray(newStates->Prog.ColorLoc);
+                
+                forceSetShader = true;
+            }
         }
     }
-
-    if ( changeStates & MSK(TEXTUREHANDLE))
+    
+    if (_vbo)
     {
-        if (_rendStates[TEXTUREHANDLE])
+        if (setAll || (newStates->DataBuf != _lastStates.DataBuf))
+        {
+            Glext::GLBindBuffer(GL_ARRAY_BUFFER, newStates->DataBuf);
+        }
+        
+        if (setAll || (newStates->IndexBuf != _lastStates.IndexBuf))
+        {
+            Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newStates->IndexBuf);
+        }
+        
+        if (forceSetShader || (newStates->Tex != _lastStates.Tex))
+        {
+            if (newStates->Tex)
+            {
+                if (newStates->Prog.UVLoc != -1)
+                    Glext::GLEnableVertexAttribArray(newStates->Prog.UVLoc);
+
+                if (newStates->Prog.TexFlagLoc != - 1)
+                    Glext::GLUniform1i(newStates->Prog.TexFlagLoc, 1);
+            }
+            else
+            {
+                if (newStates->Prog.UVLoc != -1)
+                    Glext::GLDisableVertexAttribArray(newStates->Prog.UVLoc);
+
+                if (newStates->Prog.TexFlagLoc != - 1)
+                    Glext::GLUniform1i(newStates->Prog.TexFlagLoc, 0);
+            }
+        }
+        
+        if (newStates->Prog.FogLoc != -1 &&
+            (forceSetShader || (newStates->Fog != _lastStates.Fog) ||
+            (newStates->FogLength != _lastStates.FogLength) ||
+            (newStates->FogStart != _lastStates.FogStart)) )
+        {
+            if (newStates->Fog)
+                Glext::GLUniform3f(newStates->Prog.FogLoc, 1.0, newStates->FogStart, newStates->FogLength );
+            else
+                Glext::GLUniform3f(newStates->Prog.FogLoc, 0.0, 0.0, 0.0 );
+        }
+        
+        if (newStates->Prog.AFogLoc != -1 &&
+            (forceSetShader || (newStates->AFog != _lastStates.AFog) ||
+            (newStates->AFogLength != _lastStates.AFogLength) ||
+            (newStates->AFogStart != _lastStates.AFogStart)) )
+        {
+            if (newStates->AFog)
+                Glext::GLUniform3f(newStates->Prog.AFogLoc, 1.0, newStates->AFogStart, newStates->AFogLength );
+            else
+                Glext::GLUniform3f(newStates->Prog.AFogLoc, 0.0, 0.0, 0.0 );
+        }
+    }
+    else
+    {
+        if (setAll || (newStates->Stipple != _lastStates.Stipple))
+        {
+        }
+
+        if (setAll || (newStates->Fog != _lastStates.Fog) ||
+            (newStates->FogLength != _lastStates.FogLength) ||
+            (newStates->FogStart != _lastStates.FogStart) )
+        {
+            if (newStates->Fog)
+            {
+                glEnable(GL_FOG);
+                glFogf(GL_FOG_DENSITY, 1.0);
+                glFogi(GL_FOG_MODE, GL_LINEAR);
+                glHint(GL_FOG_HINT, GL_DONT_CARE);
+
+                float fcolors[4] = {0.0, 0.0, 0.0, 1.0};
+
+                glFogfv(GL_FOG_COLOR, fcolors);
+                
+                glFogf(GL_FOG_START, newStates->FogStart);
+                glFogf(GL_FOG_END, newStates->FogStart + newStates->FogLength);
+            }
+            else
+            {
+                glDisable(GL_FOG);
+            }
+        }
+    }
+    
+    if (setAll || (newStates->TuD != _lastStates.TuD))
+    {
+        /*glMatrixMode(GL_PROJECTION);
+        if (newStates->TuD)
+            glLoadIdentity();
+        else
+            glLoadMatrixd(_frustum);
+        glMatrixMode(GL_MODELVIEW);*/
+    }
+    
+    if (setAll || (newStates->DepthTest != _lastStates.DepthTest))
+    {
+        if (newStates->DepthTest)
+        {
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+        }
+        else
+        {
+            glDisable(GL_DEPTH_TEST);
+        }
+    }
+    
+    if (setAll || (newStates->Tex != _lastStates.Tex))
+    {
+        if (newStates->Tex)
         {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, _rendStates[TEXTUREHANDLE]);
+            glBindTexture(GL_TEXTURE_2D, newStates->Tex);
+            
+            if (!_vbo)
+                glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         }
         else
         {
             glDisable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, 0);
+            
+            if (!_vbo)
+                glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         }
     }
 
-    if ( changeStates & ( MSK(TEXTUREHANDLE) | MSK(TEXTUREMAG) ) )
+    if (setAll || (newStates->Tex != _lastStates.Tex)
+               || (newStates->LinearFilter != _lastStates.LinearFilter) )
     {
-        if (_rendStates[TEXTUREMAG])
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        else
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        if (newStates->Tex)
+        {
+            if (newStates->LinearFilter)
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            }
+            else
+            {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            }
+        }
     }
 
-    if ( changeStates & ( MSK(TEXTUREHANDLE) | MSK(TEXTUREMIN) ) )
+    if (setAll || (newStates->Shaded != _lastStates.Shaded))
     {
-        if (_rendStates[TEXTUREMIN])
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        else
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    }
-
-
-    if ( changeStates & MSK(SHADEMODE) )
-    {
-        if (_rendStates[SHADEMODE])
+        if (newStates->Shaded)
             glShadeModel(GL_SMOOTH);
         else
             glShadeModel(GL_FLAT);
     }
-
-    if ( changeStates & MSK(STIPPLEENABLE) )
+    
+    if (setAll || (newStates->SrcBlend != _lastStates.SrcBlend)
+                   || (newStates->DstBlend != _lastStates.DstBlend))
     {
+        glBlendFunc(newStates->SrcBlend, newStates->DstBlend);
     }
 
-    if ( changeStates & (MSK(SRCBLEND) | MSK(DESTBLEND)) )
+    if (setAll || (newStates->TexBlend != _lastStates.TexBlend))
     {
-        GLint src, dst;
-        switch (_rendStates[SRCBLEND])
-        {
-        case 0:
-            src = GL_ZERO;
-            break;
-
-        case 1:
-            src = GL_ONE;
-            break;
-
-        default:
-        case 2:
-            src = GL_SRC_ALPHA;
-            break;
-
-        case 3:
-            src = GL_ONE_MINUS_SRC_ALPHA;
-            break;
-        }
-
-        switch (_rendStates[DESTBLEND])
-        {
-        case 0:
-            dst = GL_ZERO;
-            break;
-
-        case 1:
-            dst = GL_ONE;
-            break;
-
-        case 2:
-            dst = GL_SRC_ALPHA;
-            break;
-
-        default:
-        case 3:
-            dst = GL_ONE_MINUS_SRC_ALPHA;
-            break;
-        }
-
-        glBlendFunc(src, dst);
-    }
-
-    if ( changeStates & MSK(TEXTUREMAPBLEND) )
-    {
-        if (_rendStates[TEXTUREMAPBLEND] == 0)
+        if (newStates->TexBlend == 0)
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-        else if (_rendStates[TEXTUREMAPBLEND] == 1)
+        else if (newStates->TexBlend == 1)
         {
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
             glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
             glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
         }
-        else if (_rendStates[TEXTUREMAPBLEND] == 2)
+        else if (newStates->TexBlend == 2)
             glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
 
-    if ( changeStates & MSK(ALPHABLENDENABLE) )
+    if (setAll || (newStates->AlphaBlend != _lastStates.AlphaBlend))
     {
-        if (_rendStates[ALPHABLENDENABLE])
+        if (newStates->AlphaBlend)
             glEnable(GL_BLEND);
         else
             glDisable(GL_BLEND);
     }
 
-    if ( changeStates & MSK(ZWRITEENABLE) )
+    if (setAll || (newStates->Zwrite != _lastStates.Zwrite))
     {
-        if (_rendStates[ZWRITEENABLE])
+        if (newStates->Zwrite)
             glDepthMask(GL_TRUE);
         else
             glDepthMask(GL_FALSE);
     }
-    
-    if ( changeStates & MSK(FOG_STATE) )
+
+    if (setAll || (newStates->AlphaTest != _lastStates.AlphaTest))
     {
-        if (_rendStates[FOG_STATE])
-        {
-            glEnable(GL_FOG);
-            glFogf(GL_FOG_DENSITY, 1.0);
-            glFogi(GL_FOG_MODE, GL_LINEAR);
-            glHint(GL_FOG_HINT, GL_DONT_CARE);
-            
-            float fcolors[4] = {0.0, 0.0, 0.0, 1.0};
-            
-            glFogfv(GL_FOG_COLOR, fcolors);
-        }
-        else
-        {
-            glDisable(GL_FOG);
-        }
-    }
-    
-    if ( changeStates & MSK(ALPHATEST) )
-    {
-        if (_rendStates[ALPHATEST] == 0)
+        if (newStates->AlphaTest == false)
         {
             glDisable(GL_ALPHA_TEST);
         }
@@ -893,9 +925,12 @@ void GFXEngine::SetRenderStates(int setAll)
             glAlphaFunc(GL_GREATER, 0.0);
         }
     }
+    
+    if (setAll < 2)
+        _lastStates = _states;
 }
 
-void GFXEngine::RenderingMesh(TRenderNode *nod)
+void GFXEngine::RenderingMeshOld(TRenderNode *nod)
 {
     if ( !_sceneBeginned )
         return;
@@ -910,99 +945,91 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     
     uint32_t flags = nod->Flags;
 
-    _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
-    _newRenderStates[STIPPLEENABLE] = 0;
-    _newRenderStates[SRCBLEND] = 1;//D3DBLEND_ONE;
-    _newRenderStates[DESTBLEND] = 0;//D3DBLEND_ZERO;
-    _newRenderStates[TEXTUREMAPBLEND] = 0;//D3DTBLEND_COPY;
-    _newRenderStates[ALPHABLENDENABLE] = 0;
-    _newRenderStates[ZWRITEENABLE] = 1;
-    _newRenderStates[TEXTUREHANDLE] = 0;
-
-    _newRenderStates[TEXTUREMAG] = (_filter != 0);
-    _newRenderStates[TEXTUREMIN] = (_filter != 0);
-    
-    _newRenderStates[FOG_STATE] = 0;
-    _newRenderStates[ALPHATEST] = 0;
+    _states.Shaded = false;
+    _states.Stipple = false;
+    _states.SrcBlend = GL_ONE;
+    _states.DstBlend = GL_ZERO;
+    _states.TexBlend = 0; //REPLACE
+    _states.AlphaBlend = false;
+    _states.Zwrite = true;
+    _states.Tex = 0;
+    _states.LinearFilter = (_filter != 0);
+    _states.Fog = false;
+    _states.AlphaTest = false;
+    _states.AFog = false;
+    _states.Prog = TShaderProg();
     
     bool useComputedColor = false;
-    
 
     if ( flags & RFLAGS_TEXTURED )
     {
         if (nod->Tex)
-            _newRenderStates[TEXTUREHANDLE] = nod->Tex->hwTex;
+            _states.Tex = nod->Tex->hwTex;
     }
 
     if ( flags & RFLAGS_SHADED )
     {
-        _newRenderStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
-        _newRenderStates[SHADEMODE] = 1;//D3DSHADE_GOURAUD;
+        _states.TexBlend = 2; //MODULATE
+        _states.Shaded = true;
     }
     
     if ( flags & RFLAGS_FOG )
     {
-        _newRenderStates[FOG_STATE] = 1;
-
-        _fogStart = nod->FogStart;
-        _fogLength = nod->FogLength;
+        _states.Fog = true;
+        _states.FogStart = nod->FogStart;
+        _states.FogLength = nod->FogLength;
     }
     
     if ( flags & RFLAGS_LUMTRACY )
     {
         if ( !_zbuf_when_tracy )
-            _newRenderStates[ZWRITEENABLE] = 0;
+            _states.Zwrite = false;
 
         if ( can_destblend )
         {
-            _newRenderStates[ALPHABLENDENABLE] = 1;
-            _newRenderStates[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _newRenderStates[SRCBLEND] = 1;//D3DBLEND_ONE;
-            _newRenderStates[DESTBLEND] = 1;//D3DBLEND_ONE;
-            _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _states.AlphaBlend = true;
+            _states.TexBlend = 1; //MODULATEALPHA;
+            _states.SrcBlend = GL_ONE;
+            _states.DstBlend = GL_ONE;
+            _states.Shaded = false;
         }
         else if ( can_srcblend )
         {
-            _newRenderStates[ALPHABLENDENABLE] = 1;
-            _newRenderStates[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _newRenderStates[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            _newRenderStates[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _states.AlphaBlend = true;
+            _states.TexBlend = 1; //MODULATEALPHA;
+            _states.SrcBlend = GL_SRC_ALPHA;
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+            _states.Shaded = false;
         }
         else if ( can_stippling )
         {
-            _newRenderStates[ALPHABLENDENABLE] = 1;
-            _newRenderStates[TEXTUREMAPBLEND] = 1;//D3DTBLEND_MODULATEALPHA;
-            _newRenderStates[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
-            _newRenderStates[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _newRenderStates[STIPPLEENABLE] = 1;
-            _newRenderStates[SHADEMODE] = 0;//D3DSHADE_FLAT;
+            _states.AlphaBlend = true;
+            _states.TexBlend = 1; //MODULATEALPHA;
+            _states.SrcBlend = GL_SRC_ALPHA;//D3DBLEND_SRCALPHA;, 
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;//D3DBLEND_INVSRCALPHA;
+            _states.Stipple = true;
+            _states.Shaded = false;
         }
-
-//        for (int i = 0; i < polysDat->vertexCount; i++)
-//            vtx[i].a = (float)_alpha / 255.0;
     }
     else if ( flags & RFLAGS_ZEROTRACY )
     {
-        _newRenderStates[ALPHATEST] = 1;
-        
+        _states.AlphaTest = true;        
 
         if ( _pixfmt->BytesPerPixel != 1 )
         {
-            _newRenderStates[DESTBLEND] = 3;//D3DBLEND_INVSRCALPHA;
-            _newRenderStates[SRCBLEND] = 2;//D3DBLEND_SRCALPHA;
+            _states.SrcBlend = GL_SRC_ALPHA;//D3DBLEND_SRCALPHA;, 
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;//D3DBLEND_INVSRCALPHA;
         }
 
-        _newRenderStates[ALPHABLENDENABLE] = 1;
-        _newRenderStates[TEXTUREMAG] = 0;//D3DFILTER_NEAREST;
-        _newRenderStates[TEXTUREMIN] = 0;//D3DFILTER_NEAREST;
-        _newRenderStates[TEXTUREMAPBLEND] = 2;//D3DTBLEND_MODULATE;
+        _states.AlphaBlend = true;
+        _states.LinearFilter = false;
+        _states.TexBlend = 2; //MODULATE
     }
 
     if (flags & RFLAGS_SKY)
     {
-        _newRenderStates[FOG_STATE] = 0;
-        _newRenderStates[SHADEMODE] = 1;
+        _states.Fog = false;
+        _states.Shaded = true;
     }
     else if (flags & RFLAGS_FALLOFF)
     {
@@ -1033,52 +1060,32 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
 
         if (useComputedColor)
         {
-            _newRenderStates[ZWRITEENABLE] = 1;
-            _newRenderStates[ALPHABLENDENABLE] = 1;
-            _newRenderStates[TEXTUREMAPBLEND] = 2;
-            _newRenderStates[SRCBLEND] = 2;
+            _states.Zwrite = true;
+            _states.AlphaBlend = true;
+            _states.TexBlend = 2; // MODULATE
+            _states.SrcBlend = GL_SRC_ALPHA;
 
             if (flags & RFLAGS_LUMTRACY)
-                _newRenderStates[DESTBLEND] = 1;
+                _states.DstBlend = GL_ONE;
             else
-                _newRenderStates[DESTBLEND] = 3;
+                _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
 
-            _newRenderStates[SHADEMODE] = 1;
-            _newRenderStates[STIPPLEENABLE] = 0;
-
-            //_newRenderStates[FOG_STATE] = 0;
+            _states.Shaded = true;
+            _states.Stipple = false;
         }
-
-//            for (int i = 0; i < polysDat->vertexCount; i++)
-//            {
-//                if (polysDat->distance[i] > transDist)
-//                {
-//                    float prc = (polysDat->distance[i] - transDist) / transLen;
-//                    if (prc > 1.0)
-//                        prc = 1.0;
-//
-//                    vtx[i].a = (1.0 - prc);
-//                }
-//            }
     }
     
     if (flags & RFLAGS_COMPUTED_COLOR)
         useComputedColor = true;
     
     if (flags & RFLAGS_DISABLE_ZWRITE)
-        _newRenderStates[ZWRITEENABLE] = 0;
+        _states.Zwrite = false;
 
     SetRenderStates(0);
-    
-    if (_rendStates[FOG_STATE])
-    {
-        glFogf(GL_FOG_START, _fogStart);
-        glFogf(GL_FOG_END, _fogStart + _fogLength);
-    }
-    
+
     int tmp = glGetError();
     if (tmp != GL_NO_ERROR)
-        printf("glDisable %x\n", tmp);
+        printf("glGetError %x\n", tmp);
     
     glMatrixMode(GL_MODELVIEW);
     
@@ -1089,10 +1096,7 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     nod->TForm.m03, nod->TForm.m13, nod->TForm.m23, nod->TForm.m33 };
     
     glLoadMatrixd(mm);
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    
+  
     glVertexPointer(3, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].Pos);
     
     if (useComputedColor)
@@ -1106,7 +1110,6 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     
     if (flags & RFLAGS_TEXTURED)
     {
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->coordsID >= 0 )
             glTexCoordPointer(2, GL_FLOAT, sizeof(tUtV), nod->Mesh->CoordsCache.at( nod->coordsID ).Coords.data());
         else
@@ -1117,10 +1120,168 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     tmp = glGetError();
     if (tmp != GL_NO_ERROR)
         printf("glDrawElements %x\n", tmp);
+}
+
+void GFXEngine::RenderingMesh(TRenderNode *nod)
+{
+    if ( !_sceneBeginned )
+        return;
     
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    if (!nod)
+        return;
+    
+    TMesh *mesh = nod->Mesh;
+    
+    if (!mesh)
+        return;
+    
+    uint32_t flags = nod->Flags;
+
+    _states.Shaded = false;
+    _states.Stipple = false;
+    _states.SrcBlend = GL_ONE;
+    _states.DstBlend = GL_ZERO;
+    _states.TexBlend = 0; //REPLACE
+    _states.AlphaBlend = false;
+    _states.Zwrite = true;
+    _states.Tex = 0;
+    _states.LinearFilter = (_filter != 0);
+    _states.Fog = false;
+    _states.AlphaTest = false;
+    _states.AFog = false;
+    _states.Prog = _stdShaderProg;
+    
+    if ( flags & RFLAGS_TEXTURED )
+    {
+        if (nod->Tex)
+            _states.Tex = nod->Tex->hwTex;
+    }
+
+    if ( flags & RFLAGS_SHADED )
+    {
+        _states.TexBlend = 2; //MODULATE
+        _states.Shaded = true;
+    }
+    
+    if ( flags & RFLAGS_FOG )
+    {
+        _states.Fog = true;
+        _states.FogStart = nod->FogStart;
+        _states.FogLength = nod->FogLength;
+    }
+    
+    if ( flags & RFLAGS_LUMTRACY )
+    {
+        if ( !_zbuf_when_tracy )
+            _states.Zwrite = false;
+
+        if ( can_destblend )
+        {
+            _states.AlphaBlend = true;
+            _states.TexBlend = 1; //MODULATEALPHA;
+            _states.SrcBlend = GL_ONE;
+            _states.DstBlend = GL_ONE;
+            _states.Shaded = false;
+        }
+        else if ( can_srcblend )
+        {
+            _states.AlphaBlend = true;
+            _states.TexBlend = 1; //MODULATEALPHA;
+            _states.SrcBlend = GL_SRC_ALPHA;
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+            _states.Shaded = false;
+        }
+        else if ( can_stippling )
+        {
+            _states.AlphaBlend = true;
+            _states.TexBlend = 1; //MODULATEALPHA;
+            _states.SrcBlend = GL_SRC_ALPHA;//D3DBLEND_SRCALPHA;, 
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;//D3DBLEND_INVSRCALPHA;
+            _states.Stipple = true;
+            _states.Shaded = false;
+        }
+    }
+    else if ( flags & RFLAGS_ZEROTRACY )
+    {
+        _states.AlphaTest = true;        
+
+        if ( _pixfmt->BytesPerPixel != 1 )
+        {
+            _states.SrcBlend = GL_SRC_ALPHA;//D3DBLEND_SRCALPHA;, 
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;//D3DBLEND_INVSRCALPHA;
+        }
+
+        _states.AlphaBlend = true;
+        _states.LinearFilter = false;
+        _states.TexBlend = 2; //MODULATE
+    }
+
+    if (flags & RFLAGS_SKY)
+    {
+        _states.Fog = false;
+        _states.Shaded = true;
+    }
+    else if (flags & RFLAGS_FALLOFF)
+    {
+        _states.Zwrite = true;
+        _states.AlphaBlend = true;
+        _states.TexBlend = 2; // MODULATE
+        _states.SrcBlend = GL_SRC_ALPHA;
+
+        if (flags & RFLAGS_LUMTRACY)
+            _states.DstBlend = GL_ONE;
+        else
+            _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+
+        _states.Shaded = true;
+        _states.Stipple = false;
+        
+        _states.AFog = true; 
+        _states.AFogStart = System::IniConf::GfxSkyDistance.Get<int>();
+        _states.AFogLength = System::IniConf::GfxSkyLength.Get<int>();
+    }
+    
+    if (flags & RFLAGS_DISABLE_ZWRITE)
+        _states.Zwrite = false;
+
+    _states.DataBuf = nod->Mesh->glDataBuf;
+    _states.IndexBuf = nod->Mesh->glIndexBuf;
+    
+    SetRenderStates(0);
+
+    int tmp = glGetError();
+    if (tmp != GL_NO_ERROR)
+        printf("glGetError %x\n", tmp);
+    
+    glMatrixMode(GL_MODELVIEW);
+    
+    double mm[16] {
+    nod->TForm.m00, nod->TForm.m10, nod->TForm.m20, nod->TForm.m30,
+    nod->TForm.m01, nod->TForm.m11, nod->TForm.m21, nod->TForm.m31,
+    nod->TForm.m02, nod->TForm.m12, nod->TForm.m22, nod->TForm.m32,
+    nod->TForm.m03, nod->TForm.m13, nod->TForm.m23, nod->TForm.m33 };
+    
+    glLoadMatrixd(mm);
+
+    Glext::GLVertexAttribPointer(_lastStates.Prog.PosLoc, 3, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, Pos));
+    
+    if (flags & RFLAGS_COMPUTED_COLOR)
+        Glext::GLVertexAttribPointer(_lastStates.Prog.ColorLoc, 4, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, ComputedColor));
+    else
+        Glext::GLVertexAttribPointer(_lastStates.Prog.ColorLoc, 4, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, Color));
+    
+    if (flags & RFLAGS_TEXTURED)
+    {
+        if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->coordsID >= 0 )
+            Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(tUtV), (void *)nod->Mesh->CoordsCache.at( nod->coordsID ).BufferPos);
+        else
+            Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
+    }
+    
+    glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GL_UNSIGNED_INT, NULL);
+    tmp = glGetError();
+    if (tmp != GL_NO_ERROR)
+        printf("glDrawElements %x\n", tmp);
 }
 
 void GFXEngine::RenderNode(TRenderNode *node)
@@ -1131,13 +1292,19 @@ void GFXEngine::RenderNode(TRenderNode *node)
     switch(node->Type)
     {
         case TRenderNode::TYPE_MESH:
-            RenderingMesh(node);
+            if (_vbo)
+                RenderingMesh(node);
+            else
+                RenderingMeshOld(node);
             break;
             
         case TRenderNode::TYPE_PARTICLE:
         {
             PrepareParticle(node);
-            RenderingMesh(node);
+            if (_vbo)
+                RenderingMesh(node);
+            else
+                RenderingMeshOld(node);
         }
             break;
             
@@ -1608,9 +1775,11 @@ void GFXEngine::BeginFrame()
     
     Common::Point scrSz = System::GetResolution();
     glViewport(0, 0, scrSz.x, scrSz.y);
-
-    glPushAttrib(GL_DEPTH_WRITEMASK);
-    glDepthMask(GL_TRUE);
+    
+    bool saved = _states.Zwrite;
+    
+    _states.Zwrite = true;
+    SetRenderStates(0);
     
     if (_colorEffects)
     {
@@ -1624,14 +1793,21 @@ void GFXEngine::BeginFrame()
 
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glPopAttrib();
     
+    _states.Zwrite = saved;
+    SetRenderStates(0);
     
+    if (!_vbo)
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+    }
+    
+    _states.Prog = _stdShaderProg;
 }
 
 void GFXEngine::EndFrame()
-{   
+{       
     if (_colorEffects > 1)
     {
         Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);   
@@ -1684,8 +1860,6 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
 {
     if (bitm->swTex && !bitm->hwTex)
     {
-        glPushAttrib(GL_TEXTURE_2D | GL_TEXTURE_BINDING_2D);
-
         glGenTextures(1, &bitm->hwTex);
 
         if (!bitm->hwTex)
@@ -1694,7 +1868,8 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
             return false;
         }
 
-        glBindTexture(GL_TEXTURE_2D, bitm->hwTex);
+        _states.Tex = bitm->hwTex;
+        SetRenderStates(0);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1717,8 +1892,6 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
             
             SDL_FreeSurface(conv);
         }
-        
-        glPopAttrib();
     }
 
     return true;
@@ -2547,18 +2720,28 @@ void GFXEngine::Init()
     
     LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
     
-    if (_glext)
-    {
-        
-        
-        
-    }
-    
+    _vbo = System::IniConf::GfxVBO.Get<bool>();
     _colorEffects = System::IniConf::GfxColorEffects.Get<int32_t>();
     
     if (!_glext)
+    {
         _colorEffects = 0;
+        _vbo = false;
+    }
     
+    if (_vbo)
+    {
+        _stdPsShader = CompileShader(GL_FRAGMENT_SHADER, _stdPShaderText);
+        _stdVsShader = CompileShader(GL_VERTEX_SHADER,   _stdVShaderText);
+        uint32_t progID = Glext::GLCreateProgram();
+        
+        Glext::GLAttachShader(progID, _stdPsShader);
+        Glext::GLAttachShader(progID, _stdVsShader);
+        Glext::GLLinkProgram(progID);
+
+        _stdShaderProg = TShaderProg( progID );
+    }
+
     if (_colorEffects > 0)
     {
         Glext::GLGenFramebuffers(1, &_fbo);
@@ -2586,20 +2769,24 @@ void GFXEngine::Init()
         glBindTexture(GL_TEXTURE_2D, 0);
         Glext::GLBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        if (_vbo)
+        {
+            _psShader = LoadShader(GL_FRAGMENT_SHADER, "res/clreff_vbo.ps");
+            _vsShader = LoadShader(GL_VERTEX_SHADER, "res/clreff_vbo.vs");
+        }
+        else
+        {
+            _psShader = LoadShader(GL_FRAGMENT_SHADER, "res/clreff.ps");
+            _vsShader = LoadShader(GL_VERTEX_SHADER, "res/clreff.vs");
+        }
 
-        _psShader = LoadShader(GL_FRAGMENT_SHADER, "res/clreff.ps");
-        _vsShader = LoadShader(GL_VERTEX_SHADER, "res/clreff.vs");
-
-        _shaderProg = Glext::GLCreateProgram();
-        Glext::GLAttachShader(_shaderProg, _psShader);
-        Glext::GLAttachShader(_shaderProg, _vsShader);
-        Glext::GLLinkProgram(_shaderProg);
+        uint32_t progID = Glext::GLCreateProgram();
         
-        _shdrIDNorm = Glext::GLGetUniformLocation(_shaderProg, "normclr");
-        _shdrIDInv = Glext::GLGetUniformLocation(_shaderProg, "invclr");
-        _shdrIDrand = Glext::GLGetUniformLocation(_shaderProg, "randval");
-        _shdrIDscrsize = Glext::GLGetUniformLocation(_shaderProg, "screenSize");
-        _shdrIDmillisecs = Glext::GLGetUniformLocation(_shaderProg, "millisecs");
+        Glext::GLAttachShader(progID, _psShader);
+        Glext::GLAttachShader(progID, _vsShader);
+        Glext::GLLinkProgram(progID);
+        
+        _colorEffectsShaderProg = TColorEffectsProg(progID);
     }
     
 }
@@ -2622,6 +2809,47 @@ void GFXEngine::Deinit()
         SDL_FreeSurface(ScreenSurface);
     
     ScreenSurface = NULL;
+    
+    if (_stdQuadDataBuf)
+        Glext::GLDeleteBuffers(1, &_stdQuadDataBuf);
+    
+    _stdQuadDataBuf = 0;
+    
+    if (_stdQuadIndexBuf)
+        Glext::GLDeleteBuffers(1, &_stdQuadIndexBuf);
+    
+    _stdQuadIndexBuf = 0;
+    
+    if (_stdShaderProg.ID)
+        Glext::GLDeleteProgram(_stdShaderProg.ID);
+    
+    if (_stdVsShader)
+        Glext::GLDeleteShader(_stdVsShader);
+    
+    if (_stdPsShader)
+        Glext::GLDeleteShader(_stdPsShader);
+    
+    _stdShaderProg.ID = 0;
+    _stdVsShader = 0;
+    _stdPsShader = 0;   
+    
+    if (_colorEffectsShaderProg.ID)
+        Glext::GLDeleteProgram(_colorEffectsShaderProg.ID); 
+    
+    if (_psShader)
+        Glext::GLDeleteShader(_psShader);
+    
+    if (_vsShader)
+        Glext::GLDeleteShader(_vsShader);
+    
+    _colorEffectsShaderProg.ID = 0;
+    _vsShader = 0;
+    _psShader = 0;
+}
+
+GFXEngine::~GFXEngine()
+{
+    Deinit();
 }
 
 int GFXEngine::EventsWatcher(void *, SDL_Event *event)
@@ -3643,69 +3871,98 @@ void GFXEngine::RecreateScreenSurface()
     if ( !screenTex )
         glGenTextures(1, &screenTex);
 
-    glPushAttrib(GL_TEXTURE_BIT);
-
-    glBindTexture(GL_TEXTURE_2D, screenTex);
+    _states.Tex = screenTex;
+    SetRenderStates(0);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, ScreenSurface->w, ScreenSurface->h, 0, pixfmt, pixtype, NULL);
+}
 
-    glPopAttrib();
+void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
+{
+    static const uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
+    
+    if (_vbo)
+    {
+        if (!_stdQuadDataBuf)
+        {
+            Glext::GLGenBuffers(1, &_stdQuadDataBuf);
+            Glext::GLBindBuffer(GL_ARRAY_BUFFER, _stdQuadDataBuf);
+            Glext::GLBufferData(GL_ARRAY_BUFFER, sizeof(TVertex) * vtx.size(), NULL, GL_DYNAMIC_DRAW);
+        }
+        
+        if (!_stdQuadIndexBuf)
+        {
+            Glext::GLGenBuffers(1, &_stdQuadIndexBuf);
+            Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _stdQuadIndexBuf);
+            Glext::GLBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexes), &indexes, GL_STATIC_DRAW);
+        }
+        
+        _states.DataBuf = _stdQuadDataBuf;
+        _states.IndexBuf = _stdQuadIndexBuf;
+        
+        SetRenderStates(0);
+        
+        Glext::GLBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TVertex) * vtx.size(), vtx.data()); 
+        
+        if (_lastStates.Prog.PosLoc != -1)
+            Glext::GLVertexAttribPointer(_lastStates.Prog.PosLoc, 3, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, Pos));  
+        if (_lastStates.Prog.ColorLoc != -1)
+            Glext::GLVertexAttribPointer(_lastStates.Prog.ColorLoc, 4, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, Color));
+        if (_lastStates.Prog.UVLoc != -1)
+            Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+        
+    }
+    else
+    {
+        glVertexPointer(3, GL_FLOAT, sizeof(TVertex), &vtx[0].Pos);
+        glColorPointer(4, GL_FLOAT, sizeof(TVertex), &vtx[0].Color);
+        glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &vtx[0].TexCoord);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &indexes);
+    }
 }
 
 void GFXEngine::DrawScreenSurface()
 {
+    GfxStates save = _states;
+    
     Common::Point scrSz = System::GetResolution();
     glViewport(0, 0, scrSz.x, scrSz.y);
     
-    glPushAttrib(GL_LIGHTING | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TRANSFORM_BIT | GL_TEXTURE_BIT | GL_TEXTURE_2D);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    
+    _states.DepthTest = false;
+    _states.Zwrite = false;
+    _states.AlphaBlend = true;
+    _states.SrcBlend = GL_SRC_ALPHA;
+    _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+    _states.Tex = screenTex;
+    _states.TexBlend = 2;
+    _states.Prog = _stdShaderProg;
 
-    glDisable(GL_LIGHTING);
-
-    glDepthMask(GL_FALSE);
-    glDisable(GL_DEPTH_TEST);
-
-    glDisable(GL_LIGHTING);
-
-    glEnable(GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //GL_ONE_MINUS_SRC_ALPHA
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, screenTex);
+    SetRenderStates(0);
+    
+    // Will be binded with SetRenderStates
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ScreenSurface->w, ScreenSurface->h, pixfmt, pixtype, ScreenSurface->pixels);
 
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    glColor3f(1,1,1);
-    
-    GFX::TVertex vtx[4] = {
-        GFX::TVertex( vec3d(-1.0,  1.0, 0.0), tUtV(0.0, 0.0) ),
-        GFX::TVertex( vec3d(-1.0, -1.0, 0.0), tUtV(0.0, 1.0) ),
-        GFX::TVertex( vec3d( 1.0, -1.0, 0.0), tUtV(1.0, 1.0) ),
-        GFX::TVertex( vec3d( 1.0,  1.0, 0.0), tUtV(1.0, 0.0) ),
+    static std::array<TVertex, 4> vtx = {
+        GFX::TVertex( vec3f(-1.0,  1.0, 0.0), tUtV(0.0, 0.0) ),
+        GFX::TVertex( vec3f(-1.0, -1.0, 0.0), tUtV(0.0, 1.0) ),
+        GFX::TVertex( vec3f( 1.0, -1.0, 0.0), tUtV(1.0, 1.0) ),
+        GFX::TVertex( vec3f( 1.0,  1.0, 0.0), tUtV(1.0, 0.0) )
     };
     
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    DrawVtxQuad(vtx);
     
-    glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
-    
-    uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
-   
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indexes);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glPopAttrib();
+    _states = save;
 }
 
 uint32_t GFXEngine::CompileShader(int32_t type, const std::string &string)
@@ -3765,78 +4022,63 @@ uint32_t GFXEngine::LoadShader(int32_t type, const std::string &fl)
 
 void GFXEngine::DrawFBO()
 {
-    Glext::GLUseProgram(_shaderProg);
+    GfxStates save = _states;
     
     Common::Point scrSz = System::GetResolution();
-    
-    if (_shdrIDNorm >= 0)
-        Glext::GLUniform3f(_shdrIDNorm, _normClr.x, _normClr.y, _normClr.z);
-    
-    if (_shdrIDInv >= 0)
-        Glext::GLUniform3f(_shdrIDInv, _invClr.x, _invClr.y, _invClr.z);
-    
-    if (_shdrIDrand >= 0)
-        Glext::GLUniform1i(_shdrIDrand, rand());
-    
-    if (_shdrIDscrsize >= 0)
-        Glext::GLUniform2i(_shdrIDscrsize, scrSz.x, scrSz.y);
-    
-    if (_shdrIDmillisecs >= 0)
-        Glext::GLUniform1i(_shdrIDmillisecs, SDL_GetTicks());
-    
-    
     glViewport(0, 0, scrSz.x, scrSz.y);
     
-    glPushAttrib(GL_LIGHTING | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TRANSFORM_BIT | GL_TEXTURE_BIT | GL_TEXTURE_2D);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    glDisable(GL_LIGHTING);
-
-    glDepthMask(GL_FALSE);
-    glDisable(GL_DEPTH_TEST);
-
-    glDisable(GL_LIGHTING);
-
-    glEnable(GL_BLEND);
+    
+    _states.DepthTest = false;
+    _states.Zwrite = false;
+    _states.AlphaBlend = true;
+    
     if (_fboBlend == 0)
-        glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    {
+        _states.SrcBlend = GL_ONE;
+        _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+    }
     else if (_fboBlend == 1)
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+    {
+        _states.SrcBlend = GL_SRC_ALPHA;
+        _states.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+    }
+    
+    _states.Tex = _fboTex;
+    _states.TexBlend = 2;
+    _states.Prog = _colorEffectsShaderProg;
 
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, _fboTex);
+    // Apply texture and program
+    SetRenderStates(0);
     
-    glColor4f(1,1,1, 1);
+    if (_colorEffectsShaderProg.NormLoc >= 0)
+        Glext::GLUniform3f(_colorEffectsShaderProg.NormLoc, _normClr.x, _normClr.y, _normClr.z);
     
-    GFX::TVertex vtx[4] = {
-        GFX::TVertex( vec3d(-1.0,  1.0, 0.0), tUtV(0.0, 1.0) ),
-        GFX::TVertex( vec3d(-1.0, -1.0, 0.0), tUtV(0.0, 0.0) ),
-        GFX::TVertex( vec3d( 1.0, -1.0, 0.0), tUtV(1.0, 0.0) ),
-        GFX::TVertex( vec3d( 1.0,  1.0, 0.0), tUtV(1.0, 1.0) ),
+    if (_colorEffectsShaderProg.InvLoc >= 0)
+        Glext::GLUniform3f(_colorEffectsShaderProg.InvLoc, _invClr.x, _invClr.y, _invClr.z);
+    
+    if (_colorEffectsShaderProg.RandLoc >= 0)
+        Glext::GLUniform1i(_colorEffectsShaderProg.RandLoc, rand());
+    
+    if (_colorEffectsShaderProg.ScrSizeLoc >= 0)
+        Glext::GLUniform2i(_colorEffectsShaderProg.ScrSizeLoc, scrSz.x, scrSz.y);
+    
+    if (_colorEffectsShaderProg.MillisecsLoc >= 0)
+        Glext::GLUniform1i(_colorEffectsShaderProg.MillisecsLoc, SDL_GetTicks());
+    
+    static std::array<TVertex, 4> vtx = {
+        GFX::TVertex( vec3f(-1.0,  1.0, 0.0), tUtV(0.0, 1.0) ),
+        GFX::TVertex( vec3f(-1.0, -1.0, 0.0), tUtV(0.0, 0.0) ),
+        GFX::TVertex( vec3f( 1.0, -1.0, 0.0), tUtV(1.0, 0.0) ),
+        GFX::TVertex( vec3f( 1.0,  1.0, 0.0), tUtV(1.0, 1.0) )
     };
     
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    DrawVtxQuad(vtx);
     
-    glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
-    
-    uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
-   
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indexes);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    glPopAttrib();
-    Glext::GLUseProgram(0);
+    _states = save;
 }
  
 void GFXEngine::SetFBOBlending(int mode)
@@ -3850,9 +4092,10 @@ void GFXEngine::UpdateFBOSizes()
     {
         Common::Point scrSz = System::GetResolution();
 
-        glBindTexture(GL_TEXTURE_2D, _fboTex);
+        _states.Tex = _fboTex;
+        SetRenderStates(0);
+        
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scrSz.x, scrSz.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glBindTexture(GL_TEXTURE_2D, 0);
 
         Glext::GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
         Glext::GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, scrSz.x, scrSz.y);
@@ -3947,5 +4190,119 @@ Common::Point GFXEngine::ConvertPosTo2DStuff(const Common::Point &pos)
     return t;
 }
 
+TMesh::TMesh(const TMesh &b)
+{
+    Mat = b.Mat;
+    Vertexes = b.Vertexes;
+    Indixes = b.Indixes;
+    CoordsCache = b.CoordsCache;
+    BoundBox = b.BoundBox;
+    
+    glDataBuf = 0;
+    glIndexBuf = 0;
+}
+
+TMesh &TMesh::operator=(const TMesh& b)
+{
+    Mat = b.Mat;
+    Vertexes = b.Vertexes;
+    Indixes = b.Indixes;
+    CoordsCache = b.CoordsCache;
+    BoundBox = b.BoundBox;
+    
+    glDataBuf = 0;
+    glIndexBuf = 0;
+    
+    return *this;
+}
+
+TMesh::~TMesh()
+{
+    GFX::Engine.MeshFreeVBO(this);
+    
+    // Just notify about still existing buffers
+    if (glDataBuf || glIndexBuf)
+        printf("TMesh still has buffers!\n");
+}
+
+void GFXEngine::MeshMakeVBO(TMesh *mesh)
+{
+    if (_vbo)
+    {        
+        if (!mesh->glDataBuf)
+            Glext::GLGenBuffers(1, &mesh->glDataBuf);
+        
+        if (!mesh->glIndexBuf)
+            Glext::GLGenBuffers(1, &mesh->glIndexBuf);
+                
+        Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->glIndexBuf);
+        Glext::GLBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->Indixes.size() * sizeof(uint32_t), mesh->Indixes.data(), GL_STATIC_DRAW);
+        
+        Glext::GLBindBuffer(GL_ARRAY_BUFFER, mesh->glDataBuf);
+        int32_t vtxDataSz = mesh->Vertexes.size() * sizeof(TVertex);
+        int32_t coordDataSz = mesh->Vertexes.size() * sizeof(tUtV);
+        Glext::GLBufferData(GL_ARRAY_BUFFER, vtxDataSz + mesh->CoordsCache.size() * coordDataSz, NULL, GL_STATIC_DRAW);
+        
+        int32_t off = 0;
+        Glext::GLBufferSubData(GL_ARRAY_BUFFER, off, vtxDataSz, mesh->Vertexes.data());
+        
+        off += vtxDataSz;
+        for (TCoordsCache &cch : mesh->CoordsCache)
+        {
+            Glext::GLBufferSubData(GL_ARRAY_BUFFER, off, coordDataSz, cch.Coords.data());
+            cch.BufferPos = off;
+            
+            off += coordDataSz;
+        }
+        
+        Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        Glext::GLBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+}
+
+void GFXEngine::MeshFreeVBO(TMesh *mesh)
+{
+    if (_vbo)
+    {
+        if (mesh->glDataBuf)
+        {
+            Glext::GLDeleteBuffers(1, &mesh->glDataBuf);
+            mesh->glDataBuf = 0;
+        }
+        
+        if (mesh->glIndexBuf)
+        {
+            Glext::GLDeleteBuffers(1, &mesh->glIndexBuf);
+            mesh->glIndexBuf = 0;
+        }
+        
+//        if (mesh->glVao)
+//        {
+//            Glext::GLDeleteVertexArrays(1, &mesh->glVao);
+//            mesh->glVao = 0;
+//        }
+    }
+}
+
+TShaderProg::TShaderProg(uint32_t id)
+: ID(id)
+{
+    FogLoc = Glext::GLGetUniformLocation(ID, "Fog");
+    AFogLoc = Glext::GLGetUniformLocation(ID, "AlphaFog");
+    TexFlagLoc = Glext::GLGetUniformLocation(ID, "Textured");
+    PosLoc = Glext::GLGetAttribLocation(ID, "vPos");
+    UVLoc  = Glext::GLGetAttribLocation(ID, "vUV");
+    ColorLoc = Glext::GLGetAttribLocation(ID, "vColor");
+}
+
+TColorEffectsProg::TColorEffectsProg(uint32_t id)
+: TShaderProg(id)
+{
+    NormLoc = Glext::GLGetUniformLocation(ID, "normclr");
+    InvLoc = Glext::GLGetUniformLocation(ID, "invclr");
+    RandLoc = Glext::GLGetUniformLocation(ID, "randval");
+    ScrSizeLoc = Glext::GLGetUniformLocation(ID, "screenSize");
+    MillisecsLoc = Glext::GLGetUniformLocation(ID, "millisecs");
+}
 
 }

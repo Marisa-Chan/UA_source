@@ -224,6 +224,9 @@ void Init()
         printf("Couldn't initialize SDL: %s", SDL_GetError());
         return;
     }
+    
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
     window = SDL_CreateWindow("OpenUA (Urban Assault)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winRes.W, winRes.H, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 

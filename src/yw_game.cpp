@@ -1751,7 +1751,11 @@ void NC_STACK_ypaworld::PrepareFiller(cellArea *sct, cellArea *sct2, float v9h, 
     bs->RecalcInternal(true);
     bs->MakeCoordsCache();
     
+    out->FreeVBO();
+    
     bs->MakeCache(out);
+    
+    out->MakeVBO();
     
     out->Id1 = x;
     out->Id2 = y;

@@ -32,6 +32,7 @@ public:
     static PFNGLDELETESHADERPROC GLDeleteShader;
     static PFNGLCOMPILESHADERPROC GLCompileShader;
     static PFNGLCREATEPROGRAMPROC GLCreateProgram;
+    static PFNGLDELETEPROGRAMPROC GLDeleteProgram;
     static PFNGLATTACHSHADERPROC GLAttachShader;
     static PFNGLLINKPROGRAMPROC GLLinkProgram;
     static PFNGLUSEPROGRAMPROC GLUseProgram;

@@ -7709,3 +7709,19 @@ int32_t NC_STACK_ypaworld::GetLegoBld(const Common::Point &cell, int bldX, int b
     return GetLegoBld(&SectorAt(cell), bldX, bldY);
 }
 
+TCellFillerCh::~TCellFillerCh()
+{
+    FreeVBO();
+}
+
+void TCellFillerCh::FreeVBO()
+{
+    for (GFX::TMesh &msh : Meshes)
+        GFX::Engine.MeshFreeVBO( &msh );
+}
+
+void TCellFillerCh::MakeVBO()
+{
+    for (GFX::TMesh &msh : Meshes)
+        GFX::Engine.MeshMakeVBO( &msh );
+}

@@ -134,7 +134,7 @@ public:
     TObjectCache *MakeCache(); 
     virtual void MakeCache(TObjectCache *);
 
-    virtual ~NC_STACK_base() {};
+    virtual ~NC_STACK_base();
     
     virtual const std::string &ClassName() const {
         return description._classname;
@@ -191,6 +191,9 @@ public:
     
     static void GenerateMeshCoordsCache(GFX::TMesh *mesh);
     void MakeCoordsCache();
+    
+    void FreeVBO();
+    void MakeVBO();
 
 protected:
     int ReadIFFTagSTRC(IFFile *mfile);

@@ -725,33 +725,32 @@ void Root::HwCompose()
 {
     if (_hwRender && _normal.size())
     {
-        glPushAttrib(GL_LIGHTING | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TRANSFORM_BIT | GL_TEXTURE_BIT | GL_TEXTURE_2D);
-
         glMatrixMode(GL_PROJECTION);
         glOrtho(0, _screenSize.x, _screenSize.y, 0, -1, 1);
         
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-
-        glDisable(GL_LIGHTING);
-
-        glDepthMask(GL_FALSE);
-        glDisable(GL_DEPTH_TEST);
-
-        glDisable(GL_LIGHTING);
-
-        glEnable(GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //GL_ONE_MINUS_SRC_ALPHA
-
+        
+        GFX::GfxStates &pStates = GFX::Engine.States();
+        
+        GFX::GfxStates saved = pStates;
+        
+        pStates.Zwrite = false;
+        pStates.DepthTest = false;
+        pStates.AlphaBlend = true;
+        pStates.SrcBlend = GL_SRC_ALPHA;
+        pStates.DstBlend = GL_ONE_MINUS_SRC_ALPHA;
+        pStates.Prog = GFX::Engine.GetStdShaderProg();
+        
+        GFX::Engine.SetRenderStates(0);
+        
         for(auto it = _normal.rbegin(); it != _normal.rend(); it++)
             HwRenderWidget(*it);
-        
-        
+
         for(auto it = _foreground.rbegin(); it != _foreground.rend(); it++)
             HwRenderWidget(*it);
 
-
-        glPopAttrib();
+        pStates = saved;
     }
 }
 
@@ -769,27 +768,14 @@ void Root::HwRenderWidget(Widget *w)
         w->_hwTex->Stream(Common::Point(w->_hwSurface->w, w->_hwSurface->h), format, fmtype, w->_hwSurface->pixels);
         SDL_UnlockSurface(w->_hwSurface);
         
-        glColor4ub(255, 255, 255, w->_alpha);
-        
-        GFX::TVertex vtx[4] = {
-            GFX::TVertex( vec3d(w->_rect.left,  w->_rect.top,    0.0), tUtV(0.0, 0.0) ),
-            GFX::TVertex( vec3d(w->_rect.left,  w->_rect.bottom, 0.0), tUtV(0.0, 1.0) ),
-            GFX::TVertex( vec3d(w->_rect.right, w->_rect.bottom, 0.0), tUtV(1.0, 1.0) ),
-            GFX::TVertex( vec3d(w->_rect.right, w->_rect.top,    0.0), tUtV(1.0, 0.0) ),
+        static std::array<GFX::TVertex, 4> vtx = {
+            GFX::TVertex( vec3f(w->_rect.left,  w->_rect.top,    0.0), tUtV(0.0, 0.0), GFX::TGLColor(1.0, 1.0, 1.0, w->_alpha / 255.0) ),
+            GFX::TVertex( vec3f(w->_rect.left,  w->_rect.bottom, 0.0), tUtV(0.0, 1.0), GFX::TGLColor(1.0, 1.0, 1.0, w->_alpha / 255.0) ),
+            GFX::TVertex( vec3f(w->_rect.right, w->_rect.bottom, 0.0), tUtV(1.0, 1.0), GFX::TGLColor(1.0, 1.0, 1.0, w->_alpha / 255.0) ),
+            GFX::TVertex( vec3f(w->_rect.right, w->_rect.top,    0.0), tUtV(1.0, 0.0), GFX::TGLColor(1.0, 1.0, 1.0, w->_alpha / 255.0) )
         };
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
-        glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
-
-        uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
-
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indexes);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        
+        GFX::Engine.DrawVtxQuad(vtx);
     }
 }
 
@@ -834,9 +820,10 @@ StreamTex::~StreamTex()
 
 void StreamTex::Stream(Common::Point sz, int32_t fmt, int32_t type, const void *data)
 {
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-                
+    GFX::GfxStates &pStates = GFX::Engine.States();
+    
+    pStates.TexBlend = 2;
+    
     if (sz != Size)
     {
         Size = sz;
@@ -844,18 +831,18 @@ void StreamTex::Stream(Common::Point sz, int32_t fmt, int32_t type, const void *
         {
             if ( t != 0 )
             {
-                glBindTexture(GL_TEXTURE_2D, t);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+                pStates.Tex = t;
+                GFX::Engine.SetRenderStates(0);
                 
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Size.x, Size.y, 0, fmt, type, NULL);
             }
         }
     }
     
-    glBindTexture(GL_TEXTURE_2D, Texs[nextTex]);
+    pStates.Tex = Texs[nextTex];
+    pStates.LinearFilter = true;
+    GFX::Engine.SetRenderStates(0);
+    
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Size.x, Size.y, fmt, type, data);
     
     nextTex = (nextTex + 1) % Texs.size();

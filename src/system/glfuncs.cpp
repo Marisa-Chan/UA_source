@@ -17,6 +17,7 @@ PFNGLSHADERSOURCEPROC Glext::GLShaderSource = NULL;
 PFNGLDELETESHADERPROC Glext::GLDeleteShader = NULL;
 PFNGLCOMPILESHADERPROC Glext::GLCompileShader = NULL;
 PFNGLCREATEPROGRAMPROC Glext::GLCreateProgram = NULL;
+PFNGLDELETEPROGRAMPROC Glext::GLDeleteProgram = NULL;
 PFNGLATTACHSHADERPROC Glext::GLAttachShader = NULL;
 PFNGLLINKPROGRAMPROC Glext::GLLinkProgram = NULL;
 PFNGLUSEPROGRAMPROC Glext::GLUseProgram = NULL;
@@ -71,6 +72,7 @@ bool Glext::init()
     GLCompileShader = (PFNGLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
     GLDeleteShader = (PFNGLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
     GLCreateProgram = (PFNGLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
+    GLDeleteProgram = (PFNGLDELETEPROGRAMPROC)SDL_GL_GetProcAddress("glDeleteProgram");
     GLAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
     GLLinkProgram = (PFNGLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
     GLUseProgram = (PFNGLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");

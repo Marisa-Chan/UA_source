@@ -892,6 +892,11 @@ struct TCellFillerCh : TObjectCache
     int8_t Id1 = -1;
     int8_t Id2 = -1;
     float  Heights[4] = {0.};
+    
+    void FreeVBO();
+    void MakeVBO();
+    
+    ~TCellFillerCh();
 };
 
 struct MapKeySector

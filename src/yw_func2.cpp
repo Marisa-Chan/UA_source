@@ -478,6 +478,7 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
     sky->SetVizLimit(yw->field_15ec);
     sky->SetFadeLength(yw->field_15f0);
     sky->ComputeStaticFog();
+    sky->MakeVBO();
     return 1;
 }
 

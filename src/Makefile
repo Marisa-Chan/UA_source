@@ -91,6 +91,7 @@ OBJS =  \
 	system/luascript.cpp\
 	system/movie.cpp\
 	system/sound.cpp\
+	system/stdshdr.cpp\
 	system/system.cpp\
 	system/tform.cpp\
 	utils.cpp\

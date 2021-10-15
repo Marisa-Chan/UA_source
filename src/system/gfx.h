@@ -177,12 +177,15 @@ struct TCoordsCache
 {
     ResBitmap *Tex = NULL;
     std::vector<tUtV> Coords;
+    
+    // OpenGL
+    int32_t BufferPos = 0;
 };
 
 struct TVertex
 {
     vec3f Pos;
-    vec3f Normal;
+    //vec3f Normal;
     tUtV  TexCoord;
     TGLColor Color;
     TGLColor ComputedColor;
@@ -191,6 +194,7 @@ struct TVertex
     TVertex() = default;
     TVertex(const vec3f &p): Pos(p) {};
     TVertex(const vec3f &p, const tUtV &uv): Pos(p), TexCoord(uv) {};
+    TVertex(const vec3f &p, const tUtV &uv, const TGLColor &clr): Pos(p), TexCoord(uv), Color(clr) {};
 };
 
 class TMesh
@@ -205,10 +209,11 @@ public:
     TBoundBox BoundBox;
     
     TMesh() = default;
-    TMesh(const TMesh&) = default;
+    ~TMesh();
+    TMesh(const TMesh&);
     TMesh(TMesh&&) = default;
     
-    TMesh &operator=(const TMesh&) = default;
+    TMesh &operator=(const TMesh&);
     TMesh &operator=(TMesh&&) = default;
     
     void RecalcBoundBox()
@@ -217,6 +222,12 @@ public:
         for (const TVertex &v : Vertexes)
             BoundBox.Add(v.Pos);
     }
+    
+    // OpenGL
+    // Do not copy it!
+    GLuint glDataBuf = 0;
+    GLuint glIndexBuf = 0;
+    //GLuint glVao = 0;
 };
 
 struct TRenderNode
@@ -269,27 +280,60 @@ enum
     DEFAULT_WIDTH = 640,
     DEFAULT_HEIGHT = 480,
 };
-    
 
-#define MSK(X) (1 << (X))
-
-enum W3D_STATES
+struct TShaderProg
 {
-    TEXTUREHANDLE,
-    SHADEMODE,
-    STIPPLEENABLE,
-    SRCBLEND,
-    DESTBLEND,
-    TEXTUREMAPBLEND,
-    ALPHABLENDENABLE,
-    ZWRITEENABLE,
-    TEXTUREMAG,
-    TEXTUREMIN,
-    FOG_STATE,
-    ALPHATEST,
-    W3D_STATES_MAX
+    uint32_t ID = 0;
+    int32_t PosLoc = -1;
+    int32_t ColorLoc = -1;
+    int32_t UVLoc = -1;
+    int32_t TexFlagLoc = -1;
+    int32_t FogLoc = -1;
+    int32_t AFogLoc = -1;
+    
+    TShaderProg() = default;
+    TShaderProg(uint32_t id);
 };
 
+struct TColorEffectsProg : TShaderProg
+{
+    int32_t NormLoc = -1;
+    int32_t InvLoc = -1;
+    int32_t RandLoc = -1;
+    int32_t ScrSizeLoc = -1;
+    int32_t MillisecsLoc = -1;
+    
+    TColorEffectsProg() = default;
+    TColorEffectsProg(uint32_t id);
+};
+
+
+struct GfxStates
+{
+    bool TuD = false;
+    uint32_t Tex = 0;
+    bool Shaded = true;
+    bool Stipple = false;
+    uint32_t SrcBlend = GL_ONE;
+    uint32_t DstBlend = GL_ZERO;
+    int8_t TexBlend = 2;
+    bool AlphaBlend = false;
+    bool Zwrite = true;
+    bool LinearFilter = true;
+    bool AlphaTest = false;
+    bool Fog = false;
+    float FogStart = 3496.0;
+    float FogLength = 600.0;
+    bool AFog = false;
+    float AFogStart = 3496.0;
+    float AFogLength = 600.0;
+    
+    bool DepthTest = true;
+    
+    uint32_t DataBuf = 0;
+    uint32_t IndexBuf = 0;
+    TShaderProg Prog;
+};
 
 struct rstr_arg204
 {
@@ -515,6 +559,7 @@ protected:
     
 private:
     GFXEngine();
+    ~GFXEngine();
     
     void AddGfxMode(const GfxMode &md);
     uint32_t CursPix(uint8_t *data, int ofs, int bpp);
@@ -556,6 +601,8 @@ public:
     virtual void windd_func325(wdd_func324arg *arg);
 
     
+    void MeshMakeVBO(TMesh *);
+    void MeshFreeVBO(TMesh *);
     
 
     virtual void setWDD_cursor(int arg);
@@ -591,6 +638,8 @@ public:
     virtual void setW3D_texFilt(int arg);
 
     void draw2DandFlush();
+    
+    void DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx);
 
     int LoadFontByDescr(const std::string &fontname);
     void matrixAspectCorrection(mat3x3 &inout, bool invert);
@@ -611,6 +660,7 @@ public:
     
     Common::Point ConvertPosTo2DStuff(const Common::Point &pos);
     
+    void RenderingMeshOld(TRenderNode *mesh);
     void RenderingMesh(TRenderNode *mesh);
     void RenderNode(TRenderNode *node);
     void PrepareParticle(TRenderNode *node);
@@ -621,11 +671,17 @@ public:
     
     float GetAlpha() const { return _alpha / 255.0; };
     
+    GfxStates& States() { return _states; };
+    const GfxStates& GetLastStates() { return _lastStates; };
+    
+    const TShaderProg &GetStdShaderProg() { return _stdShaderProg; }; 
+    
+    void SetRenderStates(int arg);
+    
 protected:
     void initPolyEngine();
     void initPixelFormats();
-    void SetRenderStates(int arg);
-    
+
     void DrawScreenText();
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
     void DrawTextEntry(const ScreenText *txt);
@@ -662,6 +718,9 @@ private:
     SDL_Surface *ScreenSurface = NULL;
     GLuint screenTex = 0;
     GLint pixfmt, pixtype;
+    
+    static const std::string _stdPShaderText;
+    static const std::string _stdVShaderText;
 
 public:
     int _forcesoftcursor;
@@ -685,12 +744,6 @@ public:
     SDL_PixelFormat *_pixfmt;
     SDL_DisplayMode _mode;
     GLint _glPixfmt, _glPixtype;
-
-    uint32_t _rendStates[W3D_STATES_MAX];
-    uint32_t _newRenderStates[W3D_STATES_MAX];
-    
-    float _fogStart = 0.0;
-    float _fogLength = 0.0;
     
     std::list<TRenderNode *> _renderSolidList;
     std::list<TRenderNode *> _renderSkyBoxList;
@@ -708,6 +761,7 @@ public:
     bool _solidFont;
     
     bool _glext = false;
+    bool _vbo = false;
     
     // Display class
     SDL_Color _field_4 = {0}; // Color?
@@ -730,6 +784,16 @@ protected:
     float _frustumNear;
     float _frustumFar;
     
+    uint32_t _stdPsShader = 0;
+    uint32_t _stdVsShader = 0;
+    TShaderProg _stdShaderProg;
+    
+    GfxStates _states;
+    GfxStates _lastStates;
+    
+    uint32_t _stdQuadDataBuf = 0;
+    uint32_t _stdQuadIndexBuf = 0;
+
     vec3d _normClr;
     vec3d _invClr;
     
@@ -742,13 +806,7 @@ protected:
     
     uint32_t _psShader = 0;
     uint32_t _vsShader = 0;
-    uint32_t _shaderProg = 0;
-    
-    int32_t _shdrIDNorm = -1;
-    int32_t _shdrIDInv = -1;
-    int32_t _shdrIDrand = -1;
-    int32_t _shdrIDscrsize = -1;
-    int32_t _shdrIDmillisecs = -1;
+    TColorEffectsProg _colorEffectsShaderProg;
 };
     
 static constexpr GFXEngine &Engine = GFXEngine::Instance;

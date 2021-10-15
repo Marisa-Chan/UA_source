@@ -836,5 +836,7 @@ void NC_STACK_particle::MakeMeshCache()
         {
             printf("Error! Particle ade in particle ade!\n");
         }
+        
+        GFX::Engine.MeshMakeVBO(&mesh);
     }
 }

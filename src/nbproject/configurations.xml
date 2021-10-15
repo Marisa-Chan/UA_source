@@ -36,6 +36,7 @@
         <in>luascript.h</in>
         <in>movie.cpp</in>
         <in>sound.cpp</in>
+        <in>stdshdr.cpp</in>
         <in>system.cpp</in>
         <in>tform.cpp</in>
       </df>

@@ -397,31 +397,32 @@ void TMovie::ProcessFrame(uint32_t tm)
 
     Common::Point scrSz = System::GetResolution();
     glViewport(0, 0, scrSz.x, scrSz.y);
-
-    glPushAttrib(GL_LIGHTING | GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TRANSFORM_BIT | GL_TEXTURE_BIT | GL_TEXTURE_2D);
-
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glDisable(GL_LIGHTING);
+    GFX::GfxStates &pStates = GFX::Engine.States();
+    GFX::GfxStates saved = pStates;
 
-    glDepthMask(GL_FALSE);
-    glDisable(GL_DEPTH_TEST);
+    pStates.Zwrite = false;
+    pStates.DepthTest = false;
+    pStates.AlphaBlend = false;
+    pStates.Prog = GFX::Engine.GetStdShaderProg();
 
-    glDisable(GL_BLEND);
+    GFX::Engine.SetRenderStates(0);
     
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
     glClear(GL_COLOR_BUFFER_BIT);
-
-    glEnable(GL_TEXTURE_2D);
     
     if (_ctx->screenTex == 0)
     {
         glGenTextures(1, &_ctx->screenTex);
         
-        glBindTexture(GL_TEXTURE_2D, _ctx->screenTex);
+        pStates.Tex = _ctx->screenTex;
+        GFX::Engine.SetRenderStates(0);
+        
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -430,8 +431,9 @@ void TMovie::ProcessFrame(uint32_t tm)
     
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frm->width, frm->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     }
-    else
-        glBindTexture(GL_TEXTURE_2D, _ctx->screenTex);
+    
+    pStates.Tex = _ctx->screenTex;
+    GFX::Engine.SetRenderStates(0);
     
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frm->width, frm->height, GL_RGB, GL_UNSIGNED_BYTE, _ctx->dst_data[0]);
     
@@ -443,32 +445,19 @@ void TMovie::ProcessFrame(uint32_t tm)
         qW = frmAspect / scrAspect;
     else if (scrAspect < frmAspect)
         qH = scrAspect / frmAspect;
-    
-    
-    
-    GFX::TVertex vtx[4] = {
-        GFX::TVertex( vec3d(-1.0 * qW,  1.0 * qH, 0.0), tUtV(0.0, 0.0) ),
-        GFX::TVertex( vec3d(-1.0 * qW, -1.0 * qH, 0.0), tUtV(0.0, 1.0) ),
-        GFX::TVertex( vec3d( 1.0 * qW, -1.0 * qH, 0.0), tUtV(1.0, 1.0) ),
-        GFX::TVertex( vec3d( 1.0 * qW,  1.0 * qH, 0.0), tUtV(1.0, 0.0) ),
+
+    static std::array<GFX::TVertex, 4> vtx = {
+        GFX::TVertex( vec3f(-1.0 * qW,  1.0 * qH, 0.0), tUtV(0.0, 0.0) ),
+        GFX::TVertex( vec3f(-1.0 * qW, -1.0 * qH, 0.0), tUtV(0.0, 1.0) ),
+        GFX::TVertex( vec3f( 1.0 * qW, -1.0 * qH, 0.0), tUtV(1.0, 1.0) ),
+        GFX::TVertex( vec3f( 1.0 * qW,  1.0 * qH, 0.0), tUtV(1.0, 0.0) ),
     };
     
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    
-    glVertexPointer(3, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].Pos);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(GFX::TVertex), &vtx[0].TexCoord);
-    
-    uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
-   
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indexes);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glPopAttrib();
+    GFX::Engine.DrawVtxQuad(vtx);
 
     System::Flip();
+    
+    pStates = saved;
 
     av_frame_free(&frm);
 }

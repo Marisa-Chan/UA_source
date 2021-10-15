@@ -104,6 +104,8 @@ int yw_MBLoadSet(NC_STACK_ypaworld *yw, int setID)
             Common::Env.SetPrefix("rsrc", oldRsrc);
             return 0;
         }
+        
+        yw->additionalSet->MakeVBO();
 
         yw->set_number = setID;
         ypa_log_out("yw_MBLoadSet(): loaded set object %d ok\n", setID);

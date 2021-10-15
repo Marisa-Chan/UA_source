@@ -52,4 +52,5 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 - gfx.color_eff_pwr[7] 0-100(default) - power of invtuerk color effect
 - particles.limit 5000(default) - limit amount of particles 
 - menu.windowed on/off(default) - always open game menu in windowed mode
+- gfx.vbo on(default)/off - disable modern VBO(upload vertex data into video card)
 

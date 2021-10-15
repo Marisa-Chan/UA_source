@@ -45,6 +45,8 @@ Common::Ini::Key IniConf::GfxColorEffPower5("gfx.color_eff_pwr[5]", Common::Ini:
 Common::Ini::Key IniConf::GfxColorEffPower6("gfx.color_eff_pwr[6]", Common::Ini::KT_DIGIT, (int32_t)100);
 Common::Ini::Key IniConf::GfxColorEffPower7("gfx.color_eff_pwr[7]", Common::Ini::KT_DIGIT, (int32_t)100);
 
+Common::Ini::Key IniConf::GfxVBO("gfx.vbo", Common::Ini::KT_BOOL, true);
+
 
 // Input Engine
 Common::Ini::Key IniConf::InputDebug("input.debug", Common::Ini::KT_BOOL);
@@ -389,6 +391,7 @@ void IniConf::Init()
         , &GameHideBlacksect
                   
         , &GfxAdditionalModes
+        , &GfxVBO
     };
 }
     

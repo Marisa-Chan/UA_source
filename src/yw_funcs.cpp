@@ -1207,6 +1207,9 @@ int NC_STACK_ypaworld::yw_LoadSet(int setID)
             Common::Env.SetPrefix("rsrc", oldRsrc);
             return 0;
         }
+        
+        additionalSet->MakeVBO();
+        
         set_number = setID;
         ypa_log_out("yw_LoadSet(): loaded set object %d ok\n", setID);
     }
@@ -3276,6 +3279,7 @@ void NC_STACK_ypaworld::LoadOverrideModels()
         
         model->SetVizLimit(field_15e4);
         model->SetFadeLength(field_15e8);
+        model->MakeVBO();
         
         uint32_t id = std::stoi(tokens[1]);
         

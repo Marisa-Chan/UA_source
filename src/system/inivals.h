@@ -200,6 +200,8 @@ public:
     
     static Common::Ini::Key GameHideBlacksect;
     
+    static Common::Ini::Key GfxVBO;
+    
 private:
     static Common::Ini::PKeyList _varList;    
 };
