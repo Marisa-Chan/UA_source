@@ -4255,8 +4255,8 @@ void GFXEngine::MeshMakeVBO(TMesh *mesh)
             off += coordDataSz;
         }
         
-        Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        Glext::GLBindBuffer(GL_ARRAY_BUFFER, 0);
+        Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _lastStates.IndexBuf);
+        Glext::GLBindBuffer(GL_ARRAY_BUFFER, _lastStates.DataBuf);  
     }
 }
 
