@@ -648,11 +648,11 @@ struct Tmat4x4
                         0.0, 0.0, 0.0, 1.0);
     }
     
-    static Tmat4x4 UAFrustum (float near, float far)
+    static Tmat4x4 UAFrustum (float fNear, float fFar)
     {
         return Tmat4x4( 1.0,  0.0, 0.0, 0.0,
                         0.0, -1.0, 0.0, 0.0,
-                        0.0,  0.0, (far + near) / (far - near), -2.0 * (far * near) / (far - near),
+                        0.0,  0.0, (fFar + fNear) / (fFar - fNear), -2.0 * (fFar * fNear) / (fFar - fNear),
                         0.0,  0.0, 1.0, 0.0);
     }
 
