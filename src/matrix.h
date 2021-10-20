@@ -7,14 +7,14 @@
 #define MAT_FLAG_INV_SIN   1
 #define MAT_FLAG_INV_COS   2
 
-template <typename T, typename K> struct Tmat3x3;
-template <typename T, typename K> struct Tmat4x4;
+template <typename T> struct Tmat3x3;
+template <typename T> struct Tmat4x4;
 
-typedef Tmat3x3<double, double> mat3x3;
-typedef Tmat4x4<double, double> mat4x4;
+typedef Tmat3x3<double> mat3x3;
+typedef Tmat4x4<double> mat4x4;
 
 
-template <typename T, typename K>
+template <typename T>
 struct Tmat3x3
 {
     T m00;
@@ -54,7 +54,22 @@ struct Tmat3x3
         m21 = _m21;
         m22 = _m22;
     }
+    
+    template <typename K = T>
+    Tmat3x3(const Tmat3x3<K> &b)
+    {
+        m00 = b.m00;
+        m01 = b.m01;
+        m02 = b.m02;
+        m10 = b.m10;
+        m11 = b.m11;
+        m12 = b.m12;
+        m20 = b.m20;
+        m21 = b.m21;
+        m22 = b.m22;
+    }
 
+    template <typename K = T>
     Tmat3x3 (const Tvec3d<K> &axis, T angle, int flags = 0)
     {
         T cs = cos(angle);
@@ -79,21 +94,25 @@ struct Tmat3x3
         m22 = ics * axis.z * axis.z + cs;
     }
 
+    template <typename K = T>
     const Tvec3d<K> AxisX() const
     {
         return Tvec3d<K>(m00, m01, m02);
     }
 
+    template <typename K = T>
     const Tvec3d<K> AxisY() const
     {
         return Tvec3d<K>(m10, m11, m12);
     }
 
+    template <typename K = T>
     const Tvec3d<K> AxisZ() const
     {
         return Tvec3d<K>(m20, m21, m22);
     }
 
+    template <typename K = T>
     void SetX(const Tvec3d<K> &v)
     {
         m00 = v.x;
@@ -101,6 +120,7 @@ struct Tmat3x3
         m02 = v.z;
     }
 
+    template <typename K = T>
     void SetY(const Tvec3d<K> &v)
     {
         m10 = v.x;
@@ -108,6 +128,7 @@ struct Tmat3x3
         m12 = v.z;
     }
 
+    template <typename K = T>
     void SetZ(const Tvec3d<K> &v)
     {
         m20 = v.x;
@@ -115,6 +136,7 @@ struct Tmat3x3
         m22 = v.z;
     }
 
+    template <typename K = T>
     Tvec3d<K> Transform(const Tvec3d<K> &b) const
     {
         Tvec3d<K> tmp;
@@ -267,6 +289,7 @@ struct Tmat3x3
                         0.0, 0.0, 1.0);
     }
 
+    template <typename K = T>
     static const Tmat3x3 AxisAngle(const Tvec3d<K> &v, T angle)
     {
         return Tmat3x3( v, angle, MAT_FLAG_INV_SIN );
@@ -279,6 +302,7 @@ struct Tmat3x3
                        0.0, 0.0, 1.0);
     }
 
+    template <typename K = T>
     static const Tmat3x3 Basis(const Tvec3d<K> &x, const Tvec3d<K> &y, const Tvec3d<K> &z)
     {
         return Tmat3x3( x.x, x.y, x.z,
@@ -286,6 +310,7 @@ struct Tmat3x3
                         z.x, z.y, z.z );
     }
 
+    template <typename K = T>
     static const Tmat3x3 Scale(const Tvec3d<K> &sc)
     {
         return Tmat3x3( sc.x,  0.0,  0.0,
@@ -293,6 +318,7 @@ struct Tmat3x3
                         0.0,  0.0, sc.z );
     }
 
+    template <typename K = T>
     const Tvec3d<K> GetEuler() const
     {
         float sy = sqrt(m00 * m00 + m10 * m10);
@@ -313,6 +339,7 @@ struct Tmat3x3
         }
     }
 
+    template <typename K = T>
     static const Tmat3x3 Euler(const Tvec3d<K> &euler)
     {
         float _cx = cos(euler.x);
@@ -341,6 +368,7 @@ struct Tmat3x3
                         -_sy,                     _cy * _sx,                     _cy * _cx );
     }
 
+    template <typename K = T>
     static const Tmat3x3 Euler_ZXY(const Tvec3d<K> &euler)
     {
         float c1 = cos(euler.z);
@@ -356,7 +384,7 @@ struct Tmat3x3
     }
 };
 
-template <typename T, typename K>
+template <typename T>
 struct Tmat4x4
 {
     T m00;
@@ -383,14 +411,26 @@ struct Tmat4x4
     
     Tmat4x4(Tmat4x4 &&) = default;
     Tmat4x4(const Tmat4x4 &) = default;
+    
+    Tmat4x4( T _m00, T _m01, T _m02, T _m03,
+             T _m10, T _m11, T _m12, T _m13,
+             T _m20, T _m21, T _m22, T _m23,
+             T _m30, T _m31, T _m32, T _m33)
+    : m00(_m00), m01(_m01), m02(_m02), m03(_m03)
+    , m10(_m10), m11(_m11), m12(_m12), m13(_m13)
+    , m20(_m20), m21(_m21), m22(_m22), m23(_m23)
+    , m30(_m30), m31(_m31), m32(_m32), m33(_m33)
+    {}
 
+    template <typename K = T>
     Tmat4x4(const Tvec3d<K> &t)
     {
         identity();
         setTranslate(t);
     }
 
-    Tmat4x4(const Tmat3x3<T, K> &m)
+    template <typename K = T>
+    Tmat4x4(const Tmat3x3<K> &m)
     {
         *this = m;
     }
@@ -415,6 +455,7 @@ struct Tmat4x4
         m33 = 1.0;
     }
 
+    template <typename K = T>
     Tvec3d<K> Transform(const Tvec3d<K> &b) const
     {
         Tvec3d<K> tmp;
@@ -432,7 +473,8 @@ struct Tmat4x4
                        m03, m13, m23, m33);
     }
 
-    Tmat4x4 &operator*=(const Tmat3x3<T, K> &b)
+    template <typename K = T>
+    Tmat4x4 &operator*=(const Tmat3x3<K> &b)
     {
         Tmat4x4 a = *this;
         m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20;
@@ -498,6 +540,7 @@ struct Tmat4x4
         return *this;
     }
 
+    template <typename K = T>
     Tmat4x4 &operator+=(const Tvec3d<K> &t)
     {
         m03 += t.x;
@@ -506,6 +549,7 @@ struct Tmat4x4
         return *this;
     }
 
+    template <typename K = T>
     Tmat4x4 &operator-=(const Tvec3d<K> &t)
     {
         m03 -= t.x;
@@ -514,7 +558,8 @@ struct Tmat4x4
         return *this;
     }
 
-    Tmat4x4 &operator=(const Tmat3x3<T, K> &m)
+    template <typename K = T>
+    Tmat4x4 &operator=(const Tmat3x3<K> &m)
     {
         m00 = m.m00;
         m01 = m.m01;
@@ -535,7 +580,8 @@ struct Tmat4x4
         return *this;
     }
 
-    const Tmat4x4 operator*(const Tmat3x3<T, K> &b) const
+    template <typename K = T>
+    const Tmat4x4 operator*(const Tmat3x3<K> &b) const
     {
         Tmat4x4 tmp = *this;
         tmp *= b;
@@ -549,6 +595,7 @@ struct Tmat4x4
         return tmp;
     }
 
+    template <typename K = T>
     const Tmat4x4 operator+(const Tvec3d<K> &t) const
     {
         Tmat4x4 tmp = *this;
@@ -556,6 +603,7 @@ struct Tmat4x4
         return tmp;
     }
 
+    template <typename K = T>
     const Tmat4x4 operator-(const Tvec3d<K> &t) const
     {
         Tmat4x4 tmp = *this;
@@ -565,11 +613,13 @@ struct Tmat4x4
     
     Tmat4x4 &operator=(const Tmat4x4 &b) = default;
 
+    template <typename K = T>
     Tvec3d<K> operator*(const Tvec3d<K> &v) const
     {
         return Transform(v);
     }
 
+    template <typename K = T>
     void setTranslate(const Tvec3d<K> &t)
     {
         m03 = t.x;
@@ -584,9 +634,26 @@ struct Tmat4x4
         m23 = -m23;
     }
 
+    template <typename K = T>
     const Tvec3d<K> getTranslate() const
     {
         return Tvec3d<K>(m03, m13, m23);
+    }
+    
+    static Tmat4x4 Ortho (T left, T right, T bottom, T top, T nearval, T farval)
+    {
+        return Tmat4x4( 2.0 / (right-left), 0.0, 0.0, -(right+left) / (right-left),
+                        0.0, 2.0 / (top-bottom), 0.0, -(top+bottom) / (top-bottom),
+                        0.0, 0.0, -2.0 / (farval-nearval), -(farval+nearval) / (farval-nearval),
+                        0.0, 0.0, 0.0, 1.0);
+    }
+    
+    static Tmat4x4 UAFrustum (float near, float far)
+    {
+        return Tmat4x4( 1.0,  0.0, 0.0, 0.0,
+                        0.0, -1.0, 0.0, 0.0,
+                        0.0,  0.0, (far + near) / (far - near), -2.0 * (far * near) / (far - near),
+                        0.0,  0.0, 1.0, 0.0);
     }
 
 };
