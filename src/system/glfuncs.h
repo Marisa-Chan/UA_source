@@ -46,6 +46,10 @@ public:
     static PFNGLUNIFORM4FPROC GLUniform4f;
     static PFNGLUNIFORM4IPROC GLUniform4i;
     
+    static PFNGLUNIFORMMATRIX2FVPROC GLUniformMatrix2fv;
+    static PFNGLUNIFORMMATRIX3FVPROC GLUniformMatrix3fv;
+    static PFNGLUNIFORMMATRIX4FVPROC GLUniformMatrix4fv;
+    
     static PFNGLGETATTRIBLOCATIONPROC GLGetAttribLocation;
     static PFNGLVERTEXATTRIBPOINTERPROC GLVertexAttribPointer;
     static PFNGLDISABLEVERTEXATTRIBARRAYPROC GLDisableVertexAttribArray;

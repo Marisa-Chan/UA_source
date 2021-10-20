@@ -31,6 +31,10 @@ PFNGLUNIFORM3IPROC Glext::GLUniform3i = NULL;
 PFNGLUNIFORM4FPROC Glext::GLUniform4f = NULL;
 PFNGLUNIFORM4IPROC Glext::GLUniform4i = NULL;
 
+PFNGLUNIFORMMATRIX2FVPROC Glext::GLUniformMatrix2fv = NULL;
+PFNGLUNIFORMMATRIX3FVPROC Glext::GLUniformMatrix3fv = NULL;
+PFNGLUNIFORMMATRIX4FVPROC Glext::GLUniformMatrix4fv = NULL;
+
 PFNGLGETATTRIBLOCATIONPROC Glext::GLGetAttribLocation = NULL;
 PFNGLVERTEXATTRIBPOINTERPROC Glext::GLVertexAttribPointer = NULL;
 PFNGLDISABLEVERTEXATTRIBARRAYPROC Glext::GLDisableVertexAttribArray = NULL;
@@ -86,6 +90,10 @@ bool Glext::init()
     GLUniform3i = (PFNGLUNIFORM3IPROC)SDL_GL_GetProcAddress("glUniform3i");
     GLUniform4f = (PFNGLUNIFORM4FPROC)SDL_GL_GetProcAddress("glUniform4f");
     GLUniform4i = (PFNGLUNIFORM4IPROC)SDL_GL_GetProcAddress("glUniform4i");
+    
+    GLUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2fv");
+    GLUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3fv");
+    GLUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4fv");
     
     GLGetAttribLocation = (PFNGLGETATTRIBLOCATIONPROC)SDL_GL_GetProcAddress("glGetAttribLocation");
     GLVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)SDL_GL_GetProcAddress("glVertexAttribPointer");
