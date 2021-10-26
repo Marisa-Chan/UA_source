@@ -2605,6 +2605,15 @@ void GFXEngine::Init()
     
     System::IniConf::ReadFromNucleusIni();
     
+    _vbo = System::IniConf::GfxVBO.Get<bool>();
+    _colorEffects = System::IniConf::GfxColorEffects.Get<int32_t>();
+    
+    if (!_glext)
+    {
+        _colorEffects = 0;
+        _vbo = false;
+    }
+    
     SDL_DisplayMode deskMode;
     SDL_GetDesktopDisplayMode(0, &deskMode);
 
@@ -2701,16 +2710,7 @@ void GFXEngine::Init()
     Gui::Instance.SetScreenSize(GetSize());
     
     LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
-    
-    _vbo = System::IniConf::GfxVBO.Get<bool>();
-    _colorEffects = System::IniConf::GfxColorEffects.Get<int32_t>();
-    
-    if (!_glext)
-    {
-        _colorEffects = 0;
-        _vbo = false;
-    }
-    
+
     if (_vbo)
     {
         _stdPsShader = CompileShader(GL_FRAGMENT_SHADER, _stdPShaderText);
