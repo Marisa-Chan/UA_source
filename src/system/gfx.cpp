@@ -1847,7 +1847,6 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
 
         if (!bitm->hwTex)
         {
-            glPopAttrib();
             return false;
         }
 
