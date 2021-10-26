@@ -1083,10 +1083,6 @@ void GFXEngine::RenderingMeshOld(TRenderNode *nod)
 
     SetRenderStates(0);
 
-    int tmp = glGetError();
-    if (tmp != GL_NO_ERROR)
-        printf("glGetError %x\n", tmp);
-    
     glMatrixMode(GL_MODELVIEW);
     
     double mm[16] {
@@ -1104,10 +1100,6 @@ void GFXEngine::RenderingMeshOld(TRenderNode *nod)
     else
         glColorPointer(4, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].Color);
     
-    tmp = glGetError();
-    if (tmp != GL_NO_ERROR)
-        printf("glColorPointer %x\n", tmp);
-    
     if (flags & RFLAGS_TEXTURED)
     {
         if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->coordsID >= 0 )
@@ -1117,9 +1109,6 @@ void GFXEngine::RenderingMeshOld(TRenderNode *nod)
     }
     
     glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GLINDEXTYPE, mesh->Indixes.data());
-    tmp = glGetError();
-    if (tmp != GL_NO_ERROR)
-        printf("glDrawElements %x\n", tmp);
 }
 
 void GFXEngine::RenderingMesh(TRenderNode *nod)
@@ -1249,9 +1238,6 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     
     SetRenderStates(0);
 
-    int tmp = glGetError();
-    if (tmp != GL_NO_ERROR)
-        printf("glGetError %x\n", tmp);
     
     glMatrixMode(GL_MODELVIEW);
     
@@ -1279,9 +1265,6 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     }
     
     glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GLINDEXTYPE, NULL);
-    tmp = glGetError();
-    if (tmp != GL_NO_ERROR)
-        printf("glDrawElements %x\n", tmp);
 }
 
 void GFXEngine::RenderNode(TRenderNode *node)
