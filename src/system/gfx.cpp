@@ -1861,7 +1861,7 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
         if (bitm->swTex->format->format == _pixfmt->format)
         {
             SDL_LockSurface(bitm->swTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, bitm->swTex->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, bitm->swTex->pixels);
             SDL_UnlockSurface(bitm->swTex);
         }
         else
@@ -1869,7 +1869,7 @@ bool GFXEngine::AllocTexture(ResBitmap *bitm)
             SDL_Surface *conv = ConvertSDLSurface(bitm->swTex, _pixfmt);
             
             SDL_LockSurface(conv);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, conv->pixels);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitm->width, bitm->height, 0, _glPixfmt, _glPixtype, conv->pixels);
             SDL_UnlockSurface(conv);
             
             SDL_FreeSurface(conv);
@@ -2735,7 +2735,7 @@ void GFXEngine::Init()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, FBOTEXTYPE, 640, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 
         Glext::GLGenRenderbuffers(1, &_fbod);
@@ -3858,8 +3858,10 @@ void GFXEngine::RecreateScreenSurface()
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, ScreenSurface->w, ScreenSurface->h, 0, pixfmt, pixtype, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ScreenSurface->w, ScreenSurface->h, 0, pixfmt, pixtype, NULL);
 }
 
 void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
@@ -4077,7 +4079,7 @@ void GFXEngine::UpdateFBOSizes()
         _states.Tex = _fboTex;
         SetRenderStates(0);
         
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scrSz.x, scrSz.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, FBOTEXTYPE, scrSz.x, scrSz.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
         Glext::GLBindRenderbuffer(GL_RENDERBUFFER, _fbod);
         Glext::GLRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, scrSz.x, scrSz.y);

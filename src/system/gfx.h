@@ -87,11 +87,21 @@ namespace GFX
 {
 
 #ifndef GFXSHORTINDEX    
+    
 typedef uint32_t IndexType;
 #define GLINDEXTYPE GL_UNSIGNED_INT
+
 #else
+
 typedef uint16_t IndexType;
 #define GLINDEXTYPE GL_UNSIGNED_SHORT
+
+#endif
+
+#ifndef __EMSCRIPTEN__
+#define FBOTEXTYPE GL_RGBA32F
+#else
+#define FBOTEXTYPE GL_RGBA
 #endif
 
 enum RFLAGS

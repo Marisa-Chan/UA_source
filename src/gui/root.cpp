@@ -834,7 +834,7 @@ void StreamTex::Stream(Common::Point sz, int32_t fmt, int32_t type, const void *
                 pStates.Tex = t;
                 GFX::Engine.SetRenderStates(0);
                 
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Size.x, Size.y, 0, fmt, type, NULL);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Size.x, Size.y, 0, fmt, type, NULL);
             }
         }
     }
