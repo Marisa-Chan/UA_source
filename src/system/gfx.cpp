@@ -1116,7 +1116,7 @@ void GFXEngine::RenderingMeshOld(TRenderNode *nod)
             glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &mesh->Vertexes[0].TexCoord);
     }
     
-    glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GL_UNSIGNED_INT, mesh->Indixes.data());
+    glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GLINDEXTYPE, mesh->Indixes.data());
     tmp = glGetError();
     if (tmp != GL_NO_ERROR)
         printf("glDrawElements %x\n", tmp);
@@ -1278,7 +1278,7 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
             Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
     }
     
-    glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GLINDEXTYPE, NULL);
     tmp = glGetError();
     if (tmp != GL_NO_ERROR)
         printf("glDrawElements %x\n", tmp);
@@ -3882,7 +3882,7 @@ void GFXEngine::RecreateScreenSurface()
 
 void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
 {
-    static const uint32_t indexes[6] = {0, 1, 2, 0, 2, 3};
+    static const uint16_t indexes[6] = {0, 1, 2, 0, 2, 3};
     
     if (_vbo)
     {
@@ -3914,7 +3914,7 @@ void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
         if (_lastStates.Prog.UVLoc != -1)
             Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
         
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
         
     }
     else
@@ -3923,7 +3923,7 @@ void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
         glColorPointer(4, GL_FLOAT, sizeof(TVertex), &vtx[0].Color);
         glTexCoordPointer(2, GL_FLOAT, sizeof(TVertex), &vtx[0].TexCoord);
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, &indexes);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &indexes);
     }
 }
 
@@ -4236,7 +4236,7 @@ void GFXEngine::MeshMakeVBO(TMesh *mesh)
             Glext::GLGenBuffers(1, &mesh->glIndexBuf);
                 
         Glext::GLBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->glIndexBuf);
-        Glext::GLBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->Indixes.size() * sizeof(uint32_t), mesh->Indixes.data(), GL_STATIC_DRAW);
+        Glext::GLBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->Indixes.size() * sizeof(IndexType), mesh->Indixes.data(), GL_STATIC_DRAW);
         
         Glext::GLBindBuffer(GL_ARRAY_BUFFER, mesh->glDataBuf);
         int32_t vtxDataSz = mesh->Vertexes.size() * sizeof(TVertex);

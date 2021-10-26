@@ -86,6 +86,14 @@ struct windd_arg256
 namespace GFX
 {
 
+#ifndef GFXSHORTINDEX    
+typedef uint32_t IndexType;
+#define GLINDEXTYPE GL_UNSIGNED_INT
+#else
+typedef uint16_t IndexType;
+#define GLINDEXTYPE GL_UNSIGNED_SHORT
+#endif
+
 enum RFLAGS
 {
     RFLAGS_TEXTURED  =      (1 << 0),
@@ -202,7 +210,7 @@ class TMesh
 public:
     TRenderParams Mat;
     std::vector<TVertex> Vertexes;
-    std::vector<uint32_t> Indixes;
+    std::vector<IndexType> Indixes;
     
     std::vector<TCoordsCache> CoordsCache;
     
