@@ -268,7 +268,7 @@ public:
     void SetMusicVolume(int vol);
     void SetMusicIgnoreCommandsFlag(bool flag);
     void SetMusicTrack(int trackID, int minDelay, int maxDelay);
-    void StopMusicTrack();
+    void StopMusicTrack(bool reset = true);
     void PlayMusicTrack();
 
     void UpdateSoundCarrier(TSndCarrier *smpls);

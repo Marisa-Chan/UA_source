@@ -205,12 +205,13 @@ void SFXEngine::SetMusicVolume(int vol)
     }
 }
 
-void SFXEngine::StopMusicTrack()
+void SFXEngine::StopMusicTrack(bool reset)
 {
     if (digDriver && musPlayer && musOn)
     {
         musPlayer->stop();
-        musTrack = 0;
+        if (reset)
+            musTrack = 0;
     }
 }
 

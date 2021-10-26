@@ -1370,7 +1370,15 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
     if ( System::IniConf::GfxMoviePlayer.Get<bool>() )
     {
         GFX::Engine.EndFrame();
+        
+        if ( field_73CE & World::PREF_CDMUSICDISABLE )
+                SFXEngine::SFXe.StopMusicTrack(false); // Stop music without reset track ID
+        
         System::Movie.PlayMovie(buf, GameShell->snd__volume);
+        
+        if ( field_73CE & World::PREF_CDMUSICDISABLE )
+            SFXEngine::SFXe.PlayMusicTrack();
+        
         GFX::Engine.BeginFrame();
     }
     
