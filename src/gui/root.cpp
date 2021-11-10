@@ -725,11 +725,8 @@ void Root::HwCompose()
 {
     if (_hwRender && _normal.size())
     {
-        glMatrixMode(GL_PROJECTION);
-        glOrtho(0, _screenSize.x, _screenSize.y, 0, -1, 1);
-        
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+        GFX::Engine.SetProjectionMatrix( mat4x4f::Ortho(0, _screenSize.x, _screenSize.y, 0, -1, 1) );
+        GFX::Engine.SetModelViewMatrix( mat4x4f() );
         
         GFX::GfxStates &pStates = GFX::Engine.States();
         

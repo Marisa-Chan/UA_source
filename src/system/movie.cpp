@@ -398,10 +398,8 @@ void TMovie::ProcessFrame(uint32_t tm)
     Common::Point scrSz = System::GetResolution();
     glViewport(0, 0, scrSz.x, scrSz.y);
     
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    GFX::Engine.SetProjectionMatrix( mat4x4f() );
+    GFX::Engine.SetModelViewMatrix( mat4x4f() );
 
     GFX::GfxStates &pStates = GFX::Engine.States();
     GFX::GfxStates saved = pStates;

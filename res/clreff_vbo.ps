@@ -1,7 +1,22 @@
-#version 120
+#version 140
+
+layout(std140) uniform Parameters
+{
+    mat4 MProj;
+    mat4 MView;
+    vec3 Fog;
+    vec3 AlphaFog;
+    bool Textured;
+    bool Flat;
+    bool ATest;
+};
+
 uniform sampler2D texture;
+in vec4 smoothColor;
+
 uniform vec3 normclr;
 uniform vec3 invclr;
+
 void main()
 {
     vec4 clr = texture2D(texture, gl_TexCoord[0].xy);

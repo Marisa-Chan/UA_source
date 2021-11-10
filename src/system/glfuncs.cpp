@@ -59,6 +59,10 @@ PFNGLUNMAPBUFFERPROC Glext::GLUnmapBuffer = NULL;
 PFNGLGETBUFFERPARAMETERIVPROC Glext::GLGetBufferParameteriv = NULL;
 PFNGLGETBUFFERPOINTERVPROC Glext::GLGetBufferPointerv = NULL;
 
+PFNGLGETUNIFORMBLOCKINDEXPROC Glext::GLGetUniformBlockIndex = NULL;
+PFNGLUNIFORMBLOCKBINDINGPROC Glext::GLUniformBlockBinding = NULL;
+PFNGLBINDBUFFERBASEPROC Glext::GLBindBufferBase = NULL;
+
 bool Glext::init()
 {
     GLGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)SDL_GL_GetProcAddress("glGenFramebuffers");
@@ -116,9 +120,13 @@ bool Glext::init()
     GLBufferSubData = (PFNGLBUFFERSUBDATAPROC )SDL_GL_GetProcAddress("glBufferSubData");
     GLGetBufferSubData = (PFNGLGETBUFFERSUBDATAPROC )SDL_GL_GetProcAddress("glGetBufferSubData");
     GLMapBuffer = (PFNGLMAPBUFFERPROC )SDL_GL_GetProcAddress("glMapBuffer");
-    GLUnmapBuffer = (PFNGLUNMAPBUFFERPROC )SDL_GL_GetProcAddress("glUnmapBuffer");
+    GLUnmapBuffer = (PFNGLUNMAPBUFFERPROC)SDL_GL_GetProcAddress("glUnmapBuffer");
     GLGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIVPROC )SDL_GL_GetProcAddress("glGetBufferParameteriv");
     GLGetBufferPointerv = (PFNGLGETBUFFERPOINTERVPROC )SDL_GL_GetProcAddress("glGetBufferPointerv");
+    
+    GLGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)SDL_GL_GetProcAddress("glGetUniformBlockIndex");
+    GLUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)SDL_GL_GetProcAddress("glUniformBlockBinding");
+    GLBindBufferBase = (PFNGLBINDBUFFERBASEPROC)SDL_GL_GetProcAddress("glBindBufferBase");
     
     return true;
 }

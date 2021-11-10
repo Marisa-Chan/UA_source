@@ -305,10 +305,7 @@ struct TShaderProg
     int32_t PosLoc = -1;
     int32_t ColorLoc = -1;
     int32_t UVLoc = -1;
-    int32_t TexFlagLoc = -1;
-    int32_t FogLoc = -1;
-    int32_t AFogLoc = -1;
-    
+
     TShaderProg() = default;
     TShaderProg(uint32_t id);
 };
@@ -328,7 +325,6 @@ struct TColorEffectsProg : TShaderProg
 
 struct GfxStates
 {
-    bool TuD = false;
     uint32_t Tex = 0;
     bool Shaded = true;
     bool Stipple = false;
@@ -696,6 +692,11 @@ public:
     
     void SetRenderStates(int arg);
     
+    void BindVBOParameters(TShaderProg &shader);
+    
+    void SetProjectionMatrix(const mat4x4f &mat);
+    void SetModelViewMatrix(const mat4x4f &mat);
+    
 protected:
     void initPolyEngine();
     void initPixelFormats();
@@ -798,13 +799,25 @@ protected:
     Common::Point _resolution;
 
     // Win3d
-    GLdouble _frustum[16];
+    mat4x4f _frustum;
     float _frustumNear;
     float _frustumFar;
     
     uint32_t _stdPsShader = 0;
     uint32_t _stdVsShader = 0;
     TShaderProg _stdShaderProg;
+    
+    uint32_t _vboParams = 0;
+    
+    static constexpr int32_t _vboMProjOff = 0;   // 4 * 4 * 4 = 64
+    static constexpr int32_t _vboMViewOff = 64;  // 4 * 4 * 4 = 64
+    static constexpr int32_t _vboFogOff   = 128; // 3 * 4 = 12  ... + 4(because next vec3)
+    static constexpr int32_t _vboAFogOff  = 144; // 3 * 4 = 12
+    static constexpr int32_t _vboTextured = 156; // 4
+    static constexpr int32_t _vboFlat     = 160; // 4
+    static constexpr int32_t _vboATest    = 164; // 4
+    static constexpr int32_t _vboParamsSize = 168; 
+    static constexpr int32_t _vboParamsBlockBinding = 0;
     
     GfxStates _states;
     GfxStates _lastStates;

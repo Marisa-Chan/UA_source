@@ -73,6 +73,10 @@ public:
     static PFNGLUNMAPBUFFERPROC GLUnmapBuffer;
     static PFNGLGETBUFFERPARAMETERIVPROC GLGetBufferParameteriv;
     static PFNGLGETBUFFERPOINTERVPROC GLGetBufferPointerv;
+    
+    static PFNGLGETUNIFORMBLOCKINDEXPROC GLGetUniformBlockIndex;
+    static PFNGLUNIFORMBLOCKBINDINGPROC GLUniformBlockBinding;
+    static PFNGLBINDBUFFERBASEPROC GLBindBufferBase;
 };
     
 }

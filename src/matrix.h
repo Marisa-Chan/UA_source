@@ -13,6 +13,9 @@ template <typename T> struct Tmat4x4;
 typedef Tmat3x3<double> mat3x3;
 typedef Tmat4x4<double> mat4x4;
 
+typedef Tmat3x3<float> mat3x3f;
+typedef Tmat4x4<float> mat4x4f;
+
 
 template <typename T>
 struct Tmat3x3
@@ -411,6 +414,14 @@ struct Tmat4x4
     
     Tmat4x4(Tmat4x4 &&) = default;
     Tmat4x4(const Tmat4x4 &) = default;
+    
+    template <typename K = T>
+    Tmat4x4(const Tmat4x4<K> &b)
+    : m00(b.m00), m01(b.m01), m02(b.m02), m03(b.m03)
+    , m10(b.m10), m11(b.m11), m12(b.m12), m13(b.m13)
+    , m20(b.m20), m21(b.m21), m22(b.m22), m23(b.m23)
+    , m30(b.m30), m31(b.m31), m32(b.m32), m33(b.m33)
+    {}
     
     Tmat4x4( T _m00, T _m01, T _m02, T _m03,
              T _m10, T _m11, T _m12, T _m13,
