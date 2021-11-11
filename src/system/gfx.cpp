@@ -2611,6 +2611,15 @@ void GFXEngine::Init()
         _vbo = false;
     }
     
+    if (_vbo)
+    {
+        Glext::GLGenBuffers(1, &_vboParams);
+        Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
+        Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize+64, NULL, GL_DYNAMIC_DRAW); 
+        
+        Glext::GLBindBufferBase(GL_UNIFORM_BUFFER, _vboParamsBlockBinding, _vboParams);
+    }
+    
     SDL_DisplayMode deskMode;
     SDL_GetDesktopDisplayMode(0, &deskMode);
 
@@ -2710,12 +2719,6 @@ void GFXEngine::Init()
 
     if (_vbo)
     {
-        Glext::GLGenBuffers(1, &_vboParams);
-        Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
-        Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize+64, NULL, GL_DYNAMIC_DRAW); 
-        
-        Glext::GLBindBufferBase(GL_UNIFORM_BUFFER, _vboParamsBlockBinding, _vboParams);
-        
         _stdPsShader = CompileShader(GL_FRAGMENT_SHADER, _stdPShaderText);
         _stdVsShader = CompileShader(GL_VERTEX_SHADER,   _stdVShaderText);
         uint32_t progID = Glext::GLCreateProgram();
