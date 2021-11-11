@@ -3979,7 +3979,8 @@ uint32_t GFXEngine::CompileShader(int32_t type, const std::string &string)
         {
             char *logbuff = new char[tmpvar + 2];
             Glext::GLGetShaderInfoLog(sh, tmpvar, NULL, logbuff);
-            printf("%s\n", logbuff);
+            printf("Shader error: %s\n", logbuff);
+            log_d3dlog("Shader error: %s\n", logbuff);
             delete[] logbuff;
         }
         Glext::GLDeleteShader(sh);
