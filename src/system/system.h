@@ -33,7 +33,7 @@ namespace System
         operator Common::Point() const;
     };
     
-    void Init();
+    void Init(bool oldGL = false);
     void Deinit();
     
     // Events update cycle

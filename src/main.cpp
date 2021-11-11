@@ -852,7 +852,11 @@ int main(int argc, char *argv[])
     
     HandleMods();
     
-    System::Init();
+    System::IniConf::ReadFromNucleusIni();
+    bool gfxVbo = System::IniConf::GfxVBO.Get<bool>();
+    
+    System::Init(!gfxVbo);
+    
     GFX::Engine.Init();
     System::Movie.Init();
     
