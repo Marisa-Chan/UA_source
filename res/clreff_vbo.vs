@@ -16,10 +16,10 @@ attribute vec4 vColor;
 attribute vec2 vUV;
 
 out vec4 smoothColor;
-
+out vec2 texCoords;
 void main()
 {
     gl_Position = MView * MProj * vec4(vPos, 1.0);
     smoothColor = vColor;
-    gl_TexCoord[0] = vec4(vUV, 0, 0);
+    texCoords = vUV;
 }

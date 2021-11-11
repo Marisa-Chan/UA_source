@@ -13,12 +13,13 @@ layout(std140) uniform Parameters
 
 uniform sampler2D texture;
 in vec4 smoothColor;
+in vec2 texCoords;
 
 uniform vec3 normclr;
 uniform vec3 invclr;
 
 void main()
 {
-    vec4 clr = texture2D(texture, gl_TexCoord[0].xy);
+    vec4 clr = texture2D(texture, texCoords);
     gl_FragColor = vec4( clr.xyz * normclr + (1.0 - clr.xyz) * invclr, clr.w);
 }
