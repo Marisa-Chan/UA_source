@@ -20,12 +20,13 @@ layout(std140) uniform Parameters\
 uniform sampler2D texture;\
 in vec4 smoothColor;\
 flat in vec4 flatColor;\
+in vec2 texCoords;\
 void main()\
 {\
     vec4 clr;\
     if (Flat) clr = flatColor; else clr = smoothColor;\
     if (Textured)\
-        gl_FragColor = texture2D(texture, gl_TexCoord[0].xy) * clr;\
+        gl_FragColor = texture2D(texture, texCoords) * clr;\
     else\
         gl_FragColor = clr;\
     if (ATest && gl_FragColor.w <= 0.0)\
@@ -52,6 +53,7 @@ attribute vec2 vUV;\
 \
 out vec4 smoothColor;\
 flat out vec4 flatColor;\
+out vec2 texCoords;\
 void main()\
 {\
     vec4 tformed = MView * vec4(vPos, 1.0);\
@@ -74,7 +76,7 @@ void main()\
     }\
     flatColor = clr;\
     smoothColor = clr;\
-    if (Textured) gl_TexCoord[0] = vec4(vUV, 0, 0);\
+    if (Textured) texCoords = vUV;\
 }";
  
 }

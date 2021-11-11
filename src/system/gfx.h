@@ -819,6 +819,8 @@ protected:
     static constexpr int32_t _vboParamsSize = 168; 
     static constexpr int32_t _vboParamsBlockBinding = 0;
     
+    uint32_t _globalVao = 0;
+    
     GfxStates _states;
     GfxStates _lastStates;
     

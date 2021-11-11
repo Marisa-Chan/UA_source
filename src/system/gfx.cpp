@@ -2613,6 +2613,9 @@ void GFXEngine::Init()
     
     if (_vbo)
     {
+        Glext::GLGenVertexArrays(1, &_globalVao);
+        Glext::GLBindVertexArray(_globalVao);
+        
         Glext::GLGenBuffers(1, &_vboParams);
         Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
         Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize+64, NULL, GL_DYNAMIC_DRAW); 
