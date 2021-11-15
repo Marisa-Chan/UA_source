@@ -55,6 +55,7 @@ PFNGLBUFFERDATAPROC Glext::GLBufferData = NULL;
 PFNGLBUFFERSUBDATAPROC Glext::GLBufferSubData = NULL;
 PFNGLGETBUFFERSUBDATAPROC Glext::GLGetBufferSubData = NULL;
 PFNGLMAPBUFFERPROC Glext::GLMapBuffer = NULL;
+PFNGLMAPBUFFERRANGEPROC Glext::GLMapBufferRange = NULL;
 PFNGLUNMAPBUFFERPROC Glext::GLUnmapBuffer = NULL;
 PFNGLGETBUFFERPARAMETERIVPROC Glext::GLGetBufferParameteriv = NULL;
 PFNGLGETBUFFERPOINTERVPROC Glext::GLGetBufferPointerv = NULL;
@@ -120,6 +121,7 @@ bool Glext::init()
     GLBufferSubData = (PFNGLBUFFERSUBDATAPROC )SDL_GL_GetProcAddress("glBufferSubData");
     GLGetBufferSubData = (PFNGLGETBUFFERSUBDATAPROC )SDL_GL_GetProcAddress("glGetBufferSubData");
     GLMapBuffer = (PFNGLMAPBUFFERPROC )SDL_GL_GetProcAddress("glMapBuffer");
+    GLMapBufferRange = (PFNGLMAPBUFFERRANGEPROC)SDL_GL_GetProcAddress("glMapBufferRange");
     GLUnmapBuffer = (PFNGLUNMAPBUFFERPROC)SDL_GL_GetProcAddress("glUnmapBuffer");
     GLGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIVPROC )SDL_GL_GetProcAddress("glGetBufferParameteriv");
     GLGetBufferPointerv = (PFNGLGETBUFFERPOINTERVPROC )SDL_GL_GetProcAddress("glGetBufferPointerv");

@@ -2618,7 +2618,7 @@ void GFXEngine::Init()
         
         Glext::GLGenBuffers(1, &_vboParams);
         Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
-        Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize+64, NULL, GL_DYNAMIC_DRAW); 
+        Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize, NULL, GL_STREAM_DRAW); 
         
         Glext::GLBindBufferBase(GL_UNIFORM_BUFFER, _vboParamsBlockBinding, _vboParams);
     }
@@ -3888,7 +3888,7 @@ void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
         {
             Glext::GLGenBuffers(1, &_stdQuadDataBuf);
             Glext::GLBindBuffer(GL_ARRAY_BUFFER, _stdQuadDataBuf);
-            Glext::GLBufferData(GL_ARRAY_BUFFER, sizeof(TVertex) * vtx.size(), NULL, GL_DYNAMIC_DRAW);
+            Glext::GLBufferData(GL_ARRAY_BUFFER, sizeof(TVertex) * vtx.size(), NULL, GL_STREAM_DRAW);
         }
         
         if (!_stdQuadIndexBuf)
@@ -3913,7 +3913,6 @@ void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
             Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
         
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
-        
     }
     else
     {

@@ -70,6 +70,7 @@ public:
     static PFNGLBUFFERSUBDATAPROC GLBufferSubData;
     static PFNGLGETBUFFERSUBDATAPROC GLGetBufferSubData;
     static PFNGLMAPBUFFERPROC GLMapBuffer;
+    static PFNGLMAPBUFFERRANGEPROC GLMapBufferRange;
     static PFNGLUNMAPBUFFERPROC GLUnmapBuffer;
     static PFNGLGETBUFFERPARAMETERIVPROC GLGetBufferParameteriv;
     static PFNGLGETBUFFERPOINTERVPROC GLGetBufferPointerv;
