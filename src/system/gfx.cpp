@@ -724,12 +724,7 @@ void GFXEngine::SetRenderStates(int setAll)
     }
     
     if (_vbo)
-    {
-        int32_t curBind = -1;
-        glGetIntegerv(GL_UNIFORM_BUFFER_BINDING, &curBind);
-        if (curBind != _vboParams)
-            Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
-        
+    {        
         if (setAll || (newStates->DataBuf != _lastStates.DataBuf))
         {
             Glext::GLBindBuffer(GL_ARRAY_BUFFER, newStates->DataBuf);
@@ -749,8 +744,7 @@ void GFXEngine::SetRenderStates(int setAll)
                 
                 glBindTexture(GL_TEXTURE_2D, newStates->Tex);
 
-                int32_t tmp = 1;
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboTextured, 4, &tmp);
+                _vboStatesBlock.Textured = 1;
             }
             else
             {
@@ -759,9 +753,9 @@ void GFXEngine::SetRenderStates(int setAll)
                 
                 glBindTexture(GL_TEXTURE_2D, 0);
 
-                int32_t tmp = 0;
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboTextured, 4, &tmp);
+                _vboStatesBlock.Textured = 0;
             }
+            _vboStatesChanged = true;
         }
         
         if ((forceSetShader || (newStates->Fog != _lastStates.Fog) ||
@@ -770,14 +764,15 @@ void GFXEngine::SetRenderStates(int setAll)
         {
             if (newStates->Fog)
             {
-                float tmp[3] = { 1.0, newStates->FogStart, newStates->FogLength };
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboFogOff, 4 * 3, &tmp);
+                _vboStatesBlock.Fog = 1.0;
+                _vboStatesBlock.FogStart = newStates->FogStart;
+                _vboStatesBlock.FogLength = newStates->FogLength;
             }
             else
             {
-                float tmp[3] = {0.0, 0.0, 0.0};
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboFogOff, 4 * 3, &tmp);
+                _vboStatesBlock.Fog = 0.0;
             }
+            _vboStatesChanged = true;
         }
         
         if ((forceSetShader || (newStates->AFog != _lastStates.AFog) ||
@@ -786,42 +781,41 @@ void GFXEngine::SetRenderStates(int setAll)
         {
             if (newStates->AFog)
             {
-                float tmp[3] = { 1.0, newStates->AFogStart, newStates->AFogLength };
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboAFogOff, 4 * 3, &tmp);
+                _vboStatesBlock.AFog = 1.0;
+                _vboStatesBlock.AFogStart = newStates->AFogStart;
+                _vboStatesBlock.AFogLength = newStates->AFogLength;
             }
             else
             {
-                float tmp[3] = {0.0, 0.0, 0.0};
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboAFogOff, 4 * 3, &tmp);
+                _vboStatesBlock.AFog = 0.0;
             }
+            _vboStatesChanged = true;
         }
         
         if (forceSetShader || (newStates->Shaded != _lastStates.Shaded))
         {
             if (newStates->Shaded)
             {
-                int32_t tmp = 0;
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboFlat, 4, &tmp);
+                _vboStatesBlock.Flat = 0;
             }
             else
             {
-                int32_t tmp = 1;
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboFlat, 4, &tmp);
+                _vboStatesBlock.Flat = 1;
             }
+            _vboStatesChanged = true;
         }
         
         if (setAll || (newStates->AlphaTest != _lastStates.AlphaTest))
         {
             if (newStates->AlphaTest == false)
             {
-                int32_t tmp = 0;
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboATest, 4, &tmp);
+                _vboStatesBlock.ATest = 0;
             }
             else
             {
-                int32_t tmp = 1;
-                Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboATest, 4, &tmp);
+                _vboStatesBlock.ATest = 1;
             }
+            _vboStatesChanged = true;
         }
     }
     else
@@ -1280,6 +1274,7 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
             Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
     }
     
+    CommitUBOParameters();    
     glDrawElements(GL_TRIANGLES, mesh->Indixes.size(), GLINDEXTYPE, NULL);
 }
 
@@ -3912,6 +3907,7 @@ void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
         if (_lastStates.Prog.UVLoc != -1)
             Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
         
+        CommitUBOParameters();    
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
     }
     else
@@ -4288,13 +4284,28 @@ void GFXEngine::BindVBOParameters(TShaderProg &shader)
     }
 }
 
+void GFXEngine::CommitUBOParameters()
+{
+    if (_vbo && _vboStatesChanged)
+    {
+        _vboStatesChanged = false;
+        
+        Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
+        
+        // Orphan ubo
+        Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize, NULL, GL_STREAM_DRAW);
+        
+        Glext::GLBufferData(GL_UNIFORM_BUFFER, _vboParamsSize, &_vboStatesBlock, GL_STREAM_DRAW);
+    }
+}
+
 void GFXEngine::SetProjectionMatrix(const mat4x4f &mat)
 {
     mat4x4f tmp = mat.Transpose();
     if (_vbo)
     {
-        Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
-        Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboMProjOff, 4 * 4 * 4, &tmp.m00);
+        _vboStatesBlock.Proj = tmp;
+        _vboStatesChanged = true;
     }
     else
     {
@@ -4308,8 +4319,8 @@ void GFXEngine::SetModelViewMatrix(const mat4x4f &mat)
     mat4x4f tmp = mat.Transpose();
     if (_vbo)
     {
-        Glext::GLBindBuffer(GL_UNIFORM_BUFFER, _vboParams);
-        Glext::GLBufferSubData(GL_UNIFORM_BUFFER, _vboMViewOff, 4 * 4 * 4, &tmp.m00);
+        _vboStatesBlock.View = tmp;
+        _vboStatesChanged = true;
     }
     else
     {

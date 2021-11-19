@@ -694,6 +694,8 @@ public:
     
     void BindVBOParameters(TShaderProg &shader);
     
+    void CommitUBOParameters();
+    
     void SetProjectionMatrix(const mat4x4f &mat);
     void SetModelViewMatrix(const mat4x4f &mat);
     
@@ -818,6 +820,24 @@ protected:
     static constexpr int32_t _vboATest    = 164; // 4
     static constexpr int32_t _vboParamsSize = 168; 
     static constexpr int32_t _vboParamsBlockBinding = 0;
+    
+    struct
+    {
+        mat4x4f Proj;
+        mat4x4f View;
+        float   Fog = 0.0;
+        float   FogStart = 0.0;
+        float   FogLength = 0.0;
+        float   _pad1 = 0.0;
+        float   AFog = 0.0;
+        float   AFogStart = 0.0;
+        float   AFogLength = 0.0;
+        int32_t Textured = 0;
+        int32_t Flat = 0;
+        int32_t ATest = 0;
+    } _vboStatesBlock;
+    
+    bool _vboStatesChanged = true;
     
     uint32_t _globalVao = 0;
     
