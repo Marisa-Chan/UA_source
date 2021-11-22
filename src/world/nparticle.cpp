@@ -59,116 +59,82 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
 {
     TF::TForm3D *view = rndrParams->ViewTForm;
 
-    int v27 = -1;
+    // Transformed position, but without of projection
+    vec3d pos = view->CalcSclRot.Transform(p->Pos - view->CalcPos);
+    
+    if (pos.z < GFX::Engine.GetProjectionNear() || pos.z > GFX::Engine.GetProjectionFar())
+        return;
+    
+    // Calculate projection position and W parameter for NDC
+    const mat4x4f &Proj = GFX::Engine.GetProjectionMatrix();
+    
+    vec3d projPos = Proj.Transform(pos);
+    float w = pos.x * Proj.m30 + pos.y * Proj.m31 + pos.z * Proj.m32 + Proj.m33;
+    
+    /* Radius of 2.0 side square = sqrt(1.0^2 + 1.0^2) = 1.414
+     * And applied W
+     */
+    float radius = scale * 1.42 / w;
 
-    vec3d sprPos = p->Pos - ((view->CalcSclRot.AxisX() + view->CalcSclRot.AxisY()) * scale * 0.5);
+    vec2f scrPos(projPos.x / w, projPos.y / w);
+    
+    // If transformed point length more than 
+    if ( scrPos.length() > 1.42 + radius )
+        return;
 
-    vec3d v37;//, v36, v37;
-
-    for (int i = 0; i < 5; i++)
+    if ( p->pParticleGen->_lifePerAde )
     {
-        switch ( i )
+        size_t id = p->Age / p->pParticleGen->_lifePerAde;
+
+        if (id == p->pParticleGen->_meshCache.size()) // fix little overlap
+            id = p->pParticleGen->_meshCache.size() - 1;
+
+        if ( id < p->pParticleGen->_meshCache.size() )
         {
-        case 0:
-            v37 = p->Pos;
-            break;
-        case 1:
-            v37 = sprPos;
-            break;
-        case 2:
-            v37 = sprPos + view->CalcSclRot.AxisX() * scale;
-            break;
-        case 3:
-            v37 = sprPos + (view->CalcSclRot.AxisX() + view->CalcSclRot.AxisY()) * scale;
-            break;
-        case 4:
-            v37 = sprPos + view->CalcSclRot.AxisY() * scale;
-            break;
-        }
+            GFX::TMesh &mesh = p->pParticleGen->_meshCache.at(id);
 
-        int flags = 0;
+            GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
+            rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_PARTICLE );
 
-        vec3d v30 = view->CalcSclRot.Transform(v37 - view->CalcPos);
+            rend.Distance = pos.length();
+            rend.Flags = mesh.Mat.Flags | rndrParams->flags;
+            rend.Color = mesh.Mat.Color;
 
-        if (v30.z < rndrParams->minZ)
-            flags = 16;
-        else if (v30.z > rndrParams->maxZ)
-            flags = 32;
-
-        if ( v30.x > v30.z )
-            flags |= 2;
-
-        if ( -v30.z > v30.x )
-            flags |= 1;
-
-        if ( v30.y > v30.z )
-            flags |= 8;
-
-        if ( -v30.z > v30.y )
-            flags |= 4;
-
-        //_skltData->tformedVertex[i] = UAskeleton::Vertex(v30, flags);
-
-        v27 &= flags;
-    }
-
-    if ( !v27 )
-    {
-        //rndrParams->sklt = _skltData;
-
-        if ( p->pParticleGen->_lifePerAde )
-        {
-            size_t id = p->Age / p->pParticleGen->_lifePerAde;
-            
-            if (id == p->pParticleGen->_meshCache.size()) // fix little overlap
-                id = p->pParticleGen->_meshCache.size() - 1;
-            
-            if ( id < p->pParticleGen->_meshCache.size() )
+            /*if (newsky)
             {
-                GFX::TMesh &mesh = p->pParticleGen->_meshCache.at(id);
-                
-                GFX::TRenderNode& rend = GFX::Engine.AllocRenderNode();
-                rend = GFX::TRenderNode( GFX::TRenderNode::TYPE_PARTICLE );
+                if ( distance >= transDist ||
+                     skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
+                     skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
+                    rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
+            }*/
 
-                vec3d pos = view->CalcSclRot.Transform(p->Pos - view->CalcPos);
+            if ((mesh.Mat.Flags & GFX::RFLAGS_DYNAMIC_TEXTURE) && mesh.Mat.TexSource)
+            {
+                mesh.Mat.TexSource->SetTime(rndrParams->timeStamp, rndrParams->frameTime);
+                uint32_t frameid = mesh.Mat.TexSource->GetCurrentFrameID();
 
-                rend.Distance = pos.length();
-                rend.Flags = mesh.Mat.Flags | rndrParams->flags;
-                rend.Color = mesh.Mat.Color;
-
-                /*if (newsky)
+                if (frameid < mesh.CoordsCache.size())
                 {
-                    if ( distance >= transDist ||
-                         skel132.tform.Transform(msh.BoundBox.Min).XZ().length() >= transDist ||
-                         skel132.tform.Transform(msh.BoundBox.Max).XZ().length() >= transDist )
-                        rend.Mat.Flags |= GFX::RFLAGS_FALLOFF;
-                }*/
-                
-                if ((mesh.Mat.Flags & GFX::RFLAGS_DYNAMIC_TEXTURE) && mesh.Mat.TexSource)
-                {
-                    mesh.Mat.TexSource->SetTime(rndrParams->timeStamp, rndrParams->frameTime);
-                    uint32_t frameid = mesh.Mat.TexSource->GetCurrentFrameID();
-
-                    if (frameid < mesh.CoordsCache.size())
-                    {
-                        rend.Tex = mesh.CoordsCache.at(frameid).Tex;
-                        rend.coordsID = frameid;                    
-                    }
+                    rend.Tex = mesh.CoordsCache.at(frameid).Tex;
+                    rend.coordsID = frameid;                    
                 }
-                else
-                    rend.Tex = mesh.Mat.Tex;
-
-                rend.Mesh = &mesh;            
-
-                rend.TForm = mat4x4(view->CalcSclRot) * mat4x4(p->Pos - view->CalcPos);
-                rend.TimeStamp = rndrParams->timeStamp;
-                rend.FrameTime = rndrParams->frameTime;
-                rend.FogStart = rndrParams->fadeStart;
-                rend.FogLength = rndrParams->fadeLength;
-                rend.ParticleSize = scale;
-
-                GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
             }
+            else
+                rend.Tex = mesh.Mat.Tex;
+
+            rend.Mesh = &mesh;        
+            
+            rend.TForm = mat4x4(scale, 0.0, 0.0, pos.x,
+                                0.0, scale, 0.0, pos.y,
+                                0.0,   0.0, 1.0, pos.z,
+                                0.0,   0.0, 0.0, 1.0);
+            rend.TimeStamp = rndrParams->timeStamp;
+            rend.FrameTime = rndrParams->frameTime;
+            rend.FogStart = rndrParams->fadeStart;
+            rend.FogLength = rndrParams->fadeLength;
+            rend.ParticleSize = scale;
+
+            GFX::GFXEngine::Instance.QueueRenderMesh(&rend);
         }
     }
 }

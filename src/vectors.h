@@ -8,6 +8,7 @@ template <typename T> struct Tvec2d;
 template <typename T> struct Tvec3d;
 
 typedef Tvec2d<double> vec2d;
+typedef Tvec2d<float>  vec2f;
 typedef Tvec3d<double> vec3d;
 typedef Tvec3d<float>  vec3f;
 typedef Tvec3d<int32_t> vec3i;

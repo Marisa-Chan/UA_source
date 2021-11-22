@@ -677,7 +677,6 @@ public:
     void RenderingMeshOld(TRenderNode *mesh);
     void RenderingMesh(TRenderNode *mesh);
     void RenderNode(TRenderNode *node);
-    void PrepareParticle(TRenderNode *node);
     void Rasterize(uint32_t RasterEtapes = RASTER_ALL);
     
     void QueueRenderMesh(TRenderNode *mesh);
@@ -698,6 +697,10 @@ public:
     
     void SetProjectionMatrix(const mat4x4f &mat);
     void SetModelViewMatrix(const mat4x4f &mat);
+    
+    const mat4x4f &GetProjectionMatrix() const { return _frustum; }; 
+    float GetProjectionNear() const { return _frustumNear; }; 
+    float GetProjectionFar() const { return _frustumFar; }; 
     
 protected:
     void initPolyEngine();

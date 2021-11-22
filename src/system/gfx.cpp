@@ -1294,7 +1294,6 @@ void GFXEngine::RenderNode(TRenderNode *node)
             
         case TRenderNode::TYPE_PARTICLE:
         {
-            PrepareParticle(node);
             if (_vbo)
                 RenderingMesh(node);
             else
@@ -1305,19 +1304,6 @@ void GFXEngine::RenderNode(TRenderNode *node)
         default:
             break;
     }
-}
-
-void GFXEngine::PrepareParticle(TRenderNode *node)
-{
-    if (!node->Mesh)
-        return;
-    
-    vec3d pos = node->TForm.getTranslate();
-    
-    node->TForm = mat4x4( mat3x3(node->ParticleSize, 0, 0,
-                                 0, node->ParticleSize, 0,
-                                 0, 0, 1.0) );
-    node->TForm.setTranslate( pos );
 }
 
 void GFXEngine::QueueRenderMesh(TRenderNode *nod)
