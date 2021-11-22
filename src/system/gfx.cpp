@@ -3924,6 +3924,9 @@ void GFXEngine::DrawScreenSurface()
     _states.Tex = screenTex;
     _states.TexBlend = 2;
     _states.Prog = _stdShaderProg;
+    _states.AlphaTest = false;
+    _states.Shaded = true;
+    _states.LinearFilter = true;
 
     SetRenderStates(0);
     
@@ -4026,6 +4029,10 @@ void GFXEngine::DrawFBO()
     _states.Tex = _fboTex;
     _states.TexBlend = 2;
     _states.Prog = _colorEffectsShaderProg;
+    
+    _states.AlphaTest = false;
+    _states.Shaded = true;
+    _states.LinearFilter = true;
 
     // Apply texture and program
     SetRenderStates(0);
