@@ -145,7 +145,7 @@ $(CPPDEPFILES): $(OBJDIR)/%.d: %.cpp
 
 $(DEPFILES):
 	mkdir -p $(@D)
-	echo -n "$(OBJDIR)/" > $@
+	printf "$(OBJDIR)/" > $@
 	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM >> $@
 
 -include $(DEPFILES)
