@@ -41,6 +41,11 @@ public:
     
     virtual void AddScore(std::array<TPlayerStatus, 8> *score) const {};
     
+    Record& operator=(const Record& b)
+    {
+        return *this;
+    }
+    
     bool ReadByteArray(const Common::ByteArray &bt)
     {
         if (bt.size() < dataSize)
@@ -84,11 +89,6 @@ public:
     virtual void ReadBytes(const void *bt)
     {
         TimeStamp = Utils::UL32Byte(bt);
-    }
-    
-    void operator=(const Frame &b)
-    {
-        TimeStamp = b.TimeStamp;
     }
 };
 
@@ -137,6 +137,9 @@ public:
     
     virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
+        if (owner >= score->size())
+            return;
+        
         score->at(owner).SectorsTaked++;
         score->at(owner).Score++;
     }
@@ -192,8 +195,11 @@ public:
     
     virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
-        int owner = (owners >> 3) & 7;
+        uint8_t owner = (owners >> 3) & 7;
         int flags = owners & 0xC0;
+        
+        if (owner >= score->size())
+            return;
         
         score->at(owner).DestroyedUnits++;
 
@@ -313,6 +319,9 @@ public:
     
     virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
+        if (owner >= score->size())
+            return;
+        
         score->at(owner).Score += 100;
         score->at(owner).Power++;
     }
@@ -398,19 +407,11 @@ public:
     
     virtual void AddScore(std::array<TPlayerStatus, 8> *score) const
     {
+        if (owner >= score->size())
+            return;
+        
         score->at(owner).Score += 500;
         score->at(owner).Upgrades++;
-    }
-    
-    void operator=(const Upgrade &b)
-    {
-        secX = b.secX;
-        secY = b.secY;
-        owner = b.owner;
-        upgradeType = b.upgradeType;
-        lastVhcl = b.lastVhcl;
-        lastWeapon = b.lastWeapon;
-        lastBuild = b.lastBuild;
     }
 };
 

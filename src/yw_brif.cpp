@@ -1846,7 +1846,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
     int lastVhcl   = upg.lastVhcl;
     int lastBuild  = upg.lastBuild;
 
-    if ( !lastVhcl && lastWeapon )
+    if ( lastVhcl == 0 && lastWeapon != 0 )
     {
         int i = 0;
         for (const World::TVhclProto &vhcl : yw->VhclProtos)
@@ -1864,7 +1864,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
             return cur;
     }
 
-    if ( !lastWeapon && lastVhcl )
+    if ( lastWeapon == 0 && lastVhcl != 0 )
     {
         lastWeapon = yw->VhclProtos[ lastVhcl ].weapon;
 
@@ -1876,13 +1876,13 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
     World::TWeapProto *wpn  = NULL;
     World::TBuildingProto *bld = NULL;
 
-    if ( lastVhcl )
+    if ( lastVhcl && lastVhcl < yw->VhclProtos.size() )
         vhcl = &yw->VhclProtos.at(lastVhcl);
 
-    if ( lastBuild )
+    if ( lastBuild && lastBuild < yw->BuildProtos.size() )
         bld = &yw->BuildProtos.at(lastBuild);
 
-    if ( lastWeapon )
+    if ( lastWeapon && lastWeapon < yw->WeaponProtos.size() )
         wpn = &yw->WeaponProtos.at(lastWeapon);
 
     std::string v13 = " ";
