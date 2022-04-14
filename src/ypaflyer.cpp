@@ -308,7 +308,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
 
         if ( v79 )
         {
-            if ( v90 || (!_secndTtype && v88 < World::SectorLength) )
+            if ( v90 || (!_secndTtype && v88 < World::CVSectorLength) )
             {
                 CollisionWithBact(arg->frameTime);
             }

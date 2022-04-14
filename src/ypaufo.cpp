@@ -93,7 +93,7 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
     if ( v108 != 0.0 )
         _target_dir = _target_vec / v108;
 
-    int v8 = !_secndTtype && v108 < World::SectorLength;
+    int v8 = !_secndTtype && v108 < World::CVSectorLength;
 
     if ( v108 > _ufoTogo )
         v108 = _ufoTogo;

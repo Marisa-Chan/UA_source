@@ -331,7 +331,7 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
     _extraViewEnable = false;
     _extraViewNumber = -1;
     
-    _localeStrings.resize(World::LocaleStringsNumber);
+    _localeStrings.resize(World::CVLocaleStringsNumber);
 }
 
 namespace World
@@ -7651,7 +7651,7 @@ void NC_STACK_ypaworld::SetMapSize(const Common::Point &sz)
 {
     _mapSize = sz;
 
-    _mapLength = vec2d( _mapSize.x * World::SectorLength, _mapSize.y * World::SectorLength );
+    _mapLength = vec2d( _mapSize.x * World::CVSectorLength, _mapSize.y * World::CVSectorLength );
     
     _cells.Clear();
     _cells.Resize(sz);

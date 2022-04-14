@@ -1659,7 +1659,7 @@ void sub_4C157C(NC_STACK_ypaworld *yw)
     float v1 = (robo_map.h - robo_map.field_250) * robo_map.field_1E4;
     float v3 = (robo_map.w - robo_map.field_24C) * robo_map.field_1E0;
 
-    float v6 = (yw->_mapSize.x * World::SectorLength);
+    float v6 = (yw->_mapSize.x * World::CVSectorLength);
     int v20 = robo_map.w - robo_map.field_248;
 
     int v17 = ((robo_map.field_1D8 - v3 * 0.5) * v20) / v6;
@@ -1692,7 +1692,7 @@ void sub_4C157C(NC_STACK_ypaworld *yw)
 
 
     float v15 = -(robo_map.field_1DC + v1 * 0.5);
-    float v14 = (yw->_mapSize.y * World::SectorLength);
+    float v14 = (yw->_mapSize.y * World::CVSectorLength);
 
     v20 = robo_map.h - robo_map.field_250;
     v19 = (v20 * v1 / v14);
@@ -2282,8 +2282,8 @@ char *sb_0x4f6650(NC_STACK_ypaworld *yw, char *cmdbuf, int x, int y)
 
 void sub_4C1814(NC_STACK_ypaworld *yw, int a2, int a3)
 {
-    float v15 = yw->_mapSize.x * World::SectorLength;
-    float v12 = yw->_mapSize.y * World::SectorLength;
+    float v15 = yw->_mapSize.x * World::CVSectorLength;
+    float v12 = yw->_mapSize.y * World::CVSectorLength;
 
     float v4 = a2 * robo_map.field_1E0;
     float v13 = v4 * 0.5;
@@ -5960,10 +5960,10 @@ void ypaworld_func64__sub7__sub1__sub0(NC_STACK_ypaworld *yw)
 {
     int v8 = 0;
 
-    int v22 = flt_516524 / World::SectorLength;
-    int v6 = -flt_516530 / World::SectorLength;
-    int v24 = flt_51652C / World::SectorLength;
-    int v23 = -flt_516528 / World::SectorLength;
+    int v22 = flt_516524 / World::CVSectorLength;
+    int v6 = -flt_516530 / World::CVSectorLength;
+    int v24 = flt_51652C / World::CVSectorLength;
+    int v23 = -flt_516528 / World::CVSectorLength;
 
     if ( v22 >= yw->_mapSize.x )
         v22 = yw->_mapSize.x - 1;
@@ -6160,7 +6160,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1D8 = (yw->_mapSize.x * World::SectorLength) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
+                robo_map.field_1D8 = (yw->_mapSize.x * World::CVSectorLength) / (float)robo_map.field_1CC * (float)(winpt->move.ScreenPos.x - robo_map.field_21C ) + robo_map.field_220;
             }
             else
             {
@@ -6173,7 +6173,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
             if ( winpt->flag & ClickBoxInf::FLAG_LM_HOLD )
             {
                 robo_map.field_1ED = 0;
-                robo_map.field_1DC = robo_map.field_224 - (yw->_mapSize.y * World::SectorLength) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
+                robo_map.field_1DC = robo_map.field_224 - (yw->_mapSize.y * World::CVSectorLength) / (float)robo_map.field_1D2 * (float)(winpt->move.ScreenPos.y - robo_map.field_21E);
             }
             else
             {
@@ -6337,7 +6337,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1D8 = yw->_mapSize.x * World::SectorLength / (-1.0 * (float)robo_map.field_1CC) + robo_map.field_1D8;
+                    robo_map.field_1D8 = yw->_mapSize.x * World::CVSectorLength / (-1.0 * (float)robo_map.field_1CC) + robo_map.field_1D8;
                 }
                 break;
 
@@ -6346,7 +6346,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_220 = robo_map.field_1D8;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1D8 = yw->_mapSize.x * World::SectorLength / (float)robo_map.field_1CC + robo_map.field_1D8;
+                    robo_map.field_1D8 = yw->_mapSize.x * World::CVSectorLength / (float)robo_map.field_1CC + robo_map.field_1D8;
                 }
                 break;
 
@@ -6355,7 +6355,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapSize.y * World::SectorLength / (-1.0 * (float)robo_map.field_1D2);
+                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapSize.y * World::CVSectorLength / (-1.0 * (float)robo_map.field_1D2);
                 }
                 break;
 
@@ -6364,7 +6364,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, InputState *inpt)
                 {
                     robo_map.field_224 = robo_map.field_1DC;
                     robo_map.field_1ED = 0;
-                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapSize.y * World::SectorLength / (float)robo_map.field_1D2;
+                    robo_map.field_1DC = robo_map.field_1DC - yw->_mapSize.y * World::CVSectorLength / (float)robo_map.field_1D2;
                 }
                 break;
 
@@ -9714,10 +9714,10 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
 
     GFX::Engine.raster_func211(drect);
 
-    int v14 = dround(robo_map.field_1F0 * robo_map.field_1E0) / World::SectorLength;
-    int v29 = dround(robo_map.field_1F4 * robo_map.field_1E4) / World::SectorLength;
-    int v28 = dround( (robo_map.field_1F8 + robo_map.field_1F0) * robo_map.field_1E0 ) / World::SectorLength;
-    int v30 = dround( (robo_map.field_1FC + robo_map.field_1F4) * robo_map.field_1E4 ) / World::SectorLength;
+    int v14 = dround(robo_map.field_1F0 * robo_map.field_1E0) / World::CVSectorLength;
+    int v29 = dround(robo_map.field_1F4 * robo_map.field_1E4) / World::CVSectorLength;
+    int v28 = dround( (robo_map.field_1F8 + robo_map.field_1F0) * robo_map.field_1E0 ) / World::CVSectorLength;
+    int v30 = dround( (robo_map.field_1FC + robo_map.field_1F4) * robo_map.field_1E4 ) / World::CVSectorLength;
 
     if ( v14 < 1 )
         v14 = 1;

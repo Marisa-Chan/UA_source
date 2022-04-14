@@ -449,8 +449,8 @@ void NC_STACK_yparobo::InitForce(NC_STACK_ypabact *unit)
     setTarget_msg arg67;
     arg67.tgt_type = BACT_TGT_TYPE_CELL;
     arg67.priority = 0;
-    arg67.tgt_pos.x = _position.x + _rotation.m20 * World::SectorLength * 0.5;
-    arg67.tgt_pos.z = _position.z + _rotation.m22 * World::SectorLength * 0.5;
+    arg67.tgt_pos.x = _position.x + _rotation.m20 * World::CVSectorLength * 0.5;
+    arg67.tgt_pos.z = _position.z + _rotation.m22 * World::CVSectorLength * 0.5;
     newUnit->SetTarget(&arg67);
 
     if ( _world->isNetGame )
@@ -2594,8 +2594,8 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
         setTarget_msg arg67;
         arg67.tgt_type = BACT_TGT_TYPE_CELL;
         arg67.priority = 0;
-        arg67.tgt_pos.x = _rotation.m20 * World::SectorLength * 0.5 + _position.x;
-        arg67.tgt_pos.z = _rotation.m22 * World::SectorLength * 0.5 + _position.z;
+        arg67.tgt_pos.x = _rotation.m20 * World::CVSectorLength * 0.5 + _position.x;
+        arg67.tgt_pos.z = _rotation.m22 * World::CVSectorLength * 0.5 + _position.z;
 
         newUnit->SetTarget(&arg67);
 

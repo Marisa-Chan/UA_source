@@ -3214,7 +3214,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub19__sub2__sub0(int id)
 {
     TMapSuperItem &sitem = _levelInfo.SuperItems[id];
 
-    sitem.CurrentRadius = (timeStamp - sitem.TriggerTime) * World::SectorLength / 2400.0;
+    sitem.CurrentRadius = (timeStamp - sitem.TriggerTime) * World::CVSectorLength / 2400.0;
 
     vec2d tmp = World::SectorIDToCenterPos2( sitem.Sector );
 

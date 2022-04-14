@@ -99,7 +99,7 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
     if ( v220 > 0.0 )
         _target_dir = _target_vec / v220;
 
-    bool v215 = !_secndTtype && v220 < World::SectorLength;
+    bool v215 = !_secndTtype && v220 < World::CVSectorLength;
 
     switch ( _status )
     {
@@ -1278,7 +1278,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
         if ( !_world->GetSectorInfo(&arg130) )
             return 0;
 
-        float v109 = World::SectorLength;
+        float v109 = World::CVSectorLength;
 
         for ( NC_STACK_ypabact* &v12 : arg130.pcell->unitsList )
         {
@@ -1751,7 +1751,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     {
         if ( v43 )
         {
-            if ( v37 < World::SectorLength && v38 > 0.93 )
+            if ( v37 < World::CVSectorLength && v38 > 0.93 )
             {
                 if ( v34.y > -0.85 && v34.y < 0.2 )
                     return 1;
@@ -1766,7 +1766,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     {
         if ( v43 )
         {
-            if ( v37 < World::SectorLength && v38 > 0.91 )
+            if ( v37 < World::CVSectorLength && v38 > 0.91 )
             {
                 if ( v34.y > -0.4 && v34.y < 0.3 )
                     return 1;

@@ -2,11 +2,10 @@
 #define WORLD_CONSTS_H
 
 namespace World {
-
-constexpr float SectorLength = 1200.0;
-constexpr float SectorHalfLength = SectorLength / 2.0;
-constexpr size_t LocaleStringsNumber = 2700;
-
+// Constant values
+constexpr float CVSectorLength = 1200.0;
+constexpr float CVSectorHalfLength = CVSectorLength / 2.0;
+constexpr size_t CVLocaleStringsNumber = 2700;
 }
 
 #endif
