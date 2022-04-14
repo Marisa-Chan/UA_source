@@ -739,10 +739,10 @@ int SaveHistoryParser::Handle(ScriptParser::Parser &parser, const std::string &p
         History::Instance decoders;
 
         k = 0;
-        while(decoders[ hh[k] ] != NULL)
+        while(k < hh.size() && decoders[ hh.at(k) ] != NULL)
         {
-            size_t sz = decoders[ hh[k] ]->dataSize + 1;
-            _o._history.Write(&hh[k], sz);
+            size_t sz = decoders[ hh.at(k) ]->dataSize + 1;
+            _o._history.Write(&hh.at(k), sz);
             k += sz;            
         }
     }
