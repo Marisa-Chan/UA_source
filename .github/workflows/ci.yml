@@ -10,7 +10,9 @@ jobs:
       run: |
         sudo apt update &&
         sudo apt install -y git g++ make libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-net-dev libopenal-dev libvorbis-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev liblua5.3-dev
-    - name: cd into src
-      run: cd src && ls -lah Makefile
     - name: make
-      run: pwd && make nix -d -f Makefile
+      working-directory: ./src
+      run: |
+        pwd &&
+        ls -lah Makefile &&
+        make nix -d -f Makefile
