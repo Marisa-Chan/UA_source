@@ -13,4 +13,4 @@ jobs:
     - name: cd into src
       run: cd src && ls -lah Makefile
     - name: make
-      run: make nix -d -f Makefile
+      run: pwd && make nix -d -f Makefile
