@@ -15,4 +15,4 @@ jobs:
       run: |
         pwd &&
         ls -lah Makefile &&
-        make nix -d -f Makefile
+        make nix -j `nproc`
