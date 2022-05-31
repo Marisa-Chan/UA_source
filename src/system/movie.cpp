@@ -42,9 +42,15 @@ struct TMovie::Context
 {
     AVFormatContext *FormatCtx = NULL;
     AVCodecContext  *VidCodecCtx = NULL;
-    AVCodec         *VidCodec = NULL;
     AVCodecContext  *AudCodecCtx = NULL;
+    
+#if LIBAVCODEC_VERSION_MAJOR < 59
+    AVCodec         *VidCodec = NULL;
     AVCodec         *AudCodec = NULL;
+#else
+    const AVCodec   *VidCodec = NULL;
+    const AVCodec   *AudCodec = NULL;
+#endif
     
     int videoStream = -1;
     int audioStream = -1;

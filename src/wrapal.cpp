@@ -957,7 +957,7 @@ size_t WALStream::_read(void *buf, size_t bufsz, int32_t *endTs)
         TSSamples &bf = _queue.front();
         
         size_t toRead = Common::MIN(bufsz - readed, bf.Samples.size() - _bufPos);
-        std::memcpy((uint8_t *)buf + readed, (uint8_t *)bf.Samples.data() + _bufPos, toRead );
+        ::memcpy((uint8_t *)buf + readed, (uint8_t *)bf.Samples.data() + _bufPos, toRead );
         
         readed += toRead;
         _bufPos += toRead;
