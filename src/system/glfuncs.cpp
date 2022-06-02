@@ -1,4 +1,5 @@
 #include "glfuncs.h"
+#include <stdexcept>
 
 namespace GFX
 {   
@@ -64,71 +65,94 @@ PFNGLGETUNIFORMBLOCKINDEXPROC Glext::GLGetUniformBlockIndex = NULL;
 PFNGLUNIFORMBLOCKBINDINGPROC Glext::GLUniformBlockBinding = NULL;
 PFNGLBINDBUFFERBASEPROC Glext::GLBindBufferBase = NULL;
 
+template<typename T>
+inline void SetGLFunc(T &pFunc, const char *name)
+{
+    pFunc = (T)SDL_GL_GetProcAddress(name);
+    
+    if (!pFunc) 
+        throw std::runtime_error(std::string("Can't get GL extension address for ") + std::string(name));
+}
+
+
 bool Glext::init()
 {
-    GLGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)SDL_GL_GetProcAddress("glGenFramebuffers");
-    GLBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)SDL_GL_GetProcAddress("glBindFramebuffer");
-    GLGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)SDL_GL_GetProcAddress("glGenRenderbuffers");
-    GLBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)SDL_GL_GetProcAddress("glBindRenderbuffer");
-    GLFrameBufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)SDL_GL_GetProcAddress("glFramebufferTexture");
-    GLFrameBufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)SDL_GL_GetProcAddress("glFramebufferTexture2D");
-    GLRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)SDL_GL_GetProcAddress("glRenderbufferStorage");
-    GLFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)SDL_GL_GetProcAddress("glFramebufferRenderbuffer");
-    GLCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)SDL_GL_GetProcAddress("glCheckFramebufferStatus");
-    GLGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)SDL_GL_GetProcAddress("glGenerateMipmap");
-    GLCreateShader = (PFNGLCREATESHADERPROC)SDL_GL_GetProcAddress("glCreateShader");
-    GLShaderSource = (PFNGLSHADERSOURCEPROC)SDL_GL_GetProcAddress("glShaderSource");
-    GLCompileShader = (PFNGLCOMPILESHADERPROC)SDL_GL_GetProcAddress("glCompileShader");
-    GLDeleteShader = (PFNGLDELETESHADERPROC)SDL_GL_GetProcAddress("glDeleteShader");
-    GLCreateProgram = (PFNGLCREATEPROGRAMPROC)SDL_GL_GetProcAddress("glCreateProgram");
-    GLDeleteProgram = (PFNGLDELETEPROGRAMPROC)SDL_GL_GetProcAddress("glDeleteProgram");
-    GLAttachShader = (PFNGLATTACHSHADERPROC)SDL_GL_GetProcAddress("glAttachShader");
-    GLLinkProgram = (PFNGLLINKPROGRAMPROC)SDL_GL_GetProcAddress("glLinkProgram");
-    GLUseProgram = (PFNGLUSEPROGRAMPROC)SDL_GL_GetProcAddress("glUseProgram");
-    GLGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)SDL_GL_GetProcAddress("glGetUniformLocation");
+    int major = 0, minor = 0;
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &major);
+    SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minor);
+    
+    if (major < 2)
+        return false;
+    
+    try {
+    SetGLFunc(GLGenFramebuffers, "glGenFramebuffers");
+    SetGLFunc(GLBindFramebuffer, "glBindFramebuffer");
+    SetGLFunc(GLGenRenderbuffers, "glGenRenderbuffers");
+    SetGLFunc(GLBindRenderbuffer, "glBindRenderbuffer");
+    SetGLFunc(GLFrameBufferTexture, "glFramebufferTexture");
+    SetGLFunc(GLFrameBufferTexture2D, "glFramebufferTexture2D");
+    SetGLFunc(GLRenderbufferStorage, "glRenderbufferStorage");
+    SetGLFunc(GLFramebufferRenderbuffer, "glFramebufferRenderbuffer");
+    SetGLFunc(GLCheckFramebufferStatus, "glCheckFramebufferStatus");
+    SetGLFunc(GLGenerateMipmap, "glGenerateMipmap");
+    SetGLFunc(GLCreateShader, "glCreateShader");
+    SetGLFunc(GLShaderSource, "glShaderSource");
+    SetGLFunc(GLCompileShader, "glCompileShader");
+    SetGLFunc(GLDeleteShader, "glDeleteShader");
+    SetGLFunc(GLCreateProgram, "glCreateProgram");
+    SetGLFunc(GLDeleteProgram, "glDeleteProgram");
+    SetGLFunc(GLAttachShader, "glAttachShader");
+    SetGLFunc(GLLinkProgram, "glLinkProgram");
+    SetGLFunc(GLUseProgram, "glUseProgram");
+    SetGLFunc(GLGetUniformLocation, "glGetUniformLocation");
 
-    GLUniform1f = (PFNGLUNIFORM1FPROC)SDL_GL_GetProcAddress("glUniform1f");
-    GLUniform1i = (PFNGLUNIFORM1IPROC)SDL_GL_GetProcAddress("glUniform1i");
-    GLUniform2f = (PFNGLUNIFORM2FPROC)SDL_GL_GetProcAddress("glUniform2f");
-    GLUniform2i = (PFNGLUNIFORM2IPROC)SDL_GL_GetProcAddress("glUniform2i");
-    GLUniform3f = (PFNGLUNIFORM3FPROC)SDL_GL_GetProcAddress("glUniform3f");
-    GLUniform3i = (PFNGLUNIFORM3IPROC)SDL_GL_GetProcAddress("glUniform3i");
-    GLUniform4f = (PFNGLUNIFORM4FPROC)SDL_GL_GetProcAddress("glUniform4f");
-    GLUniform4i = (PFNGLUNIFORM4IPROC)SDL_GL_GetProcAddress("glUniform4i");
+    SetGLFunc(GLUniform1f, "glUniform1f");
+    SetGLFunc(GLUniform1i, "glUniform1i");
+    SetGLFunc(GLUniform2f, "glUniform2f");
+    SetGLFunc(GLUniform2i, "glUniform2i");
+    SetGLFunc(GLUniform3f, "glUniform3f");
+    SetGLFunc(GLUniform3i, "glUniform3i");
+    SetGLFunc(GLUniform4f, "glUniform4f");
+    SetGLFunc(GLUniform4i, "glUniform4i");
     
-    GLUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)SDL_GL_GetProcAddress("glUniformMatrix2fv");
-    GLUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)SDL_GL_GetProcAddress("glUniformMatrix3fv");
-    GLUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)SDL_GL_GetProcAddress("glUniformMatrix4fv");
+    SetGLFunc(GLUniformMatrix2fv, "glUniformMatrix2fv");
+    SetGLFunc(GLUniformMatrix3fv, "glUniformMatrix3fv");
+    SetGLFunc(GLUniformMatrix4fv, "glUniformMatrix4fv");
     
-    GLGetAttribLocation = (PFNGLGETATTRIBLOCATIONPROC)SDL_GL_GetProcAddress("glGetAttribLocation");
-    GLVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)SDL_GL_GetProcAddress("glVertexAttribPointer");
-    GLDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)SDL_GL_GetProcAddress("glDisableVertexAttribArray");
-    GLEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)SDL_GL_GetProcAddress("glEnableVertexAttribArray");
+    SetGLFunc(GLGetAttribLocation, "glGetAttribLocation");
+    SetGLFunc(GLVertexAttribPointer, "glVertexAttribPointer");
+    SetGLFunc(GLDisableVertexAttribArray, "glDisableVertexAttribArray");
+    SetGLFunc(GLEnableVertexAttribArray, "glEnableVertexAttribArray");
     
-    GLBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)SDL_GL_GetProcAddress("glBindVertexArray");
-    GLDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)SDL_GL_GetProcAddress("glDeleteVertexArrays");
-    GLGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)SDL_GL_GetProcAddress("glGenVertexArrays");
+    SetGLFunc(GLBindVertexArray, "glBindVertexArray");
+    SetGLFunc(GLDeleteVertexArrays, "glDeleteVertexArrays");
+    SetGLFunc(GLGenVertexArrays, "glGenVertexArrays");
 
-    GLGetShaderiv = (PFNGLGETSHADERIVPROC)SDL_GL_GetProcAddress("glGetShaderiv");
-    GLGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)SDL_GL_GetProcAddress("glGetShaderInfoLog");
+    SetGLFunc(GLGetShaderiv, "glGetShaderiv");
+    SetGLFunc(GLGetShaderInfoLog, "glGetShaderInfoLog");
     
     
-    GLBindBuffer = (PFNGLBINDBUFFERPROC)SDL_GL_GetProcAddress("glBindBuffer");
-    GLDeleteBuffers = (PFNGLDELETEBUFFERSPROC )SDL_GL_GetProcAddress("glDeleteBuffers");
-    GLGenBuffers = (PFNGLGENBUFFERSPROC )SDL_GL_GetProcAddress("glGenBuffers");
-    GLIsBuffer = (PFNGLISBUFFERPROC )SDL_GL_GetProcAddress("glIsBuffer");
-    GLBufferData = (PFNGLBUFFERDATAPROC )SDL_GL_GetProcAddress("glBufferData");
-    GLBufferSubData = (PFNGLBUFFERSUBDATAPROC )SDL_GL_GetProcAddress("glBufferSubData");
-    GLGetBufferSubData = (PFNGLGETBUFFERSUBDATAPROC )SDL_GL_GetProcAddress("glGetBufferSubData");
-    GLMapBuffer = (PFNGLMAPBUFFERPROC )SDL_GL_GetProcAddress("glMapBuffer");
-    GLMapBufferRange = (PFNGLMAPBUFFERRANGEPROC)SDL_GL_GetProcAddress("glMapBufferRange");
-    GLUnmapBuffer = (PFNGLUNMAPBUFFERPROC)SDL_GL_GetProcAddress("glUnmapBuffer");
-    GLGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIVPROC )SDL_GL_GetProcAddress("glGetBufferParameteriv");
-    GLGetBufferPointerv = (PFNGLGETBUFFERPOINTERVPROC )SDL_GL_GetProcAddress("glGetBufferPointerv");
+    SetGLFunc(GLBindBuffer, "glBindBuffer");
+    SetGLFunc(GLDeleteBuffers, "glDeleteBuffers");
+    SetGLFunc(GLGenBuffers, "glGenBuffers");
+    SetGLFunc(GLIsBuffer, "glIsBuffer");
+    SetGLFunc(GLBufferData, "glBufferData");
+    SetGLFunc(GLBufferSubData, "glBufferSubData");
+    SetGLFunc(GLGetBufferSubData, "glGetBufferSubData");
+    SetGLFunc(GLMapBuffer, "glMapBuffer");
+    SetGLFunc(GLMapBufferRange, "glMapBufferRange");
+    SetGLFunc(GLUnmapBuffer, "glUnmapBuffer");
+    SetGLFunc(GLGetBufferParameteriv, "glGetBufferParameteriv");
+    SetGLFunc(GLGetBufferPointerv, "glGetBufferPointerv");
     
-    GLGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)SDL_GL_GetProcAddress("glGetUniformBlockIndex");
-    GLUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)SDL_GL_GetProcAddress("glUniformBlockBinding");
-    GLBindBufferBase = (PFNGLBINDBUFFERBASEPROC)SDL_GL_GetProcAddress("glBindBufferBase");
+    SetGLFunc(GLGetUniformBlockIndex, "glGetUniformBlockIndex");
+    SetGLFunc(GLUniformBlockBinding, "glUniformBlockBinding");
+    SetGLFunc(GLBindBufferBase, "glBindBufferBase");
+    }
+    catch(const std::runtime_error &e)
+    {
+        return false;
+    }
     
     return true;
 }
