@@ -502,6 +502,13 @@ public:
     static int can_destblend;
     static int can_stippling;
     static uint32_t FpsMaxTicks;
+
+protected:
+    static SDL_PixelFormat *_pixfmt;
+    static GLint _glPixfmt, _glPixtype;
+    static bool _staticInited;
+    
+    static void StaticInit();
     
 public:
     void Init();
@@ -551,8 +558,12 @@ public:
     SDL_Cursor *LoadCursor(const std::string &name);
     
     
-    static uint32_t CorrectSurfaceFormat(uint32_t format);
-    static void GLMapFormat(uint32_t pixelFormat, GLint *format, GLint *type);
+    static SDL_PixelFormat *GetPixelFormat() { return _pixfmt; };
+    static uint32_t GetPixelFormatU32() { return _pixfmt->format; };
+    static void GetGlPixTypeFmt(GLint *format, GLint *type);
+    static GLint GetGlPixFormat() { return _glPixfmt; };
+    static GLint GetGlPixType() { return _glPixtype; };
+    
     
     static void DrawLine(SDL_Surface *surface, const Common::Line &line, uint8_t cr, uint8_t cg, uint8_t cb);
     static void BlitScaleMasked(SDL_Surface *src, Common::Rect sRect, SDL_Surface *mask, uint8_t index, SDL_Surface *dst, Common::Rect dRect);
@@ -662,7 +673,7 @@ public:
     void setFrustumClip(float near, float far);
 
     virtual void ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool transp);
-    virtual SDL_PixelFormat *GetScreenFormat();
+
     virtual SDL_Surface *CreateSurfaceScreenFormat(int width, int height);
     virtual SDL_Surface *ConvertToScreenFormat(SDL_Surface *src);
     
@@ -704,7 +715,6 @@ public:
     
 protected:
     void initPolyEngine();
-    void initPixelFormats();
 
     void DrawScreenText();
     void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
@@ -741,7 +751,6 @@ private:
     
     SDL_Surface *ScreenSurface = NULL;
     GLuint screenTex = 0;
-    GLint pixfmt, pixtype;
     
     static const std::string _stdPShaderText;
     static const std::string _stdVShaderText;
@@ -765,9 +774,7 @@ public:
     int _zbuf_when_tracy;
     int _colorkey;
 
-    SDL_PixelFormat *_pixfmt;
-    SDL_DisplayMode _mode;
-    GLint _glPixfmt, _glPixtype;
+    
     
     std::list<TRenderNode *> _renderSolidList;
     std::list<TRenderNode *> _renderSkyBoxList;

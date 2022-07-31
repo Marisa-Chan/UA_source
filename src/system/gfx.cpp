@@ -28,6 +28,10 @@ int GFXEngine::can_destblend;
 int GFXEngine::can_stippling;
 uint32_t GFXEngine::FpsMaxTicks = 1000/60;
 
+SDL_PixelFormat *GFXEngine::_pixfmt = NULL;
+GLint GFXEngine::_glPixfmt, GFXEngine::_glPixtype;
+bool GFXEngine::_staticInited = false;
+
 const std::array<vec3d, 8> GFXEngine::_clrEff 
 {   vec3d(1.0,  1.0,  1.0)
 ,   vec3d(1.21, 0.0,  0.29)
@@ -71,7 +75,34 @@ bool TRenderParams::operator==(const TRenderParams &b)
     return Tex == b.Tex;
 }
 
+void GFXEngine::StaticInit()
+{
+    if (_staticInited)
+        return;
 
+    _staticInited = true;
+    
+    SDL_DisplayMode curr;
+    SDL_GetCurrentDisplayMode(0, &curr);
+    
+    switch(curr.format)
+    {
+        case SDL_PIXELFORMAT_RGB888:
+        case SDL_PIXELFORMAT_ARGB8888:
+            _pixfmt = SDL_AllocFormat( SDL_PIXELFORMAT_ARGB8888 );
+            _glPixfmt = GL_BGRA;
+            _glPixtype = GL_UNSIGNED_BYTE;
+            break;
+        
+        case SDL_PIXELFORMAT_BGR888:
+        case SDL_PIXELFORMAT_ABGR8888:
+        default:
+            _pixfmt = SDL_AllocFormat( SDL_PIXELFORMAT_ABGR8888 );
+            _glPixfmt = GL_RGBA;
+            _glPixtype = GL_UNSIGNED_BYTE;
+            break;
+    }
+}
 
 GFXEngine::GFXEngine()
 {
@@ -95,10 +126,6 @@ GFXEngine::GFXEngine()
     _alpha = 255;
     _zbuf_when_tracy = 0;
     _colorkey = 0;
-
-    _pixfmt = NULL;
-    _glPixfmt = 0;
-    _glPixtype = 0;
 
     _sceneBeginned = 0;
 
@@ -301,20 +328,6 @@ void GFXEngine::DrawScreenText()
     _font.entries.clear();
 }
 
-void GFXEngine::initPixelFormats()
-{
-    if (_pixfmt)
-        SDL_FreeFormat(_pixfmt);
-
-    SDL_DisplayMode curr;
-    SDL_GetCurrentDisplayMode(0, &curr);
-    curr.format = CorrectSurfaceFormat(curr.format);
-
-    _pixfmt = SDL_AllocFormat( curr.format );
-
-    GLMapFormat(curr.format, &_glPixfmt, &_glPixtype);
-}
-
 void GFXEngine::initPolyEngine()
 {
     _states = GfxStates();
@@ -509,8 +522,6 @@ void GFXEngine::ApplyResolution()
         _corrIW = _corrW = 1.0;
         _corrIH = _corrH = 1.0;
     }
-    
-    initPixelFormats();
     
     initPolyEngine();
 }
@@ -2186,24 +2197,18 @@ void GFXEngine::ConvAlphaPalette(UA_PALETTE *dst, const UA_PALETTE &src, bool tr
     }
 }
 
-SDL_PixelFormat *GFXEngine::GetScreenFormat()
-{
-    return Screen()->format;
-}
-
 SDL_Surface *GFXEngine::CreateSurfaceScreenFormat(int width, int height)
 {
-    SDL_PixelFormat *fmt = GetScreenFormat();
 #if SDL_VERSION_ATLEAST(2,0,5)
-    return SDL_CreateRGBSurfaceWithFormat(0, width, height, fmt->BitsPerPixel, fmt->format);
+    return SDL_CreateRGBSurfaceWithFormat(0, width, height, _pixfmt->BitsPerPixel, _pixfmt->format);
 #else
-    return SDL_CreateRGBSurface(0, width, height, fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
+    return SDL_CreateRGBSurface(0, width, height, _pixfmt->BitsPerPixel, _pixfmt->Rmask, _pixfmt->Gmask, _pixfmt->Bmask, _pixfmt->Amask );
 #endif
 }
 
 SDL_Surface *GFXEngine::ConvertToScreenFormat(SDL_Surface *src)
 {
-    return ConvertSDLSurface(src, Screen()->format);
+    return ConvertSDLSurface(src, _pixfmt);
 }
 
 SDL_Surface * GFXEngine::ConvertSDLSurface(SDL_Surface *src, const SDL_PixelFormat * fmt)
@@ -2577,6 +2582,8 @@ SDL_Cursor *GFXEngine::LoadCursor(const std::string &name)
 
 void GFXEngine::Init()
 {
+    StaticInit();
+    
     _glext = Glext::init();
     
     System::EventsAddHandler(EventsWatcher);
@@ -2604,9 +2611,6 @@ void GFXEngine::Init()
         Glext::GLBindBufferBase(GL_UNIFORM_BUFFER, _vboParamsBlockBinding, _vboParams);
     }
     
-    SDL_DisplayMode deskMode;
-    SDL_GetDesktopDisplayMode(0, &deskMode);
-
     std::array<Common::Point, 17> checkModes
     {{
         {640, 480},     {800, 600},     {1024, 768},    {1280, 1024}, 
@@ -2618,15 +2622,13 @@ void GFXEngine::Init()
     
     graphicsModes.reserve(checkModes.size());
 
-    uint32_t corrected = CorrectSurfaceFormat(deskMode.format);
-
     for(Common::Point m : checkModes)
     {
         SDL_DisplayMode target, closest;
 
         target.w = m.x;
         target.h = m.y;
-        target.format = corrected;
+        target.format = _pixfmt->format;
         target.refresh_rate = 0;
         target.driverdata   = 0;
 
@@ -2636,7 +2638,7 @@ void GFXEngine::Init()
             mode.w = closest.w;
             mode.h = closest.h;
             mode.mode = closest;
-            mode.bpp = SDL_BYTESPERPIXEL(closest.format) * 8;
+            mode.bpp = _pixfmt->BytesPerPixel;
             mode.name = GfxMode::GenName(mode.w, mode.h);
 
             AddGfxMode(mode);
@@ -2654,7 +2656,7 @@ void GFXEngine::Init()
             
             target.w = std::stoi(vals[0]);
             target.h = std::stoi(vals[1]);
-            target.format = corrected;
+            target.format = _pixfmt->format;
             target.refresh_rate = 0;
             target.driverdata   = 0;
 
@@ -2662,7 +2664,7 @@ void GFXEngine::Init()
             mode.w = target.w;
             mode.h = target.h;
             mode.mode = target;
-            mode.bpp = SDL_BYTESPERPIXEL(corrected) * 8;
+            mode.bpp = _pixfmt->BytesPerPixel;
             mode.name = GfxMode::GenName(mode.w, mode.h);
                 
             if (SDL_GetClosestDisplayMode(0, &target, &closest) )
@@ -2770,12 +2772,6 @@ void GFXEngine::Init()
 
 void GFXEngine::Deinit()
 {
-    if (_pixfmt)
-    {
-        SDL_FreeFormat(_pixfmt);
-        _pixfmt = NULL;
-    }
-
     if ( _font.ttfFont )
     {
         TTF_CloseFont(_font.ttfFont);
@@ -3788,44 +3784,10 @@ void GFXEngine::Draw(SDL_Surface *src, const Common::Rect &sRect, SDL_Surface *d
     SDL_BlitSurface(src, &Ssrc, dst, &Sdst);
 }
 
-uint32_t GFXEngine::CorrectSurfaceFormat(uint32_t format)
+void GFXEngine::GetGlPixTypeFmt(GLint *format, GLint *type)
 {
-    if (format == SDL_PIXELFORMAT_BGR888)
-        return SDL_PIXELFORMAT_ABGR8888;
-    else if (format == SDL_PIXELFORMAT_RGB888)
-        return SDL_PIXELFORMAT_ARGB8888;
-    return format;
-}
-
-void GFXEngine::GLMapFormat(uint32_t pixelFormat, GLint *format, GLint *type)
-{
-    switch(pixelFormat)
-    {
-    case SDL_PIXELFORMAT_ARGB8888:
-        *format = GL_BGRA;
-        *type = GL_UNSIGNED_INT_8_8_8_8_REV;
-        break;
-
-    case SDL_PIXELFORMAT_ABGR8888:
-        *format = GL_RGBA;
-        *type = GL_UNSIGNED_INT_8_8_8_8_REV;
-        break;
-
-    case SDL_PIXELFORMAT_BGRA8888:
-        *format = GL_BGRA;
-        *type = GL_UNSIGNED_BYTE;
-        break;
-
-    case SDL_PIXELFORMAT_RGBA8888:
-        *format = GL_RGBA;
-        *type = GL_UNSIGNED_BYTE;
-        break;
-
-    default:
-        *format = GL_RGBA;
-        *type = GL_UNSIGNED_BYTE;
-        break;
-    }
+    *format = _glPixfmt;
+    *type = _glPixtype;
 }
 
 void GFXEngine::RecreateScreenSurface()
@@ -3833,17 +3795,7 @@ void GFXEngine::RecreateScreenSurface()
     if ( ScreenSurface )
         SDL_FreeSurface(ScreenSurface);
 
-    SDL_DisplayMode mode;
-    SDL_GetCurrentDisplayMode(0, &mode);
-    mode.format = CorrectSurfaceFormat(mode.format);
-
-    int bpp;
-    uint32_t rm, gm, bm, am;
-    SDL_PixelFormatEnumToMasks(mode.format, &bpp, &rm, &gm, &bm, &am);
-
-    GLMapFormat(mode.format, &pixfmt, &pixtype);
-    
-    ScreenSurface = SDL_CreateRGBSurface(0, _resolution.x, _resolution.y, bpp, rm, gm, bm, am);
+    ScreenSurface = SDL_CreateRGBSurface(0, _resolution.x, _resolution.y, _pixfmt->BitsPerPixel, _pixfmt->Rmask, _pixfmt->Gmask, _pixfmt->Bmask, _pixfmt->Amask);
 
     if ( !screenTex )
         glGenTextures(1, &screenTex);
@@ -3856,7 +3808,7 @@ void GFXEngine::RecreateScreenSurface()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ScreenSurface->w, ScreenSurface->h, 0, pixfmt, pixtype, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ScreenSurface->w, ScreenSurface->h, 0, _glPixfmt, _glPixtype, NULL);
 }
 
 void GFXEngine::DrawVtxQuad(const std::array<GFX::TVertex, 4> &vtx)
@@ -3931,7 +3883,7 @@ void GFXEngine::DrawScreenSurface()
     SetRenderStates(0);
     
     // Will be binded with SetRenderStates
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ScreenSurface->w, ScreenSurface->h, pixfmt, pixtype, ScreenSurface->pixels);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, ScreenSurface->w, ScreenSurface->h, _glPixfmt, _glPixtype, ScreenSurface->pixels);
 
     static std::array<TVertex, 4> vtx = {
         GFX::TVertex( vec3f(-1.0,  1.0, 0.0), tUtV(0.0, 0.0) ),

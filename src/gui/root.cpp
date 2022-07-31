@@ -704,19 +704,13 @@ SDL_Surface *Root::CreateScreenFmtSurface(uint32_t w, uint32_t h)
 {
     if (w == 0 || h == 0)
         return NULL;
-    
-    SDL_DisplayMode curr;
-    SDL_GetCurrentDisplayMode(0, &curr);
-    curr.format = GFX::Engine.CorrectSurfaceFormat(curr.format);
+   
+    SDL_PixelFormat *fmt = GFX::Engine.GetPixelFormat();
     
 #if SDL_VERSION_ATLEAST(2,0,5)
-    return SDL_CreateRGBSurfaceWithFormat(0, w, h, SDL_BITSPERPIXEL(curr.format), curr.format);
+    return SDL_CreateRGBSurfaceWithFormat(0, w, h, fmt->BitsPerPixel, fmt->format);
 #else
-    int bpp;
-    Uint32 Rmask, Gmask, Bmask, Amask;
-    SDL_PixelFormatEnumToMasks(curr.format, &bpp, &Rmask, &Gmask, &Bmask, &Amask);
-        
-    return SDL_CreateRGBSurface(0, w, h, bpp, Rmask, Gmask, Bmask, Amask );
+    return SDL_CreateRGBSurface(0, w, h, fmt->BitsPerPixel, fmt->Rmask, fmt->Gmask, fmt->Bmask, fmt->Amask );
 #endif
     
 }
@@ -755,14 +749,11 @@ void Root::HwRenderWidget(Widget *w)
 {
     if (w && w->IsEnabled() && w->_alpha != 0 /*&& Common::Rect(_screenSize).IsIntersects(w->_rect)*/ && w->_hwSurface)
     {
-        GLint format, fmtype;
-        GFX::Engine.GLMapFormat(w->_hwSurface->format->format, &format, &fmtype);
-        
         SDL_LockSurface(w->_hwSurface);
         if (!w->_hwTex)
             w->_hwTex = new StreamTex();
         
-        w->_hwTex->Stream(Common::Point(w->_hwSurface->w, w->_hwSurface->h), format, fmtype, w->_hwSurface->pixels);
+        w->_hwTex->Stream(Common::Point(w->_hwSurface->w, w->_hwSurface->h), GFX::Engine.GetGlPixFormat(), GFX::Engine.GetGlPixType(), w->_hwSurface->pixels);
         SDL_UnlockSurface(w->_hwSurface);
         
         static std::array<GFX::TVertex, 4> vtx = {
