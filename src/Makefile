@@ -1,5 +1,5 @@
 CDEFS = 
-CFLAGS = -std=c++11 -O0 -g -Wall -fexceptions -mno-ms-bitfields -Wno-class-memaccess -Wshadow
+CFLAGS = -std=c++11 -O0 -g -Wall -fexceptions -mno-ms-bitfields -Wno-class-memaccess -Wshadow -I./
 TARGET = UA_source
 LDFLAGS = 
 OBJDIR := obj
@@ -148,7 +148,9 @@ $(DEPFILES):
 	printf "$(OBJDIR)/" > $@
 	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM >> $@
 
+ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPFILES)
+endif
 
 
 win32 nix mac msys: $(OBJFILES)
