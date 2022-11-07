@@ -2,6 +2,16 @@
 <configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
+      <df name="any-lite">
+        <in>any.hpp</in>
+      </df>
+      <df name="common">
+        <in>bitman.h</in>
+        <in>cachestor.h</in>
+        <in>common.h</in>
+        <in>line.h</in>
+        <in>plane.h</in>
+      </df>
       <df name="fmtlib">
         <in>chrono.h</in>
         <in>color.h</in>
@@ -11,18 +21,31 @@
         <in>format.cc</in>
         <in>format.h</in>
         <in>locale.h</in>
+        <in>os.cc</in>
+        <in>os.h</in>
         <in>ostream.h</in>
-        <in>posix.cc</in>
         <in>posix.h</in>
         <in>printf.h</in>
         <in>ranges.h</in>
-        <in>safe-duration-cast.h</in>
       </df>
       <df name="gui">
         <in>root.cpp</in>
         <in>root.h</in>
+        <in>scaler.cpp</in>
+        <in>scaler.h</in>
         <in>uabutton.cpp</in>
         <in>uabutton.h</in>
+        <in>uacommon.cpp</in>
+        <in>uacommon.h</in>
+        <in>uaempty.cpp</in>
+        <in>uaempty.h</in>
+        <in>uamsgbox.cpp</in>
+        <in>uamsgbox.h</in>
+        <in>uascroll.cpp</in>
+        <in>uascroll.h</in>
+        <in>uawidgets.h</in>
+        <in>uawindow.cpp</in>
+        <in>uawindow.h</in>
         <in>widget.cpp</in>
         <in>widget.h</in>
       </df>
@@ -50,19 +73,55 @@
         <in>zndNet.cpp</in>
         <in>zndNet.h</in>
       </df>
+      <df name="system">
+        <df name="platform">
+          <df name="x86">
+          </df>
+        </df>
+        <in>fsmgr.cpp</in>
+        <in>fsmgr.h</in>
+        <in>gfx.cpp</in>
+        <in>gfx.h</in>
+        <in>glfuncs.cpp</in>
+        <in>glfuncs.h</in>
+        <in>inivals.cpp</in>
+        <in>inivals.h</in>
+        <in>inpt.cpp</in>
+        <in>inpt.h</in>
+        <in>luascript.cpp</in>
+        <in>luascript.h</in>
+        <in>movie.cpp</in>
+        <in>movie.h</in>
+        <in>sound.cpp</in>
+        <in>sound.h</in>
+        <in>stdshdr.cpp</in>
+        <in>system.cpp</in>
+        <in>system.h</in>
+        <in>tform.cpp</in>
+        <in>tform.h</in>
+      </df>
       <df name="world">
+        <in>analyzer.cpp</in>
+        <in>analyzer.h</in>
+        <in>consts.h</in>
         <in>history.h</in>
+        <in>luaevents.cpp</in>
+        <in>luaevents.h</in>
+        <in>nparticle.cpp</in>
+        <in>nparticle.h</in>
         <in>parsers.cpp</in>
         <in>parsers.h</in>
+        <in>protos.cpp</in>
+        <in>protos.h</in>
         <in>saveparsers.cpp</in>
         <in>saveparsers.h</in>
+        <in>tools.cpp</in>
+        <in>tools.h</in>
       </df>
       <in>3ds.cpp</in>
       <in>3ds.h</in>
       <in>IFFile.cpp</in>
       <in>IFFile.h</in>
-      <in>MC.cpp</in>
-      <in>MC.h</in>
       <in>ade.cpp</in>
       <in>ade.h</in>
       <in>amesh.cpp</in>
@@ -78,27 +137,16 @@
       <in>button.cpp</in>
       <in>button.h</in>
       <in>common.cpp</in>
-      <in>common.h</in>
       <in>crc32.cpp</in>
       <in>crc32.h</in>
       <in>def_parser.cpp</in>
       <in>def_parser.h</in>
-      <in>display.cpp</in>
-      <in>display.h</in>
       <in>embed.cpp</in>
       <in>embed.h</in>
-      <in>engine_gfx.cpp</in>
-      <in>engine_gfx.h</in>
-      <in>engine_input.cpp</in>
-      <in>engine_input.h</in>
-      <in>engine_miles.cpp</in>
-      <in>engine_miles.h</in>
-      <in>engine_tform.cpp</in>
-      <in>engine_tform.h</in>
+      <in>env.cpp</in>
+      <in>env.h</in>
       <in>font.cpp</in>
       <in>font.h</in>
-      <in>fsmgr.cpp</in>
-      <in>fsmgr.h</in>
       <in>glob_funcs.cpp</in>
       <in>glob_funcs.h</in>
       <in>global.h</in>
@@ -120,6 +168,8 @@
       <in>iwimp.cpp</in>
       <in>iwimp.h</in>
       <in>listnode.h</in>
+      <in>loaders.cpp</in>
+      <in>loaders.h</in>
       <in>log.cpp</in>
       <in>log.h</in>
       <in>lstvw.cpp</in>
@@ -129,10 +179,10 @@
       <in>memstream.h</in>
       <in>network.cpp</in>
       <in>network.h</in>
-      <in>nlist.cpp</in>
-      <in>nlist.h</in>
       <in>nucleas.cpp</in>
       <in>nucleas.h</in>
+      <in>obj3d.cpp</in>
+      <in>obj3d.h</in>
       <in>particle.cpp</in>
       <in>particle.h</in>
       <in>rsrc.cpp</in>
@@ -149,16 +199,12 @@
       <in>vectors.h</in>
       <in>wav.cpp</in>
       <in>wav.h</in>
-      <in>win3d.cpp</in>
-      <in>win3d.h</in>
       <in>windp.cpp</in>
       <in>windp.h</in>
       <in>winp.cpp</in>
       <in>winp.h</in>
       <in>wintimer.cpp</in>
       <in>wintimer.h</in>
-      <in>wrapSDL.cpp</in>
-      <in>wrapSDL.h</in>
       <in>wrapal.cpp</in>
       <in>wrapal.h</in>
       <in>ypabact.cpp</in>
@@ -199,13 +245,13 @@
       </toolsSet>
       <compile>
         <compiledirpicklist>
-          <compiledirpicklistitem>.</compiledirpicklistitem>
           <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
         </compiledirpicklist>
         <compiledir>${AUTO_FOLDER}</compiledir>
         <compilecommandpicklist>
-          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
           <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
         </compilecommandpicklist>
         <compilecommand>${AUTO_COMPILE}</compilecommand>
       </compile>
@@ -215,6 +261,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
             <option name="debug_dir" value="/home/marisa/work/openUA/UA_source/GAME"/>

@@ -75,7 +75,7 @@ struct TVhclSound
         {
             if (Sample)
             {
-                Nucleus::Delete(Sample);
+                Sample->Delete();
                 Sample = NULL;
             }
         }
@@ -137,7 +137,7 @@ struct TVhclProto
     uint8_t disable_enable_bitmask = 0;
     int8_t weapon = 0;
     int field_4 = 0;
-    char mgun = 0;
+    int8_t mgun = 0;
     uint8_t type_icon = 0;
     std::string name;
     int16_t vp_normal = 0;
@@ -160,7 +160,7 @@ struct TVhclProto
     float adist_bact = 0.0;
     float sdist_sector = 0.0;
     float sdist_bact = 0.0;
-    char radar = 0;
+    int8_t radar = 0;
     float mass = 0.0;
     float force = 0.0;
     float airconst = 0.0;
@@ -183,12 +183,12 @@ struct TVhclProto
     float scale_fx_p2 = 0.0;
     int scale_fx_p3 = 0;
     std::array<int16_t, 32> scale_fx_pXX;
-    char job_fighttank = 0;
-    char job_fighthelicopter = 0;
-    char job_fightflyer = 0;
-    char job_fightrobo = 0;
-    char job_conquer = 0;
-    char job_reconnoitre = 0;
+    int8_t job_fighttank = 0;
+    int8_t job_fighthelicopter = 0;
+    int8_t job_fightflyer = 0;
+    int8_t job_fightrobo = 0;
+    int8_t job_conquer = 0;
+    int8_t job_reconnoitre = 0;
     NC_STACK_skeleton *wireframe = NULL;
     NC_STACK_skeleton *hud_wireframe = NULL;
     NC_STACK_skeleton *mg_wireframe = NULL;
@@ -212,10 +212,10 @@ struct TWeapProto
         SND_MAX    = 3
     };
     
-    char field_0 = 0;
-    char enable_mask = 0;
-    int16_t model_id = 0;
-    char type_icon = 0;
+    int8_t unitID = 0;
+    uint8_t enable_mask = 0;
+    int16_t _weaponFlags = 0;
+    uint8_t type_icon = 0;
     std::string name;
     int16_t vp_normal = 0;
     int16_t vp_fire = 0;
@@ -226,16 +226,16 @@ struct TWeapProto
     std::vector<DestFX> dfx;
     std::vector<DestFX> ExtDestroyFX; // ext_dest_fx
     std::array<TVhclSound, SND_MAX> sndFXes;
-    int field_870 = 0;
-    int field_874 = 0;
+//    int field_870 = 0;
+//    int field_874 = 0;
     int energy = 0;
-    int field_87C = 0;
+//    int field_87C = 0;
     int life_time = 0;
     int life_time_nt = 0;
     int drive_time = 0;
     int delay_time = 0;
-    int field_890 = 0;
-    int field_894 = 0;
+    float adistSector = 0;
+    float adistBact = 0;
     int shot_time = 0;
     int shot_time_user = 0;
     int salve_shots = 0;
@@ -252,7 +252,7 @@ struct TWeapProto
     float force = 0.0;
     float airconst = 0.0;
     float maxrot = 0.0;
-    int field_8D8 = 0;
+    float heightStd = 0;
     float radius = 0.0;
     float overeof = 0.0;
     float vwr_radius = 0.0;

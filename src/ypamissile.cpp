@@ -407,7 +407,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
                                         arg84.energy = -v92;
                                         arg84.unit = _mislEmitter;
 
-                                        if ( a1->_owner == _owner || !_world->isNetGame )
+                                        if ( a1->_owner == _owner || !_world->_isNetGame )
                                             bct->ModifyEnergy(&arg84);
                                     }
 
@@ -489,9 +489,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
             SetState(&arg78);
 
-            if ( !(_mislFlags & FLAG_MISL_IGNOREBUILDS) || !_pSector->w_type )
+            if ( !(_mislFlags & FLAG_MISL_IGNOREBUILDS) || _pSector->PurposeType == cellArea::PT_NONE )
             {
-                if ( _world->UserRobo->_owner == _owner || !_world->isNetGame )
+                if ( _world->_userRobo->_owner == _owner || !_world->_isNetGame )
                 {
                     yw_arg129 v25;
 
@@ -591,9 +591,9 @@ void NC_STACK_ypamissile::AI_layer3(update_msg *arg)
 
                     SetState(&arg78);
 
-                    if ( !(_mislFlags & FLAG_MISL_IGNOREBUILDS) || !_pSector->w_type )
+                    if ( !(_mislFlags & FLAG_MISL_IGNOREBUILDS) || _pSector->PurposeType == cellArea::PT_NONE )
                     {
-                        if ( _world->UserRobo->_owner == _owner || !_world->isNetGame )
+                        if ( _world->_userRobo->_owner == _owner || !_world->_isNetGame )
                         {
                             yw_arg129 v25;
 
@@ -810,9 +810,9 @@ void NC_STACK_ypamissile::Impact()
 
     float v16 = _fly_dir_length * _mass;
 
-    if ( v16 > _world->max_impulse && _world->max_impulse > 0.0 )
+    if ( v16 > _world->_maxImpulse && _world->_maxImpulse > 0.0 )
     {
-        float v7 = _world->max_impulse / v16;
+        float v7 = _world->_maxImpulse / v16;
         arg83.force *= v7;
         arg83.mass *= v7;
     }
@@ -823,7 +823,7 @@ void NC_STACK_ypamissile::Impact()
         {
             int v10 = 1;
 
-            if ( _world->isNetGame )
+            if ( _world->_isNetGame )
             {
                 if ( _owner != bct->_owner )
                     v10 = 0;
@@ -834,7 +834,7 @@ void NC_STACK_ypamissile::Impact()
         }
     }
 
-    if ( _world->isNetGame )
+    if ( _world->_isNetGame )
     {
         uamessage_impulse impMsg;
         impMsg.msgID = UAMSG_IMPULSE;

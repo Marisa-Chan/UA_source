@@ -18,7 +18,7 @@ struct robo_arg128
 {
     int flags;
     BactTarget tgt;
-    char tgType;
+    uint8_t tgType;
     vec3d tgt_pos;
     int prim_comm_id;
     int comm_id;
@@ -53,7 +53,7 @@ struct robo_loct1
     int energ;
     float distance;
     int aggr;
-    char tgType;
+    uint8_t tgType;
     vec3d tgt_pos;
     NC_STACK_ypabact *tgt_bact;
     int command_id;
@@ -269,8 +269,8 @@ protected:
     int yparobo_func70__sub6__sub2(const Common::Point &sc);
     int yparobo_func70__sub6__sub1(const Common::Point &sc);
     int yparobo_func70__sub6__sub7();
-    int yparobo_func70__sub6__sub6(int *a2, int *px, int *py);
-    int yparobo_func70__sub6__sub5(int *a2, int *px, int *py);
+    int yparobo_func70__sub6__sub6(int *a2, Common::Point *pCellId);
+    int yparobo_func70__sub6__sub5(int *a2, Common::Point *pCellId);
     int yparobo_func70__sub6__sub13();
     int yparobo_func70__sub6__sub12();
     int yparobo_func70__sub6__sub3(const Common::Point &sc);
@@ -279,8 +279,8 @@ protected:
     int yparobo_func70__sub6__sub9();
     int yparobo_func70__sub6__sub10();
     int yparobo_func70__sub6__sub11();
-    int sub_4F4E48(int x, int y);
-    float sub_4F4C6C(NC_STACK_ypabact *bctnd, int a4, int a3);
+    int sub_4F4E48(const Common::Point &cellId);
+    float sub_4F4C6C(NC_STACK_ypabact *bctnd);
     
     int yparobo_func134__sub1(robo_arg134 *arg);
     
@@ -316,19 +316,19 @@ public:
     World::rbcolls _roboColls;
     float _roboYPos;
 
-    char _roboWFlags;
+    uint8_t _roboWFlags;
     int32_t _roboState;
     int _roboNewAI;
     int _roboTimeScale;
 
-    char _roboEpConquer;
-    char _roboEpRadar;
-    char _roboEpPower;
-    char _roboEpDefense;
-    char _roboEpSafety;
-    char _roboEpRecon;
-    char _roboEpChangePlace;
-    char _roboEpRobo;
+    uint8_t _roboEpConquer;
+    uint8_t _roboEpRadar;
+    uint8_t _roboEpPower;
+    uint8_t _roboEpDefense;
+    uint8_t _roboEpSafety;
+    uint8_t _roboEpRecon;
+    uint8_t _roboEpChangePlace;
+    uint8_t _roboEpRobo;
 
     int _roboDockEnerg;
     int _roboDockCnt;
@@ -336,8 +336,8 @@ public:
     int _roboDockTime;
     vec3d _roboDockTargetPos;
     NC_STACK_ypabact *_roboDockTargetBact;
-    char _roboDockTargetType;
-    char _roboDockAggr;
+    uint8_t _roboDockTargetType;
+    uint8_t _roboDockAggr;
     int _roboDockTargetCommandID;
     vec3d _roboDockPos;
 
@@ -418,9 +418,9 @@ public:
     
     int _roboEnergyMove; //??
 
-    char _roboFillMode;
-    char _roboEnergyLoadFlags;
-    char _roboEnergyLossFlags;
+    uint8_t _roboFillMode;
+    uint8_t _roboEnergyLoadFlags;
+    uint8_t _roboEnergyLossFlags;
 
     int _roboEnergyReloadPS; // Reload per second
     

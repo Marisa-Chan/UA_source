@@ -23,9 +23,6 @@ int ypabact_id = 1;
 NC_STACK_ypabact::NC_STACK_ypabact()
 : _kidList(this, GetKidRefNode, World::BLIST_KIDS)
 {
-    _sectX = 0;
-    _sectY = 0;
-    _pSector = NULL;
     _wrldSize = vec2d();
     _wrldSectors = Common::Point();
     _bact_type = 0;
@@ -218,7 +215,7 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
 
                         _oflags |= BACT_OFLAG_VIEWER;
 
-                        if ( _world->isNetGame )
+                        if ( _world->_isNetGame )
                             viewMsg.view = 1;
 
                         SFXEngine::SFXe.startSound(&_soundcarrier, 8);
@@ -227,13 +224,13 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
                     {
                         _oflags &= ~BACT_OFLAG_VIEWER;
 
-                        if ( _world->isNetGame )
+                        if ( _world->_isNetGame )
                             viewMsg.view = 0;
 
                         SFXEngine::SFXe.sub_424000(&_soundcarrier, 8);
                     }
 
-                    if ( _world->isNetGame ) // Network message send routine?
+                    if ( _world->_isNetGame ) // Network message send routine?
                     {
                         viewMsg.msgID = UAMSG_VIEWER;
                         viewMsg.owner = _owner;
@@ -341,11 +338,11 @@ size_t NC_STACK_ypabact::Deinit()
     _kidRef.Detach();
 
     while (!_kidList.empty())
-        Nucleus::Delete(_kidList.front());
+        _kidList.front()->Delete();
 
     while (!_missiles_list.empty())
     {
-        Nucleus::Delete(_missiles_list.front());
+        _missiles_list.front()->Delete();
         _missiles_list.pop_front();        
     }
 
@@ -599,8 +596,7 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     cellArea *oldcell = _pSector;
 
-    _sectX = sect_info.sec_x;
-    _sectY = sect_info.sec_z;
+    _cellId = sect_info.CellId;
 
 //    bact->pos_x_cntr = sect_info.pos_x_cntr;
 //    bact->pos_y_cntr = sect_info.pos_y_cntr;
@@ -619,7 +615,7 @@ void NC_STACK_ypabact::Update(update_msg *arg)
 
     NC_STACK_ypabact *roboHost = _world->getYW_userHostStation();
 
-    if ( _pSector->w_type == 6 && _bact_type == BACT_TYPES_ROBO && this == roboHost )
+    if ( _pSector->PurposeType == cellArea::PT_GATEOPENED && _bact_type == BACT_TYPES_ROBO && this == roboHost )
         ((NC_STACK_yparobo *)roboHost)->ypabact_func65__sub0();
 
     if ( !(_status_flg & BACT_STFLAG_DEATH1) && _energy <= 0 && _bact_type != BACT_TYPES_MISSLE )
@@ -3021,7 +3017,7 @@ void NC_STACK_ypabact::Die()
             deputy->_commandID = _commandID;
             deputy->_aggr = _aggr;
 
-            if ( _world->isNetGame )
+            if ( _world->_isNetGame )
             {
                 if (_owner)
                     deadMsg.newParent = deputy->_gid;
@@ -3173,7 +3169,7 @@ void NC_STACK_ypabact::Die()
 
             SetStateInternal(&arg119);
 
-            if ( _world->isNetGame )
+            if ( _world->_isNetGame )
             {
                 if (_owner)
                     deadMsg.landed = 1;
@@ -3190,7 +3186,7 @@ void NC_STACK_ypabact::Die()
         }
     }
 
-    if ( _world->isNetGame )
+    if ( _world->_isNetGame )
     {
         if ( _owner )
         {
@@ -3230,7 +3226,7 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
     {
         int v6 = SetStateInternal(arg);
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             if ( v6 && _owner && _bact_type != BACT_TYPES_MISSLE )
             {
@@ -3293,9 +3289,9 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
     {
         yw_arg180 v26;
 
-        if ( wproto.model_id & 2 )
+        if ( wproto._weaponFlags & 2 )
             v26.effects_type = 0;
-        else if ( wproto.model_id & 0x10 )
+        else if ( wproto._weaponFlags & 0x10 )
             v26.effects_type = 1;
         else
             v26.effects_type = 2;
@@ -3351,7 +3347,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 
         wobj->_fly_dir_length = _fly_dir_length + wproto.start_speed;
 
-        if ( !(wproto.model_id & 0x12) )
+        if ( !(wproto._weaponFlags & 0x12) )
             wobj->_fly_dir_length *= 0.2;
 
         wobj->_rotation.SetZ( wobj->_fly_dir );
@@ -3410,7 +3406,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 
         SFXEngine::SFXe.startSound(&wobj->_soundcarrier, 1);
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             wobj->_gid |= _owner << 24;
 
@@ -3499,8 +3495,7 @@ size_t NC_STACK_ypabact::SetPosition(bact_arg80 *arg)
     _pSector = sect_info.pcell;
     _old_pos = arg->pos;
     _position = arg->pos;
-    _sectX = sect_info.sec_x;
-    _sectY = sect_info.sec_z;
+    _cellId = sect_info.CellId;
 
     if ( !(arg->field_C & 2) )
         CorrectPositionInLevelBox(NULL);
@@ -3640,67 +3635,71 @@ void NC_STACK_ypabact::ApplyImpulse(bact_arg83 *arg)
 
 void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
 {
-    int v6 = 0;
-
-    int a4 = _world->getYW_invulnerable();
-
-    if ( !_world || !(_oflags & BACT_OFLAG_VIEWER) || !a4 || arg->energy <= -1000000 )
+    if (_world && (_oflags & BACT_OFLAG_VIEWER))
     {
-        if ( _world->isNetGame )
-            v6 = 1;
+        if (_world->getYW_invulnerable() && arg->energy > -1000000)
+            return;
+    }
+    
+    bool isNetGame = false;
+    if (_world && _world->_isNetGame)
+        isNetGame = true;
+    
+    bool friendlyFire = false;
+    if (!arg->unit || _owner == arg->unit->_owner)
+        friendlyFire = true;
 
-        if ( !v6 || !arg->unit || _owner == arg->unit->_owner )
+    if ( isNetGame && friendlyFire == false )
+    {
+        uamessage_vhclEnergy vhclEnrgy;
+        vhclEnrgy.msgID = UAMSG_VHCLENERGY;
+        vhclEnrgy.owner = _owner;
+        vhclEnrgy.id = _gid;
+        vhclEnrgy.energy = arg->energy;
+
+        if ( arg->unit )
         {
-            _energy += arg->energy;
+            vhclEnrgy.killer = arg->unit->_gid;
+            vhclEnrgy.killerOwner = arg->unit->_owner;
+        }
+        else
+        {
+            vhclEnrgy.killer = 0;
+            vhclEnrgy.killerOwner = 0;
+        }
 
+        yw_arg181 arg181;
+
+        arg181.recvID = 0;
+        arg181.recvFlags = 2;
+        arg181.data = &vhclEnrgy;
+        arg181.dataSize = sizeof(vhclEnrgy);
+        arg181.garant = 1;
+
+        _world->ypaworld_func181(&arg181);
+    }
+    else
+    {
+        _energy += arg->energy;
+
+        if ( _energy <= 0 )
+        {
             if ( arg->unit )
                 _killer_owner = arg->unit->_owner;
             else
                 _killer_owner = 0;
 
-            if ( _energy <= 0 )
-            {
-                _killer = arg->unit;
-                _status_flg &= ~BACT_STFLAG_LAND;
+            _killer = arg->unit;
+            _status_flg &= ~BACT_STFLAG_LAND;
 
-                setState_msg v16;
-                v16.newStatus = BACT_STATUS_DEAD;
-                v16.unsetFlags = 0;
-                v16.setFlags = 0;
+            setState_msg v16;
+            v16.newStatus = BACT_STATUS_DEAD;
+            v16.unsetFlags = 0;
+            v16.setFlags = 0;
 
-                SetState(&v16);
+            SetState(&v16);
 
-                Die();
-            }
-        }
-        else
-        {
-            uamessage_vhclEnergy vhclEnrgy;
-            vhclEnrgy.msgID = UAMSG_VHCLENERGY;
-            vhclEnrgy.owner = _owner;
-            vhclEnrgy.id = _gid;
-            vhclEnrgy.energy = arg->energy;
-
-            if ( arg->unit )
-            {
-                vhclEnrgy.killer = arg->unit->_gid;
-                vhclEnrgy.killerOwner = arg->unit->_owner;
-            }
-            else
-            {
-                vhclEnrgy.killer = 0;
-                vhclEnrgy.killerOwner = 0;
-            }
-
-            yw_arg181 arg181;
-
-            arg181.recvID = 0;
-            arg181.recvFlags = 2;
-            arg181.data = &vhclEnrgy;
-            arg181.dataSize = sizeof(vhclEnrgy);
-            arg181.garant = 1;
-
-            _world->ypaworld_func181(&arg181);
+            Die();
         }
     }
 }
@@ -4231,10 +4230,10 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
                         bnode->_scale_time = -1;
 
-                        if ( _world->GameShell )
-                            SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_PLASMA);
+                        if ( _world->_GameShell )
+                            SFXEngine::SFXe.startSound(&_world->_GameShell->samples1_info, World::SOUND_ID_PLASMA);
 
-                        if ( _world->isNetGame )
+                        if ( _world->_isNetGame )
                         {
                             uamessage_endPlasma epMsg;
                             epMsg.msgID = UAMSG_ENDPLASMA;
@@ -4370,34 +4369,34 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
         {
             if ( cel_unit->_owner != unit->_owner && cel_unit->_owner )
             {
-                int job_id;
+                int jobLevel;
 
                 switch ( cel_unit->_bact_type )
                 {
                 case BACT_TYPES_BACT:
-                    job_id = proto.job_fighthelicopter;
+                    jobLevel = proto.job_fighthelicopter;
                     break;
 
                 case BACT_TYPES_TANK:
                 case BACT_TYPES_CAR:
-                    job_id = proto.job_fighttank;
+                    jobLevel = proto.job_fighttank;
                     break;
 
                 case BACT_TYPES_FLYER:
                 case BACT_TYPES_UFO:
-                    job_id = proto.job_fightflyer;
+                    jobLevel = proto.job_fightflyer;
                     break;
 
                 case BACT_TYPES_ROBO:
-                    job_id = proto.job_fightrobo;
+                    jobLevel = proto.job_fightrobo;
                     break;
 
                 default:
-                    job_id = 5;
+                    jobLevel = 5;
                     break;
                 }
 
-                if ( *job <= job_id )
+                if ( *job <= jobLevel )
                 {
                     float radivs = (unit->_position - cel_unit->_position).length();
 
@@ -4410,7 +4409,7 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
                             if ( unit->TestTargetSector(cel_unit) )
                             {
                                 *radius = radivs;
-                                *job = job_id;
+                                *job = jobLevel;
                                 v40 = cel_unit;
                             }
                         }
@@ -4463,7 +4462,7 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
                                 if ( unit->TestTargetSector(cel_unit) )
                                 {
                                     *radius = radivs;
-                                    *job = job_id;
+                                    *job = jobLevel;
                                     v40 = cel_unit;
                                 }
                             }
@@ -4487,7 +4486,7 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
                                     if ( unit->TestTargetSector(cel_unit) )
                                     {
                                         *radius = radivs;
-                                        *job = job_id;
+                                        *job = jobLevel;
                                         v40 = cel_unit;
                                     }
                                 }
@@ -4527,7 +4526,7 @@ void NC_STACK_ypabact::GetSectorTarget(bact_arg90 *arg)
         {
             for (int y = -1; y < 2; y++)
             {
-                Common::Point pt = arg130.pcell->PosID + Common::Point(x, y);
+                Common::Point pt = arg130.pcell->CellId + Common::Point(x, y);
                 NC_STACK_ypabact *v7 = GetSectorTarget__sub0( _world->SectorAt(pt), arg->unit, &rad, &job);
 
                 if ( v7 )
@@ -4545,12 +4544,12 @@ void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
 
     _world->GetSectorInfo(&arg130);
 
-    vec2d ttmp = World::SectorIDToCenterPos2( {arg130.sec_x, arg130.sec_z} );
+    vec2d ttmp = World::SectorIDToCenterPos2( arg130.CellId );
 
     arg->x = ttmp.x;
     arg->z = ttmp.y;
 
-    if ( arg130.pcell->comp_type != 1 )
+    if ( arg130.pcell->SectorType != 1 )
     {
         int v7 = 0;
 
@@ -4591,9 +4590,9 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
     if ( _world->GetSectorInfo(&arg130) )
     {
         cellArea *cell = arg130.pcell;
-        Common::Point pt = cell->PosID;
+        Common::Point pt = cell->CellId;
 
-        if ( arg130.sec_x != 0 &&  arg130.sec_z != 0 )
+        if ( arg130.CellId.x != 0 && arg130.CellId.y != 0 )
         {
             // left-up
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y - 1);
@@ -4618,7 +4617,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_z )
+        if ( arg130.CellId.y )
         {
             // up
             cellArea &tcell = _world->SectorAt(pt.x, pt.y - 1);
@@ -4643,7 +4642,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x < _wrldSectors.x - 1 && arg130.sec_z )
+        if ( arg130.CellId.x < _wrldSectors.x - 1 && arg130.CellId.y )
         {
             // right-up
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y - 1);
@@ -4668,7 +4667,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x )
+        if ( arg130.CellId.x )
         {
             // left
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y);
@@ -4713,7 +4712,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
                 }
         }
 
-        if ( arg130.sec_x < _wrldSectors.x - 1 )
+        if ( arg130.CellId.x < _wrldSectors.x - 1 )
         {
             // right
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y);
@@ -4738,7 +4737,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x != 0 && arg130.sec_z < _wrldSectors.y - 1 )
+        if ( arg130.CellId.x != 0 && arg130.CellId.y < _wrldSectors.y - 1 )
         {
             // left-down
             cellArea &tcell = _world->SectorAt(pt.x - 1, pt.y + 1);
@@ -4763,7 +4762,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_z < _wrldSectors.y - 1  )
+        if ( arg130.CellId.y < _wrldSectors.y - 1  )
         {
             // down
             cellArea &tcell = _world->SectorAt(pt.x, pt.y + 1);
@@ -4788,7 +4787,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
             }
         }
 
-        if ( arg130.sec_x < _wrldSectors.x - 1 && arg130.sec_z < _wrldSectors.y - 1 )
+        if ( arg130.CellId.x < _wrldSectors.x - 1 && arg130.CellId.y < _wrldSectors.y - 1 )
         {
             // down-right
             cellArea &tcell = _world->SectorAt(pt.x + 1, pt.y + 1);
@@ -4817,7 +4816,7 @@ void NC_STACK_ypabact::GetForcesRatio(bact_arg92 *arg)
         {
             int v33 = 0;
 
-            if ( cell->comp_type == 1 )
+            if ( cell->SectorType == 1 )
             {
                 v33 = cell->buildings_health.At(0, 0);
             }
@@ -5101,8 +5100,8 @@ size_t NC_STACK_ypabact::CheckFireAI(bact_arg101 *arg)
         v8 = &_world->GetWeaponsProtos().at( _weapon );
 
 
-        if ( v8->model_id & 1 )
-            v36 = v8->model_id & 0xFE;
+        if ( v8->_weaponFlags & 1 )
+            v36 = v8->_weaponFlags & 0xFE;
         else
             v8 = NULL;
     }
@@ -5193,39 +5192,25 @@ void NC_STACK_ypabact::MarkSectorsForView()
     {
         if ( _status != BACT_STATUS_DEAD && _status != BACT_STATUS_CREATE )
         {
-            int v8 = 0;
-
-            if ( _parent )
-            {
-                if (_radar >= _parent->_radar)
-                    v8 = 1;
-                else if (_sectX != _parent->_sectX)
-                    v8 = 1;
-                else if (_sectY != _parent->_sectY)
-                    v8 = 1;
-            }
-            else
-                v8 = 1;            
-
-            if ( v8 )
+            if ( !_parent || _cellId != _parent->_cellId || _radar > _parent->_radar )
             {
                 if ( _owner < 8 )
                 {
                     for (int i = -_radar; i <= _radar; i++)
                     {
-                        int yy = _sectY + i;
+                        int yy = _cellId.y + i;
 
                         if ( _radar == 1 )
                         {
                             if ( yy > 0 && yy < _wrldSectors.y - 1 )
                             {
-                                if ( _sectX - 1 > 0 )
-                                    _world->SectorAt(_sectX - 1, yy).AddToViewMask(_owner);
+                                if ( _cellId.x > 1 )
+                                    _world->SectorAt(_cellId.x - 1, _cellId.y).AddToViewMask(_owner);
 
-                                _world->SectorAt(_sectX, yy).AddToViewMask(_owner);
+                                _world->SectorAt(_cellId.x, yy).AddToViewMask(_owner);
 
-                                if ( _sectX + 1 < _wrldSectors.x - 1 )
-                                    _world->SectorAt(_sectX + 1, yy).AddToViewMask(_owner);
+                                if ( _cellId.x + 1 < _wrldSectors.x - 1 )
+                                    _world->SectorAt(_cellId.x + 1, yy).AddToViewMask(_owner);
                             }
                         }
                         else
@@ -5239,7 +5224,7 @@ void NC_STACK_ypabact::MarkSectorsForView()
 
                             for (int j = -tmp; j <= tmp; j++)
                             {
-                                Common::Point d(_sectX + j, yy);
+                                Common::Point d(_cellId.x + j, yy);
 
                                 if ( _world->IsGamePlaySector(d) )
                                     _world->SectorAt(d).AddToViewMask(_owner);
@@ -5327,7 +5312,7 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
 {
     int a5 = 0;
 
-    if ( _world->isNetGame )
+    if ( _world->_isNetGame )
         a5 = 1;
 
     if ( _mgun == -1 )
@@ -5995,7 +5980,7 @@ NC_STACK_ypabact *sb_0x493984(NC_STACK_ypabact *bact, int a2)
 
 void NC_STACK_ypabact::sub_493480(NC_STACK_ypabact *bact2, int mode)
 {
-    if ( _world->isNetGame )
+    if ( _world->_isNetGame )
     {
         static uamessage_reorder ordMsg;
 
@@ -6137,7 +6122,7 @@ void NC_STACK_ypabact::ReorganizeGroup(bact_arg109 *arg)
             int a4 = _host_station->getROBO_commCount();
             _commandID = a4;
 
-            if (_world->isNetGame)
+            if (_world->_isNetGame)
                 _commandID |= _owner << 24;
 
             _host_station->setROBO_commCount(a4 + 1);
@@ -6836,10 +6821,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     cellArea *oldSect = _pSector;
 
-    _sectX = arg130.sec_x;
-    _sectY = arg130.sec_z;
-//  bact->pos_x_cntr = arg130.pos_x_cntr;
-//  bact->pos_y_cntr = arg130.pos_y_cntr;
+    _cellId = arg130.CellId;
     _pSector = arg130.pcell;
 
     if ( oldSect != arg130.pcell )
@@ -6887,7 +6869,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
 void NC_STACK_ypabact::ypabact_func117(update_msg *upd)
 {
-    if (_world->netInterpolate)
+    if (_world->_netInterpolate)
         ypabact_func122(upd);
     else
         ypabact_func123(upd);
@@ -6897,7 +6879,7 @@ void NC_STACK_ypabact::Release()
 {
     if ( _owner )
     {
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             if ( _bact_type != BACT_TYPES_MISSLE )
             {
@@ -7260,7 +7242,7 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
     else
         v5 = 0;
 
-    if ( _world->isNetGame )
+    if ( _world->_isNetGame )
     {
         uamessage_sectorEnergy seMsg;
         seMsg.msgID = UAMSG_SECTORENERGY;
@@ -7359,7 +7341,7 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
                 _vp_extra[0].SetVP(_vp_genesis);
                 _vp_extra[0].flags |= (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
 
-                if ( _world->isNetGame )
+                if ( _world->_isNetGame )
                 {
                     uamessage_startPlasma splMsg;
                     splMsg.msgID = UAMSG_STARTPLASMA;
@@ -7536,8 +7518,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
     cellArea *current_pcell = start_pcell;
 
-    int v23 = Common::ABS(target_pcell->PosID.x - current_pcell->PosID.x);
-    int v24 = Common::ABS(target_pcell->PosID.y - current_pcell->PosID.y);
+    int v23 = Common::ABS(target_pcell->CellId.x - current_pcell->CellId.x);
+    int v24 = Common::ABS(target_pcell->CellId.y - current_pcell->CellId.y);
 
     float sq2 = sqrt(2.0);
 
@@ -7553,7 +7535,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 if ( dx == 0.0 && dz == 0.0 )
                     continue;
 
-                Common::Point currentSec = current_pcell->PosID;
+                Common::Point currentSec = current_pcell->CellId;
                 Common::Point t = currentSec + Common::Point(dx, dz);
 
                 if ( _world->IsGamePlaySector(t) )
@@ -7569,11 +7551,11 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                     if (fabs(current_pcell->height - cell_tzx->height) >= 500.0 )
                         continue;
 
-                    if (cell_tzx->comp_type == 1 && cell_tzx != target_pcell)
+                    if (cell_tzx->SectorType == 1 && cell_tzx != target_pcell)
                     {
                         int32_t hlth = _world->GetLegoBld(cell_tzx, 0, 0);
 
-                        if (_world->legos[hlth].selected_sklt_intern != _world->legos[hlth].sklt_obj_intern)
+                        if (_world->_legoArray[hlth].UseCollisionSkelet != _world->_legoArray[hlth].CollisionSkelet)
                             continue;
                     }
 
@@ -7593,8 +7575,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
 
                     float new_cost_to_this = sqrt(POW2(dx) + POW2(dz)) + cell_tzx->addit_cost + current_pcell->cost_to_this;
 
-                    int v40 = Common::ABS(target_pcell->PosID.x - t.x);
-                    int v41 = Common::ABS(target_pcell->PosID.y - t.y);
+                    int v40 = Common::ABS(target_pcell->CellId.x - t.x);
+                    int v41 = Common::ABS(target_pcell->CellId.y - t.y);
 
                     float new_cost_to_target = Common::MIN(v40, v41) * sq2 + Common::ABS(v40 - v41);
 
@@ -7664,8 +7646,8 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
     
     cellArea *nextcell = pathCells.top();
 
-    int v61 = nextcell->PosID.x - curcell->PosID.x;
-    int v62 = nextcell->PosID.y - curcell->PosID.y;
+    int v61 = nextcell->CellId.x - curcell->CellId.x;
+    int v62 = nextcell->CellId.y - curcell->CellId.y;
 
     int step_id = 0;
 
@@ -7683,7 +7665,7 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
         pathCells.pop();
         nextcell = pathCells.top();
 
-        if ( nextcell->PosID.x - curcell->PosID.x != v61 || nextcell->PosID.y - curcell->PosID.y != v62 )
+        if ( nextcell->CellId.x - curcell->CellId.x != v61 || nextcell->CellId.y - curcell->CellId.y != v62 )
         {
             float tx, tz;
 
@@ -7714,10 +7696,10 @@ size_t NC_STACK_ypabact::PathFinder(bact_arg124 *arg)
                 }
             }
 
-            v61 = nextcell->PosID.x - curcell->PosID.x;
-            v62 = nextcell->PosID.y - curcell->PosID.y;
+            v61 = nextcell->CellId.x - curcell->CellId.x;
+            v62 = nextcell->CellId.y - curcell->CellId.y;
             
-            arg->waypoints[ step_id ] = World::SectorIDToCenterPos3(curcell->PosID) + vec3d(tx, 0.0, tz);
+            arg->waypoints[ step_id ] = World::SectorIDToCenterPos3(curcell->CellId) + vec3d(tx, 0.0, tz);
             maxsteps--;
             step_id++;
         }
@@ -7812,9 +7794,9 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
 
     if ( vwr )
     {
-        if (_world->current_bact)
+        if (_world->_viewerBact)
         {
-            if ( _world->current_bact->_bact_type != BACT_TYPES_MISSLE )
+            if ( _world->_viewerBact->_bact_type != BACT_TYPES_MISSLE )
                 _salve_counter = 0;
         }
 
@@ -7822,7 +7804,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
 
         _oflags |= BACT_OFLAG_VIEWER;
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
             viewMsg.view = 1;
 
         if ( _bact_type == BACT_TYPES_BACT && !(_status_flg & BACT_STFLAG_LAND) && _status == BACT_STATUS_NORMAL )
@@ -7834,7 +7816,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
     {
         _oflags &= ~BACT_OFLAG_VIEWER;
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
             viewMsg.view = 0;
 
         SFXEngine::SFXe.sub_424000(&_soundcarrier, 8);
@@ -7857,7 +7839,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
         }
     }
 
-    if ( _world->isNetGame ) // Network message send routine?
+    if ( _world->_isNetGame ) // Network message send routine?
     {
         viewMsg.msgID = UAMSG_VIEWER;
         viewMsg.owner = _owner;

@@ -36,7 +36,7 @@ void NC_STACK_iwimp::RemoveClickBox(ClickBox *box)
     cboxList.remove(box);
 }
 
-void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
+void NC_STACK_iwimp::GetClick(TClickBoxInf *click, TMousePos &mouse)
 {
     for(std::list<ClickBox *>::iterator it = cboxList.begin();
             it != cboxList.end();
@@ -71,23 +71,23 @@ void NC_STACK_iwimp::GetClick(ClickBoxInf *click, MousePos &mouse)
     }
 }
 
-void NC_STACK_iwimp::CheckClick(ClickBoxInf *arg)
+void NC_STACK_iwimp::CheckClick(TClickBoxInf *arg)
 {
-    arg->flag |= ClickBoxInf::FLAG_OK;
+    arg->flag |= TClickBoxInf::FLAG_OK;
     arg->selected_btn = NULL;
     arg->selected_btnID = -1;
 
     GetClick(arg, arg->move);
 
-    if ( arg->flag & ClickBoxInf::FLAG_LM_HOLD )
+    if ( arg->flag & TClickBoxInf::FLAG_LM_HOLD )
     {
         if ( arg->selected_btnID >= 0 &&
                 selectedCbox == arg->selected_btn &&
                 selectedButton == arg->selected_btnID )
-            arg->flag |= ClickBoxInf::FLAG_BTN_HOLD;
+            arg->flag |= TClickBoxInf::FLAG_BTN_HOLD;
     }
 
-    if ( arg->flag & ClickBoxInf::FLAG_LM_DOWN )
+    if ( arg->flag & TClickBoxInf::FLAG_LM_DOWN )
     {
         GetClick(arg, arg->ldw_pos);
 
@@ -100,11 +100,11 @@ void NC_STACK_iwimp::CheckClick(ClickBoxInf *arg)
         {
             selectedCbox = arg->selected_btn;
             selectedButton = arg->selected_btnID;
-            arg->flag |= ClickBoxInf::FLAG_BTN_DOWN;
+            arg->flag |= TClickBoxInf::FLAG_BTN_DOWN;
         }
     }
 
-    if ( arg->flag & ClickBoxInf::FLAG_LM_UP )
+    if ( arg->flag & TClickBoxInf::FLAG_LM_UP )
     {
         GetClick(arg, arg->lup_pos);
 
@@ -112,7 +112,7 @@ void NC_STACK_iwimp::CheckClick(ClickBoxInf *arg)
         {
             if ( arg->selected_btn == selectedCbox &&
                     arg->selected_btnID == selectedButton )
-                arg->flag |= ClickBoxInf::FLAG_BTN_UP;
+                arg->flag |= TClickBoxInf::FLAG_BTN_UP;
         }
         selectedButton = -1;
         selectedCbox = 0;

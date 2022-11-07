@@ -1,8 +1,12 @@
 #ifndef WORLD_TOOLS_H
 #define WORLD_TOOLS_H
 
-#include "../common.h"
+#include <string>
+
+#include "common/common.h"
+#include "common/plane.h"
 #include "../vectors.h"
+#include "../bitmap.h"
 #include "consts.h"
 
 namespace World {
@@ -30,6 +34,9 @@ inline vec3d SectorIDToCenterPos3(const Common::Point &sec)
 inline vec2d SectorIDToCenterPos2(const Common::Point &sec)
 { return vec2d((float)sec.x * CVSectorLength + CVSectorHalfLength, -((float)sec.y * CVSectorLength + CVSectorHalfLength)); };
 
+
+Common::PlaneBytes GetPlaneBytesFromBitmap(NC_STACK_bitmap *bitmap);
+Common::PlaneBytes LoadMapDataFromImage(const std::string &fileName);
 
 }
 

@@ -5,7 +5,7 @@
 #include <inttypes.h>
 #include <SDL2/SDL.h>
 
-#include "../common.h"
+#include "common/common.h"
 #include "../system/gfx.h"
 
 #include "widget.h"

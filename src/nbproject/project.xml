@@ -6,7 +6,7 @@
             <name>UA_source</name>
             <c-extensions/>
             <cpp-extensions>cc,cpp</cpp-extensions>
-            <header-extensions>h</header-extensions>
+            <header-extensions>h,hpp</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>

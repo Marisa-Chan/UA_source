@@ -12,7 +12,9 @@
 #include "../matrix.h"
 #include "../IFFile.h"
 #include "../nucleas.h"
-#include "../common.h"
+#include "common/common.h"
+#include "common/cachestor.h"
+#include "common/line.h"
 
 
 #define GFX_MAX_VERTEX 12
@@ -376,8 +378,8 @@ struct ColorFx
 
 struct displ_arg263
 {
-    ResBitmap *bitm;
-    int pointer_id;
+    ResBitmap *bitm = NULL;
+    int pointer_id = 0;
 };
 
 struct windd_dlgBox
@@ -395,11 +397,14 @@ struct windd_dlgBox
 };
 
 
-struct wdd_func324arg
+struct TGFXDeviceInfo
 {
-    const char *name;
-    const char *guid;
-    int currr;
+    std::string name;
+    std::string guid;
+    bool isCurrent = false;
+    
+    TGFXDeviceInfo(const std::string &__name, const std::string &__guid)
+    : name(__name), guid(__guid) {}
 };
 
 struct ScreenText
@@ -530,11 +535,7 @@ public:
 
     uint8_t *MakeScreenCopy(int *ow, int *oh);
     uint8_t *MakeDepthScreenCopy(int *ow, int *oh);
-    
-    
-    int GetScreenH();
-    int GetScreenW();
-    
+
     
     GfxMode windd_func0__sub0(const std::string &file);
     GfxMode sub_41F68C();
@@ -622,8 +623,8 @@ public:
     virtual void windd_func321(IDVPair *);
     virtual void windd_func322(windd_dlgBox *dlgBox);
     
-    virtual void windd_func324(wdd_func324arg *inout);
-    virtual void windd_func325(wdd_func324arg *arg);
+    virtual const std::vector<TGFXDeviceInfo>& GetDevices();
+    virtual void SetDeviceByGUID(const std::string &guid);
 
     
     void MeshMakeVBO(TMesh *);
@@ -649,10 +650,9 @@ public:
 
     virtual UA_PALETTE *GetPalette();
 
-    virtual int16_t GetWidth();
-    virtual int16_t GetHeight();
-
-    Common::Point GetSize() const { return _resolution; };
+    virtual int16_t GetScreenW() const { return _resolution.x; }
+    virtual int16_t GetScreenH() const { return _resolution.y; }
+    virtual Common::Point GetScreenSize() const { return _resolution; };
     
     
     
@@ -870,6 +870,8 @@ protected:
     uint32_t _psShader = 0;
     uint32_t _vsShader = 0;
     TColorEffectsProg _colorEffectsShaderProg;
+    
+    static std::vector<TGFXDeviceInfo> _devices;
 };
     
 static constexpr GFXEngine &Engine = GFXEngine::Instance;

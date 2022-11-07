@@ -157,7 +157,7 @@ void NC_STACK_ypacar::DoKamikaze()
 
         for (int j = 0; j <= v59; j++ )
         {
-            Common::Point pt(_sectX + i, _sectY + j);
+            Common::Point pt = _cellId + Common::Point(i, j);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -176,13 +176,13 @@ void NC_STACK_ypacar::DoKamikaze()
 
                             v19->_energy -= v67;
 
-                            if ( _world->isNetGame )
+                            if ( _world->_isNetGame )
                             {
                                 v63 = 1;
 
                                 uamessage_vhclEnergy veMsg;
                                 veMsg.msgID = UAMSG_VHCLENERGY;
-                                veMsg.tstamp = _world->timeStamp;
+                                veMsg.tstamp = _world->_timeStamp;
                                 veMsg.owner = v19->_owner;
                                 veMsg.id = v19->_gid;
                                 veMsg.energy = -v67;
@@ -192,7 +192,7 @@ void NC_STACK_ypacar::DoKamikaze()
                                 arg181.recvFlags = 2;
                                 arg181.senderFlags = 1;
                                 arg181.dataSize = sizeof(veMsg);
-                                arg181.senderID = _world->GameShell->callSIGN.c_str();
+                                arg181.senderID = _world->_GameShell->netPlayerName.c_str();
                                 arg181.garant = 1;
                                 arg181.data = &veMsg;
 

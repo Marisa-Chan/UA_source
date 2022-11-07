@@ -29,13 +29,13 @@ size_t NC_STACK_input::Init(IDVList &stak)
 size_t NC_STACK_input::Deinit()
 {
     if ( _timer )
-        delete_class_obj(_timer);
+        _timer->Delete();
 
     if ( _wimp )
-        delete_class_obj(_wimp);
+        _wimp->Delete();
 
     if ( _keyboard )
-        delete_class_obj(_keyboard);
+        _keyboard->Delete();
 
     for (InputNodeList &lst : _buttons)
         FreeKNodes(&lst);
@@ -146,7 +146,7 @@ bool NC_STACK_input::InitDriver(uint8_t type, const std::string &val)
     {
     case Input::ITYPE_WIMP:                                     // input.wimp
         if ( _wimp )
-            delete_class_obj(_wimp);
+            _wimp->Delete();
 
         _wimp = Nucleus::CTFInit<NC_STACK_iwimp>(val + ".class");
         if ( !_wimp )
@@ -155,7 +155,7 @@ bool NC_STACK_input::InitDriver(uint8_t type, const std::string &val)
 
     case Input::ITYPE_TIMER:                                   // input.timer
         if ( _timer )
-            delete_class_obj(_timer);
+            _timer->Delete();
 
         _timer = Nucleus::CTFInit<NC_STACK_itimer>(val + ".class");
         if ( !_timer )
@@ -164,7 +164,7 @@ bool NC_STACK_input::InitDriver(uint8_t type, const std::string &val)
 
     case Input::ITYPE_KBD:
         if ( _keyboard )
-            delete_class_obj(_keyboard);
+            _keyboard->Delete();
 
         _keyboard = Nucleus::CTFInit<NC_STACK_idev>(val + ".class");
         if ( !_keyboard )
@@ -220,9 +220,9 @@ void NC_STACK_input::UpdateList(InputNodeList *lst, bool *btn, float *slider)
         *slider = ftmp;
 }
 
-void NC_STACK_input::QueryInput(InputState *arg)
+void NC_STACK_input::QueryInput(TInputState *arg)
 {
-    arg->Clear();
+    *arg = TInputState();
 
     if ( _timer )
         arg->Period = _timer->itimer_func64();
@@ -319,7 +319,7 @@ void NC_STACK_input::FreeKNodes(InputNodeList *lst)
         InputNode &nod = lst->front();
 
         if (nod.DriverObj)
-            Nucleus::Delete(nod.DriverObj);
+            nod.DriverObj->Delete();
 
         lst->pop_front();
     }

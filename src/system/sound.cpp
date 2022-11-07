@@ -1,10 +1,10 @@
 #include "../fmtlib/printf.h"
-#include "../common.h"
+#include "common/common.h"
 #include "../ini.h"
 #include "../log.h"
 #include <math.h>
 #include "sound.h"
-#include "../common.h"
+#include "common/common.h"
 #include "inivals.h"
 
 

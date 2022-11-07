@@ -199,7 +199,7 @@ public:
     virtual size_t Deinit();
     virtual bool SetInputExpression(bool slider, uint32_t index, const std::string &val);
     bool InitDriver(uint8_t type, const std::string &val);
-    virtual void QueryInput(InputState *arg);
+    virtual void QueryInput(TInputState *arg);
 
     virtual bool SetHotKey(uint16_t id, const std::string &keyname);
 

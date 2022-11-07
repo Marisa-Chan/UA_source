@@ -17,7 +17,7 @@ extern int dword_514EFC;
 EXTR int dword_514F24;
 
 EXTR UserData userdata;
-EXTR InputState input_states;
+EXTR TInputState input_states;
 EXTR base_64arg world_update_arg;
 
 EXTR NC_STACK_ypaworld *ypaworld;

@@ -80,7 +80,7 @@ NC_STACK_3ds *NC_STACK_3ds::Load3DS(const std::string &filename)
     if(tmp->LoadFromFile(&fil))
         return tmp;
     
-    Nucleus::Delete(tmp);
+    tmp->Delete();
     return NULL;
 }
 

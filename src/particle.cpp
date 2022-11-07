@@ -263,7 +263,7 @@ void NC_STACK_particle::_SetLifeStages(const std::vector<NC_STACK_ade *> &ades)
     for (NC_STACK_ade *ade : _lifeStagesAdes)
     {
         if (ade)
-            Nucleus::Delete(ade);
+            ade->Delete();
     }
 
     _lifeStagesAdes = ades;
@@ -357,7 +357,7 @@ size_t NC_STACK_particle::Deinit()
     for (NC_STACK_ade *ade : _lifeStagesAdes)
     {
         if (ade)
-            Nucleus::Delete(ade);
+            ade->Delete();
     }
 
     return NC_STACK_ade::Deinit();

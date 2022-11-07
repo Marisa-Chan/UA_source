@@ -137,6 +137,7 @@ public:
     
     void clear()
     {
+        // If here method for return correspondent ref node
         if (_refNodeCallBack)
         {
             while(!empty())
@@ -162,7 +163,7 @@ public:
     const int ListType; // Identify list by this
     
 protected:
-    _T_RefNodeCallBack _refNodeCallBack;
+    _T_RefNodeCallBack _refNodeCallBack; // Used to return correct kidref for this list
 };
 
 #endif // LISTNODE_H_INCLUDED

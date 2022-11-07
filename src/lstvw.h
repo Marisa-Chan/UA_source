@@ -38,10 +38,10 @@ public:
     GuiBase() : flags(0), iconString(NULL), postDraw(NULL), AttachedTo(NULL) {};
 
 
-    inline bool IsClosed() {
+    inline bool IsClosed() const {
         return ((flags & FLAG_CLOSED) != 0);
     };
-    inline bool IsOpen() {
+    inline bool IsOpen() const {
         return ((flags & FLAG_CLOSED) == 0);
     };
 
@@ -139,7 +139,7 @@ public:
     void FormateItemBlock(NC_STACK_ypaworld *yw);
     void ScrollParamsFromEntries(NC_STACK_ypaworld *yw);
 
-    void InputHandle(NC_STACK_ypaworld *yw, InputState *struc);
+    void InputHandle(NC_STACK_ypaworld *yw, TInputState *struc);
 
     void PosOnSelected(int a2);
 

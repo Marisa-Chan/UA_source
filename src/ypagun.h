@@ -98,10 +98,10 @@ public:
     float _gunMaxSide;
     vec3d _gunBasis; // Basis Z
     vec3d _gunRott; // Basis Y
-    char _gunType;
+    uint8_t _gunType;
     int _gunFireTime;
     int _gunFireCount;
-    char _gunFlags;
+    uint8_t _gunFlags;
     int _gunDownTime;
 };
 

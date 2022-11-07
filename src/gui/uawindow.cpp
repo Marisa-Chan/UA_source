@@ -243,7 +243,7 @@ void UAWindow::OnHelpClick(Widget *w, void *d)
 
 void UAWindow::OnBtnDownSound(Widget *w, void *d, Common::Point, Common::Point, int)
 {
-    SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
+    SFXEngine::SFXe.startSound(&yw->_GameShell->samples1_info, 3);
 }
 
 

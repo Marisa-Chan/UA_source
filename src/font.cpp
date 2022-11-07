@@ -376,7 +376,7 @@ char * FontUA::TextRelWidthItem(TileMap *, char *pos, const std::string &txt, in
 
 char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
 {
-    TileMap *v3 = yw->tiles[ arg->fontID ];
+    TileMap *v3 = yw->_guiTiles[ arg->fontID ];
 
     int v4 = arg->width;
 
@@ -441,7 +441,7 @@ char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdb
 
 char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
 {
-    TileMap *tset = yw->tiles[ arg->fontID ];
+    TileMap *tset = yw->_guiTiles[ arg->fontID ];
 
     int v28 = 0;
     int v29 = 0;

@@ -651,6 +651,12 @@ struct Tmat4x4
         return Tvec3d<K>(m03, m13, m23);
     }
     
+    template <typename K = T>
+    const T CalcW(const Tvec3d<K> &v) const
+    {
+        return v.x * m30 + v.y * m31 + v.z * m32 + m33;
+    }
+    
     static Tmat4x4 Ortho (T left, T right, T bottom, T top, T nearval, T farval)
     {
         return Tmat4x4( 2.0 / (right-left), 0.0, 0.0, -(right+left) / (right-left),

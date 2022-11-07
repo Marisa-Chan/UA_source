@@ -614,7 +614,7 @@ float NC_STACK_winp::GetSlider()
     return _sliderPos / 300.0;
 }
 
-void NC_STACK_winp::QueryKeyboard(InputState *arg)
+void NC_STACK_winp::QueryKeyboard(TInputState *arg)
 {
     arg->HotKeyID = -1;
     arg->KbdLastDown = _kbdLastDown;
@@ -1019,7 +1019,7 @@ void NC_STACK_winp::CheckJoy()
     }
 }
 
-void NC_STACK_winp::CheckClick(ClickBoxInf *arg)
+void NC_STACK_winp::CheckClick(TClickBoxInf *arg)
 {
     arg->flag = 0;
 
@@ -1031,41 +1031,41 @@ void NC_STACK_winp::CheckClick(ClickBoxInf *arg)
     _mMoveQuery = Common::Point();
 
     if ( _mLstate )
-        arg->flag |= ClickBoxInf::FLAG_LM_HOLD;
+        arg->flag |= TClickBoxInf::FLAG_LM_HOLD;
     if ( _mMstate )
-        arg->flag |= ClickBoxInf::FLAG_MM_HOLD;
+        arg->flag |= TClickBoxInf::FLAG_MM_HOLD;
     if ( _mRstate )
-        arg->flag |= ClickBoxInf::FLAG_RM_HOLD;
+        arg->flag |= TClickBoxInf::FLAG_RM_HOLD;
     if ( _mDBLstate )
-        arg->flag |= ClickBoxInf::FLAG_DBL_CLICK;
+        arg->flag |= TClickBoxInf::FLAG_DBL_CLICK;
 
     if ( _mLDcnt > 0 )
     {
         arg->ldw_pos.ScreenPos.x = _mLDpos.x;
         arg->ldw_pos.ScreenPos.y = _mLDpos.y;
-        arg->flag |= ClickBoxInf::FLAG_LM_DOWN;
+        arg->flag |= TClickBoxInf::FLAG_LM_DOWN;
     }
     if ( _mLUcnt > 0 )
     {
         arg->lup_pos.ScreenPos.x = _mLUpos.x;
         arg->lup_pos.ScreenPos.y = _mLUpos.y;
-        arg->flag |= ClickBoxInf::FLAG_LM_UP;
+        arg->flag |= TClickBoxInf::FLAG_LM_UP;
     }
     if ( _mRDcnt > 0 )
     {
-        arg->flag |= ClickBoxInf::FLAG_RM_DOWN;
+        arg->flag |= TClickBoxInf::FLAG_RM_DOWN;
     }
     if ( _mRUcnt > 0 )
     {
-        arg->flag |= ClickBoxInf::FLAG_RM_UP;
+        arg->flag |= TClickBoxInf::FLAG_RM_UP;
     }
     if ( _mMDcnt > 0 )
     {
-        arg->flag |= ClickBoxInf::FLAG_MM_DOWN;
+        arg->flag |= TClickBoxInf::FLAG_MM_DOWN;
     }
     if ( _mMUcnt > 0 )
     {
-        arg->flag |= ClickBoxInf::FLAG_MM_UP;
+        arg->flag |= TClickBoxInf::FLAG_MM_UP;
     }
 
     _mDBLstate = false;

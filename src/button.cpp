@@ -220,9 +220,9 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
     if ( sbt.xpos < 0 || sbt.ypos < 0 || sbt.width < 0 || sbt.width + sbt.xpos > w )
         return 0;
 
-    sbt.down_id = arg->down_id;
-    sbt.up_id = arg->up_id;
-    sbt.pressed_id = arg->pressed_id;
+    sbt.down_id = arg->downCode;
+    sbt.up_id = arg->upCode;
+    sbt.pressed_id = arg->pressedCode;
     sbt.txt_r = arg->txt_r;
     sbt.txt_g = arg->txt_g;
     sbt.txt_b = arg->txt_b;
@@ -349,14 +349,14 @@ size_t NC_STACK_button::Hide()
     return 1;
 }
 
-NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
+NC_STACK_button::ResCode NC_STACK_button::button_func69(TInputState *arg)
 {
     ResCode result = ResCode(0);
 
-    if ( !(arg->ClickInf.flag & ClickBoxInf::FLAG_OK) )
+    if ( !(arg->ClickInf.flag & TClickBoxInf::FLAG_OK) )
         return ResCode(0);
 
-    if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+    if ( arg->ClickInf.flag & TClickBoxInf::FLAG_LM_DOWN )
     {
         for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
         {
@@ -364,7 +364,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
         }
     }
 
-    if (arg->ClickInf.flag & ClickBoxInf::FLAG_LM_UP)
+    if (arg->ClickInf.flag & TClickBoxInf::FLAG_LM_UP)
     {
         for (WidgetArr::iterator it = field_d8.begin(); it != field_d8.end(); it++)
         {
@@ -381,7 +381,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
         }
     }
 
-    if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_HOLD )
+    if ( arg->ClickInf.flag & TClickBoxInf::FLAG_LM_HOLD )
     {
         if ( this == arg->ClickInf.selected_btn && arg->ClickInf.selected_btnID != -1 && (field_d8[arg->ClickInf.selected_btnID].flags & FLAG_DOWN) )
         {
@@ -428,7 +428,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
 
     if ( this == arg->ClickInf.selected_btn )
     {
-        if ( arg->ClickInf.flag & ClickBoxInf::FLAG_LM_DOWN )
+        if ( arg->ClickInf.flag & TClickBoxInf::FLAG_LM_DOWN )
             result = ResCode(3);
 
         if ( arg->ClickInf.selected_btnID != -1 && arg->ClickInf.selected_btnID < (int)field_d8.size())
@@ -439,19 +439,19 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
             switch ( sbt.button_type )
             {
             case TYPE_BUTTON:
-                if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+                if ( arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_DOWN )
                 {
                     sbt.flags |= FLAG_PRESSED | FLAG_DOWN;
                     result = ResCode(sbt.down_id, sbt.button_id);
                 }
 
-                if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_HOLD )
+                if ( arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_HOLD )
                 {
                     if ( sbt.flags & FLAG_PRESSED )
                         result = ResCode(sbt.pressed_id, sbt.button_id);
                 }
 
-                if ( (arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_UP) )
+                if ( (arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_UP) )
                 {
                     if ( sbt.flags & FLAG_DOWN )
                     {
@@ -463,7 +463,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
                 break;
 
             case TYPE_CHECKBX:
-                if ( !(arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN) )
+                if ( !(arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_DOWN) )
                     return ResCode(0, sbt.button_id);
 
                 if ( sbt.flags & FLAG_PRESSED )
@@ -479,7 +479,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
                 break;
 
             case TYPE_RADIOBTN:
-                if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+                if ( arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_DOWN )
                 {
                     UnsetRadioButtons();
                     sbt.flags |= FLAG_PRESSED | FLAG_DOWN;
@@ -488,9 +488,9 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
                 break;
 
             case TYPE_SLIDER:
-                if ( !(arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_UP) )
+                if ( !(arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_UP) )
                 {
-                    if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+                    if ( arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_DOWN )
                     {
                         Slider *sbttt = sbt.field_41C;
                         if ( arg->ClickInf.ldw_pos.BtnPos.x < sbttt->field_6_ )
@@ -515,7 +515,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(InputState *arg)
                         sbt.flags |= FLAG_PRESSED | FLAG_DOWN;
                         result = ResCode(sbt.down_id, sbt.button_id);
                     }
-                    else if ( arg->ClickInf.flag & ClickBoxInf::FLAG_BTN_HOLD )
+                    else if ( arg->ClickInf.flag & TClickBoxInf::FLAG_BTN_HOLD )
                     {
                         result = ResCode(sbt.pressed_id, sbt.button_id);
                     }

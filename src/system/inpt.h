@@ -3,20 +3,22 @@
 
 #include <vector>
 #include "../utils.h"
-#include "../common.h"
+#include "common/common.h"
+#include "common/bitman.h"
 
 class NC_STACK_input;
 
 class ButtonBox
 {
 public:
-    int16_t x;
-    int16_t y;
-    int16_t w;
-    int16_t h;
+    int16_t x = 0;
+    int16_t y = 0;
+    int16_t w = 0;
+    int16_t h = 0;
 
-    ButtonBox() : x(0), y(0), w(0), h(0) {};
-    ButtonBox(int16_t _x, int16_t _y, int16_t _w, int16_t _h) : x(_x), y(_y), w(_w), h(_h) {};
+    ButtonBox() = default;
+    ButtonBox(int16_t _x, int16_t _y, int16_t _w, int16_t _h) 
+    : x(_x), y(_y), w(_w), h(_h) {};
 
     explicit operator bool() const
     {
@@ -32,27 +34,18 @@ public:
         RESERVED    = 48
     };
 
-    void *pobject;
+    void *pobject = NULL;
     std::vector<ButtonBox> buttons;
-
-    ClickBox() : ButtonBox(), pobject(NULL) {};
 };
 
-struct MousePos
+struct TMousePos
 {
     Common::Point ScreenPos;
     Common::Point BoxPos;
     Common::Point BtnPos;
-    
-    void clear()
-    {
-        ScreenPos = Common::Point();
-        BoxPos = Common::Point();
-        BtnPos = Common::Point();
-    }
 };
 
-struct ClickBoxInf
+struct TClickBoxInf
 {
     enum
     {
@@ -72,38 +65,25 @@ struct ClickBoxInf
         FLAG_DBL_CLICK = 0x2000
     };
 
-    int flag;
-    ClickBox *selected_btn;
-    int selected_btnID;
-    MousePos move;
-    MousePos ldw_pos;
-    MousePos lup_pos;
-    
-    void clear()
-    {
-        flag = 0;
-        selected_btn = NULL;
-        selected_btnID = 0;
-        move.clear();
-        ldw_pos.clear();
-        lup_pos.clear();
-    }
+    int flag = 0;
+    ClickBox *selected_btn = NULL;
+    uint32_t selected_btnID = 0;
+    TMousePos move;
+    TMousePos ldw_pos;
+    TMousePos lup_pos;
 };
 
-struct InputState
+struct TInputState
 {
-    uint32_t Period;
-    int16_t  KbdLastDown;
-    int16_t  KbdLastHit;
-    int16_t  HotKeyID;
-    uint8_t  chr;
+    uint32_t Period = 0;
+    int16_t  KbdLastDown = 0;
+    int16_t  KbdLastHit = 0;
+    int16_t  HotKeyID = 0;
+    uint8_t  chr = 0;
 
-    float Sliders[32];
-    Common::BitMan Buttons;
-    ClickBoxInf ClickInf;
-    
-    
-    void Clear();
+    std::array<float, 32> Sliders = {0.0};
+    Common::BitMan<32> Buttons;
+    TClickBoxInf ClickInf;
 };
 
 class INPEngine
@@ -113,9 +93,9 @@ public:
     int init();
     void deinit();
 
-    NC_STACK_input *getPInput();
+    NC_STACK_input *GetInput();
 
-    void QueryInput(InputState *a1);
+    void QueryInput(TInputState *a1);
     void AddClickBoxFront(ClickBox *box);
     void AddClickBoxBack(ClickBox *box);
 

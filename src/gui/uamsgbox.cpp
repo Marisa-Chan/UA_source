@@ -205,7 +205,7 @@ void UAMessageBox::OnParentResize(Common::Point newSz)
 
 void UAMessageBox::OnBtnPressSound(Widget *w, void *d)
 {
-    SFXEngine::SFXe.startSound(&yw->GameShell->samples1_info, 3);
+    SFXEngine::SFXe.startSound(&yw->_GameShell->samples1_info, 3);
 }
 
 void UAMessageBox::OnBtnClick(Widget* w, void *d)

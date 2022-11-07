@@ -85,31 +85,31 @@ TVhclProto::~TVhclProto()
 {
     if ( wireframe )
     {
-        Nucleus::Delete(wireframe);
+        wireframe->Delete();
         wireframe = NULL;
     }
 
     if ( hud_wireframe )
     {
-        Nucleus::Delete(hud_wireframe);
+        hud_wireframe->Delete();
         hud_wireframe = NULL;
     }
 
     if ( mg_wireframe )
     {
-        Nucleus::Delete(mg_wireframe);
+        mg_wireframe->Delete();
         mg_wireframe = NULL;
     }
 
     if ( wpn_wireframe_1 )
     {
-        Nucleus::Delete(wpn_wireframe_1);
+        wpn_wireframe_1->Delete();
         wpn_wireframe_1 = NULL;
     }
 
     if ( wpn_wireframe_2 )
     {
-        Nucleus::Delete(wpn_wireframe_2);
+        wpn_wireframe_2->Delete();
         wpn_wireframe_2 = NULL;
     }
     
@@ -120,7 +120,7 @@ TWeapProto::~TWeapProto()
 {
     if ( wireframe )
     {
-        Nucleus::Delete(wireframe);
+        wireframe->Delete();
         wireframe = NULL;
     }
 }

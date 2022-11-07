@@ -24,7 +24,7 @@ size_t NC_STACK_embed::Init(IDVList &)
 size_t NC_STACK_embed::Deinit()
 {
     for ( NC_STACK_rsrc *res : _resources )
-        Nucleus::Delete(res);
+        res->Delete();
     
     _resources.clear();
     

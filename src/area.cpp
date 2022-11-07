@@ -81,9 +81,9 @@ size_t NC_STACK_area::Init(IDVList &stak)
 size_t NC_STACK_area::Deinit()
 {
     if ( _texImg )
-        Nucleus::Delete(_texImg);
+        _texImg->Delete();
     if ( _tracyImg )
-        Nucleus::Delete(_tracyImg);
+        _tracyImg->Delete();
     return NC_STACK_ade::Deinit();
 }
 
@@ -444,7 +444,7 @@ void NC_STACK_area::setAREA_bitm(NC_STACK_bitmap *bitm)
     if ( bitm )
     {
         if ( _texImg != NULL )
-            Nucleus::Delete(_texImg);
+            _texImg->Delete();
 
         _texImg = bitm;
         bitm->PrepareTexture();
@@ -511,7 +511,7 @@ void NC_STACK_area::setAREA_tracybitm(NC_STACK_bitmap *bitm)
     if ( bitm )
     {
         if ( _tracyImg != NULL )
-            Nucleus::Delete(_tracyImg);
+            _tracyImg->Delete();
 
         _tracyImg = bitm;
         bitm->PrepareTexture();

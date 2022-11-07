@@ -103,7 +103,7 @@ bool SaveRoboParser::RoboParser(ScriptParser::Parser &parser, const std::string 
     {
         _r->_energy_max = parser.stoi(p2);
 
-        if ( _o.UserRobo == _r )
+        if ( _o._userRobo == _r )
         {
             if ( _r->_energy_max < _o._maxRoboEnergy )
             {
@@ -501,10 +501,10 @@ int SaveGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, c
     {
         int gemId = parser.stoi(p2);
 
-        if ( gemId >= 0 && gemId < (int)_o._Gems.size() )
-            _o.GetSector(_o._Gems[gemId])->w_type = 0;
+        if ( gemId >= 0 && gemId < (int)_o._techUpgrades.size() )
+            _o.GetSector(_o._techUpgrades[gemId].CellId)->PurposeType = cellArea::PT_NONE;
         else
-            printf("SaveGemParser::Handle : gemId = %d but _Gems.size() = %d\n", gemId, (int)_o._Gems.size());
+            printf("SaveGemParser::Handle : gemId = %d but _Gems.size() = %d\n", gemId, (int)_o._techUpgrades.size());
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -548,13 +548,13 @@ int SaveKwFactorParser::Handle(ScriptParser::Parser &parser, const std::string &
                 {
                     int pwr = parser.stoi(tmp);
 
-                    for (PowerStationRef &kw : _o._powerStations)
+                    for (auto kw : _o._powerStations)
                     {
-                        if ( kw.pCell )
+                        if ( kw.second.pCell )
                         {
-                            if ( secX == kw.Cell.x && secY == kw.Cell.y )
+                            if ( secX == kw.second.CellId.x && secY == kw.second.CellId.y )
                             {
-                                kw.EffectivePower = pwr;
+                                kw.second.EffectivePower = pwr;
                                 break;
                             }
                         }
@@ -574,7 +574,7 @@ int SaveGlobalsParser::Handle(ScriptParser::Parser &parser, const std::string &p
         return ScriptParser::RESULT_SCOPE_END;
 
     if ( !StriCmp(p1, "time") )
-        _o.timeStamp = parser.stoi(p2);
+        _o._timeStamp = parser.stoi(p2);
     else
         return ScriptParser::RESULT_UNKNOWN;
     return ScriptParser::RESULT_OK;
@@ -585,23 +585,19 @@ bool SaveOwnerMapParser::IsScope(ScriptParser::Parser &parser, const std::string
     if ( StriCmp(word, "begin_ownermap") )
         return false;
 
-    for (int i = 0; i < 8; i++)
-        _o.sectors_count_by_owner[i] = 0;
+    _o._countSectorsPerOwner.fill(0);
 
-    if ( _o.own_map )
-        delete _o.own_map;
+    _o._lvlOwnMap = ReadMapAsPlaneBytes(parser);
 
-    _o.own_map = ReadMapAsPlaneBytes(parser);
-
-    if ( _o.own_map )
+    if ( _o._lvlOwnMap.IsNotNull() )
     {
         for (int y = 0; y < _o._mapSize.y; y++)
         {
             for (int x = 0; x < _o._mapSize.x; x++)
             {
-                int own = _o.own_map->At(x, y);
+                int own = _o._lvlOwnMap(x, y);
                 _o._cells(x, y).owner = own;
-                _o.sectors_count_by_owner[own]++;
+                _o._countSectorsPerOwner[own]++;
             }
         }
     }
@@ -621,29 +617,25 @@ bool SaveBuildingMapParser::IsScope(ScriptParser::Parser &parser, const std::str
     if ( StriCmp(word, "begin_buildingmap") )
         return false;
 
-    if ( _o.blg_map )
-        delete _o.blg_map;
-
-    _o.blg_map = ReadMapAsPlaneBytes(parser);
-    if ( _o.blg_map )
+    _o._lvlBuildingsMap = ReadMapAsPlaneBytes(parser);
+    
+    if ( _o._lvlBuildingsMap.IsNotNull() )
     {
         for (int y = 0; y < _o._mapSize.y; y++)
         {
             for (int x = 0; x < _o._mapSize.x; x++)
             {
                 cellArea &cell = _o._cells(x, y);
-                int blg = _o.blg_map->At(x, y);
+                int blg = _o._lvlBuildingsMap(x, y);
                 
                 if (blg > 0 && cell.owner != 0)
                 {
                     ypaworld_arg148 arg148;
                     arg148.field_18 = 1;
-                    arg148.ownerID = cell.owner;
-                    arg148.ownerID2 = cell.owner;
+                    arg148.owner = cell.owner;
                     arg148.blg_ID = blg;
                     arg148.field_C = 1;
-                    arg148.x = x;
-                    arg148.y = y;
+                    arg148.CellId = cell.CellId;
 
                     _o.ypaworld_func148(&arg148);
                 }
@@ -665,19 +657,17 @@ bool SaveEnergyMapParser::IsScope(ScriptParser::Parser &parser, const std::strin
     if ( StriCmp(word, "begin_energymap") )
         return false;
 
-    Common::PlaneBytes *nrgmap = ReadMapAsPlaneBytes(parser);
+    Common::PlaneBytes nrgmap = ReadMapAsPlaneBytes(parser);
 
-    if ( nrgmap )
+    if ( nrgmap.IsOk() )
     {
         for (size_t i = 0; i < _o._cells.size(); ++i)
         {
             cellArea &cell = _o._cells.At(i);
 
             for(size_t j = 0; j < 9; j++)
-                cell.buildings_health.At(j / 3, j % 3) = nrgmap->At( i * 9 + j );
+                cell.buildings_health.At(j / 3, j % 3) = nrgmap( i * 9 + j );
         }
-
-        delete nrgmap;
     }
     return true;
 }

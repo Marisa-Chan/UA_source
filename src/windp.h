@@ -7,12 +7,12 @@
 #include "lstvw.h"
 #include "netlib/zndNet.h"
 
-enum FREE_FRACTION
+enum NET_FRACTION
 {
-    FREE_FRACTION_RESISTANCE = 1,
-    FREE_FRACTION_GHORKOV = 2,
-    FREE_FRACTION_MIKO = 4,
-    FREE_FRACTION_TAER = 8
+    NET_FRACTION_RESISTANCE = (1 << 0),
+    NET_FRACTION_GHORKOV    = (1 << 1),
+    NET_FRACTION_MIKO       = (1 << 2),
+    NET_FRACTION_TAER       = (1 << 3)
 };
 
 
@@ -49,12 +49,18 @@ struct windp_createPlayerMsg
     uint32_t data2;
 };
 
-struct windp_arg79
+struct TDPPlayerData
 {
-    int mode;
-    uint32_t ID;
+    enum NETPLAYERDATA
+    {
+        NPD_ITSME     =  (1 << 0),
+    };
+    
+    uint32_t Index;
     std::string name;
     uint32_t flags;
+    
+    bool IsItMe() const { return (flags & NPD_ITSME) != 0; }
 };
 
 struct windp_recvMsg
@@ -79,8 +85,8 @@ struct windp_arg82
 struct windp_arg87
 {
     char callSIGN[64];
-    char isHoster;
-    char isClient;
+    bool isHoster;
+    bool isClient;
 };
 
 
@@ -113,7 +119,7 @@ public:
 extern netgamelst netgame_wnd;
 
 void sb_0x451034__sub6(NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, InputState *inpt);
+void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, TInputState *inpt);
 
 
 
@@ -154,8 +160,14 @@ public:
 
     virtual size_t CreatePlayer(windp_createPlayerMsg *pl);
     virtual size_t DeletePlayer(const char *playerName);
-    virtual size_t EnumPlayers(IDVPair *stak);
-    virtual size_t GetPlayerData(windp_arg79 *stak);
+
+    virtual bool GetPlayerData(uint32_t index, TDPPlayerData *out) const;
+    std::vector<TDPPlayerData> GetPlayersData() const;
+    virtual uint32_t GetPlayerCount() const;
+    int32_t GetMyIndex() const;
+    int32_t GetPlayerIndex(const std::string &name) const;
+    std::string GetPlayerName(uint32_t index) const;
+    bool IsPlayer(const std::string &name) const;
 
     bool Send(yw_arg181 *arg);
     bool Recv(windp_recvMsg *recv);
@@ -164,7 +176,7 @@ public:
     virtual size_t GetCaps(IDVPair *stak);
     virtual size_t LockSession(int *);
     virtual size_t Reset(IDVPair *stak);
-    virtual uint32_t CountPlayers();
+    
 
     virtual bool GetRemoteStart(windp_arg87 *arg);
 
@@ -211,7 +223,6 @@ public:
 
     bool init();
     void deinit();
-    int getNumPlayers();
 
 protected:
     enum
@@ -225,6 +236,7 @@ protected:
     void ReloadSessionsList();
     uint64_t GetUserID(const std::string &name);
     std::string GetUserName(uint64_t id);
+    void UpdateOwnPlayerIndex();
 
 
     //Data
@@ -242,6 +254,7 @@ public:
     uint64_t    _myID;
     std::string _myName;
     ZNDNet::UserInfoVect _rawUsers;
+    int32_t _myIndex = -1;
     ZNDNet::SessionInfoVect _rawSessions;
     uint32_t _nextUsersGet;
     uint32_t _nextSessionsGet;

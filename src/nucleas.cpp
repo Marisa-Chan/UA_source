@@ -53,12 +53,6 @@ NC_STACK_nucleus *CFInit(const std::string &classname, IDVList::TInitList lst)
     return CFInit(classname, stak);
 }
 
-void Delete(NC_STACK_nucleus *clas)
-{
-    clas->Deinit();
-    delete clas;
-}
-
 }
 
 
@@ -167,15 +161,6 @@ const std::string &NC_STACK_nucleus::getName() const
 }
 
 
-
-int delete_class_obj(NC_STACK_nucleus *cls)
-{
-    int ret = cls->Deinit();
-
-    delete cls;
-
-    return ret;
-}
 
 NC_STACK_nucleus *NC_STACK_nucleus::LoadObjectFromIFF(IFFile *mfile)
 {

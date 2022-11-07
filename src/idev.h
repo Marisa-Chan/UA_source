@@ -14,7 +14,7 @@ public:
     virtual float GetSlider() { 
         return 0.0; 
     };
-    virtual void QueryKeyboard(InputState *arg) {};
+    virtual void QueryKeyboard(TInputState *arg) {};
     virtual bool BindKey(const std::string &keyName) {
         return false;
     };

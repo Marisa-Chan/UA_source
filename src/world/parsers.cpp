@@ -16,16 +16,16 @@ namespace Parsers
 
 bool UserParser::ReadUserNameFile(const std::string &filename)
 {
-    if ( !_o.GameShell->UserName.empty() )
+    if ( !_o._GameShell->UserName.empty() )
         return false;
 
-    std::string buf = fmt::sprintf("save:%s/%s", _o.GameShell->UserName, filename);
+    std::string buf = fmt::sprintf("save:%s/%s", _o._GameShell->UserName, filename);
     FSMgr::FileHandle *signFile = uaOpenFileAlloc(buf, "r");
 
     if ( !signFile )
         return false;
 
-    bool res = signFile->ReadLine(&_o.GameShell->callSIGN);
+    bool res = signFile->ReadLine(&_o._GameShell->netPlayerName);
 
     delete signFile;
     return res;
@@ -37,10 +37,10 @@ bool UserParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
     if (StriCmp(word, "new_user"))
         return false;
 
-    if (!_o.GameShell->remoteMode)
+    if (!_o._GameShell->remoteMode)
     {
         if ( !ReadUserNameFile("callsign.def") )
-            _o.GameShell->callSIGN =  _o.GetLocaleString(366, "UNNAMED");
+            _o._GameShell->netPlayerName =  _o.GetLocaleString(366, "UNNAMED");
     }
     return true;
 }
@@ -69,7 +69,7 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     }
     else if ( !StriCmp(p1, "beamenergy") )
     {
-        _o.beamenergy = parser.stol(p2, NULL, 0);
+        _o._beamEnergyCapacity = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "playerstatus") )
     {
@@ -80,25 +80,25 @@ int UserParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
             int plid = parser.stol(val, NULL, 0);
             if ( stok.GetNext(&val) )
             {
-                _o.playerstatus[plid].DestroyedUnits = parser.stol(val, NULL, 0);
+                _o._playersStats[plid].DestroyedUnits = parser.stol(val, NULL, 0);
                 if ( stok.GetNext(&val) )
                 {
-                    _o.playerstatus[plid].DestroyedByUser = parser.stol(val, NULL, 0);
+                    _o._playersStats[plid].DestroyedByUser = parser.stol(val, NULL, 0);
                     if ( stok.GetNext(&val) )
                     {
-                        _o.playerstatus[plid].ElapsedTime = parser.stol(val, NULL, 0);
+                        _o._playersStats[plid].ElapsedTime = parser.stol(val, NULL, 0);
                         if ( stok.GetNext(&val) )
                         {
-                            _o.playerstatus[plid].SectorsTaked = parser.stol(val, NULL, 0);
+                            _o._playersStats[plid].SectorsTaked = parser.stol(val, NULL, 0);
                             if ( stok.GetNext(&val) )
                             {
-                                _o.playerstatus[plid].Score = parser.stol(val, NULL, 0);
+                                _o._playersStats[plid].Score = parser.stol(val, NULL, 0);
                                 if ( stok.GetNext(&val) )
                                 {
-                                    _o.playerstatus[plid].Power = parser.stol(val, NULL, 0);
+                                    _o._playersStats[plid].Power = parser.stol(val, NULL, 0);
                                     if ( stok.GetNext(&val) )
                                     {
-                                        _o.playerstatus[plid].Upgrades = parser.stol(val, NULL, 0);
+                                        _o._playersStats[plid].Upgrades = parser.stol(val, NULL, 0);
                                     }
                                 }
                             }
@@ -155,7 +155,7 @@ bool InputParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
 {
     if ( !StriCmp(word, "new_input") )
     {
-        for( UserData::TInputConf &k: _o.GameShell->InputConfig )
+        for( UserData::TInputConf &k: _o._GameShell->InputConfig )
         {
             k.PKeyCode = 0;
             k.NKeyCode = 0;
@@ -173,7 +173,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     if ( !StriCmp(p1, "end") )
         return ScriptParser::RESULT_SCOPE_END;
 
-    _o.GameShell->_saveDataFlags |= World::SDF_INPUT;
+    _o._GameShell->savedDataFlags |= World::SDF_INPUT;
 
     if ( !StriCmp(p1, "qualmode") )
     {
@@ -182,34 +182,34 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     {
         if ( StrGetBool(p2) )
         {
-             _o.GameShell->inp_joystick = true;
-             _o.field_73CE &= ~World::PREF_JOYDISABLE;
+             _o._GameShell->joystickEnabled = true;
+             _o._preferences &= ~World::PREF_JOYDISABLE;
         }
         else
         {
-            _o.GameShell->inp_joystick = false;
-            _o.field_73CE |= World::PREF_JOYDISABLE;
+            _o._GameShell->joystickEnabled = false;
+            _o._preferences |= World::PREF_JOYDISABLE;
         }
     }
     else if ( !StriCmp(p1, "altjoystick") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.GameShell->inp_altjoystick = true;
-            _o.field_73CE |= World::PREF_ALTJOYSTICK;
+            _o._GameShell->altJoystickEnabled = true;
+            _o._preferences |= World::PREF_ALTJOYSTICK;
         }
         else
         {
-            _o.GameShell->inp_altjoystick = false;
-            _o.field_73CE &= ~World::PREF_ALTJOYSTICK;
+            _o._GameShell->altJoystickEnabled = false;
+            _o._preferences &= ~World::PREF_ALTJOYSTICK;
         }
     }
     else if ( !StriCmp(p1, "forcefeedback") )
     {
         if ( StrGetBool(p2) )
-            _o.field_73CE &= ~World::PREF_FFDISABLE;
+            _o._preferences &= ~World::PREF_FFDISABLE;
         else
-            _o.field_73CE |= World::PREF_FFDISABLE;
+            _o._preferences |= World::PREF_FFDISABLE;
     }
     else
     {
@@ -229,7 +229,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             bool ok = false;
             int cfgIdex = parser.stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.getPInput()->SetInputExpression(true, cfgIdex, buf) )
+            if ( !INPe.GetInput()->SetInputExpression(true, cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set slider %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_BAD_DATA;
@@ -242,16 +242,16 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 ypa_log_out("Unknown number in slider-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_BAD_DATA;
             }
-            _o.GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_SLIDER;
-            _o.GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
+            _o._GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_SLIDER;
+            _o._GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
 
             Stok stok(buf, " :\t\n");
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o.GameShell->InputConfig[ gsIndex ].NKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                _o._GameShell->InputConfig[ gsIndex ].NKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
 
-                if ( _o.GameShell->InputConfig[ gsIndex ].NKeyCode == -1 )
+                if ( _o._GameShell->InputConfig[ gsIndex ].NKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for slider %s\n", tmp.c_str());
                     return ScriptParser::RESULT_BAD_DATA;
@@ -259,9 +259,9 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
                 if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
                 {
-                    _o.GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                    _o._GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
 
-                    if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
+                    if ( _o._GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                     {
                         ypa_log_out("Unknown keyword for slider %s\n", tmp.c_str());
                         return ScriptParser::RESULT_BAD_DATA;
@@ -282,7 +282,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
             int cfgIdex = parser.stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.getPInput()->SetInputExpression(false, cfgIdex, buf) )
+            if ( !INPe.GetInput()->SetInputExpression(false, cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set button %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_BAD_DATA;
@@ -294,16 +294,16 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 ypa_log_out("Unknown number in button-declaration (%d)\n", cfgIdex);
                 return ScriptParser::RESULT_BAD_DATA;
             }
-            _o.GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_BUTTON;
-            _o.GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
+            _o._GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_BUTTON;
+            _o._GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
 
             Stok stok(buf, " :\t\n");
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o.GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                _o._GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
 
-                if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
+                if ( _o._GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for button %s\n", tmp.c_str());
                     return ScriptParser::RESULT_BAD_DATA;
@@ -323,7 +323,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
             int cfgIdex = parser.stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.getPInput()->SetHotKey(cfgIdex, buf) )
+            if ( !INPe.GetInput()->SetHotKey(cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set hotkey %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_OK;
@@ -336,14 +336,14 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 return ScriptParser::RESULT_OK;
             }
 
-            _o.GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_HOTKEY;
-            _o.GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
+            _o._GameShell->InputConfig[ gsIndex ].Type = World::INPUT_BIND_TYPE_HOTKEY;
+            _o._GameShell->InputConfig[ gsIndex ].KeyID = cfgIdex;
 
             std::string tmp = Stok::Fast(buf, " :\t\n");
             if ( !tmp.empty() )
             {
-                _o.GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
-                if ( _o.GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
+                _o._GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                if ( _o._GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for hotkey: %s\n", tmp.c_str());
                     return ScriptParser::RESULT_OK;
@@ -880,35 +880,35 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     else if ( !StriCmp(p1, "wireframe") )
     {
         if ( _vhcl->wireframe )
-            Nucleus::Delete( _vhcl->wireframe );
+            _vhcl->wireframe->Delete();
         
         _vhcl->wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "hud_wireframe") )
     {
         if ( _vhcl->hud_wireframe )
-            Nucleus::Delete(_vhcl->hud_wireframe);
+            _vhcl->hud_wireframe->Delete();
 
         _vhcl->hud_wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "mg_wireframe") )
     {
         if ( _vhcl->mg_wireframe )
-            Nucleus::Delete(_vhcl->mg_wireframe);
+            _vhcl->mg_wireframe->Delete();
 
         _vhcl->mg_wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "wpn_wireframe_1") )
     {
         if ( _vhcl->wpn_wireframe_1 )
-            Nucleus::Delete(_vhcl->wpn_wireframe_1);
+            _vhcl->wpn_wireframe_1->Delete();
 
         _vhcl->wpn_wireframe_1 = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
     else if ( !StriCmp(p1, "wpn_wireframe_2") )
     {
         if ( _vhcl->wpn_wireframe_2 )
-            Nucleus::Delete(_vhcl->wpn_wireframe_2);
+            _vhcl->wpn_wireframe_2->Delete();
 
         _vhcl->wpn_wireframe_2 = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
@@ -1064,7 +1064,7 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     {
         _roboTmp = TRoboProto();
         _vhclID = parser.stol(opt, NULL, 0);
-        _vhcl = &_o.VhclProtos.at(_vhclID);
+        _vhcl = &_o._vhclProtos.at(_vhclID);
         
         *_vhcl = TVhclProto();
 
@@ -1124,9 +1124,9 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     else if ( !StriCmp(word, "modify_vehicle") )
     {
         _vhclID = parser.stol(opt, NULL, 0);
-        _vhcl = &_o.VhclProtos.at(_vhclID);
+        _vhcl = &_o._vhclProtos.at(_vhclID);
 
-        _o.last_modify_vhcl = _vhclID;
+        _o._upgradeVehicleId = _vhclID;
         return true;
     }
 
@@ -1150,11 +1150,11 @@ bool WeaponProtoParser::IsScope(ScriptParser::Parser &parser, const std::string 
     if (!StriCmp(word, "new_weapon"))
     {
         int wpnId = parser.stol(opt, NULL, 0);
-        _wpn = &_o.WeaponProtos[wpnId];
+        _wpn = &_o._weaponProtos[wpnId];
 
         *_wpn = TWeapProto();
         
-        _wpn->field_0 = 4;
+        _wpn->unitID = 4;
         _wpn->name.clear();
         _wpn->energy = 10000;
         _wpn->mass = 50.0;
@@ -1208,9 +1208,9 @@ bool WeaponProtoParser::IsScope(ScriptParser::Parser &parser, const std::string 
     else if (!StriCmp(word, "modify_weapon"))
     {
         int wpnId = parser.stol(opt, NULL, 0);
-        _wpn = &_o.WeaponProtos[wpnId];
+        _wpn = &_o._weaponProtos[wpnId];
 
-        _o.last_modify_weapon = wpnId;
+        _o._upgradeWeaponId = wpnId;
         return true;
     }
 
@@ -1225,13 +1225,13 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
     if ( !StriCmp(p1, "model") )
     {
         if ( !StriCmp(p2, "grenade") )
-            _wpn->model_id = 17;
+            _wpn->_weaponFlags = 17;
         else if ( !StriCmp(p2, "rocket") )
-            _wpn->model_id = 3;
+            _wpn->_weaponFlags = 3;
         else if ( !StriCmp(p2, "missile") )
-            _wpn->model_id = 7;
+            _wpn->_weaponFlags = 7;
         else if ( !StriCmp(p2, "bomb") || !StriCmp(p2, "special") )
-            _wpn->model_id = 1;
+            _wpn->_weaponFlags = 1;
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
@@ -1411,7 +1411,7 @@ int WeaponProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p
     else if ( !StriCmp(p1, "wireframe") )
     {
         if ( _wpn->wireframe )
-            Nucleus::Delete(_wpn->wireframe);
+            _wpn->wireframe->Delete();
 
         _wpn->wireframe = Nucleus::CInit<NC_STACK_sklt>( {{NC_STACK_rsrc::RSRC_ATT_NAME, std::string(p2)}} );
     }
@@ -1491,8 +1491,8 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
     {
         int bldId = parser.stol(opt, NULL, 0);
 
-        _o.BuildProtos[bldId] = TBuildingProto();
-        _bld = &_o.BuildProtos[bldId];
+        _o._buildProtos[bldId] = TBuildingProto();
+        _bld = &_o._buildProtos[bldId];
         _bld->Energy = 50000;
         _bld->TypeIcon = 65;
         _bld->SndFX.volume = 120;
@@ -1503,8 +1503,8 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
     {
         int bldId = parser.stol(opt, NULL, 0);
 
-        _bld = &_o.BuildProtos[bldId];
-        _o.last_modify_build = bldId;
+        _bld = &_o._buildProtos[bldId];
+        _o._upgradeBuildId = bldId;
         return true;
     }
 
@@ -1628,7 +1628,7 @@ bool MovieParser::IsScope(ScriptParser::Parser &parser, const std::string &word,
     if ( StriCmp(word, "begin_movies") )
         return false;
 
-    for (std::string &movie : _o.movies)
+    for (std::string &movie : _o._movies)
         movie.clear();
     return true;
 }
@@ -1638,23 +1638,23 @@ int MovieParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 	if ( !StriCmp(p1, "end") )
 		return ScriptParser::RESULT_SCOPE_END;
 	else if ( !StriCmp(p1, "game_intro") )
-		_o.movies[World::MOVIE_INTRO] = p2;
+		_o._movies[World::MOVIE_INTRO] = p2;
 	else if ( !StriCmp(p1, "win_extro") )
-		_o.movies[World::MOVIE_WIN] = p2;
+		_o._movies[World::MOVIE_WIN] = p2;
 	else if ( !StriCmp(p1, "lose_extro") )
-		_o.movies[World::MOVIE_LOSE] = p2;
+		_o._movies[World::MOVIE_LOSE] = p2;
 	else if ( !StriCmp(p1, "user_intro") )
-		_o.movies[World::MOVIE_USER] = p2;
+		_o._movies[World::MOVIE_USER] = p2;
 	else if ( !StriCmp(p1, "kyt_intro") )
-		_o.movies[World::MOVIE_KYT] = p2;
+		_o._movies[World::MOVIE_KYT] = p2;
 	else if ( !StriCmp(p1, "taer_intro") )
-		_o.movies[World::MOVIE_TAER] = p2;
+		_o._movies[World::MOVIE_TAER] = p2;
 	else if ( !StriCmp(p1, "myk_intro") )
-		_o.movies[World::MOVIE_MYK] = p2;
+		_o._movies[World::MOVIE_MYK] = p2;
 	else if ( !StriCmp(p1, "sulg_intro") )
-		_o.movies[World::MOVIE_SULG] = p2;
+		_o._movies[World::MOVIE_SULG] = p2;
 	else if ( !StriCmp(p1, "black_intro") )
-		_o.movies[World::MOVIE_BLACK] = p2;
+		_o._movies[World::MOVIE_BLACK] = p2;
 	else
 		return ScriptParser::RESULT_UNKNOWN;
 	return ScriptParser::RESULT_OK;
@@ -1662,7 +1662,7 @@ int MovieParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
 
 BkgParser::BkgParser(NC_STACK_ypaworld *o)
-: _o(o->_mapRegions)
+: _o(o->_globalMapRegions)
 {}
 
 int BkgParser::Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2)
@@ -1946,16 +1946,13 @@ bool MiscParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
     if ( StriCmp(word, "begin_misc") )
         return false;
 
-    _o.beam_energy_start = 500;
-    _o.beam_energy_add = 100;
-    _o.unit_limit = 512;
-    _o.unit_limit_type = 0;
-    _o.unit_limit_arg = 0;
-    _o.easy_cheat_keys = 0;
-        
-    shellGfxMode = false;
-    gfxMode = false;
-    
+    _o._beamEnergyStart = 500;
+    _o._beamEnergyAdd = 100;
+    _o._defaultUnitLimit = 512;
+    _o._defaultUnitLimitType = 0;
+    _o._defaultUnitLimitArg = 0;
+    _o._easyCheatKeys = false;
+
     return true;
 }
 
@@ -1967,7 +1964,7 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     }
     else if ( !StriCmp(p1, "one_game_res") )
     {
-        _o.one_game_res = StrGetBool(p2);
+        _o._oneGameRes = StrGetBool(p2);
     }
     else if ( !StriCmp(p1, "shell_default_res") )
     {
@@ -1975,9 +1972,8 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     	std::string pp1, pp2;
         if ( stok.GetNext(&pp1) && stok.GetNext(&pp2) )
         {
-            _o.shell_default_res = parser.stol(pp2, NULL, 0) | (parser.stol(pp1, NULL, 0) << 12);
-            if (!shellGfxMode)
-                _o._shellGfxMode = Common::Point(parser.stol(pp1, NULL, 0), parser.stol(pp2, NULL, 0));
+            _o._shellDefaultRes = Common::Point(parser.stol(pp1, NULL, 0), parser.stol(pp2, NULL, 0));
+            _o._shellGfxMode = Common::Point(parser.stol(pp1, NULL, 0), parser.stol(pp2, NULL, 0));
         }
     }
     else if ( !StriCmp(p1, "game_default_res") )
@@ -1986,38 +1982,37 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         std::string pp1, pp2;
         if ( stok.GetNext(&pp1) && stok.GetNext(&pp2) )
         {
-            _o.game_default_res = parser.stol(pp2, NULL, 0) | (parser.stol(pp1, NULL, 0) << 12);
-            if (!gfxMode)
-                _o._gfxMode = Common::Point(parser.stol(pp1, NULL, 0), parser.stol(pp2, NULL, 0));
+            _o._gameDefaultRes = Common::Point(parser.stol(pp1, NULL, 0), parser.stol(pp2, NULL, 0));
+            _o._gfxMode = Common::Point(parser.stol(pp1, NULL, 0), parser.stol(pp2, NULL, 0));
         }
     }
     else if ( !StriCmp(p1, "max_impulse") )
     {
-        _o.max_impulse = parser.stof(p2);
+        _o._maxImpulse = parser.stof(p2);
     }
     else if ( !StriCmp(p1, "unit_limit") )
     {
-        _o.unit_limit = parser.stol(p2, NULL, 0);
+        _o._defaultUnitLimit = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_type") )
     {
-        _o.unit_limit_type = parser.stol(p2, NULL, 0);
+        _o._defaultUnitLimitType = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_arg") )
     {
-        _o.unit_limit_arg = parser.stol(p2, NULL, 0);
+        _o._defaultUnitLimitArg = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "beam_energy_start") )
     {
-        _o.beam_energy_start = parser.stol(p2, NULL, 0);
+        _o._beamEnergyStart = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "beam_energy_add") )
     {
-        _o.beam_energy_add = parser.stol(p2, NULL, 0);
+        _o._beamEnergyAdd = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "easy_cheat_keys") )
     {
-        _o.easy_cheat_keys = parser.stol(p2, NULL, 0);
+        _o._easyCheatKeys = parser.stol(p2, NULL, 0) != 0;
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2031,8 +2026,8 @@ bool SuperItemParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_superitem") )
         return false;
 
-    _o.superbomb_wall_vproto = 0;
-    _o.superbomb_center_vproto = 0;
+    _o._stoudsonWaveVehicleId = 0;
+    _o._stoudsonCenterVehicleId = 0;
     return true;
 }
 
@@ -2044,11 +2039,11 @@ int SuperItemParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
 	else if ( !StriCmp(p1, "superbomb_center_vproto") )
     {
-        _o.superbomb_center_vproto = parser.stol(p2, NULL, 0);
+        _o._stoudsonCenterVehicleId = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "superbomb_wall_vproto") )
     {
-        _o.superbomb_wall_vproto = parser.stol(p2, NULL, 0);
+        _o._stoudsonWaveVehicleId = parser.stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2105,10 +2100,10 @@ bool LevelDataParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     _o._levelInfo.MovieStr.clear();
     _o._levelInfo.MovieWinStr.clear();
     _o._levelInfo.MovieLoseStr.clear();
-    _o.vehicle_sector_ratio_1 = 0;
-    _o.unit_limit_1 = _o.unit_limit;
-    _o.unit_limit_type_1 = _o.unit_limit_type;
-    _o.unit_limit_arg_1 = _o.unit_limit_arg;
+    _o._vehicleSectorRatio = 0;
+    _o._levelUnitLimit = _o._defaultUnitLimit;
+    _o._levelUnitLimitType = _o._defaultUnitLimitType;
+    _o._levelUnitLimitArg = _o._defaultUnitLimitArg;
     _o._luaScriptName = "";
     return true;
 }
@@ -2244,19 +2239,19 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "vehicle_sector_ratio") )
     {
-        _o.vehicle_sector_ratio_1 = parser.stof(p2, 0);
+        _o._vehicleSectorRatio = parser.stof(p2, 0);
     }
     else if ( !StriCmp(p1, "unit_limit") )
     {
-        _o.unit_limit_1 = parser.stol(p2, NULL, 0);
+        _o._levelUnitLimit = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_type") )
     {
-        _o.unit_limit_type_1 = parser.stol(p2, NULL, 0);
+        _o._levelUnitLimitType = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "unit_limit_arg") )
     {
-        _o.unit_limit_arg_1 = parser.stol(p2, NULL, 0);
+        _o._levelUnitLimitArg = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "lua_script") )
     {
@@ -2685,7 +2680,7 @@ int LevelGatesParser::Handle(ScriptParser::Parser &parser, const std::string &p1
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _g->SecX == 0 || _g->SecY == 0)
+        if ( _g->CellId.x == 0 || _g->CellId.y == 0)
         {
             ypa_log_out("Gate init: gate[%d] no sector coords!\n", _o._levelInfo.Gates.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
@@ -2702,11 +2697,11 @@ int LevelGatesParser::Handle(ScriptParser::Parser &parser, const std::string &p1
 
     if ( !StriCmp(p1, "sec_x") )
     {
-        _g->SecX = parser.stol(p2, NULL, 0);
+        _g->CellId.x = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _g->SecY = parser.stol(p2, NULL, 0);
+        _g->CellId.y = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "closed_bp") )
     {
@@ -2723,11 +2718,11 @@ int LevelGatesParser::Handle(ScriptParser::Parser &parser, const std::string &p1
     else if ( !StriCmp(p1, "keysec_x") )
     {
         _g->KeySectors.emplace_back();
-        _g->KeySectors.back().x = parser.stol(p2, NULL, 0);
+        _g->KeySectors.back().CellId.x = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "keysec_y") )
     {
-        _g->KeySectors.back().y = parser.stol(p2, NULL, 0);
+        _g->KeySectors.back().CellId.y = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "mb_status") )
     {
@@ -2799,8 +2794,8 @@ bool LevelGemParser::IsScope(ScriptParser::Parser &parser, const std::string &wo
     if ( StriCmp(word, "begin_gem") )
         return false;
 
-    _o._Gems.emplace_back();
-    _g = &_o._Gems.back();
+    _o._techUpgrades.emplace_back();
+    _g = &_o._techUpgrades.back();
     _g->MbStatus = 0;
     return true;
 }
@@ -2811,13 +2806,13 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
     {
         if ( !_g->BuildingID )
         {
-            ypa_log_out("WStein init: gem[%d] no building defined!\n", _o._Gems.size() - 1);
+            ypa_log_out("WStein init: gem[%d] no building defined!\n", _o._techUpgrades.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
-        if ( _g->SecX == 0 || _g->SecY == 0 )
+        if ( _g->CellId.x == 0 || _g->CellId.y == 0 )
         {
-            ypa_log_out("WStein init: gem[%d] sector pos wonky tonk!\n", _o._Gems.size() - 1);
+            ypa_log_out("WStein init: gem[%d] sector pos wonky tonk!\n", _o._techUpgrades.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
         }
 
@@ -2833,11 +2828,11 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
     }
     else if ( !StriCmp(p1, "sec_x") )
     {
-        _g->SecX = parser.stol(p2, NULL, 0);
+        _g->CellId.x = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _g->SecY = parser.stol(p2, NULL, 0);
+        _g->CellId.y = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "building") )
     {
@@ -2938,10 +2933,10 @@ bool LevelEnableParser::IsScope(ScriptParser::Parser &parser, const std::string 
 
     _fraction = parser.stol(opt, NULL, 0);
 
-    for (TVhclProto &vhcl : _o.VhclProtos)
+    for (TVhclProto &vhcl : _o._vhclProtos)
         vhcl.disable_enable_bitmask &= ~(1 << _fraction);
 
-    for (TBuildingProto &bld : _o.BuildProtos)
+    for (TBuildingProto &bld : _o._buildProtos)
         bld.EnableMask &= ~(1 << _fraction);
 
     return true;
@@ -2955,16 +2950,16 @@ int LevelEnableParser::Handle(ScriptParser::Parser &parser, const std::string &p
     if ( !StriCmp(p1, "vehicle") )
     {
         size_t id = parser.stol(p2, NULL, 0);
-        if ( id >= 0 && id < _o.VhclProtos.size() ) //_o.ypaworld.VhclProtos.size() )
-            _o.VhclProtos[id].disable_enable_bitmask |= (1 << _fraction);
+        if ( id >= 0 && id < _o._vhclProtos.size() ) //_o.ypaworld.VhclProtos.size() )
+            _o._vhclProtos[id].disable_enable_bitmask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
     else if ( !StriCmp(p1, "building") )
     {
         size_t id = parser.stol(p2, NULL, 0);
-        if ( id >= 0 && id < _o.BuildProtos.size() )
-            _o.BuildProtos[id].EnableMask |= (1 << _fraction);
+        if ( id >= 0 && id < _o._buildProtos.size() )
+            _o._buildProtos[id].EnableMask |= (1 << _fraction);
         else
             return ScriptParser::RESULT_BAD_DATA;
     }
@@ -3031,7 +3026,7 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
 {
     if ( !StriCmp(p1, "end") )
     {
-        if ( _s->Sector.x == 0 || _s->Sector.y == 0)
+        if ( _s->CellId.x == 0 || _s->CellId.y == 0)
         {
             ypa_log_out("Super item #%d: invalid sector coordinates!\n", _o._levelInfo.SuperItems.size() - 1);
             return ScriptParser::RESULT_BAD_DATA;
@@ -3066,11 +3061,11 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
 
     if ( !StriCmp(p1, "sec_x") )
     {
-        _s->Sector.x = parser.stol(p2, NULL, 0);
+        _s->CellId.x = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "sec_y") )
     {
-        _s->Sector.y = parser.stol(p2, NULL, 0);
+        _s->CellId.y = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "inactive_bp") )
     {
@@ -3087,11 +3082,11 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
     else if ( !StriCmp(p1, "keysec_x") )
     {
         _s->KeySectors.emplace_back();
-        _s->KeySectors.back().x = parser.stol(p2, NULL, 0);
+        _s->KeySectors.back().CellId.x = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "keysec_y") )
     {
-        _s->KeySectors.back().y = parser.stol(p2, NULL, 0);
+        _s->KeySectors.back().CellId.y = parser.stol(p2, NULL, 0);
     }
     else if ( !StriCmp(p1, "mb_status") )
     {
@@ -3124,7 +3119,7 @@ int LevelSuperItemsParser::Handle(ScriptParser::Parser &parser, const std::strin
     return ScriptParser::RESULT_OK;
 }
 
-Common::PlaneBytes *MapAsPlaneBytes::ReadMapAsPlaneBytes(ScriptParser::Parser &parser)
+Common::PlaneBytes MapAsPlaneBytes::ReadMapAsPlaneBytes(ScriptParser::Parser &parser)
 {
     std::string buf;
     parser.ReadLine(&buf);
@@ -3136,15 +3131,17 @@ Common::PlaneBytes *MapAsPlaneBytes::ReadMapAsPlaneBytes(ScriptParser::Parser &p
     stok.GetNext(&tmp);
     int h = parser.stol(tmp, NULL, 0);
     
-    Common::PlaneBytes *bmp = new Common::PlaneBytes;
-    bmp->Resize(w, h);
+    if (w <= 0 || h <= 0)
+        return Common::PlaneBytes();
+    
+    Common::PlaneBytes bmp(w, h);
 
     for (int j = 0; j < h; j++)
     {
         parser.ReadLine(&buf);
         stok = buf;
 
-        uint8_t *ln = bmp->Line(j);
+        uint8_t *ln = bmp.Line(j);
 
         for (int i = 0; i < w; i++)
         {
@@ -3161,29 +3158,10 @@ bool LevelMapsParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     if ( StriCmp(word, "begin_maps") )
         return false;
 
-    if ( _o.typ_map )
-    {
-        delete _o.typ_map;
-        _o.typ_map = NULL;
-    }
-
-    if ( _o.own_map )
-    {
-        delete _o.own_map;
-        _o.own_map = NULL;
-    }
-
-    if ( _o.hgt_map )
-    {
-        delete _o.hgt_map;
-        _o.hgt_map = NULL;
-    }
-
-    if ( _o.blg_map )
-    {
-        delete _o.blg_map;
-        _o.blg_map = NULL;
-    }
+    _o._lvlTypeMap.Clear();
+    _o._lvlOwnMap.Clear();
+    _o._lvlHeightMap.Clear();
+    _o._lvlBuildingsMap.Clear();
 
     return true;
 }
@@ -3195,35 +3173,35 @@ int LevelMapsParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( !StriCmp(p1, "typ_map") )
     {
-        _o.typ_map = ReadMapAsPlaneBytes(parser);
+        _o._lvlTypeMap = ReadMapAsPlaneBytes(parser);
 
-        if ( !_o.typ_map )
+        if ( !_o._lvlTypeMap.IsOk() )
             return ScriptParser::RESULT_BAD_DATA;
 
-        _m.MapSize = _o.typ_map->Size();
+        _m.MapSize = _o._lvlTypeMap.Size();
 
         _m.ReadedPartsBits |= TLevelDescription::BIT_TYP;
     }
     else if ( !StriCmp(p1, "own_map") )
     {
-        _o.own_map = ReadMapAsPlaneBytes(parser);
-        if ( !_o.own_map )
+        _o._lvlOwnMap = ReadMapAsPlaneBytes(parser);
+        if ( !_o._lvlOwnMap.IsOk() )
             return ScriptParser::RESULT_BAD_DATA;
 
         _m.ReadedPartsBits |= TLevelDescription::BIT_OWN;
     }
     else if ( !StriCmp(p1, "hgt_map") )
     {
-        _o.hgt_map = ReadMapAsPlaneBytes(parser);
-        if ( !_o.hgt_map )
+        _o._lvlHeightMap = ReadMapAsPlaneBytes(parser);
+        if ( !_o._lvlHeightMap.IsOk() )
             return ScriptParser::RESULT_BAD_DATA;
 
         _m.ReadedPartsBits |= TLevelDescription::BIT_HGT;
     }
     else if ( !StriCmp(p1, "blg_map") )
     {
-        _o.blg_map = ReadMapAsPlaneBytes(parser);
-        if ( !_o.blg_map )
+        _o._lvlBuildingsMap = ReadMapAsPlaneBytes(parser);
+        if ( !_o._lvlBuildingsMap.IsOk() )
             return ScriptParser::RESULT_BAD_DATA;
 
         _m.ReadedPartsBits |= TLevelDescription::BIT_BLG;
@@ -3241,36 +3219,36 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     if ( !StriCmp(p1, "end") )
     {
         if ( GFX::Engine.getWDD_drawPrim() )
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_DRAWPRIMITIVES;
         else
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
 
         if ( GFX::Engine.getWDD_16bitTex() )
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_16BITTEXTURE;
         else
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_16BITTEXTURE;
         
         return ScriptParser::RESULT_SCOPE_END;
     }
 
-    _o.GameShell->_saveDataFlags |= World::SDF_VIDEO;
+    _o._GameShell->savedDataFlags |= World::SDF_VIDEO;
 
     if ( !StriCmp(p1, "videomode") )
     {
         int modeid = parser.stoi(p2);
-        _o.game_default_res = modeid;
-        _o.GameShell->game_default_res = modeid;
+        _o._gameDefaultRes = Common::Point((modeid >> 12 & 0xFFF), (modeid & 0xFFF));
+        _o._GameShell->game_default_res = modeid;
     }
     else if ( !StriCmp(p1, "farview") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_FARVIEW;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_FARVIEW;
             _o.SetFarView(true);
         }
         else
         {
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_FARVIEW;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_FARVIEW;
             _o.SetFarView(false);
         }
     }
@@ -3280,30 +3258,30 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     else if ( !StriCmp(p1, "drawprimitive") )
     {
         if ( StrGetBool(p2) )
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_DRAWPRIMITIVES;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_DRAWPRIMITIVES;
         else
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_DRAWPRIMITIVES;
     }
     else if ( !StriCmp(p1, "16bittexture") )
     {
         if ( StrGetBool(p2) )
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_16BITTEXTURE;
         else
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_16BITTEXTURE;
     }
     else if ( !StriCmp(p1, "softmouse") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_SOFTMOUSE;
-            _o.field_73CE |= World::PREF_SOFTMOUSE;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_SOFTMOUSE;
+            _o._preferences |= World::PREF_SOFTMOUSE;
 
             GFX::Engine.setWDD_cursor(1);
         }
         else
         {
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_SOFTMOUSE;
-            _o.field_73CE &= ~World::PREF_SOFTMOUSE;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_SOFTMOUSE;
+            _o._preferences &= ~World::PREF_SOFTMOUSE;
 
             GFX::Engine.setWDD_cursor(0);
         }
@@ -3315,31 +3293,31 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     {
         if ( StrGetBool(p2) )
         {
-            _o.GameShell->GFX_flags |= World::GFX_FLAG_SKYRENDER;
+            _o._GameShell->GFXFlags |= World::GFX_FLAG_SKYRENDER;
             _o.setYW_skyRender(true);
         }
         else
         {
-            _o.GameShell->GFX_flags &= ~World::GFX_FLAG_SKYRENDER;
+            _o._GameShell->GFXFlags &= ~World::GFX_FLAG_SKYRENDER;
             _o.setYW_skyRender(false);
         }
     }
     else if ( !StriCmp(p1, "fxnumber") )
     {
-        _o.fxnumber = parser.stoi(p2);
-        _o.GameShell->fxnumber = _o.fxnumber;
+        _o._fxLimit = parser.stoi(p2);
+        _o._GameShell->fxnumber = _o._fxLimit;
     }
     else if ( !StriCmp(p1, "enemyindicator") )
     {
         if ( StrGetBool(p2) )
         {
-            _o.field_73CE |= World::PREF_ENEMYINDICATOR;
-            _o.GameShell->enemyindicator = true;
+            _o._preferences |= World::PREF_ENEMYINDICATOR;
+            _o._GameShell->enemyIndicator = true;
         }
         else
         {
-            _o.field_73CE &= ~World::PREF_ENEMYINDICATOR;
-            _o.GameShell->enemyindicator = false;
+            _o._preferences &= ~World::PREF_ENEMYINDICATOR;
+            _o._GameShell->enemyIndicator = false;
         }
     }
     else if ( !StriCmp(p1, "gfxmode") )
@@ -3359,10 +3337,15 @@ int VideoParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
                 const GFX::GfxMode &mode = pModes.at(i);
                 if (mode.w == w && mode.h == h)
                 {
-                    _o.GameShell->_gfxModeIndex = i;
+                    _o._GameShell->_gfxModeIndex = i;
                     _o._gfxMode = mode;
-                    _o._gfxWindowed = win;
-                    _o.GameShell->_gfxMode = mode;
+
+                    if (win)
+                        _o._GameShell->GFXFlags |= World::GFX_FLAG_WINDOWED;
+                    else
+                        _o._GameShell->GFXFlags &= ~World::GFX_FLAG_WINDOWED;
+
+                    _o._GameShell->_gfxMode = mode;
                     break;
                 }
             }
@@ -3378,31 +3361,31 @@ int SoundParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     if ( !StriCmp(p1, "end") )
         return ScriptParser::RESULT_SCOPE_END;
 
-    _o.GameShell->_saveDataFlags |= World::SDF_SOUND;
+    _o._GameShell->savedDataFlags |= World::SDF_SOUND;
 
     if ( !StriCmp(p1, "channels") )
     {
     }
     else if ( !StriCmp(p1, "volume") )
     {
-        _o.GameShell->snd__volume = parser.stoi(p2);
-        SFXEngine::SFXe.setMasterVolume(_o.GameShell->snd__volume);
+        _o._GameShell->soundVolume = parser.stoi(p2);
+        SFXEngine::SFXe.setMasterVolume(_o._GameShell->soundVolume);
     }
     else if ( !StriCmp(p1, "cdvolume") )
     {
-        _o.GameShell->snd__cdvolume = parser.stoi(p2);
-        SFXEngine::SFXe.SetMusicVolume(_o.GameShell->snd__cdvolume);
+        _o._GameShell->musicVolume = parser.stoi(p2);
+        SFXEngine::SFXe.SetMusicVolume(_o._GameShell->musicVolume);
     }
     else if ( !StriCmp(p1, "invertlr") )
     {
         if ( !StriCmp(p2, "yes") )
         {
-            _o.GameShell->snd__flags2 |= World::SF_INVERTLR;
+            _o._GameShell->soundFlags |= World::SF_INVERTLR;
             SFXEngine::SFXe.setReverseStereo(true);
         }
         else
         {
-            _o.GameShell->snd__flags2 &= ~World::SF_INVERTLR;
+            _o._GameShell->soundFlags &= ~World::SF_INVERTLR;
             SFXEngine::SFXe.setReverseStereo(false);
         }
     }
@@ -3413,15 +3396,15 @@ int SoundParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     {
         if ( !StriCmp(p2, "yes") )
         {
-            _o.GameShell->snd__flags2 |= World::SF_CDSOUND;
-            _o.field_73CE |= World::PREF_CDMUSICDISABLE;
+            _o._GameShell->soundFlags |= World::SF_CDSOUND;
+            _o._preferences |= World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
         }
         else
         {
-            _o.GameShell->snd__flags2 &= ~World::SF_CDSOUND;
-            _o.field_73CE &= ~World::PREF_CDMUSICDISABLE;
+            _o._GameShell->soundFlags &= ~World::SF_CDSOUND;
+            _o._preferences &= ~World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(false);
         }
@@ -3448,12 +3431,12 @@ int LevelStatusParser::Handle(ScriptParser::Parser &parser, const std::string &p
         return ScriptParser::RESULT_SCOPE_END;
 
     if ( _setFlag )
-        _o.GameShell->_saveDataFlags |= World::SDF_SCORE;
+        _o._GameShell->savedDataFlags |= World::SDF_SCORE;
 
     if ( !StriCmp(p1, "status") )
     {
-        if ( _o._mapRegions.MapRegions[_levelId].Status != TMapRegionInfo::STATUS_NONE )
-            _o._mapRegions.MapRegions[_levelId].Status = parser.stoi(p2);
+        if ( _o._globalMapRegions.MapRegions[_levelId].Status != TMapRegionInfo::STATUS_NONE )
+            _o._globalMapRegions.MapRegions[_levelId].Status = parser.stoi(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -3496,30 +3479,30 @@ int BuddyParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     return ScriptParser::RESULT_OK;
 }
 
-void ShellParser::ParseStatus(ScriptParser::Parser &parser, save_status *status, const std::string &p2)
+void ShellParser::ParseStatus(ScriptParser::Parser &parser, TMFWinStatus *status, const std::string &p2)
 {
     Stok stok(p2, " _");
     std::string val;
 
     if ( stok.GetNext(&val) )
-        status->p1 = parser.stoi(val);
+        status->Valid = parser.stoi(val) != 0;
 
     if ( stok.GetNext(&val) )
-        status->p2 = parser.stoi(val);
+        status->IsOpen = parser.stoi(val) != 0;
 
     if ( stok.GetNext(&val) )
-        status->p3 = parser.stoi(val);
+        status->Rect.x = parser.stoi(val);
 
     if ( stok.GetNext(&val) )
-        status->p4 = parser.stoi(val);
+        status->Rect.y = parser.stoi(val);
 
     if ( stok.GetNext(&val) )
-        status->p5 = parser.stoi(val);
+        status->Rect.w = parser.stoi(val);
 
     if ( stok.GetNext(&val) )
-        status->p6 = parser.stoi(val);
+        status->Rect.h = parser.stoi(val);
 
-    for (auto &x : status->pX)
+    for (auto &x : status->Data)
     {
         if ( !stok.GetNext(&val) )
             break;
@@ -3533,18 +3516,18 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 {
     if ( !StriCmp(p1, "end") )
     {
-        _o.field_739A = 1;
+        _o._shellConfIsParsed = true;
         return ScriptParser::RESULT_SCOPE_END;
     }
 
-    _o.GameShell->_saveDataFlags |= World::SDF_SHELL;
+    _o._GameShell->savedDataFlags |= World::SDF_SHELL;
 
     if ( !StriCmp(p1, "LANGUAGE") )
     {
         std::string * deflt = NULL;
         std::string * slct = NULL;
 
-        for(std::string &s : _o.GameShell->lang_dlls)
+        for(std::string &s : _o._GameShell->lang_dlls)
         {
             if ( !StriCmp(s, p2) )
                 slct = &s;
@@ -3553,11 +3536,11 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
         }
 
         if ( slct )
-            _o.GameShell->default_lang_dll = slct;
+            _o._GameShell->default_lang_dll = slct;
         else
-            _o.GameShell->default_lang_dll = deflt;
+            _o._GameShell->default_lang_dll = deflt;
 
-        _o.GameShell->prev_lang = _o.GameShell->default_lang_dll;
+        _o._GameShell->prev_lang = _o._GameShell->default_lang_dll;
 
         if ( !_o.ReloadLanguage() )
         {
@@ -3575,19 +3558,19 @@ int ShellParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
     }
     else if ( !StriCmp(p1, "robo_map_status") )
     {
-        ParseStatus(parser, &_o.robo_map_status, p2);
+        ParseStatus(parser, &_o._roboMapStatus, p2);
     }
     else if ( !StriCmp(p1, "robo_finder_status") )
     {
-        ParseStatus(parser, &_o.robo_finder_status, p2);
+        ParseStatus(parser, &_o._roboFinderStatus, p2);
     }
     else if ( !StriCmp(p1, "vhcl_map_status") )
     {
-        ParseStatus(parser, &_o.vhcl_map_status, p2);
+        ParseStatus(parser, &_o._vhclMapStatus, p2);
     }
     else if ( !StriCmp(p1, "vhcl_finder_status") )
     {
-        ParseStatus(parser, &_o.vhcl_finder_status, p2);
+        ParseStatus(parser, &_o._vhclFinderStatus, p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

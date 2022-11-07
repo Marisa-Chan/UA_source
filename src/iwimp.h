@@ -18,7 +18,7 @@ public:
     virtual void AddClickBoxFront(ClickBox *box);
     virtual void AddClickBoxBack(ClickBox *box);
     virtual void RemoveClickBox(ClickBox *box);
-    virtual void CheckClick(ClickBoxInf *arg);
+    virtual void CheckClick(TClickBoxInf *arg);
 
     NC_STACK_iwimp() {
         clear();
@@ -36,7 +36,7 @@ public:
 protected:
     void clear();
 
-    void GetClick(ClickBoxInf *click, MousePos &mouse);
+    void GetClick(TClickBoxInf *click, TMousePos &mouse);
 
 //Data
 public:

@@ -453,7 +453,7 @@ void NC_STACK_yparobo::InitForce(NC_STACK_ypabact *unit)
     arg67.tgt_pos.z = _position.z + _rotation.m22 * World::CVSectorLength * 0.5;
     newUnit->SetTarget(&arg67);
 
-    if ( _world->isNetGame )
+    if ( _world->_isNetGame )
     {
         newUnit->_gid |= newUnit->_owner << 24;
 
@@ -602,17 +602,17 @@ int NC_STACK_yparobo::sub_4A58C0(NC_STACK_ypabact *bact, NC_STACK_ypabact *bact2
 
 void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK_ypabact *unit2)
 {
-    for (int i = -1; i < 2; i++)
+    for (int i = -1; i <= 1; i++)
     {
-        for (int j = -1; j < 2; j++)
+        for (int j = -1; j <= 1; j++)
         {
-            Common::Point pt(unit1->_sectX + i, unit1->_sectY + j);
+            Common::Point pt = unit1->_cellId + Common::Point(i, j);
 
             if ( _world->IsGamePlaySector(pt) )
             {
                 cellArea &pcell = _world->SectorAt(pt);
 
-                if ( pcell.owner == unit1->_owner && pcell.w_type == 2 )
+                if ( pcell.owner == unit1->_owner && pcell.PurposeType == cellArea::PT_POWERSTATION )
                 {
                     vec2d xy = World::SectorIDToCenterPos2(pt);
                     sub_4A5A08(unit2, xy.x, xy.y);
@@ -654,7 +654,7 @@ void NC_STACK_yparobo::sb_0x4a7010__sub1__sub0(NC_STACK_ypabact *unit1, NC_STACK
     }
     else
     {
-        vec2d xy = World::SectorIDToCenterPos2( {unit1->_sectX, unit1->_sectY} );
+        vec2d xy = World::SectorIDToCenterPos2( unit1->_cellId );
 
         sub_4A5A08(unit2, xy.x, xy.y);
 
@@ -757,7 +757,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
 
         SetPosition(&v18);
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             _status_flg |= BACT_STFLAG_DSETTED;
 
@@ -781,7 +781,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
         _vp_extra[0].flags = 0;
         _vp_extra[1].flags = 0;
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             uamessage_endBeam ebMsg;
             ebMsg.msgID = UAMSG_ENDBEAM;
@@ -896,7 +896,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
                     _world->GetSectorInfo(&arg130);
 
-                    if ( v81 || !arg130.pcell->w_type )
+                    if ( v81 || arg130.pcell->PurposeType == cellArea::PT_NONE )
                     {
                         yw_arg129 v60;
                         v60.pos = arg136.isectPos;
@@ -969,7 +969,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
                     _world->GetSectorInfo(&arg130);
 
-                    if ( v81 || !arg130.pcell->w_type )
+                    if ( v81 || arg130.pcell->PurposeType == cellArea::PT_NONE )
                     {
                         yw_arg129 v60;
                         v60.pos = clzn->pos1;
@@ -1356,8 +1356,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
         if ( !v6 )
         {
-            if ( _world->GameShell )
-                SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_ERROR);
+            if ( _world->_GameShell )
+                SFXEngine::SFXe.startSound(&_world->_GameShell->samples1_info, World::SOUND_ID_ERROR);
         }
         else
         {
@@ -1436,7 +1436,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 newbact->_owner = _owner;
                 AddSubject(newbact);
 
-                if ( _world->isNetGame )
+                if ( _world->_isNetGame )
                 {
                     newbact->_gid |= newbact->_owner << 24;
                     newbact->_commandID |= newbact->_owner << 24;
@@ -1469,6 +1469,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
                 newbact->_host_station = this;
                 _roboEnergyLife -= arg->energy;
+                
+                _world->SetCmdrIdToSelect(newbact->_commandID); // Select it for add next units
 
                 _world->HistoryAktCreate(newbact);
             }
@@ -1497,7 +1499,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
 
                 newbact2->_aggr = arg->selectBact->_aggr;
 
-                if ( _world->isNetGame )
+                if ( _world->_isNetGame )
                 {
                     newbact2->_gid |= newbact2->_owner << 24;
 
@@ -1535,25 +1537,23 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     case World::DOACTION_6:
         if ( arg->energy <= _roboEnergyLife )
         {
-            arg148.ownerID = _owner;
-            arg148.ownerID2 = _owner;
+            arg148.owner = _owner;
             arg148.blg_ID = arg->protoID;
             arg148.field_C = 0;
-            arg148.x = arg->target_sect_x;
-            arg148.y = arg->target_sect_y;
+            arg148.CellId = arg->target_Sect->CellId;
             arg148.field_18 = 0;
             if ( _world->ypaworld_func148(&arg148) )
             {
                 _roboEnergyLife -= arg->energy;
 
-                if ( _world->isNetGame )
+                if ( _world->_isNetGame )
                 {
                     uamessage_startBuild sbMsg;
                     sbMsg.msgID = UAMSG_STARTBUILD;
                     sbMsg.owner = _owner;
                     sbMsg.bproto = arg->protoID;
-                    sbMsg.sec_x = arg->target_sect_x;
-                    sbMsg.sec_y = arg->target_sect_y;
+                    sbMsg.sec_x = arg->target_Sect->CellId.x;
+                    sbMsg.sec_y = arg->target_Sect->CellId.y;
 
                     arg181.recvID = 0;
                     arg181.recvFlags = 2;
@@ -1576,7 +1576,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
             _roboEnergyMove -= arg->energy;
             _roboBeamPos = arg->target_point;
             _roboBeamTimePre = 1500;
-            if ( _world->isNetGame )
+            if ( _world->_isNetGame )
             {
                 uamessage_startBeam stbMsg;
                 stbMsg.msgID = UAMSG_STARTBEAM;
@@ -1640,8 +1640,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 arg->selectBact->_waypoints[0].x = arg->target_point.x;
                 arg->selectBact->_waypoints[0].z = arg->target_point.z;
 
-                if ( _world->GameShell )
-                    SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_ERROR);
+                if ( _world->_GameShell )
+                    SFXEngine::SFXe.startSound(&_world->_GameShell->samples1_info, World::SOUND_ID_ERROR);
             }
         }
         else
@@ -1708,8 +1708,8 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     arg->selectBact->_waypoints[v72].z = arg->target_point.z;
                     arg->selectBact->_waypoints_count++;
 
-                    if ( _world->GameShell )
-                        SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_ERROR);
+                    if ( _world->_GameShell )
+                        SFXEngine::SFXe.startSound(&_world->_GameShell->samples1_info, World::SOUND_ID_ERROR);
                 }
             }
             else
@@ -1796,42 +1796,40 @@ int NC_STACK_yparobo::FindBestBldRadar()
 
 void NC_STACK_yparobo::sub_4F4FF4(int sectID, setTarget_msg *parg67)
 {
-    int sX = sectID % _wrldSectors.x;
-    int sY = sectID / _wrldSectors.x;
+    Common::Point pt(sectID % _wrldSectors.x, sectID / _wrldSectors.x);
 
-    if ( sX == _sectX && sY == _sectY )
+    if ( _cellId == pt )
     {
-        if ( sX >= 2 )
-            sX--;
+        if ( pt.x >= 2 )
+            pt.x--;
         else
-            sX++;
+            pt.x++;
     }
     else
     {
-        if ( sX > _sectX )
-            sX--;
-        if ( sX < _sectX )
-            sX++;
+        if ( pt.x > _cellId.x )
+            pt.x--;
+        if ( pt.x < _cellId.x )
+            pt.x++;
 
-        if ( sY > _sectY )
-            sY--;
-        if ( sY < _sectY )
-            sY++;
+        if ( pt.y > _cellId.y )
+            pt.y--;
+        if ( pt.y < _cellId.y )
+            pt.y++;
     }
 
     parg67->tgt_type = BACT_TGT_TYPE_CELL;
     parg67->priority = 0;
-    parg67->tgt_pos = World::SectorIDToCenterPos3( {sX, sY} );
+    parg67->tgt_pos = World::SectorIDToCenterPos3( pt );
 }
 
 void NC_STACK_yparobo::buildRadar(update_msg *arg)
 {
-    int xx = _roboBuildingCellID % _wrldSectors.x;
-    int yy = _roboBuildingCellID / _wrldSectors.x;
+    Common::Point pt( _roboBuildingCellID % _wrldSectors.x, _roboBuildingCellID / _wrldSectors.x );
 
     float v35 = arg->frameTime * 0.001;
 
-    if ( _world->SectorAt(_roboBuildingCellID).w_type )
+    if ( _world->SectorAt(_roboBuildingCellID).PurposeType != cellArea::PT_NONE )
     {
         setTarget_msg arg67;
         arg67.tgt_type = BACT_TGT_TYPE_NONE;
@@ -1855,8 +1853,8 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
         }
         else
         {
-
-            if ( abs(_sectX - xx) > 1 || abs(_sectY - yy) > 1 )
+            Common::Point dist = _cellId.AbsDistance( pt );
+            if ( dist.x > 1 || dist.y > 1 ) // More than one sector distance
             {
                 setTarget_msg arg67;
                 sub_4F4FF4(_roboBuildingCellID, &arg67);
@@ -1865,93 +1863,85 @@ void NC_STACK_yparobo::buildRadar(update_msg *arg)
 
                 SetTarget(&arg67);
             }
-            else
+            else if ( dist ) // Not null distance (1 sector distance)
             {
+                setTarget_msg arg67;
+                arg67.tgt_type = BACT_TGT_TYPE_NONE;
+                arg67.priority = 0;
+                SetTarget(&arg67);
 
-                if ( _sectX != xx || _sectY != yy )
+                vec2d t = World::SectorIDToCenterPos2( pt ) - _position.XZ();
+
+                t.normalise();
+
+                float v41 = t.dot( _rotation.AxisZ().XZ() );
+
+                if ( v41 <= 0.9 )
                 {
-                    setTarget_msg arg67;
-                    arg67.tgt_type = BACT_TGT_TYPE_NONE;
-                    arg67.priority = 0;
-                    SetTarget(&arg67);
+                    float a2 = clp_acos(v41);
 
-                    vec2d t = World::SectorIDToCenterPos2( {xx, yy} ) - _position.XZ();
+                    if ( t.cross( _rotation.AxisZ().XZ() ) > 0.0 )
+                        a2 = -a2;
 
-                    t.normalise();
+                    if ( a2 < -_maxrot * v35 )
+                        a2 = -_maxrot * v35;
 
-                    float v41 = t.dot( _rotation.AxisZ().XZ() );
+                    if ( a2 > _maxrot * v35 )
+                        a2 = _maxrot * v35;
 
-                    if ( v41 <= 0.9 )
-                    {
-                        float a2 = clp_acos(v41);
-
-                        if ( t.cross( _rotation.AxisZ().XZ() ) > 0.0 )
-                            a2 = -a2;
-
-                        if ( a2 < -_maxrot * v35 )
-                            a2 = -_maxrot * v35;
-
-                        if ( a2 > _maxrot * v35 )
-                            a2 = _maxrot * v35;
-
-                        sub_4A10E8(a2);
-                    }
-                    else
-                    {
-                        ypaworld_arg148 arg148;
-
-                        arg148.ownerID2 = _owner;
-                        arg148.ownerID = _owner;
-                        arg148.blg_ID = build_id;
-                        arg148.x = xx;
-                        arg148.y = yy;
-                        arg148.field_C = 0;
-                        arg148.field_18 = 0;
-
-                        if ( _world->ypaworld_func148(&arg148) )
-                        {
-                            const World::TBuildingProto &proto = _world->GetBuildProtos().at(build_id);
-
-                            if ( _roboBuildSpare >= proto.Energy )
-                            {
-                                _roboBuildSpare -= proto.Energy;
-                            }
-                            else
-                            {
-                                _energy -= proto.Energy - _roboBuildSpare;
-                                _roboBuildSpare = 0;
-                            }
-
-                            _roboBuildingDuty = 0;
-
-                            if ( _roboNewAI )
-                                _roboRadarDelay = _roboTimeScale * (100 - _roboEpRadar) / 100;
-                        }
-                        else
-                        {
-                            setTarget_msg arg67_1;
-                            arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
-                            arg67_1.priority = 0;
-
-                            SetTarget(&arg67_1);
-
-                            _roboBuildingDuty = 0;
-                        }
-                    }
+                    sub_4A10E8(a2);
                 }
                 else
                 {
-                    setTarget_msg arg67;
+                    ypaworld_arg148 arg148;
 
-                    sub_4F4FF4(_roboBuildingCellID, &arg67);
+                    arg148.owner = _owner;
+                    arg148.blg_ID = build_id;
+                    arg148.CellId = pt;
+                    arg148.field_C = 0;
+                    arg148.field_18 = 0;
 
-                    arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
+                    if ( _world->ypaworld_func148(&arg148) )
+                    {
+                        const World::TBuildingProto &proto = _world->GetBuildProtos().at(build_id);
 
-                    SetTarget(&arg67);
+                        if ( _roboBuildSpare >= proto.Energy )
+                        {
+                            _roboBuildSpare -= proto.Energy;
+                        }
+                        else
+                        {
+                            _energy -= proto.Energy - _roboBuildSpare;
+                            _roboBuildSpare = 0;
+                        }
+
+                        _roboBuildingDuty = 0;
+
+                        if ( _roboNewAI )
+                            _roboRadarDelay = _roboTimeScale * (100 - _roboEpRadar) / 100;
+                    }
+                    else
+                    {
+                        setTarget_msg arg67_1;
+                        arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
+                        arg67_1.priority = 0;
+
+                        SetTarget(&arg67_1);
+
+                        _roboBuildingDuty = 0;
+                    }
                 }
-
             }
+            else
+            {
+                setTarget_msg arg67;
 
+                sub_4F4FF4(_roboBuildingCellID, &arg67);
+
+                arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
+
+                SetTarget(&arg67);
+            }
         }
     }
 }
@@ -1994,12 +1984,11 @@ int NC_STACK_yparobo::FindBestBldPowerStation()
 
 void NC_STACK_yparobo::buildPower(update_msg *arg)
 {
-    int xx = _roboBuildingCellID % _wrldSectors.x;
-    int yy = _roboBuildingCellID / _wrldSectors.x;
+    Common::Point pt(_roboBuildingCellID % _wrldSectors.x, _roboBuildingCellID / _wrldSectors.x);
 
     float v38 = arg->frameTime * 0.001;
 
-    if ( _world->SectorAt( _roboBuildingCellID ).w_type )
+    if ( _world->SectorAt( _roboBuildingCellID ).PurposeType != cellArea::PT_NONE )
     {
         setTarget_msg arg67;
         arg67.tgt_type = BACT_TGT_TYPE_NONE;
@@ -2028,91 +2017,86 @@ void NC_STACK_yparobo::buildPower(update_msg *arg)
             }
             else
             {
-                if ( abs(_sectX - xx) > 1 || abs(_sectY - yy) > 1 )
+                Common::Point dist = _cellId.AbsDistance( pt );
+                if ( dist.x > 1 || dist.y > 1 ) // More than one sector distance
                 {
                     setTarget_msg arg67;
                     sub_4F4FF4(_roboBuildingCellID, &arg67);
                     arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
                     SetTarget(&arg67);
                 }
-                else
+                else if ( dist ) // Not null distance (1 sector distance)
                 {
+                    setTarget_msg arg67;
+                    arg67.tgt_type = BACT_TGT_TYPE_NONE;
+                    arg67.priority = 0;
+                    SetTarget(&arg67);
 
-                    if ( _sectX != xx || _sectY != yy )
+                    vec2d t = World::SectorIDToCenterPos2( pt ) - _position.XZ();
+
+                    t.normalise();
+
+                    float v44 = t.dot( _rotation.AxisZ().XZ() );
+
+                    if ( v44 <= 0.9 )
                     {
-                        setTarget_msg arg67;
-                        arg67.tgt_type = BACT_TGT_TYPE_NONE;
-                        arg67.priority = 0;
-                        SetTarget(&arg67);
+                        float a2 = clp_acos(v44);
 
-                        vec2d t = World::SectorIDToCenterPos2( {xx, yy} ) - _position.XZ();
+                        if ( t.cross( _rotation.AxisZ().XZ() ) > 0.0 )
+                            a2 = -a2;
 
-                        t.normalise();
+                        if ( a2 < -_maxrot * v38 )
+                            a2 = -_maxrot * v38;
 
-                        float v44 = t.dot( _rotation.AxisZ().XZ() );
+                        if ( a2 > _maxrot * v38 )
+                            a2 = _maxrot * v38;
 
-                        if ( v44 <= 0.9 )
-                        {
-                            float a2 = clp_acos(v44);
-
-                            if ( t.cross( _rotation.AxisZ().XZ() ) > 0.0 )
-                                a2 = -a2;
-
-                            if ( a2 < -_maxrot * v38 )
-                                a2 = -_maxrot * v38;
-
-                            if ( a2 > _maxrot * v38 )
-                                a2 = _maxrot * v38;
-
-                            sub_4A10E8(a2);
-                        }
-                        else
-                        {
-                            ypaworld_arg148 arg148;
-                            arg148.ownerID2 = _owner;
-                            arg148.ownerID = _owner;
-                            arg148.blg_ID = bldid;
-                            arg148.x = xx;
-                            arg148.y = yy;
-                            arg148.field_C = 0;
-                            arg148.field_18 = 0;
-
-                            if ( _world->ypaworld_func148(&arg148) )
-                            {
-                                const World::TBuildingProto &proto = _world->GetBuildProtos().at(bldid);
-
-                                if ( _roboBuildSpare >= proto.Energy )
-                                {
-                                    _roboBuildSpare -= proto.Energy;
-                                }
-                                else
-                                {
-                                    _energy -= proto.Energy - _roboBuildSpare;
-                                    _roboBuildSpare = 0;
-                                }
-
-                                _roboBuildingDuty = 0;
-
-                                if ( _roboNewAI )
-                                    _roboPowerDelay = _roboTimeScale * (100 - _roboEpPower) / 100;
-                            }
-                            else
-                            {
-                                setTarget_msg arg67_1;
-                                arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
-                                arg67_1.priority = 0;
-                                SetTarget(&arg67_1);
-                                _roboBuildingDuty = 0;
-                            }
-                        }
+                        sub_4A10E8(a2);
                     }
                     else
                     {
-                        setTarget_msg arg67;
-                        sub_4F4FF4(_roboBuildingCellID, &arg67);
-                        arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
-                        SetTarget(&arg67);
+                        ypaworld_arg148 arg148;
+                        arg148.owner = _owner;
+                        arg148.blg_ID = bldid;
+                        arg148.CellId = pt;
+                        arg148.field_C = 0;
+                        arg148.field_18 = 0;
+
+                        if ( _world->ypaworld_func148(&arg148) )
+                        {
+                            const World::TBuildingProto &proto = _world->GetBuildProtos().at(bldid);
+
+                            if ( _roboBuildSpare >= proto.Energy )
+                            {
+                                _roboBuildSpare -= proto.Energy;
+                            }
+                            else
+                            {
+                                _energy -= proto.Energy - _roboBuildSpare;
+                                _roboBuildSpare = 0;
+                            }
+
+                            _roboBuildingDuty = 0;
+
+                            if ( _roboNewAI )
+                                _roboPowerDelay = _roboTimeScale * (100 - _roboEpPower) / 100;
+                        }
+                        else
+                        {
+                            setTarget_msg arg67_1;
+                            arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
+                            arg67_1.priority = 0;
+                            SetTarget(&arg67_1);
+                            _roboBuildingDuty = 0;
+                        }
                     }
+                }
+                else
+                {
+                    setTarget_msg arg67;
+                    sub_4F4FF4(_roboBuildingCellID, &arg67);
+                    arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
+                    SetTarget(&arg67);
                 }
             }
         }
@@ -2167,12 +2151,11 @@ int NC_STACK_yparobo::FindBestBldDefenceCenter()
 void NC_STACK_yparobo::buildSafe(update_msg *arg)
 {
     // Copy of sub4_sub0 with minor changes
-    int xx = _roboBuildingCellID % _wrldSectors.x;
-    int yy = _roboBuildingCellID / _wrldSectors.x;
+    Common::Point pt(_roboBuildingCellID % _wrldSectors.x, _roboBuildingCellID / _wrldSectors.x);
 
     float v35 = arg->frameTime * 0.001;
 
-    if ( _world->SectorAt( _roboBuildingCellID ).w_type )
+    if ( _world->SectorAt( _roboBuildingCellID ).PurposeType != cellArea::PT_NONE )
     {
         setTarget_msg arg67;
         arg67.tgt_type = BACT_TGT_TYPE_NONE;
@@ -2196,8 +2179,8 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
         }
         else
         {
-
-            if ( abs(_sectX - xx) > 1 || abs(_sectY - yy) > 1 )
+            Common::Point dist = _cellId.AbsDistance( pt );
+            if ( dist.x > 1 || dist.y > 1 ) // More than one sector distance
             {
                 setTarget_msg arg67;
                 sub_4F4FF4(_roboBuildingCellID, &arg67);
@@ -2206,91 +2189,84 @@ void NC_STACK_yparobo::buildSafe(update_msg *arg)
 
                 SetTarget(&arg67);
             }
-            else
+            else if ( dist ) // Not null distance (1 sector distance)
             {
+                setTarget_msg arg67;
+                arg67.tgt_type = BACT_TGT_TYPE_NONE;
+                arg67.priority = 0;
+                SetTarget(&arg67);
 
-                if ( _sectX != xx || _sectY != yy )
+                vec2d t = World::SectorIDToCenterPos2( pt ) - _position.XZ();
+
+                t.normalise();
+
+                float v41 = t.dot( _rotation.AxisZ().XZ() );
+
+                if ( v41 <= 0.9 )
                 {
-                    setTarget_msg arg67;
-                    arg67.tgt_type = BACT_TGT_TYPE_NONE;
-                    arg67.priority = 0;
-                    SetTarget(&arg67);
-                    
-                    vec2d t = World::SectorIDToCenterPos2( {xx, yy} ) - _position.XZ();
+                    float a2 = clp_acos(v41);
 
-                    t.normalise();
+                    if ( t.cross( _rotation.AxisZ().XZ() ) > 0.0 )
+                        a2 = -a2;
 
-                    float v41 = t.dot( _rotation.AxisZ().XZ() );
+                    if ( a2 < -_maxrot * v35 )
+                        a2 = -_maxrot * v35;
 
-                    if ( v41 <= 0.9 )
-                    {
-                        float a2 = clp_acos(v41);
+                    if ( a2 > _maxrot * v35 )
+                        a2 = _maxrot * v35;
 
-                        if ( t.cross( _rotation.AxisZ().XZ() ) > 0.0 )
-                            a2 = -a2;
-
-                        if ( a2 < -_maxrot * v35 )
-                            a2 = -_maxrot * v35;
-
-                        if ( a2 > _maxrot * v35 )
-                            a2 = _maxrot * v35;
-
-                        sub_4A10E8(a2);
-                    }
-                    else
-                    {
-                        ypaworld_arg148 arg148;
-
-                        arg148.ownerID2 = _owner;
-                        arg148.ownerID = _owner;
-                        arg148.blg_ID = build_id;
-                        arg148.x = xx;
-                        arg148.y = yy;
-                        arg148.field_C = 0;
-                        arg148.field_18 = 0;
-
-                        if ( _world->ypaworld_func148(&arg148) )
-                        {
-                            const World::TBuildingProto &proto = _world->GetBuildProtos().at(build_id);
-
-                            if ( _roboBuildSpare >= proto.Energy )
-                            {
-                                _roboBuildSpare -= proto.Energy;
-                            }
-                            else
-                            {
-                                _energy -= proto.Energy - _roboBuildSpare;
-                                _roboBuildSpare = 0;
-                            }
-
-                            _roboBuildingDuty = 0;
-
-                            if ( _roboNewAI )
-                                _roboSafetyDelay = _roboTimeScale * (100 - _roboEpSafety) / 100;
-                        }
-                        else
-                        {
-                            setTarget_msg arg67_1;
-                            arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
-                            arg67_1.priority = 0;
-
-                            SetTarget(&arg67_1);
-
-                            _roboBuildingDuty = 0;
-                        }
-                    }
+                    sub_4A10E8(a2);
                 }
                 else
                 {
-                    setTarget_msg arg67;
+                    ypaworld_arg148 arg148;
 
-                    sub_4F4FF4(_roboBuildingCellID, &arg67);
+                    arg148.owner = _owner;
+                    arg148.blg_ID = build_id;
+                    arg148.CellId = pt;
+                    arg148.field_C = 0;
+                    arg148.field_18 = 0;
 
-                    arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
+                    if ( _world->ypaworld_func148(&arg148) )
+                    {
+                        const World::TBuildingProto &proto = _world->GetBuildProtos().at(build_id);
 
-                    SetTarget(&arg67);
+                        if ( _roboBuildSpare >= proto.Energy )
+                        {
+                            _roboBuildSpare -= proto.Energy;
+                        }
+                        else
+                        {
+                            _energy -= proto.Energy - _roboBuildSpare;
+                            _roboBuildSpare = 0;
+                        }
+
+                        _roboBuildingDuty = 0;
+
+                        if ( _roboNewAI )
+                            _roboSafetyDelay = _roboTimeScale * (100 - _roboEpSafety) / 100;
+                    }
+                    else
+                    {
+                        setTarget_msg arg67_1;
+                        arg67_1.tgt_type = BACT_TGT_TYPE_NONE;
+                        arg67_1.priority = 0;
+
+                        SetTarget(&arg67_1);
+
+                        _roboBuildingDuty = 0;
+                    }
                 }
+            }
+            else
+            {
+                setTarget_msg arg67;
 
+                sub_4F4FF4(_roboBuildingCellID, &arg67);
+
+                arg67.tgt_type = BACT_TGT_TYPE_CELL_IND;
+
+                SetTarget(&arg67);
             }
 
         }
@@ -2303,7 +2279,7 @@ void NC_STACK_yparobo::changePlace()
     
     if ( _world->IsGamePlaySector(pt) )
     {
-        float v12 = pt.LengthTo<float>( {_sectX, _sectY} );
+        float v12 = _cellId.LengthTo<float>( pt );
 
         if ( v12 >= 0.1 )
         {
@@ -2375,7 +2351,8 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
 
             int v8 = _world->TestVehicle(node->_vehicleID, arg->job);
 
-            if ( abs(node->_sectX - _sectX) < 2 && abs(node->_sectY - _sectY) < 2 )
+            Common::Point tmp = _cellId.AbsDistance( node->_cellId );
+            if ( tmp.x < 2 && tmp.y < 2 )
                 v77 = 1;
 
             if ( v8 > -1 && v8 >= v82 )
@@ -2544,7 +2521,7 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
         newUnit->setBACT_bactCollisions(v69);
 
         AddSubject(newUnit);
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             newUnit->_gid |= newUnit->_owner << 24;
             newUnit->_commandID |= newUnit->_owner << 24;
@@ -2740,7 +2717,7 @@ void NC_STACK_yparobo::buildConquer()
 
         loct.tgType = BACT_TGT_TYPE_CELL;
 
-        if ( _roboVehicleCell->w_type == 2 )
+        if ( _roboVehicleCell->PurposeType == cellArea::PT_POWERSTATION )
             loct.aggr = 49;
         else
             loct.aggr = 60;
@@ -3579,7 +3556,7 @@ void NC_STACK_yparobo::checkCommander()
 
                 placeMessage(&arg134);
 
-                if ( _world->isNetGame  )
+                if ( _world->_isNetGame  )
                 {
                     bact_arg90 arg90;
                     arg90.unit = commander;
@@ -3614,7 +3591,7 @@ void NC_STACK_yparobo::checkCommander()
             {
                 for ( NC_STACK_ypabact *v33 : commander->_attackersList )
                 {
-                    if (_world->UserRobo->_owner == v33->_owner)
+                    if (_world->_userRobo->_owner == v33->_owner)
                     {                                       
                         if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
                         {
@@ -3647,11 +3624,11 @@ void NC_STACK_yparobo::checkDanger()
     int v11 = 0;
     int v12;
 
-    for(int i = -1; i < 2; i++)
+    for(int i = -1; i <= 1; i++)
     {
-        for(int j = -1; j < 2; j++)
+        for(int j = -1; j <= 1; j++)
         {
-            Common::Point pt(_sectX + i, _sectY + j);
+            Common::Point pt = _cellId + Common::Point(i, j);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -3713,10 +3690,10 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub0(const Common::Point &sc)
     if ( cell.owner != _owner )
         return -1;
 
-    if ( cell.w_type )
+    if ( cell.PurposeType != cellArea::PT_NONE )
         return -1;
 
-    float v8 = sqrt( POW2(_sectY - sc.y) + POW2(_sectX - sc.x) );
+    float v8 = _cellId.LengthTo<float>( sc );
 
     float v14 = ( v8 <= 0.01 ? 500.0 : 1000.0 / v8 );
 
@@ -3744,7 +3721,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub1(const Common::Point &sc)
     if ( cell.IsCanSee(_owner) )
         return -1;
 
-    float v13 = sqrt(POW2(_sectY - sc.y) + POW2(_sectX - sc.x));
+    float v13 = _cellId.LengthTo<float>( sc );
 
     if ( v13 <= 0.01 )
         v13 = 0.0;
@@ -3778,10 +3755,10 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub2(const Common::Point &sc)
 //      }
 //  }
 
-    if ( cell.owner != _owner || cell.w_type )
+    if ( cell.owner != _owner || cell.PurposeType != cellArea::PT_NONE )
         return -1;
 
-    float v9 = sqrt( POW2(_sectY - sc.y) + POW2(_sectX - sc.x) );
+    float v9 = _cellId.LengthTo<float>( sc );
 
     float v14;
 
@@ -3794,7 +3771,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub2(const Common::Point &sc)
     {
         cellArea &cll = _world->SectorAt(sc + ds);
 
-        if ( cll.w_type && _owner == cll.owner)
+        if ( cll.PurposeType != cellArea::PT_NONE && _owner == cll.owner)
             v14 += 5.0;
 
     }
@@ -3812,7 +3789,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub3(const Common::Point &sc)
     if ( cell.energy_power >= 255 )
         return -1;
 
-    if ( cell.w_type )
+    if ( cell.PurposeType != cellArea::PT_NONE )
         return -1;
 
 //  if ( cell->field_2E != 1 )
@@ -3829,7 +3806,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub3(const Common::Point &sc)
     if ( cell.owner != _owner )
         return -1;
 
-    float v9 = sqrt( POW2(_sectY - sc.y) + POW2(_sectX - sc.x) );
+    float v9 = _cellId.LengthTo<float>( sc );
     float v26 = v9 <= 0.01 ? 500.0 : 1000.0 / v9;
 
     if ( v9 > 8.0 )
@@ -3847,7 +3824,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub3(const Common::Point &sc)
             v27 += (255 - v11) * 0.05 + 10.0;
         }
 
-        if ( cll.w_type == 2 )
+        if ( cll.PurposeType == cellArea::PT_POWERSTATION )
             v27 *= 0.7;
     }
 
@@ -3856,29 +3833,29 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub3(const Common::Point &sc)
     return v27;
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub6__sub4(const Common::Point &sc)
+int32_t NC_STACK_yparobo::yparobo_func70__sub6__sub4(const Common::Point &sc)
 {
     cellArea &cell = _world->SectorAt(sc);
     
     if ( cell.owner == _owner )
         return -1;
 
-    float v7 = sqrt( POW2(_sectY - sc.y) + POW2(_sectX - sc.x) );
-    float v25;
+    float v7 = _cellId.LengthTo<float>( sc );
+    int32_t val = 0;
 
     if ( v7 <= 0.01 )
-        v25 = 1500.0;
+        val = 1500;
     else
-        v25 = 1000.0 / v7;
+        val = 1000.0 / v7;
 
     if ( cell.IsCanSee(_owner) )
     {
-        if ( cell.w_type )
-            v25 = v25 + 20.0;
-        if ( cell.w_type == 6 )
-            v25 = v25 + 40.0;
-        if ( cell.w_type == 2 )
-            v25 = v25 + 50.0;
+        if ( cell.PurposeType != cellArea::PT_NONE )
+            val = 20;
+        if ( cell.PurposeType == cellArea::PT_GATEOPENED )
+            val += 40;
+        if ( cell.PurposeType == cellArea::PT_POWERSTATION )
+            val += 50;
     }
 
     for ( Common::Point ds : NearDxy )
@@ -3888,7 +3865,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub4(const Common::Point &sc)
         if ( _world->IsGamePlaySector(pt))
         {
             if ( _world->SectorAt(pt).owner == _owner )
-                v25 = v25 + 3.0;
+                val += 3;
         }
     }
 
@@ -3901,15 +3878,15 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub4(const Common::Point &sc)
                 if ( bct->_bact_type != BACT_TYPES_MISSLE)
                 {
                     if ( bct->_bact_type == BACT_TYPES_ROBO)
-                        v25 += 100.0;
+                        val += 100;
                     else
-                        v25 += 5.0;
+                        val += 5;
                 }
             }
         }
     }
 
-    return v25;
+    return val;
 }
 
 int NC_STACK_yparobo::yparobo_func70__sub6__sub8()
@@ -3918,7 +3895,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub8()
 
     for (cellArea &cll : _world->Sectors())
     {
-        if ( cll.w_type == 3 )
+        if ( cll.PurposeType == cellArea::PT_BUILDINGS )
         {
             for ( NC_STACK_ypabact* &bct : cll.unitsList )
             {
@@ -3946,7 +3923,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub9()
 
     for (cellArea &cll : _world->Sectors())
     {
-        if ( cll.w_type == 3 )
+        if ( cll.PurposeType == cellArea::PT_BUILDINGS )
         {
             for (NC_STACK_ypabact* &bct : cll.unitsList )
             {
@@ -4004,10 +3981,8 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub12()
             {
                 if ( _owner != node->_owner )
                 {
-                    int v9 = _sectX - node->_sectX;
-                    int v10 = _sectY - node->_sectY;
-
-                    if ( abs(v9) < 3 && abs(v10) < 3 )
+                    Common::Point dist = _cellId.AbsDistance( node->_cellId );
+                    if ( dist.x < 3 && dist.y < 3 )
                         return 1;
                 }
             }
@@ -4023,7 +3998,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub13()
     {
         for (int j = -2; j <= 2; j++)
         {
-            Common::Point pt(_sectX + i, _sectY + j);
+            Common::Point pt = _cellId + Common::Point(i, j);
 
             if ( _world->IsGamePlaySector(pt) )
             {
@@ -4046,12 +4021,12 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub13()
 }
 
 
-float NC_STACK_yparobo::sub_4F4C6C(NC_STACK_ypabact *bact, int a4, int a3)
+float NC_STACK_yparobo::sub_4F4C6C(NC_STACK_ypabact *bact)
 {
     if ( bact->_status_flg & BACT_STFLAG_DEATH1 )
         return -1.0;
 
-    float v8 = sqrt( POW2(a3 - bact->_sectY) + POW2(a4 - bact->_sectX) );
+    float v8 = _cellId.LengthTo<float>( bact->_cellId );
 
     if (v8 != 0.0)
         v8 = 100.0 / v8;
@@ -4064,7 +4039,7 @@ float NC_STACK_yparobo::sub_4F4C6C(NC_STACK_ypabact *bact, int a4, int a3)
     return v8;
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub6__sub5(int *a2, int *px, int *py)
+int NC_STACK_yparobo::yparobo_func70__sub6__sub5(int *a2, Common::Point *pCellId)
 {
     float v32 = -0.5;
 
@@ -4076,12 +4051,11 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub5(int *a2, int *px, int *py)
         {
             if ( node->_owner != _owner  &&  node->_owner  &&  node->_status != BACT_STATUS_DEAD )
             {
-                if ( abs(node->_sectX - _sectX) <= 2 &&
-                        abs(node->_sectY - _sectY) <= 2 )
+                Common::Point dist = _cellId.AbsDistance( node->_cellId );
+                if ( dist.x <= 2 && dist.y <= 2 )
                 {
                     *a2 = node->_commandID;
-                    *px = node->_sectX;
-                    *py = node->_sectY;
+                    *pCellId = node->_cellId;
 
                     return 500;
                 }
@@ -4103,13 +4077,12 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub5(int *a2, int *px, int *py)
                         {
                             if ( ndbct->_status != BACT_STATUS_DEAD && !v26 )
                             {
-                                float tmp = sub_4F4C6C(ndbct, _sectX, _sectY);
+                                float tmp = sub_4F4C6C(ndbct);
                                 if ( tmp > v32 )
                                 {
                                     v32 = tmp;
                                     v29 = ndbct->_commandID;
-                                    *px = ndbct->_sectX;
-                                    *py = ndbct->_sectY;
+                                    *pCellId = ndbct->_cellId;
                                 }
                             }
                         }
@@ -4134,7 +4107,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub5(int *a2, int *px, int *py)
     return v32;
 }
 
-int NC_STACK_yparobo::yparobo_func70__sub6__sub6(int *a2, int *px, int *py)
+int NC_STACK_yparobo::yparobo_func70__sub6__sub6(int *a2, Common::Point *pCellId)
 {
     float v32 = -0.5;
     int v21 = 0;
@@ -4147,13 +4120,12 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub6(int *a2, int *px, int *py)
             {
                 if ( node->_pSector->IsCanSee(_owner) )
                 {
-                    float v13 = sub_4F4C6C(node, _sectX, _sectY);
+                    float v13 = sub_4F4C6C(node);
                     if ( v13 > v32 )
                     {
                         v21 = node->_commandID;
                         v32 = v13;
-                        *px = node->_sectX;
-                        *py = node->_sectY;
+                        *pCellId = node->_cellId;
                     }
                 }
             }
@@ -4171,7 +4143,7 @@ int NC_STACK_yparobo::yparobo_func70__sub6__sub6(int *a2, int *px, int *py)
 }
 
 
-int NC_STACK_yparobo::sub_4F4E48(int x, int y)
+int NC_STACK_yparobo::sub_4F4E48(const Common::Point &cellId)
 {
     float v14 = 0.0;
 
@@ -4179,7 +4151,7 @@ int NC_STACK_yparobo::sub_4F4E48(int x, int y)
     {
         for (int j = -1; j <= 1; j++)
         {
-            cellArea &cll = _world->SectorAt(x + i, y + j);
+            cellArea &cll = _world->SectorAt( cellId + Common::Point(i, j) );
 
             yw_arg176 arg176;
             arg176.owner = cll.owner;
@@ -4233,13 +4205,12 @@ int NC_STACK_yparobo::sub_4F4E48(int x, int y)
 
 int NC_STACK_yparobo::yparobo_func70__sub6__sub7()
 {
-    int xx = _roboPositionCellIndex % _wrldSectors.x;
-    int yy = _roboPositionCellIndex / _wrldSectors.x;
+    Common::Point pt( _roboPositionCellIndex % _wrldSectors.x, _roboPositionCellIndex / _wrldSectors.x);
 
-    int a1_4 = sub_4F4E48(_sectX, _sectY);
-    int v14 = sub_4F4E48(xx, yy);
+    int a1_4 = sub_4F4E48(_cellId);
+    int v14 = sub_4F4E48( pt );
 
-    float v12 = sqrt( POW2(_sectY - yy) + POW2(_sectX - xx) );
+    float v12 = _cellId.LengthTo<float>( pt );
 
     if ( v12 > 0.0 && a1_4 < v14 )
         v14 = ((float)v14 * (1.0 - v12 * 0.8 / 91.0));
@@ -4322,9 +4293,10 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpDefense && v6 )
     {
-        int v91, xx, yy;
+        Common::Point cellId;
+        int v91;
 
-        int v17 = yparobo_func70__sub6__sub5(&v91, &xx, &yy);
+        int v17 = yparobo_func70__sub6__sub5(&v91, &cellId);
         if ( v17 > _roboEnemyValue )
         {
             arg128.flags = 2;
@@ -4337,7 +4309,7 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
                 _roboEnemyValue = v17;
                 _roboEnemyCommandID = v91;
                 _roboEnemyTime = arg->gTime;
-                _roboEnemyCellID = yy * _wrldSectors.x + xx;
+                _roboEnemyCellID = cellId.y * _wrldSectors.x + cellId.x;
             }
         }
         _roboState |= ROBOSTATE_READYDEFENSE;
@@ -4361,8 +4333,9 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
 
     if ( _roboEpRobo && v6 )
     {
-        int v91, xx, yy;
-        int v22 = yparobo_func70__sub6__sub6(&v91, &xx, &yy);
+        Common::Point cellId;
+        int v91;
+        int v22 = yparobo_func70__sub6__sub6(&v91, &cellId);
 
         if ( v22 > _roboDangerValue )
         {
@@ -4378,7 +4351,7 @@ void NC_STACK_yparobo::AI_checkWorld(update_msg *arg)
                 _roboDangerValue = v22;
                 _roboDangerCommandID = v91;
                 _roboDangerTime = arg->gTime;
-                _roboDangerCellID = _wrldSectors.x * yy + xx;
+                _roboDangerCellID = _wrldSectors.x * cellId.y + cellId.x;
             }
         }
         _roboState |= ROBOSTATE_READYROBO;
@@ -4699,7 +4672,7 @@ void NC_STACK_yparobo::AI_layer3(update_msg *arg)
 
 void NC_STACK_yparobo::yparobo_func71__sub0(update_msg *arg)
 {
-    InputState *inpt = arg->inpt;
+    TInputState *inpt = arg->inpt;
     float v18 = arg->frameTime / 1000.0;
 
 
@@ -4986,7 +4959,7 @@ void NC_STACK_yparobo::Die()
 
         _vp_extra[1].flags = 0;
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             if ( _owner )
             {
@@ -4998,10 +4971,10 @@ void NC_STACK_yparobo::Die()
                 arg181.garant = 1;
                 _world->ypaworld_func181(&arg181);
 
-                if ( this == _world->UserRobo )
+                if ( this == _world->_userRobo )
                 {
-                    _world->UserUnit->setBACT_inputting(0);
-                    _world->UserUnit->setBACT_viewer(0);
+                    _world->_userUnit->setBACT_inputting(0);
+                    _world->_userUnit->setBACT_viewer(0);
 
                     setBACT_inputting(1);
                     setBACT_viewer(1);
@@ -5413,7 +5386,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
         _vp_extra[0].SetVP(_vp_genesis);
         _vp_extra[0].flags |= (EVPROTO_FLAG_ACTIVE | EVPROTO_FLAG_SCALE);
 
-        if ( _world->isNetGame )
+        if ( _world->_isNetGame )
         {
             uamessage_startPlasma sbMsg;
             sbMsg.msgID = UAMSG_STARTPLASMA;
@@ -5890,13 +5863,13 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
                 _position = _old_pos;
                 _roboYPos = _old_pos.y;
 
-                if ( !_world->SaveGame( fmt::sprintf("save:%s/%d.fin", _world->GameShell->UserName, _world->_levelInfo.LevelID) ) )
+                if ( !_world->SaveGame( fmt::sprintf("save:%s/%d.fin", _world->_GameShell->UserName, _world->_levelInfo.LevelID) ) )
                     ypa_log_out("Warning, final sgm save error\n");
 
                 _position = tt;
 
-                if ( _world->GameShell )
-                    uaDeleteFile( fmt::sprintf("save:%s/%d.rst", _world->GameShell->UserName, _world->_levelInfo.LevelID) );
+                if ( _world->_GameShell )
+                    uaDeleteFile( fmt::sprintf("save:%s/%d.rst", _world->_GameShell->UserName, _world->_levelInfo.LevelID) );
                 
                 _status_flg |= BACT_STFLAG_CLEAN;
 
@@ -5908,7 +5881,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
     else
     {
 
-        _position = World::SectorIDToCenterPos3( {_sectX, _sectY} );
+        _position = World::SectorIDToCenterPos3( _cellId );
 
         for (NC_STACK_ypabact* &unit : _kidList )
         {
@@ -5928,7 +5901,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
             {
                 if ( bct->_bact_type != BACT_TYPES_ROBO && bct->_bact_type != BACT_TYPES_MISSLE && bct->_bact_type != BACT_TYPES_GUN && bct->_owner == _owner )
                 {
-                    vec2d temp = World::SectorIDToCenterPos2( {_sectX, _sectY} );
+                    vec2d temp = World::SectorIDToCenterPos2( _cellId );
                     float v17 = fabs(bct->_position.x - temp.x);
                     float v29 = fabs(bct->_position.z - temp.y);
 
@@ -6008,7 +5981,7 @@ void NC_STACK_yparobo::setROBO_proto(World::TRoboProto *proto)
 
             dword_5B1128++;
 
-            if ( _world->isNetGame )
+            if ( _world->_isNetGame )
             {
                 gun_obj->_gid |= gun_obj->_owner << 24;
                 gun_obj->_commandID |= gun_obj->_owner << 24;

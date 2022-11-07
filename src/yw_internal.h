@@ -3,7 +3,7 @@
 
 struct TSectorCollision
 {
-    UAskeleton::Data *sklt = NULL;
+    NC_STACK_skeleton *sklt = NULL;
     vec3d pos;
     Common::Point Cell;
     int16_t CollisionType = 0;
@@ -16,10 +16,6 @@ struct TRenderingSector
     cellArea *p_cell;
     int dword4;
     int dword8;
-    float x;
-    float y;
-    float z;
-    float smooth_height;
 };
 
 
@@ -31,8 +27,8 @@ int yw_InitNetwork(NC_STACK_ypaworld *yw);
 int loadTOD(NC_STACK_ypaworld *yw, const char *fname);
 int writeTOD(NC_STACK_ypaworld *yw, const char *fname, int tod);
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc, int a5);
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc);
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, TInputState *struc, int a5);
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, TInputState *struc);
 
 void set_keys_vals(NC_STACK_ypaworld *yw);
 void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr);
@@ -58,7 +54,7 @@ void yw_calcPlayerScore(NC_STACK_ypaworld *yw);
 
 int sub_4DA41C(NC_STACK_ypaworld *yw, TLevelDescription *mapp, const char *fname);
 
-void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, InputState *inpt);
+void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, TInputState *inpt);
 
 NC_STACK_base *load_set_base();
 
@@ -105,8 +101,7 @@ void ypaworld_func2__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, 
 
 
 
-void ypaworld_func148__sub0(NC_STACK_ypaworld *yw, int x, int y);
-int ypaworld_func148__sub1(NC_STACK_ypaworld *yw, int id, int a4, int x, int y, int ownerID2, char blg_ID);
+
 
 
 void create_squad_man(NC_STACK_ypaworld *yw);
@@ -227,9 +222,9 @@ public:
     float field_1E0;
     float field_1E4;
     int field_1E8;
-    char field_1EC;
-    char field_1ED;
-    char field_1EE;
+    uint8_t field_1EC;
+    uint8_t field_1ED;
+    uint8_t field_1EE;
     int32_t MapViewMask;
     int field_1F0;
     int field_1F4;
@@ -276,7 +271,7 @@ struct debrif_t1
 };
 
 
-void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, InputState *inpt);
+void ypaworld_func64__sub7(NC_STACK_ypaworld *yw, TInputState *inpt);
 void ypaworld_func64__sub8(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub14(NC_STACK_ypaworld *yw);
 
@@ -303,11 +298,10 @@ char *yw_RenderUnitLifeBar(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *b
 void yw_RenderHUDRadare(NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw);
 
-void ypaworld_func64__sub20(NC_STACK_ypaworld *ywo, int dtime);
-void ypaworld_func64__sub6(NC_STACK_ypaworld *yw);
-void ypaworld_func64__sub5(NC_STACK_ypaworld *yw);
 
-void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, InputState *arg);
+void ypaworld_func64__sub6(NC_STACK_ypaworld *yw);
+
+void ypaworld_func64__sub21(NC_STACK_ypaworld *yw, TInputState *arg);
 
 
 
@@ -318,10 +312,10 @@ void ypaworld_func64__sub19(NC_STACK_ypaworld *yw);
 void ypaworld_func64__sub9(NC_STACK_ypaworld *yw);
 
 void ypaworld_func64__sub3(NC_STACK_ypaworld *yw);
-void sub_44A094(NC_STACK_ypaworld *yw);
+
 
 void FFeedback_Update(NC_STACK_ypaworld *yw);
-void sb_0x447720(NC_STACK_ypaworld *yw, InputState *inpt);
+void sb_0x447720(NC_STACK_ypaworld *yw, TInputState *inpt);
 void recorder_update_time(NC_STACK_ypaworld *yw, int dtime);
 void recorder_write_frame(NC_STACK_ypaworld *yw);
 
@@ -344,10 +338,9 @@ void ypaworld_func151__sub1(NC_STACK_ypaworld *yw);
 
 NC_STACK_bitmap * loadDisk_screen(NC_STACK_ypaworld *yw);
 void draw_splashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
-void deleteSplashScreen(NC_STACK_ypaworld *yw, NC_STACK_bitmap *splashScreen);
 
 void yw_RenderVector2D(NC_STACK_ypaworld *yw, UAskeleton::Data *wire, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, SDL_Color coloooor, wis_color_func color_func, wis_color_func color_func2, bool aspectCorrection = false);
-void yw_debriefUpdate(NC_STACK_ypaworld *yw, InputState *inpt);
+void yw_debriefUpdate(NC_STACK_ypaworld *yw, TInputState *inpt);
 
 int sub_4C885C();
 void sub_4476AC(NC_STACK_ypaworld *yw);
@@ -364,7 +357,7 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string 
 
 
 void sub_4D9550(NC_STACK_ypaworld *yw, int arg);
-void sub_47C1EC(NC_STACK_ypaworld *yw, MapGem *gemProt, int *a3, int *a4);
+void sub_47C1EC(NC_STACK_ypaworld *yw, TMapGem *gemProt, int *a3, int *a4);
 
 void yw_NetMsgHndlLoop(NC_STACK_ypaworld *yw);
 void yw_NetDrawStats(NC_STACK_ypaworld *yw);

@@ -39,7 +39,6 @@ OBJS =  \
 	base.cpp\
 	bmpAnm.cpp\
 	button.cpp\
-	common.cpp\
 	crc32.cpp\
 	def_parser.cpp\
 	embed.cpp\

@@ -63,6 +63,11 @@ public:
     //Load/Save from/to IFF
     static NC_STACK_nucleus *LoadObjectFromIFF(IFFile *mfile);
     bool SaveObjectIntoIFF(IFFile *mfile);
+    
+    void Delete() {
+        Deinit();
+        delete this;
+    }
 
 public:
     //Data
@@ -192,15 +197,7 @@ T *CTFInit(const std::string &classname)
     return CTFInit<T>(classname, empty);
 }
 
-
-void Delete(NC_STACK_nucleus *clas);
 }
-
-
-
-
-
-int delete_class_obj(NC_STACK_nucleus *cls);
 
 
 

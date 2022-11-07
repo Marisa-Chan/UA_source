@@ -111,7 +111,7 @@ bool ParseIniFile(std::string iniFile, KeyList *lst)
     delete fil;
     
     for( const std::string &str : Env._predefinedIniKeys )
-        ParseLine<Key>(str, lst);
+        ParseLine(str, lst);
 
     return true;
 }

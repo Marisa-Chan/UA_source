@@ -28,7 +28,7 @@ struct d3dsTextureMap
     ~d3dsTextureMap()
     {
         if (tex)
-            Nucleus::Delete(tex);
+            tex->Delete();
     }
 };
 

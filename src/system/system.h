@@ -13,7 +13,7 @@
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "../common.h"
+#include "common/common.h"
 
 namespace System 
 {

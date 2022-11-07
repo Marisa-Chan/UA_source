@@ -181,42 +181,22 @@ struct setState_msg
 
 struct update_msg
 {
-    int gTime;
-    int frameTime;
-    InputState *inpt;
-    int units_count;
-    int user_action;
-    int protoID;
-    NC_STACK_ypabact *selectBact;
-    cellArea *target_Sect;
-    int target_sect_x;
-    int target_sect_y;
-    int target_point_flags;
+    int gTime = 0;
+    int frameTime = 0;
+    TInputState *inpt = NULL;
+    int units_count = 0;
+    int user_action = 0;
+    int protoID = 0;
+    NC_STACK_ypabact *selectBact = NULL;
+    cellArea *target_Sect = NULL;
     vec3d target_point;
-    NC_STACK_ypabact *target_Bact;
-    int energy;
-
-    update_msg()
-    {
-        gTime = 0;
-        frameTime = 0;
-        inpt = NULL;
-        units_count = 0;
-        user_action = 0;
-        protoID = 0;
-        selectBact = NULL;
-        target_Sect = NULL;
-        target_sect_x = 0;
-        target_sect_y = 0;
-        target_point_flags = 0;
-        target_Bact = NULL;
-        energy = 0;
-    }
+    NC_STACK_ypabact *target_Bact = NULL;
+    int energy = 0;
 };
 
 struct setTarget_msg
 {
-    char tgt_type;
+    uint8_t tgt_type;
     int priority;
     BactTarget tgt;
     vec3d tgt_pos;
@@ -528,7 +508,11 @@ public:
     bool IsParentMyRobo() const;
     
     void CopyWaypointsStuff(NC_STACK_ypabact *bact);
-        
+    
+    World::RefBactList &GetKidList() { return _kidList; }
+    
+
+    // static methods for return correspond for reflist  kid ref node
     static World::RefBactList::Node& GetCellRefNode(NC_STACK_ypabact *&bact)
     {
         return bact->_cellRef;
@@ -549,9 +533,8 @@ public:
     
     World::RefBactList::Node _cellRef;
     
-    int _sectX;
-    int _sectY;
-    cellArea *_pSector;
+    Common::Point _cellId;
+    cellArea *_pSector = NULL;
     
     vec2d _wrldSize;
     
@@ -560,8 +543,8 @@ public:
     int _bact_type;
     uint32_t _gid; // global bact id
     uint8_t _vehicleID; // vehicle id, from scr files
-    char _bflags;
-    int _commandID;
+    uint8_t _bflags;
+    int32_t _commandID;
     NC_STACK_yparobo *_host_station; // parent robo?
     NC_STACK_ypabact *_parent;
     World::RefBactList _kidList;
@@ -575,17 +558,17 @@ public:
     int _energy_max;
     int _reload_const;
 //    int16_t field_3CE;
-    char _shield;
+    uint8_t _shield;
 //    char field_3D1;
-    char _radar; // num sectors view
+    uint8_t _radar; // num sectors view
     uint8_t _owner;
-    char _aggr;
-    char _status;
-    uint64_t paddiong;
+    uint8_t _aggr;
+    uint8_t _status;
+//    uint64_t paddiong;
     int _status_flg; //Additional status flags
 //    int field_3DA;
-    char _primTtype;
-    char _secndTtype;
+    uint8_t _primTtype;
+    uint8_t _secndTtype;
     int _primT_cmdID;
     int _secndT_cmdID;
     BactTarget _primT;
@@ -672,9 +655,9 @@ public:
     int _energy_time;
     vec3d _mpos;
     int _weapon;
-    char _weapon_flags;
+    uint8_t _weapon_flags;
     int _mgun;
-    char _num_weapons;
+    uint8_t _num_weapons;
 
     World::MissileList _missiles_list;
     int _weapon_time;

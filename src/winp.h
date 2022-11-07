@@ -44,11 +44,11 @@ public:
     virtual size_t Deinit();
     virtual bool GetState();
     virtual float GetSlider();
-    virtual void QueryKeyboard(InputState *arg);
+    virtual void QueryKeyboard(TInputState *arg);
     virtual bool BindKey(const std::string &keyName);
     virtual void ResetSlider();
     virtual void ForceFeedBack(uint8_t state, uint8_t effID, float p1 = 0.0, float p2 = 0.0, float p3 = 0.0, float p4 = 0.0);
-    virtual void CheckClick(ClickBoxInf *arg);
+    virtual void CheckClick(TClickBoxInf *arg);
 
     NC_STACK_winp() {};
     virtual ~NC_STACK_winp() {};

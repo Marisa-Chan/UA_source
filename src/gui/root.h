@@ -11,7 +11,7 @@
 #include <GL/gl.h>
 #endif
 
-#include "../common.h"
+#include "common/common.h"
 
 namespace Gui
 {

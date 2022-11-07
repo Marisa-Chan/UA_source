@@ -21,7 +21,7 @@ size_t NC_STACK_windp::Init(IDVList &stak)
 
     if (!init())
     {
-        delete_class_obj(this);
+        Delete();
         return 0;
     }
 
@@ -329,23 +329,66 @@ size_t NC_STACK_windp::DeletePlayer(const char *playerName)
     return 0;
 }
 
-size_t NC_STACK_windp::EnumPlayers(IDVPair *stak)
-{
-    //enum players
-    printf("%s\n", __PRETTY_FUNCTION__);
-    return 0;
-}
 
-size_t NC_STACK_windp::GetPlayerData(windp_arg79 *arg)
+bool NC_STACK_windp::GetPlayerData(uint32_t index, TDPPlayerData *out) const
 {
     //get player data
-    if (arg->ID >= _rawUsers.size())
+    if (index >= _rawUsers.size())
         return 0;
     
-    ZNDNet::UserInfo &usr = _rawUsers.at(arg->ID);
-    arg->name = usr.name;
-    arg->flags = usr.ID == _myID ? 1 : 0;
+    const ZNDNet::UserInfo &usr = _rawUsers.at(index);
+    out->name = usr.name;
+    out->flags = usr.ID == _myID ? TDPPlayerData::NPD_ITSME : 0;
+    out->Index = index;
     return 1;
+}
+
+std::vector<TDPPlayerData> NC_STACK_windp::GetPlayersData() const
+{
+    std::vector<TDPPlayerData> tmp;
+    tmp.resize( _rawUsers.size() );
+    
+    for(uint32_t i = 0; i < _rawUsers.size(); i++)
+    {
+        TDPPlayerData &p = tmp[i];
+        const ZNDNet::UserInfo &usr = _rawUsers.at(i);
+        p.Index = i;
+        p.name = usr.name;
+        p.flags = usr.ID == _myID ? TDPPlayerData::NPD_ITSME : 0;
+    }
+    return tmp;
+}
+
+int32_t NC_STACK_windp::GetMyIndex() const
+{
+    return _myIndex;
+}
+
+std::string NC_STACK_windp::GetPlayerName(uint32_t index) const
+{
+    if (index >= _rawUsers.size())
+        return std::string();
+    return _rawUsers.at(index).name;
+}
+
+int32_t NC_STACK_windp::GetPlayerIndex(const std::string &name) const
+{
+    for(uint32_t i = 0; i < _rawUsers.size(); i++)
+    {
+        if ( !StriCmp(_rawUsers[i].name, name) )
+            return i;
+    }
+    return -1;
+}
+
+bool NC_STACK_windp::IsPlayer(const std::string &name) const
+{
+    for(const ZNDNet::UserInfo &p : _rawUsers)
+    {
+        if ( !StriCmp(p.name, name) )
+            return true;
+    }
+    return false;
 }
 
 bool NC_STACK_windp::Send(yw_arg181 *arg)
@@ -399,6 +442,7 @@ bool NC_STACK_windp::Recv(windp_recvMsg *recv)
         {
             ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
             zcon->GetUsers(_rawUsers);
+            UpdateOwnPlayerIndex();
             
             recv->msgType = RECVMSG_CREATEPLAYER;
             recv->senderName = dat->name;
@@ -409,6 +453,7 @@ bool NC_STACK_windp::Recv(windp_recvMsg *recv)
         {
             ZNDNet::EventNameID *dat = (ZNDNet::EventNameID *)evt;
             zcon->GetUsers(_rawUsers); 
+            UpdateOwnPlayerIndex();
             
             recv->msgType = RECVMSG_DESTROYPLAYER;
             recv->senderName = dat->name;
@@ -430,7 +475,8 @@ bool NC_STACK_windp::Recv(windp_recvMsg *recv)
         
         case ZNDNet::EVENT_USER_LIST:
         {
-            zcon->GetUsers(_rawUsers);                
+            zcon->GetUsers(_rawUsers);   
+            UpdateOwnPlayerIndex();
         }
         break;
 
@@ -496,31 +542,29 @@ size_t NC_STACK_windp::Reset(IDVPair *stak)
     return 0;
 }
 
-uint32_t NC_STACK_windp::CountPlayers()
+uint32_t NC_STACK_windp::GetPlayerCount() const
 {
-    // get num players
-    //printf("%s\n", __PRETTY_FUNCTION__);
     return _rawUsers.size();
 }
 
 bool NC_STACK_windp::GetRemoteStart(windp_arg87 *arg)
 {
     //check remote start
-    arg->isClient = 0;
-    arg->isHoster = 0;
+    arg->isClient = false;
+    arg->isHoster = false;
 
     if (!zcon)
         return true;
 
     if (zcon == zhost)
     {
-        arg->isHoster = 1;
+        arg->isHoster = true;
         return true;
     }
 
     if (zcon == zcli)
     {
-        arg->isClient = 1;
+        arg->isClient = true;
         return true;
     }
 
@@ -554,10 +598,6 @@ size_t NC_STACK_windp::GetStats(int *stak)
     return 0;
 }
 
-int NC_STACK_windp::getNumPlayers()
-{
-    return _rawUsers.size();
-}
 
 void NC_STACK_windp::ReloadUsersList()
 {
@@ -565,7 +605,19 @@ void NC_STACK_windp::ReloadUsersList()
     {
         _nextUsersGet = SDL_GetTicks() + CONF_USERS_GET_TIME;
         zcon->GetUsers(_rawUsers);
+        UpdateOwnPlayerIndex();
     }
+}
+
+void NC_STACK_windp::UpdateOwnPlayerIndex()
+{
+    for(_myIndex = 0; _myIndex < (int32_t)_rawUsers.size(); _myIndex++)
+    {
+        if (_rawUsers[_myIndex].ID == _myID)
+            return;
+    }
+    
+    _myIndex = -1;
 }
 
 void NC_STACK_windp::ReloadSessionsList()
@@ -612,39 +664,39 @@ std::string NC_STACK_windp::GetUserName(uint64_t id)
 
 void UserData::yw_FractionInit()
 {
-    TMapRegionInfo &lvl = p_YW->_mapRegions.MapRegions[ netLevelID ];
+    TMapRegionInfo &lvl = p_YW->_globalMapRegions.MapRegions[ netLevelID ];
 
     FreeFraction = 0;
 
     if ( lvl.FractionsBits & 2 )
-        FreeFraction |= FREE_FRACTION_RESISTANCE;
+        FreeFraction |= NET_FRACTION_RESISTANCE;
 
     if ( lvl.FractionsBits & 0x40 )
-        FreeFraction |= FREE_FRACTION_GHORKOV;
+        FreeFraction |= NET_FRACTION_GHORKOV;
 
     if ( lvl.FractionsBits & 8 )
-        FreeFraction |= FREE_FRACTION_MIKO;
+        FreeFraction |= NET_FRACTION_MIKO;
 
     if ( lvl.FractionsBits & 0x10 )
-        FreeFraction |= FREE_FRACTION_TAER;
+        FreeFraction |= NET_FRACTION_TAER;
 
     uint32_t frkt = 0;
-    uint32_t msk = p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits;
+    uint32_t msk = p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits;
     if ( msk & 2 )
     {
-        frkt = FREE_FRACTION_RESISTANCE;
+        frkt = NET_FRACTION_RESISTANCE;
     }
     else if ( msk & 0x40 )
     {
-        frkt = FREE_FRACTION_GHORKOV;
+        frkt = NET_FRACTION_GHORKOV;
     }
     else if ( msk & 8 )
     {
-        frkt = FREE_FRACTION_MIKO;
+        frkt = NET_FRACTION_MIKO;
     }
     else if ( msk & 0x10 )
     {
-        frkt = FREE_FRACTION_TAER;
+        frkt = NET_FRACTION_TAER;
     }
 
     SelectedFraction = frkt;
@@ -656,14 +708,14 @@ void UserData::AfterMapChoose()
     if ( netSel < 0 )
         return;
     
-    switch ( p_YW->windp->GetMode() )
+    switch ( p_YW->_netDriver->GetMode() )
     {
         case 1:
         {
-            std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_YW->buildDate);
-            p_YW->windp->Host(bff, 4);
+            std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", p_YW->_netDriver->GetMyName(), "|", p_YW->_buildDate);
+            p_YW->_netDriver->Host(bff, 4);
             
-            p_YW->isNetGame = 1;
+            p_YW->_isNetGame = true;
             netSel = -1;
             netSelMode = NETSCREEN_INSESSION;
             netName = "";
@@ -671,18 +723,12 @@ void UserData::AfterMapChoose()
             network_listvw.firstShownEntries = 0;
             network_listvw.selectedEntry = 0;
 
-
-            std::string myName = p_YW->windp->GetMyName();
-
-            strcpy(players2[ 0 ].name, myName.c_str());
+            lobbyPlayers[ 0 ].Name = p_YW->_netDriver->GetMyName();
 
             yw_FractionInit();
 
-            rdyStart = 1;
-            players2[0].rdyStart = 1;
-            players2[0].cd = 1;
-            cd = 1;
-            last_cdchk = GlobalTime;
+            rdyStart = true;
+            lobbyPlayers[0].Ready = true;
         }
         break;
             
@@ -695,11 +741,11 @@ void UserData::AfterMapChoose()
     }
     return;
 
-    if ( p_YW->windp->GetSessionStatus() )
+    if ( p_YW->_netDriver->GetSessionStatus() )
     {
-        TMapRegionInfo &lvl = p_YW->_mapRegions.MapRegions[ netLevelID ];
+        TMapRegionInfo &lvl = p_YW->_globalMapRegions.MapRegions[ netLevelID ];
 
-        int numpl = p_YW->windp->CountPlayers();
+        int numpl = p_YW->_netDriver->GetPlayerCount();
 
         netSelMode = NETSCREEN_INSESSION;
         netName = "";
@@ -713,16 +759,16 @@ void UserData::AfterMapChoose()
 
         if ( lvl.FractionsBits & 2 )
         {
-            SelectedFraction = FREE_FRACTION_RESISTANCE;
-            FreeFraction &= ~FREE_FRACTION_RESISTANCE;
-            players2[ plid ].Fraction = FREE_FRACTION_RESISTANCE;
+            SelectedFraction = NET_FRACTION_RESISTANCE;
+            FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            lobbyPlayers[ plid ].NetFraction = NET_FRACTION_RESISTANCE;
             numpl--;
             plid++;
             selected = true;
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_RESISTANCE;
+            FreeFraction &= ~NET_FRACTION_RESISTANCE;
         }
 
         if ( lvl.FractionsBits & 0x40 )
@@ -730,19 +776,19 @@ void UserData::AfterMapChoose()
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~FREE_FRACTION_GHORKOV;
-                players2[ plid ].Fraction = FREE_FRACTION_GHORKOV;
+                FreeFraction &= ~NET_FRACTION_GHORKOV;
+                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_GHORKOV;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = FREE_FRACTION_GHORKOV;
+                    SelectedFraction = NET_FRACTION_GHORKOV;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_GHORKOV;
+            FreeFraction &= ~NET_FRACTION_GHORKOV;
         }
 
         if ( lvl.FractionsBits & 8 )
@@ -750,19 +796,19 @@ void UserData::AfterMapChoose()
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~FREE_FRACTION_MIKO;
-                players2[ plid ].Fraction = FREE_FRACTION_MIKO;
+                FreeFraction &= ~NET_FRACTION_MIKO;
+                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_MIKO;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = FREE_FRACTION_MIKO;
+                    SelectedFraction = NET_FRACTION_MIKO;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_MIKO;
+            FreeFraction &= ~NET_FRACTION_MIKO;
         }
 
         if ( lvl.FractionsBits & 0x10 )
@@ -770,23 +816,23 @@ void UserData::AfterMapChoose()
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~FREE_FRACTION_TAER;
-                players2[ plid ].Fraction = FREE_FRACTION_TAER;
+                FreeFraction &= ~NET_FRACTION_TAER;
+                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_TAER;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = FREE_FRACTION_TAER;
+                    SelectedFraction = NET_FRACTION_TAER;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_TAER;
+            FreeFraction &= ~NET_FRACTION_TAER;
         }
 
-        for(int i = 0; i < 4; i++)
-            players2[ i ].checksum = 0;
+        for(TNetPlayerLobbyData &pl : lobbyPlayers)
+            pl.DataChecksum = 0;
 
         uamessage_setLevel msg_slvl;
         msg_slvl.lvlID = netLevelID;
@@ -804,23 +850,23 @@ void UserData::AfterMapChoose()
         p_YW->SendCRC(netLevelID);
 
         windp_arg82 flushmsg;
-        flushmsg.senderID = callSIGN.c_str();
+        flushmsg.senderID = netPlayerName.c_str();
         flushmsg.senderFlags = 1;
         flushmsg.receiverID = NULL;
         flushmsg.receiverFlags = 2;
         flushmsg.guarant = 1;
 
-        p_YW->windp->FlushBuffer(flushmsg);
+        p_YW->_netDriver->FlushBuffer(flushmsg);
 
-        std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_YW->buildDate);
+        std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", netPlayerName, "|", p_YW->_buildDate);
 
-        p_YW->windp->SetSessionName(bff.c_str());
+        p_YW->_netDriver->SetSessionName(bff.c_str());
     }
     else if ( remoteMode )
     {
-        TMapRegionInfo &lvl = p_YW->_mapRegions.MapRegions[ netLevelID ];
+        TMapRegionInfo &lvl = p_YW->_globalMapRegions.MapRegions[ netLevelID ];
 
-        int numpl = p_YW->windp->CountPlayers();
+        int numpl = p_YW->_netDriver->GetPlayerCount();
 
         netSelMode = NETSCREEN_INSESSION;
         netName = "";
@@ -834,16 +880,16 @@ void UserData::AfterMapChoose()
 
         if ( lvl.FractionsBits & 2 )
         {
-            SelectedFraction = FREE_FRACTION_RESISTANCE;
-            FreeFraction &= ~FREE_FRACTION_RESISTANCE;
-            players2[ plid ].Fraction = FREE_FRACTION_RESISTANCE;
+            SelectedFraction = NET_FRACTION_RESISTANCE;
+            FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            lobbyPlayers[ plid ].NetFraction = NET_FRACTION_RESISTANCE;
             numpl--;
             plid++;
             selected = true;
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_RESISTANCE;
+            FreeFraction &= ~NET_FRACTION_RESISTANCE;
         }
 
         if ( lvl.FractionsBits & 0x40 )
@@ -851,19 +897,19 @@ void UserData::AfterMapChoose()
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~FREE_FRACTION_GHORKOV;
-                players2[ plid ].Fraction = FREE_FRACTION_GHORKOV;
+                FreeFraction &= ~NET_FRACTION_GHORKOV;
+                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_GHORKOV;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = FREE_FRACTION_GHORKOV;
+                    SelectedFraction = NET_FRACTION_GHORKOV;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_GHORKOV;
+            FreeFraction &= ~NET_FRACTION_GHORKOV;
         }
 
         if ( lvl.FractionsBits & 8 )
@@ -871,19 +917,19 @@ void UserData::AfterMapChoose()
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~FREE_FRACTION_MIKO;
-                players2[ plid ].Fraction = FREE_FRACTION_MIKO;
+                FreeFraction &= ~NET_FRACTION_MIKO;
+                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_MIKO;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = FREE_FRACTION_MIKO;
+                    SelectedFraction = NET_FRACTION_MIKO;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_MIKO;
+            FreeFraction &= ~NET_FRACTION_MIKO;
         }
 
         if ( lvl.FractionsBits & 0x10 )
@@ -891,19 +937,19 @@ void UserData::AfterMapChoose()
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~FREE_FRACTION_TAER;
-                players2[ plid ].Fraction = FREE_FRACTION_TAER;
+                FreeFraction &= ~NET_FRACTION_TAER;
+                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_TAER;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = FREE_FRACTION_TAER;
+                    SelectedFraction = NET_FRACTION_TAER;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~FREE_FRACTION_TAER;
+            FreeFraction &= ~NET_FRACTION_TAER;
         }
 
         uamessage_lobbyInit limsg;
@@ -920,30 +966,30 @@ void UserData::AfterMapChoose()
         p_YW->ypaworld_func181(&ywmsg);
 
         windp_arg82 flushmsg;
-        flushmsg.senderID = callSIGN.c_str();
+        flushmsg.senderID = netPlayerName.c_str();
         flushmsg.senderFlags = 1;
         flushmsg.receiverID = NULL;
         flushmsg.receiverFlags = 2;
         flushmsg.guarant = 1;
 
-        p_YW->windp->FlushBuffer(flushmsg);
+        p_YW->_netDriver->FlushBuffer(flushmsg);
     }
     else
     {
         if (isHost)
         {
-            std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", callSIGN, "|", p_YW->buildDate);
+            std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", netPlayerName, "|", p_YW->_buildDate);
 
-            if (p_YW->windp->GetProvType() == 4) //MODEM!!!!
+            if (p_YW->_netDriver->GetProvType() == 4) //MODEM!!!!
                 GFX::Engine.windd_func320(NULL);
 
             windp_openSessionMsg os;
             os.name = bff.c_str();
             os.maxplayers = 4;
 
-            size_t res = p_YW->windp->CreateSession(&os);
+            size_t res = p_YW->_netDriver->CreateSession(&os);
 
-            if (p_YW->windp->GetProvType() == 4) //MODEM!!!!
+            if (p_YW->_netDriver->GetProvType() == 4) //MODEM!!!!
                 GFX::Engine.windd_func321(NULL);
 
             if ( !res )
@@ -951,12 +997,12 @@ void UserData::AfterMapChoose()
         }
 
         windp_createPlayerMsg cp;
-        cp.name = callSIGN.c_str();
+        cp.name = netPlayerName.c_str();
         cp.flags = 1;
 
-        if (p_YW->windp->CreatePlayer(&cp))
+        if (p_YW->_netDriver->CreatePlayer(&cp))
         {
-            p_YW->isNetGame = 1;
+            p_YW->_isNetGame = true;
             netSel = -1;
             netSelMode = NETSCREEN_INSESSION;
             netName = "";
@@ -964,17 +1010,14 @@ void UserData::AfterMapChoose()
             network_listvw.firstShownEntries = 0;
             network_listvw.selectedEntry = 0;
 
-            int plid = p_YW->windp->getNumPlayers();
+            int plid = p_YW->_netDriver->GetPlayerCount();
 
-            strcpy(players2[ plid - 1 ].name, cp.name);
+            lobbyPlayers[ plid - 1 ].Name = cp.name;
 
             yw_FractionInit();
 
-            rdyStart = 1;
-            players2[ plid - 1].rdyStart = 1;
-            players2[ plid - 1].cd = 1;
-            cd = 1;
-            last_cdchk = GlobalTime;
+            rdyStart = true;
+            lobbyPlayers[ plid - 1].Ready = true;
         }
     }
 }
@@ -985,7 +1028,7 @@ void UserData::yw_NetOKProvider()
     {
         GFX::Engine.windd_func320(NULL);
 
-        if ( p_YW->windp->SetMode(netSel == 0) )
+        if ( p_YW->_netDriver->SetMode(netSel == 0) )
         {
             netSelMode = NETSCREEN_ENTER_NAME;
             netSel = -1;
@@ -994,7 +1037,7 @@ void UserData::yw_NetOKProvider()
 
             p_YW->GuiWinClose( &network_listvw );
 
-            netName = callSIGN;
+            netName = netPlayerName;
 
             netNameCurPos = netName.size();
         }
@@ -1008,19 +1051,19 @@ void UserData::yw_NetOKProvider()
 
 void UserData::yw_JoinNetGame()
 {
-    if ( p_YW->windp->GetProvType() != 4 || modemAskSession )
+    if ( p_YW->_netDriver->GetProvType() != 4 || modemAskSession )
     {
         windp_getNameMsg gName;
         gName.id = netSel;
 
-        if ( p_YW->windp->GetSessionName(&gName) )
+        if ( p_YW->_netDriver->GetSessionName(&gName) )
         {
-            if ( p_YW->windp->GetProvType() == 4 )
+            if ( p_YW->_netDriver->GetProvType() == 4 )
                 GFX::Engine.windd_func320(NULL);
 
-            if ( p_YW->windp->JoinSession(gName.name) )
+            if ( p_YW->_netDriver->JoinSession(gName.name) )
             {
-                if ( p_YW->windp->GetProvType() == 4 )
+                if ( p_YW->_netDriver->GetProvType() == 4 )
                     GFX::Engine.windd_func321(NULL);
 
                 netName = "";
@@ -1040,128 +1083,93 @@ void UserData::yw_JoinNetGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_mapRegions.MapRegions[ netLevelID ].MapName);
+                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
 
-                windp_arg79 plData;
-                plData.ID = 0;
-                plData.mode = 0;
-                while ( p_YW->windp->GetPlayerData(&plData) )
+                for(TDPPlayerData &p : p_YW->_netDriver->GetPlayersData())
                 {
-                    buf = plData.name;
-
-                    if ( !StriCmp(plData.name, callSIGN) )
+                    lobbyPlayers[p.Index].Name = p.name;
+                    
+                    if (p.IsItMe())
                     {
-                        buf += "X";
+                        lobbyPlayers[p.Index].Name += "X";
                     }
-
-                    strncpy(players2[plData.ID].name, buf.c_str(), sizeof(players2[plData.ID].name));
-
-
-                    plData.ID++;
                 }
 
                 windp_createPlayerMsg crPlayerMsg;
-                crPlayerMsg.name = callSIGN.c_str();
+                crPlayerMsg.name = netPlayerName.c_str();
                 crPlayerMsg.flags = 1;
 
-                if ( p_YW->windp->CreatePlayer(&crPlayerMsg) )
+                if ( p_YW->_netDriver->CreatePlayer(&crPlayerMsg) )
                 {
-                    p_YW->isNetGame = 1;
+                    p_YW->_isNetGame = true;
                     netSel = -1;
                     netSelMode = NETSCREEN_INSESSION;
                     netName = "";
                     netNameCurPos = 0;
                     network_listvw.firstShownEntries = 0;
                     network_listvw.selectedEntry = 0;
-                    isHost = 0;
-
-                    int plid = p_YW->windp->getNumPlayers();
-
-                    strncpy(players2[plid - 1].name, callSIGN.c_str(), sizeof(players2[plid - 1].name));
+                    isHost = false;
 
                     yw_FractionInit();
-
-                    players2[plid - 1].cd = 1;
-                    cd = 1;
-                    last_cdchk = GlobalTime;
-
-                    uamessage_cd cdMsg;
-                    cdMsg.cd = cd;
-                    cdMsg.msgID = UAMSG_CD;
-                    cdMsg.rdy = -1;
-                    cdMsg.owner = 0;
-
-                    yw_arg181 ywMsg;
-                    ywMsg.dataSize = sizeof(cdMsg);
-                    ywMsg.recvFlags = 2;
-                    ywMsg.recvID = 0;
-                    ywMsg.data = &cdMsg;
-                    ywMsg.garant = 1;
-
-                    p_YW->ypaworld_func181(&ywMsg);
                 }
 
-                plData.mode = 0;
-                plData.ID = 0;
-
-                while ( p_YW->windp->GetPlayerData(&plData) && StriCmp(plData.name, callSIGN) )
-                    plData.ID++;
-
-                rdyStart = 0;
-                players2[plData.ID].rdyStart = 0;
+                rdyStart = false;
+                int32_t myIndex = p_YW->_netDriver->GetMyIndex();
+                if (myIndex != -1)
+                    lobbyPlayers[myIndex].Ready = false;
 
                 p_YW->SendCRC(netLevelID);
             }
             else
             {
-                if ( p_YW->windp->GetProvType() == 4 )
+                if ( p_YW->_netDriver->GetProvType() == 4 )
                     GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
                 fmt::printf("%s: %s\n", p_YW->GetLocaleString(2400, "YPA ERROR MESSAGE"), p_YW->GetLocaleString(2401, "SESSION NOT LONGER AVAILABLE"));
 
-                if ( p_YW->windp->GetProvType() == 4 )
+                if ( p_YW->_netDriver->GetProvType() == 4 )
                 {
                     netSel = -1;
                     sub_46D698();
                 }
                 else
                 {
-                    p_YW->windp->EnumSessions(NULL);
+                    p_YW->_netDriver->EnumSessions(NULL);
                 }
             }
         }
     }
     else
     {
-        if ( p_YW->windp->GetProvType() == 4 )
+        if ( p_YW->_netDriver->GetProvType() == 4 )
             GFX::Engine.windd_func320(NULL);
 
-        if ( p_YW->windp->EnumSessions(NULL) )
+        if ( p_YW->_netDriver->EnumSessions(NULL) )
         {
-            modemAskSession = 1;
+            modemAskSession = true;
         }
 
-        if ( p_YW->windp->GetProvType() == 4 )
+        if ( p_YW->_netDriver->GetProvType() == 4 )
             GFX::Engine.windd_func321(NULL);
     }
 }
 
 void UserData::JoinLobbyLessGame()
 {
-    if (p_YW->windp->IsConnected())
+    if (p_YW->_netDriver->IsConnected())
     {
         uint32_t waitForSession = SDL_GetTicks() + 1000;
-        while (SDL_GetTicks() < waitForSession && !p_YW->windp->IsJoined())
+        while (SDL_GetTicks() < waitForSession && !p_YW->_netDriver->IsJoined())
             SDL_Delay(10);
         
-        if (p_YW->windp->IsJoined())
+        if (p_YW->_netDriver->IsJoined())
         {
             netName = "";
             netNameCurPos = 0;
             netLevelID = 0;
 
-            std::string buf = p_YW->windp->GetCurrentSessionName();
+            std::string buf = p_YW->_netDriver->GetCurrentSessionName();
             printf("%s\n", buf.c_str());
 
             for (size_t i = 0; i < buf.length(); i++)
@@ -1175,76 +1183,45 @@ void UserData::JoinLobbyLessGame()
                 }
             }
             network_listvw.firstShownEntries = 0;
-            netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_mapRegions.MapRegions[ netLevelID ].MapName);
+            netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
 
-            windp_arg79 plData;
-            plData.ID = 0;
-            plData.mode = 0;
-            while ( p_YW->windp->GetPlayerData(&plData) )
+            for(TDPPlayerData &p : p_YW->_netDriver->GetPlayersData())
             {
-                buf = plData.name;
+                lobbyPlayers[p.Index].Name = p.name;
 
-                if ( !StriCmp(plData.name, callSIGN) )
+                if (p.IsItMe())
                 {
-                    buf += "X";
+                    lobbyPlayers[p.Index].Name += "X";
                 }
-
-                strncpy(players2[plData.ID].name, buf.c_str(), sizeof(players2[plData.ID].name));
-
-
-                plData.ID++;
             }
                 
-            p_YW->isNetGame = 1;
+            p_YW->_isNetGame = true;
             netSel = -1;
             netSelMode = NETSCREEN_INSESSION;
             netName = "";
             netNameCurPos = 0;
             network_listvw.firstShownEntries = 0;
             network_listvw.selectedEntry = 0;
-            isHost = 0;
-            
-            int plid = p_YW->windp->getNumPlayers();
-
-            strncpy(players2[plid - 1].name, callSIGN.c_str(), sizeof(players2[plid - 1].name));
+            isHost = false;
 
             yw_FractionInit();
-
-            players2[plid - 1].cd = 1;
-            cd = 1;
-            last_cdchk = GlobalTime;
-
-            uamessage_cd cdMsg;
-            cdMsg.cd = cd;
-            cdMsg.msgID = UAMSG_CD;
-            cdMsg.rdy = -1;
-            cdMsg.owner = 0;
-
-            yw_arg181 ywMsg;
-            ywMsg.dataSize = sizeof(cdMsg);
-            ywMsg.recvFlags = 2;
-            ywMsg.recvID = 0;
-            ywMsg.data = &cdMsg;
-            ywMsg.garant = 1;
-
-            p_YW->ypaworld_func181(&ywMsg);
         }
     }
     return;
     
-    if ( p_YW->windp->GetProvType() != 4 || modemAskSession )
+    if ( p_YW->_netDriver->GetProvType() != 4 || modemAskSession )
     {
         windp_getNameMsg gName;
         gName.id = netSel;
 
-        if ( p_YW->windp->GetSessionName(&gName) )
+        if ( p_YW->_netDriver->GetSessionName(&gName) )
         {
-            if ( p_YW->windp->GetProvType() == 4 )
+            if ( p_YW->_netDriver->GetProvType() == 4 )
                 GFX::Engine.windd_func320(NULL);
 
-            if ( p_YW->windp->JoinSession(gName.name) )
+            if ( p_YW->_netDriver->JoinSession(gName.name) )
             {
-                if ( p_YW->windp->GetProvType() == 4 )
+                if ( p_YW->_netDriver->GetProvType() == 4 )
                     GFX::Engine.windd_func321(NULL);
 
                 netName = "";
@@ -1264,204 +1241,146 @@ void UserData::JoinLobbyLessGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_mapRegions.MapRegions[ netLevelID ].MapName);
+                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
 
-                windp_arg79 plData;
-                plData.ID = 0;
-                plData.mode = 0;
-                while ( p_YW->windp->GetPlayerData(&plData) )
+                for(TDPPlayerData &p : p_YW->_netDriver->GetPlayersData())
                 {
-                    buf = plData.name;
-
-                    if ( !StriCmp(plData.name, callSIGN) )
+                    lobbyPlayers[p.Index].Name = p.name;
+                    
+                    if (p.IsItMe())
                     {
-                        buf += "X";
+                        lobbyPlayers[p.Index].Name += "X";
                     }
-
-                    strncpy(players2[plData.ID].name, buf.c_str(), sizeof(players2[plData.ID].name));
-
-
-                    plData.ID++;
                 }
 
                 windp_createPlayerMsg crPlayerMsg;
-                crPlayerMsg.name = callSIGN.c_str();
+                crPlayerMsg.name = netPlayerName.c_str();
                 crPlayerMsg.flags = 1;
 
-                if ( p_YW->windp->CreatePlayer(&crPlayerMsg) )
+                if ( p_YW->_netDriver->CreatePlayer(&crPlayerMsg) )
                 {
-                    p_YW->isNetGame = 1;
+                    p_YW->_isNetGame = true;
                     netSel = -1;
                     netSelMode = NETSCREEN_INSESSION;
                     netName = "";
                     netNameCurPos = 0;
                     network_listvw.firstShownEntries = 0;
                     network_listvw.selectedEntry = 0;
-                    isHost = 0;
-
-                    int plid = p_YW->windp->getNumPlayers();
-
-                    strncpy(players2[plid - 1].name, callSIGN.c_str(), sizeof(players2[plid - 1].name));
+                    isHost = false;
 
                     yw_FractionInit();
-
-                    players2[plid - 1].cd = 1;
-                    cd = 1;
-                    last_cdchk = GlobalTime;
-
-                    uamessage_cd cdMsg;
-                    cdMsg.cd = cd;
-                    cdMsg.msgID = UAMSG_CD;
-                    cdMsg.rdy = -1;
-                    cdMsg.owner = 0;
-
-                    yw_arg181 ywMsg;
-                    ywMsg.dataSize = sizeof(cdMsg);
-                    ywMsg.recvFlags = 2;
-                    ywMsg.recvID = 0;
-                    ywMsg.data = &cdMsg;
-                    ywMsg.garant = 1;
-
-                    p_YW->ypaworld_func181(&ywMsg);
                 }
 
-                plData.mode = 0;
-                plData.ID = 0;
-
-                while ( p_YW->windp->GetPlayerData(&plData) && StriCmp(plData.name, callSIGN.c_str()) )
-                    plData.ID++;
-
-                rdyStart = 0;
-                players2[plData.ID].rdyStart = 0;
+                rdyStart = false;
+                int32_t myIndex = p_YW->_netDriver->GetMyIndex();
+                if (myIndex != -1)
+                    lobbyPlayers[myIndex].Ready = false;
 
                 p_YW->SendCRC(netLevelID);
             }
             else
             {
-                if ( p_YW->windp->GetProvType() == 4 )
+                if ( p_YW->_netDriver->GetProvType() == 4 )
                     GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
                 fmt::printf("%s: %s\n", p_YW->GetLocaleString(2400, "YPA ERROR MESSAGE"), p_YW->GetLocaleString(2401, "SESSION NOT LONGER AVAILABLE"));
 
-                if ( p_YW->windp->GetProvType() == 4 )
+                if ( p_YW->_netDriver->GetProvType() == 4 )
                 {
                     netSel = -1;
                     sub_46D698();
                 }
                 else
                 {
-                    p_YW->windp->EnumSessions(NULL);
+                    p_YW->_netDriver->EnumSessions(NULL);
                 }
             }
         }
     }
     else
     {
-        if ( p_YW->windp->GetProvType() == 4 )
+        if ( p_YW->_netDriver->GetProvType() == 4 )
             GFX::Engine.windd_func320(NULL);
 
-        if ( p_YW->windp->EnumSessions(NULL) )
+        if ( p_YW->_netDriver->EnumSessions(NULL) )
         {
-            modemAskSession = 1;
+            modemAskSession = true;
         }
 
-        if ( p_YW->windp->GetProvType() == 4 )
+        if ( p_YW->_netDriver->GetProvType() == 4 )
             GFX::Engine.windd_func321(NULL);
     }
 }
 
 int yw_DestroyPlayer(NC_STACK_ypaworld *yw, const char *playerName)
 {
-    int plID = -1;
-    UserData *usr = yw->GameShell;
-
-    windp_arg79 getPlDat_msg;
-    getPlDat_msg.mode = 0;
-    getPlDat_msg.ID = 0;
-
-    while ( yw->windp->GetPlayerData(&getPlDat_msg) )
-    {
-        if ( !StriCmp(getPlDat_msg.name, playerName) )
-        {
-            plID = getPlDat_msg.ID;
-            break;
-        }
-
-        getPlDat_msg.ID++;
-    }
+    int32_t plID = yw->_netDriver->GetPlayerIndex(playerName);
+    UserData *usr = yw->_GameShell;
 
     if ( plID != -1 )
     {
-        for (int i = plID; i < 3; i++ )
-            usr->players2[ i ] = usr->players2[ i + 1 ];
+        for (size_t i = plID; i < usr->lobbyPlayers.size() - 1; i++ )
+            usr->lobbyPlayers[ i ] = usr->lobbyPlayers[ i + 1 ];
     }
 
-    return yw->windp->DeletePlayer(playerName);
+    return yw->_netDriver->DeletePlayer(playerName);
 }
 
 void UserData::yw_netcleanup()
 {
     windp_arg82 flushmsg;
-    flushmsg.senderID = callSIGN.c_str();
+    flushmsg.senderID = netPlayerName.c_str();
     flushmsg.senderFlags = 1;
     flushmsg.receiverID = NULL;
     flushmsg.receiverFlags = 2;
     flushmsg.guarant = 1;
 
-    p_YW->windp->FlushBuffer(flushmsg);
+    p_YW->_netDriver->FlushBuffer(flushmsg);
 
-    if( netSelMode ==NETSCREEN_INSESSION || p_YW->netGameStarted )
-        yw_DestroyPlayer( p_YW, callSIGN.c_str() );
+    if( netSelMode ==NETSCREEN_INSESSION || p_YW->_isNetGameStarted )
+        yw_DestroyPlayer( p_YW, netPlayerName.c_str() );
 
-    if( ( netSelMode == NETSCREEN_INSESSION && isHost) || p_YW->netGameStarted )
-        p_YW->windp->CloseSession(NULL);
+    if( ( netSelMode == NETSCREEN_INSESSION && isHost) || p_YW->_isNetGameStarted )
+        p_YW->_netDriver->CloseSession(NULL);
 
-    p_YW->windp->Reset(NULL);
+    p_YW->_netDriver->Reset(NULL);
 
     netSelMode = NETSCREEN_MODE_SELECT;
 
-    p_YW->isNetGame = 0;
+    p_YW->_isNetGame = false;
 
     network_listvw.firstShownEntries = 0;
     netSel = -1;
     nInputMode = 0;
-    isHost = 0;
-    blocked = 0;
+    isHost = false;
+    blocked = false;
     netPlayerOwner = 0;
     netLevelID = 0;
-    modemAskSession = 0;
-    sentAQ = 0;
+    modemAskSession = false;
+    sentAQ = false;
 
-    for (int i = 0; i < 4; i++)
-    {
-        players2[ i ].msg[0] = 0;
-        players2[ i ].Fraction = 0;
-        players2[ i ].rdyStart = 0;
-        players2[ i ].name[0] = 0;
-        players2[ i ].welcmd = 0;
-        players2[ i ].w84upd = 0;
-        players2[ i ].checksum = 0;
-    }
+    for (TNetPlayerLobbyData &pl : lobbyPlayers)
+        pl = UserData::TNetPlayerLobbyData();
 
-    for (int i = 0; i < 8; i++)
-        players[ i ].name[0] = 0;
+    for (TNetPlayerData &pl : netPlayers)
+        pl.Name.clear();
 
-    rdyStart = 0;
+    rdyStart = false;
 
-    p_YW->netGameStarted = 0;
+    p_YW->_isNetGameStarted = false;
 
-    msgBuffLine = 0;
-    lastSender[0] = 0;
-    disconnected = 0;
-    problemCnt = 0;
+    msgBuffers.clear();
+    lastSender.clear();
+    disconnected = false;
+    problemTimer = 0;
     netProblem = 0;
-    netProblemCount = 0;
+    netProblemCountDown = 0;
     takTime = 0;
-    noSent = 0;
-    FreeFraction = (FREE_FRACTION_GHORKOV | FREE_FRACTION_MIKO | FREE_FRACTION_TAER);
-    SelectedFraction = FREE_FRACTION_RESISTANCE;
-    remoteMode = 0;
+    noSent = false;
+    FreeFraction = (NET_FRACTION_GHORKOV | NET_FRACTION_MIKO | NET_FRACTION_TAER);
+    SelectedFraction = NET_FRACTION_RESISTANCE;
+    remoteMode = false;
 
     log_netlog("netcleanup:      ende\n");
 }
@@ -1501,7 +1420,7 @@ void UserData::yw_NetPrintStartInfo()
     {
         log_netlog("-------------- Start YPA network session ------------------\n\n");
 
-        size_t pT = p_YW->windp->GetProvType();
+        size_t pT = p_YW->_netDriver->GetProvType();
 
         if ( pT == 1 )
             log_netlog("Provider: Hosting\n");
@@ -1513,89 +1432,58 @@ void UserData::yw_NetPrintStartInfo()
         log_netlog("for this povider I send a dplay-msg after %d ms\n", flush_time_norm);
         log_netlog("Following players startet with the game:\n");
 
-        windp_arg79 arg79;
-        arg79.mode = 0;
-        arg79.ID = 0;
-
-        while ( p_YW->windp->GetPlayerData(&arg79) )
+        for(uint32_t i = 0; i < p_YW->_netDriver->GetPlayerCount(); i++)
         {
             int id;
-            if ( arg79.flags & 1 )
+            if ( (int32_t)i == p_YW->_netDriver->GetMyIndex() )
             {
                 id = SelectedFraction;
             }
             else
             {
-                id = players2[arg79.ID].Fraction;
+                id = lobbyPlayers[i].NetFraction;
             }
+            
+            std::string name = p_YW->_netDriver->GetPlayerName(i);
 
             switch ( id )
             {
-            case FREE_FRACTION_RESISTANCE:
-                log_netlog("    %s and plays Resistance\n", arg79.name.c_str());
+            case NET_FRACTION_RESISTANCE:
+                log_netlog("    %s and plays Resistance\n", name.c_str());
                 break;
 
-            case FREE_FRACTION_MIKO:
-                log_netlog("    %s and plays Mykonier\n", arg79.name.c_str());
+            case NET_FRACTION_MIKO:
+                log_netlog("    %s and plays Mykonier\n", name.c_str());
                 break;
 
-            case FREE_FRACTION_TAER:
-                log_netlog("    %s and plays Taerkasten\n", arg79.name.c_str());
+            case NET_FRACTION_TAER:
+                log_netlog("    %s and plays Taerkasten\n", name.c_str());
                 break;
 
-            case FREE_FRACTION_GHORKOV:
-                log_netlog("    %s and plays Ghorkov\n", arg79.name.c_str());
+            case NET_FRACTION_GHORKOV:
+                log_netlog("    %s and plays Ghorkov\n", name.c_str());
                 break;
 
             default:
-                log_netlog("    %s and plays an unknown race\n", arg79.name.c_str());
+                log_netlog("    %s and plays an unknown race\n", name.c_str());
                 break;
             }
-
-            arg79.ID++;
         }
 
         if ( isHost )
-            log_netlog("\nThe local player is %s and is HOST\n", callSIGN.c_str());
+            log_netlog("\nThe local player is %s and is HOST\n", netPlayerName.c_str());
         else
-            log_netlog("\nThe local player is %s and is CLIENT\n", callSIGN.c_str());
+            log_netlog("\nThe local player is %s and is CLIENT\n", netPlayerName.c_str());
 
-        std::string tmp = p_YW->GetLocaleString(netLevelID + 1800, p_YW->_mapRegions.MapRegions[ netLevelID ].MapName);
+        std::string tmp = p_YW->GetLocaleString(netLevelID + 1800, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
         log_netlog("They play level %d, this is %s\n", netLevelID, tmp.c_str());
-        log_netlog("the session started at timeindex %d\n", p_YW->timeStamp / 1000);
+        log_netlog("the session started at timeindex %d\n", p_YW->_timeStamp / 1000);
         log_netlog("\n\n--------------------------------------------------------\n");
     }
     else
     {
         ypa_log_out("Unable to open Network log script\n");
     }
-}
-
-int UserData::ypaworld_func158__sub0__sub8(std::string *a2, std::string *a3)
-{
-    int numPlayers = p_YW->windp->CountPlayers();
-    int hasCD = 0;
-
-    for( int i = 0; i < numPlayers; i++ )
-    {
-        if ( players2[i].cd )
-            hasCD++;
-    }
-
-    if ( numPlayers > 3 && hasCD < 2 )
-    {
-        *a2 = p_YW->GetLocaleString(2485, "YOU NEED 2 CD TO START 4 PLAYER GAME");
-        *a3 = p_YW->GetLocaleString(2444, "2444");
-        return 1;
-    }
-    else if ( hasCD < 1 )
-    {
-        *a2 = p_YW->GetLocaleString(2484, "YOU NEED A CD TO START THIS GAME");
-        *a3 = p_YW->GetLocaleString(2443, "2443");
-        return 1;
-    }
-
-    return 0;
 }
 
 
@@ -1617,7 +1505,7 @@ void UserData::ypaworld_func151__sub7()
     log_netlog("statistical sr-thread info\n");
 //  log_netlog("   max. in send list %d\n", v2[3]);
 //  log_netlog("   max. in recv list %d\n", v2[2]);
-    log_netlog("\nthe session ended at timeindex %d\n", p_YW->timeStamp / 1000);
+    log_netlog("\nthe session ended at timeindex %d\n", p_YW->_timeStamp / 1000);
     log_netlog("-----------------------------------------------------------\n");
 
     dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func151__sub7");
@@ -1634,19 +1522,19 @@ void sb_0x451034__sub6(NC_STACK_ypaworld *yw)
 {
     netgame_wnd.flags = 0x138;
     netgame_wnd.x = 0;
-    netgame_wnd.y = 2 * yw->screen_height / 3;
-    netgame_wnd.w = yw->screen_width - 1;
-    netgame_wnd.h = 2 * yw->font_default_h + 2;
+    netgame_wnd.y = 2 * yw->_screenSize.y / 3;
+    netgame_wnd.w = yw->_screenSize.x - 1;
+    netgame_wnd.h = 2 * yw->_fontH + 2;
 
     netgame_wnd.buttons.resize(2);
-    netgame_wnd.buttons[0] = ButtonBox(yw->tiles[0]->map[97].w, 0,
-                                       yw->tiles[0]->map[97].w, yw->font_default_h);
+    netgame_wnd.buttons[0] = ButtonBox(yw->_guiTiles[0]->map[97].w, 0,
+                                       yw->_guiTiles[0]->map[97].w, yw->_fontH);
     netgame_wnd.buttons[1] = ButtonBox(0, 0,
-                                       yw->tiles[0]->map[97].w, yw->font_default_h);
+                                       yw->_guiTiles[0]->map[97].w, yw->_fontH);
 
-    netgame_wnd.field_1CC = yw->tiles[0]->map[97].w;
-    netgame_wnd.field_1D0 = 2 * yw->font_default_h;
-    netgame_wnd.field_1D4 = yw->screen_width;
+    netgame_wnd.field_1CC = yw->_guiTiles[0]->map[97].w;
+    netgame_wnd.field_1D0 = 2 * yw->_fontH;
+    netgame_wnd.field_1D4 = yw->_screenSize.x;
     netgame_wnd.field_1D8 = netgame_wnd.field_1D0;
     netgame_wnd.field_1DC[0] = 0;
     netgame_wnd.field_21C = 0;
@@ -1657,7 +1545,7 @@ void sb_0x451034__sub6(NC_STACK_ypaworld *yw)
 }
 
 //netgui update
-void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, InputState *inpt)
+void ypaworld_func64__sub7__sub5(NC_STACK_ypaworld *yw, TInputState *inpt)
 {
     dprintf("MAKE ME %s (multiplayer)\n", "ypaworld_func64__sub7__sub5");
 }

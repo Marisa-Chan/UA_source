@@ -1,4 +1,4 @@
-#include "../common.h"
+#include "common/common.h"
 #include "../ini.h"
 #include "../log.h"
 #include "inpt.h"
@@ -223,18 +223,18 @@ void INPEngine::deinit()
 {
     if ( input_class )
     {
-        delete_class_obj(input_class);
+        input_class->Delete();
         input_class = NULL;
     }
 }
 
-NC_STACK_input *INPEngine::getPInput()
+NC_STACK_input *INPEngine::GetInput()
 {
     return input_class;
 }
 
 
-void INPEngine::QueryInput(InputState *a1)
+void INPEngine::QueryInput(TInputState *a1)
 {
     input_class->QueryInput(a1);
 }
@@ -252,20 +252,4 @@ void INPEngine::AddClickBoxBack(ClickBox *box)
 void INPEngine::RemClickBox(ClickBox *box)
 {
     input_class->wimp_remClickNode(box);
-}
-
-
-void InputState::Clear()
-{
-    Period = 0;
-    KbdLastDown = Input::KC_NONE;
-    KbdLastHit   = Input::KC_NONE;
-    HotKeyID     = -1;
-    chr          = 0;
-
-    for ( float &sld : Sliders )
-        sld = 0.0;
-
-    Buttons.clear();
-    ClickInf.clear();
 }

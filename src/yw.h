@@ -8,6 +8,8 @@
 #include "types.h"
 #include "memstream.h"
 
+#include "common/plane.h"
+
 #include "system/gfx.h"
 #include "system/inpt.h"
 #include "system/sound.h"
@@ -46,9 +48,9 @@ class NC_STACK_ypaworld;
 class NC_STACK_button;
 class NC_STACK_windp;
 
-struct cityBases;
-struct subSec;
-struct secType;
+struct TLego;
+struct TSubSectorDesc;
+struct TSectorDesc;
 struct map_event;
 struct uamessage_base;
 struct uamessage_vhclData;
@@ -79,6 +81,20 @@ enum OWNERID
     OWNER_NOCHANGE  = -2,
     OWNER_RECALC    = -1,
     OWNER_UNKNOW    = 0,
+    OWNER_0         = 0,
+    OWNER_1         = 1,
+    OWNER_RESIST    = 1,
+    OWNER_2         = 2,
+    OWNER_SULG      = 2,
+    OWNER_3         = 3,
+    OWNER_MYKO      = 3,
+    OWNER_4         = 4,
+    OWNER_TAER      = 4,
+    OWNER_5         = 5,
+    OWNER_BLACK     = 5,
+    OWNER_6         = 6,
+    OWNER_GHOR      = 6,
+    OWNER_7         = 7,
 };
 
 enum COLOR_IDS
@@ -151,12 +167,12 @@ enum MOVIE_IDS
 
 enum PREFERENCES_FLAGS
 {
-    PREF_JOYDISABLE     =     4,
-    PREF_FFDISABLE      =     8,
-    PREF_ENEMYINDICATOR =  0x20,
-    PREF_SOFTMOUSE      =  0x40,
-    PREF_CDMUSICDISABLE = 0x100,
-    PREF_ALTJOYSTICK    = 0x200,
+    PREF_JOYDISABLE     =  (1 << 0), //    4,
+    PREF_FFDISABLE      =  (1 << 1), //    8,
+    PREF_ENEMYINDICATOR =  (1 << 2), // 0x20,
+    PREF_SOFTMOUSE      =  (1 << 3), // 0x40,
+    PREF_CDMUSICDISABLE =  (1 << 4), // 0x100,
+    PREF_ALTJOYSTICK    =  (1 << 5), // 0x200,
 };
 
 enum INPUT_BIND
@@ -246,29 +262,32 @@ enum SOUND_ID
 
 enum GFX_FLAG
 {
-    GFX_FLAG_FARVIEW            =    1,
-    GFX_FLAG_SKYRENDER          =    2,
-    GFX_FLAG_SOFTMOUSE          =    4,
-    GFX_FLAG_DRAWPRIMITIVES     =    8,
-    GFX_FLAG_16BITTEXTURE       = 0x10,
+    GFX_FLAG_FARVIEW            = (1 << 0),
+    GFX_FLAG_SKYRENDER          = (1 << 1),
+    GFX_FLAG_SOFTMOUSE          = (1 << 2),
+    GFX_FLAG_DRAWPRIMITIVES     = (1 << 3),
+    GFX_FLAG_16BITTEXTURE       = (1 << 4),
+    GFX_FLAG_WINDOWED           = (1 << 5),
 };
 
 enum SAVE_DATA_FLAG
 {
-    SDF_USER     =    1,
-    SDF_INPUT    =    2,
-    SDF_VIDEO    =    4,
-    SDF_SOUND    =    8,
-    SDF_SCORE    = 0x10,
-    SDF_SHELL    = 0x20,
-    SDF_PROTO    = 0x40,
-    SDF_BUDDY    = 0x80,
+    SDF_USER     = (1 << 0),
+    SDF_INPUT    = (1 << 1),
+    SDF_VIDEO    = (1 << 2),
+    SDF_SOUND    = (1 << 3),
+    SDF_SCORE    = (1 << 4),
+    SDF_SHELL    = (1 << 5),
+    SDF_PROTO    = (1 << 6),
+    SDF_BUDDY    = (1 << 7),
+    
+    SDF_ALL      = (SDF_USER | SDF_INPUT | SDF_VIDEO | SDF_SOUND | SDF_SCORE | SDF_SHELL | SDF_PROTO | SDF_BUDDY),
 };
 
 enum SOUND_FLAGS
 {
-    SF_INVERTLR  =    1,
-    SF_CDSOUND   = 0x10,
+    SF_INVERTLR  = (1 << 0),
+    SF_CDSOUND   = (1 << 4),
 };
 
 enum UPGRADE_TYPES
@@ -352,62 +371,22 @@ inline uint32_t GetUpgradeLogID(uint8_t upg)
 #include "world/history.h"
 
 
-struct usr_str
-{
-    int id = 0;
-    std::string pstring;
-};
 
-struct audiotrack_adv
-{
-    int min_delay;
-    int max_delay;
-    audiotrack_adv() : min_delay(0), max_delay(0) {};
-};
+
+
 
 
 struct ProfilesNode
 {
-    int totalElapsedTime;
-    char fraction;
+    int totalElapsedTime = 0;
+    uint8_t fraction = 0;
     std::string name;
-
-    ProfilesNode() : totalElapsedTime(0), fraction(0) {};
 };
 
 typedef std::list<ProfilesNode> ProfileList;
 
 
-struct netType1
-{
-    char msg[64];
-    uint8_t Fraction;
-    uint8_t trbl;
-    uint8_t owner;
-    uint8_t rdyStart;
-    uint8_t welcmd;
-    uint8_t cd;
-    uint8_t p[2];
-    int w84upd;
-    uint32_t checksum;
-    char name[64];
-};
 
-struct netType2
-{
-    char name[64];
-    char msg[64];
-    uint8_t rdyStart;
-    uint8_t fraction;
-    uint8_t isKilled;
-    uint8_t status;
-    uint8_t connProblem;
-    uint32_t lastMsgTime;
-    uint32_t tstamp;
-    uint32_t msgCnt;
-    int problemCnt;
-    int latency;
-};
 
 enum
 {
@@ -435,10 +414,8 @@ struct EnvAction
         ACTION_DEMO     = 5
     };
 
-    int action;
-    int params[5];
-
-    EnvAction() : action(ACTION_NONE), params{0, 0, 0, 0, 0} {};
+    int8_t action = ACTION_NONE;
+    int32_t params[5] = {0};
 };
 
 class UserData
@@ -454,29 +431,37 @@ public:
         NETSCREEN_CHOOSE_MAP  = 3,
         NETSCREEN_INSESSION = 4,
     };
+    
+    enum
+    {
+        ICHG_JOYSTICK       = (1 << 0),
+        ICHG_FORCEFEEDBACK  = (1 << 1),
+        ICHG_ALTJOYSTICK    = (1 << 2)
+    };
 
 public:
     struct TInputConf
     {
-        uint8_t Type;
-        int16_t KeyID;
-        int16_t PKeyCode;
-        int16_t NKeyCode;
-        int16_t PKeyCodeBkp;
-        int16_t NKeyCodeBkp;
-        int16_t PKeyCodeDef;
-        int16_t NKeyCodeDef;
-        uint8_t SetFlags;
+        uint8_t Type = 0;
+        int16_t KeyID = 0;
+        int16_t PKeyCode = 0;
+        int16_t NKeyCode = 0;
+        int16_t PKeyCodeBkp = 0;
+        int16_t NKeyCodeBkp = 0;
+        int16_t PKeyCodeDef = 0;
+        int16_t NKeyCodeDef = 0;
+        uint8_t SetFlags = 0; // Flags what key is setted (first/second)
         
-        TInputConf()
-        : Type(0), KeyID(0), PKeyCode(0), NKeyCode(0)
-        , PKeyCodeBkp(0), NKeyCodeBkp(0), PKeyCodeDef(0), NKeyCodeDef(0)
-        , SetFlags(0) {};
-        
+        TInputConf() = default;        
         TInputConf(uint8_t type, int16_t keyID, int16_t pKey, int16_t nKey = 0)
         : Type(type), KeyID(keyID), PKeyCode(pKey), NKeyCode(nKey)
         , PKeyCodeBkp(pKey), NKeyCodeBkp(nKey), PKeyCodeDef(pKey), NKeyCodeDef(nKey)
-        , SetFlags(0) {};
+        {};
+        
+        enum {
+            IF_FIRST  = (1 << 0),
+            IF_SECOND = (1 << 1)
+        };
     };
 
 public:
@@ -487,7 +472,7 @@ public:
     std::string UserName;
 
     NC_STACK_ypaworld *p_YW = NULL;
-    InputState *Input = NULL;
+    TInputState *Input = NULL;
     int32_t DTime     = 0;
     uint32_t GlobalTime = 0;
 
@@ -504,19 +489,16 @@ public:
     NC_STACK_button *titel_button;
     NC_STACK_button *button_input_button;
     GuiList input_listview;
-    size_t field_D36;
-    int field_D3A;
-    bool inp_joystick;
-    int field_D42;
-    bool inp_altjoystick;
-    int field_D4A;
-    int field_D4E;
-    int field_D52;
-
-    int16_t field_D5A;
-    int16_t field_0xd5c;
-
-    int field_D5E;
+    int32_t inpListActiveElement;
+    bool confFirstKey; // What key we will config for sliders (first or second)
+    bool joystickEnabled;
+    bool confJoystickEnabled; // Apply this to joystickEnabled on press "OK"
+    bool altJoystickEnabled;
+    bool confAltJoystickEnabled; // Apply this to altJoystickEnabled on press "OK"
+    bool confFFEnabled;
+    bool keyCatchMode; // mode for catch input to configure key
+    uint8_t inputChangedParts;
+    
     NC_STACK_button *video_button;
     GuiList video_listvw;
     int game_default_res;
@@ -525,65 +507,62 @@ public:
     
     int _gfxModeIndex;
     GuiList d3d_listvw;
-    char win3d_guid[100];
-    char win3d_name[300];
-
-    const char *field_139A;
-    std::string field_139E;
+    
+    std::string win3d_guid;
+    std::string win3d_name;
+    std::string conf3DGuid;
+    std::string conf3DName;
+    
     int16_t fxnumber;
-    int16_t field_0x13a4;
-    char GFX_flags;
-    int16_t field_0x13a8;
-    int16_t field_13AA;
-    int16_t field_0x13ac;
-    char snd__flags2;
+    int16_t confFxNumber;
+    uint8_t GFXFlags;
+    uint8_t confGFXFlags;
 
-    int16_t field_0x13b0;
-    int16_t snd__volume;
-    int16_t field_0x13b4;
-    int16_t snd__cdvolume;
-    int16_t field_0x13b8;
-    bool enemyindicator;
-    int field_13BE;
+    
+    uint8_t soundFlags;
+    uint8_t confSoundFlags;
+    
+    int16_t soundVolume;
+    int16_t confSoundVolume;
+    
+    int16_t musicVolume;
+    int16_t confMusicVolume;
+    
+    bool enemyIndicator;
+    bool confEnemyIndicator;
+    
     int _settingsChangeOptions;
+    
     NC_STACK_button *disk_button;
     GuiList disk_listvw;
-    int field_1612;
-    std::string usernamedir;
-    int usernamedir_len;
-    int16_t field_0x1744;
-    //FSMgr::DirIter *opened_dir;
+    int32_t diskListActiveElement;
+    
+    std::string userNameDir;
+    int16_t userNameDirCursor;
+    
+    int16_t diskScreenMode;
+    
     ProfileList profiles;
-    char field_1756;
-    uint8_t _saveDataFlags;
-    int16_t field_0x1758;
-    int16_t field_175A;
-    int16_t field_0x175c;
-    int16_t field_175E;
-    int16_t field_0x1760;
+
+    uint8_t savedDataFlags; // SDF flags - data types loaded from settings
+
+    bool diskEnterFromMapSelect;
+    
     NC_STACK_button *locale_button;
     Engine::StringList lang_dlls;
     GuiList local_listvw;
     std::string *default_lang_dll;
     std::string *prev_lang;
-
-    int16_t field_19C6;
-    int16_t field_0x19c8;
-    int field_19CA;
-    int lang_dlls_count;
+    
     NC_STACK_button *about_button;
-    int field_19D6;
-    int field_19DA;
-    int16_t field_19DE;
-    int16_t field_0x19e0;
+    uint32_t aboutDlgLastKeyTime;
+    int8_t aboutDlgKeyCount;
+
     NC_STACK_button *network_button;
     GuiList network_listvw;
-    int16_t field_1C2E;
-    int16_t field_0x1c30;
-    int16_t field_1C32;
-    int16_t field_0x1c34;
 
-    int field_1C36;
+    int16_t netListY;
+
     int16_t netSelMode;
     int16_t netSel;
     int nInputMode;
@@ -593,47 +572,99 @@ public:
     int16_t netLevelID;
     std::string netLevelName;
 
-    std::string callSIGN;
+    std::string netPlayerName;
     uint32_t netCRC;
     int32_t takTime;
     uint8_t netPlayerOwner;
-    char FreeFraction;
-    char SelectedFraction;
-    char field_1CD7;
-    int isHost;
-    int modemAskSession;
+    uint8_t FreeFraction;
+    uint8_t SelectedFraction;
+    
+    bool netGameCanStart;
+    bool isHost;
+    bool modemAskSession;
 
     uint32_t msgcount;
-    char field_1CE8;
-    char rdyStart;
-    char remoteMode;
-    uint32_t disconnected;
-    int blocked;
-    uint32_t problemCnt;
-    int16_t msgBuffLine;
-    char msgBuffers[32][64];
-    char lastSender[64];
-    usr_str map_descriptions[256];
-    int map_descriptions_count;
-    uint32_t noSent;
-    int sentAQ;
+    bool isWelcmd;
+    bool rdyStart;
+    bool remoteMode;
+    bool disconnected;
+    bool blocked;
+    
+    int32_t problemTimer;
+
+    std::deque<std::string> msgBuffers;
+    std::string lastSender;
+
+    struct TMapDescription
+    {
+        int id = 0;
+        std::string pstring;
+        
+        TMapDescription() = default;
+        TMapDescription(int __id, const std::string &__pstring)
+        : id(__id), pstring(__pstring) {};
+        
+        static bool compare(const TMapDescription &a1, const TMapDescription &a2)
+        {
+            return StriCmp(a1.pstring, a2.pstring) > 0;
+        }
+    };
+    
+    std::vector< TMapDescription > mapDescriptions;
+
+    bool noSent;
+    bool sentAQ; // sended annonce of quit
+    
     uint8_t netProblemOwner;
-    char netProblemName[64];
+    std::string netProblemName;
     int32_t netProblem;
-    uint32_t netAllOk;
-    int update_time_norm;
-    int flush_time_norm;
-    int kickTime;
+    int32_t netAllOk;
+    int32_t update_time_norm;
+    int32_t flush_time_norm;
+    int32_t kickTime;
     int32_t latencyCheck;
-    int32_t netProblemCount;
-    int32_t netAllOkCount;
-    uint32_t deadCheck;
-    int32_t sendScore;
-    netType2 players[8];
-    netType1 players2[4];
+    int32_t netProblemCountDown;
+    int32_t netAllOkCountDown;
+    uint32_t deadCheckTime;
+    int32_t sendScoreCountDown;
+    
+    struct TNetPlayerLobbyData
+    {
+        std::string Name;
+        std::string Msg;
+        uint8_t  NetFraction = 0;
+        bool     IsTrouble   = false;
+        uint8_t  Owner       = 0;
+        bool     Ready       = false;
+        bool     Welcomed    = false;
+        int32_t  UpdateCountDown = 0;
+        uint32_t DataChecksum   = 0;
+    };
+
+    struct TNetPlayerData
+    {
+        std::string Name;
+        uint8_t  Owner       = 0;
+        bool     Ready       = false;
+        uint8_t DestroyFlags = 0;
+        uint8_t Status       = 0;
+        bool ConnectionProblem = false;
+        uint32_t LastMessageTime = 0;
+        uint32_t TimeStamp   = 0;
+        uint32_t MessageCount = 0;
+        int32_t ProblemCountDown = 0;
+        int32_t Latency      = 0;
+    };
+    
+    
+    std::array<TNetPlayerData, World::CVFractionsCount> netPlayers;
+    std::array<TNetPlayerLobbyData, World::CVMaxNetPlayers> lobbyPlayers;
+    
+    
     NC_STACK_button *confirm_button;
     Gui::UABlockMsgBox *_menuMsgBox = NULL;
-    int field_0x2fb4;
+    
+    uint8_t confirmMode;
     int _menuMsgBoxCode = 0;
     std::string _connString;
 
@@ -642,21 +673,32 @@ public:
     std::array<TInputConf, World::INPUT_BIND_MAX>  InputConfig;
     std::array<std::string, World::INPUT_BIND_MAX> InputConfigTitle;
 
-    int16_t field_3426;
+    /* SGM save exist
+       0 - not checked
+       1 - exist
+       2 - not exist, but checked*/
+    int8_t sgmSaveExist = 0; 
+    
     int16_t shelltrack;
     int16_t missiontrack;
     int16_t loadingtrack;
     int16_t debriefingtrack;
-    audiotrack_adv shelltrack__adv;
-    audiotrack_adv missiontrack__adv;
-    audiotrack_adv loadingtrack__adv;
-    audiotrack_adv debriefingtrack__adv;
-    char snaps[32][256];
-    int16_t snap_count;
-    uint8_t cd;
-    uint32_t last_cdchk;
-    uint32_t lastInputEvent;
-    uint32_t WaitForDemo;
+    
+    struct TAudioTrackDelays
+    {
+        int32_t min_delay = 0;
+        int32_t max_delay = 0;
+    };
+    
+    TAudioTrackDelays shelltrack__adv;
+    TAudioTrackDelays missiontrack__adv;
+    TAudioTrackDelays loadingtrack__adv;
+    TAudioTrackDelays debriefingtrack__adv;
+    
+    std::vector<std::string> snaps;
+
+    uint32_t lastInputEvent = 0;
+    
     uint32_t netsend_count;
     uint32_t netrecv_count;
     uint32_t netrecv_time;
@@ -699,12 +741,11 @@ public:
     void sub_4DE248(int id);
     void sub_46D698();
     void yw_NetPrintStartInfo();
-    void yw_CheckCDs();
+
     void AfterMapChoose();
     void yw_NetOKProvider();
     void yw_JoinNetGame();
     void JoinLobbyLessGame();
-    int ypaworld_func158__sub0__sub8(std::string *, std::string *);
     void ypaworld_func151__sub7();
     void yw_FractionInit();
     void yw_netcleanup();
@@ -719,13 +760,21 @@ public:
     void InputConfCopyToBackup();
     void InputConfigRestoreDefault();
     void sub_46C5F0();
-    void  ypaworld_func158__sub0__sub5(int a2);
+    void  UpdateSelected3DDevFromList();
     void sub_46A7F8();
     void ypaworld_func158__sub0__sub4();
+    
 
     bool  ShellSoundsLoad();
 
     static int InputIndexFromConfig(uint32_t type, uint32_t index);
+    static bool IsHasSGM(const std::string &username, int id);
+    static bool IsHasRestartForLevel(const std::string &username, int id);
+    
+    bool IsWindowedFlag()
+    {
+        return (GFXFlags & World::GFX_FLAG_WINDOWED) != 0;
+    }
 
 protected:
     bool LoadSample(int sampleID, const std::string &file);
@@ -752,7 +801,7 @@ struct recorder
         OBJ_TYPE_VEHICLE = 2
     };
 
-    IFFile mfileYOYO;
+    IFFile mfile;
     uint16_t seqn;
     uint16_t level_id;
     int32_t frame_id;
@@ -779,7 +828,7 @@ struct recorder
     int32_t field_7C;
     int32_t field_80;
     uint32_t field_84;
-    char filename[64];
+    std::string filename;
 };
 
 enum CELL_PFLAGS
@@ -789,26 +838,49 @@ enum CELL_PFLAGS
 };
 
 struct cellArea
-{
+{    
     int32_t Id = 0;
-    Common::Point PosID;
+    Common::Point CellId;
 
-    char addit_cost; // Additional cost for ground units
-    char pf_flags; // Pathfind flags
+    float addit_cost; // Additional cost for ground units
+    uint8_t pf_flags; // Pathfind flags
     float cost_to_this;
     float cost_to_target;
     cellArea *pf_treeup;
+ 
+    enum CF
+    {
+        // Not playable sector, used as border
+        CF_BORDER = (1 << 0),
+    };
+    
+    uint8_t Flags = 0;
 
     uint8_t owner;
     int32_t type_id; // Index in array
-    char comp_type; // Complex (3x3) or simple
+    uint8_t SectorType; // Complex (3x3) or simple
     int32_t energy_power; // Cell electric power
     Common::PlaneArray<int16_t, 3, 3> buildings_health = {0};
     Common::PlaneArray<NC_STACK_base::Instance *, 3, 3> BldVPOpts = {NULL};
     uint8_t view_mask; // Who can view this sector (mask)
-    char w_type;
-    int32_t w_id;
+    
+    enum PTYPE
+    {
+        PT_NONE            = 0,  // Oridnary sector 
+        PT_CONSTRUCTING    = 1,  // Building construct process 
+        PT_POWERSTATION    = 2,
+        PT_BUILDINGS       = 3,
+        PT_TECHUPGRADE     = 4,
+        PT_GATECLOSED      = 5,
+        PT_GATEOPENED      = 6,
+        PT_TECHDEACTIVE    = 7,
+        PT_STOUDSON        = 8
+    };
+    uint8_t PurposeType = PT_NONE;
+    int32_t PurposeIndex = 0;
+    
     World::RefBactList unitsList; // Units in this sector
+    vec3d CenterPos;
     float height;
     float averg_height;
     
@@ -849,7 +921,7 @@ struct cellArea
     
     int GetEnergy()
     {
-        if ( comp_type == 1 )
+        if ( SectorType == 1 )
             return buildings_health.At(0, 0);
 
         int e = 0;
@@ -857,6 +929,16 @@ struct cellArea
             e += hlth;
         
         return e;
+    }
+    
+    inline bool IsBorder() const
+    {
+        return (Flags & CF_BORDER) != 0;
+    }
+    
+    inline bool IsGamePlaySector() const
+    {
+        return (Flags & CF_BORDER) == 0;
     }
     
     void clear()
@@ -868,17 +950,19 @@ struct cellArea
         //nlist pf_treelist;
         //nnode pf_treenode;
         pf_treeup = NULL;
+        
+        Flags = 0;
 
         owner = 0;
         type_id = 0;
-        comp_type = 0;
+        SectorType = 0;
         energy_power = 0;
         
         buildings_health.fill(0);
                 
         view_mask = 0;
-        w_type = 0;
-        w_id = 0;
+        PurposeType = PT_NONE;
+        PurposeIndex = 0;
         
         unitsList.clear();
         
@@ -899,60 +983,21 @@ struct TCellFillerCh : TObjectCache
     ~TCellFillerCh();
 };
 
-struct MapKeySector
+struct TMapKeySector
 {
-    int x;
-    int y;
-    cellArea *PCell;
-
-    MapKeySector()
-    {
-    	clear();
-    }
-
-    void clear()
-    {
-    	x = 0;
-    	y = 0;
-    	PCell = NULL;
-    }
+    Common::Point CellId;
+    cellArea *PCell = NULL;
 };
 
-struct MapGate
+struct TMapGate
 {
-    cellArea *PCell;
-    int SecX;
-    int SecY;
-    int ClosedBldID;
-    int OpenBldID;
+    cellArea *PCell = NULL;
+    Common::Point CellId;
+    int ClosedBldID = 0;
+    int OpenBldID = 0;
     std::vector<int> PassToLevels;
-    std::vector<MapKeySector> KeySectors;
-    int MbStatus;
-
-    MapGate()
-    {
-    	clear();
-    }
-
-    void clear()
-    {
-    	PCell = NULL;
-        SecX = 0;
-        SecY = 0;
-        ClosedBldID = 0;
-        OpenBldID = 0;
-
-        PassToLevels.clear();
-        
-        KeySectors.clear();
-
-        MbStatus = 0;
-    }
-    
-    operator Common::Point() const
-    {
-        return Common::Point(SecX, SecY);
-    }
+    std::vector<TMapKeySector> KeySectors;
+    int MbStatus = 0;
 };
 
 struct MapSquad
@@ -1036,11 +1081,10 @@ struct MapRobo
     }
 };
 
-struct MapGem
+struct TMapGem
 {
     int16_t BuildingID = 0;
-    int16_t SecX = 0;
-    int16_t SecY = 0;
+    Common::Point CellId;
     int MbStatus = 0;
     std::string ScriptFile;
     std::string MsgDefault;
@@ -1054,8 +1098,6 @@ struct MapGem
     int16_t NwBprotoNum4 = 0;
     Engine::StringList ActionsList;
     int Type = 0;
-    
-    operator Common::Point() const { return Common::Point(SecX, SecY); };
 };
 
 struct TBkgPicInfo
@@ -1130,11 +1172,11 @@ struct TMapSuperItem
     int State = STATE_INACTIVE;
     int32_t TimerValue = 0;
     cellArea *PCell = NULL;
-    Common::Point Sector;
+    Common::Point CellId;
     int32_t InactiveBldID = 0;
     int32_t ActiveBldID = 0;
     int32_t TriggerBldID = 0;
-    std::vector<MapKeySector> KeySectors;
+    std::vector<TMapKeySector> KeySectors;
     int MbStatus = 0;
     int32_t ActiveTime = 0;
     int32_t TriggerTime = 0;
@@ -1174,7 +1216,7 @@ struct TLevelInfo
     int UserMask = 0;
 
     std::vector<TMapBuddy> Buddies;
-    std::vector<MapGate> Gates;
+    std::vector<TMapGate> Gates;
     std::vector<TMapSuperItem> SuperItems;
     std::array<int, 8> JodieFoster = {{0}};
     std::string MovieStr;
@@ -1345,8 +1387,8 @@ struct TBriefengScreen
     Common::PlaneBytes TypMap;
     //int _owner;
     uint32_t LastFrameTimeStamp = 0;
-    std::array<World::TPlayerStatus, 8> StatsGlobal;
-    std::array<World::TPlayerStatus, 8> StatsIngame;
+    std::array<World::TPlayerStatus, World::CVFractionsCount> StatsGlobal;
+    std::array<World::TPlayerStatus, World::CVFractionsCount> StatsIngame;
     std::string MovieStr;
     std::vector<World::History::Upgrade> Upgrades;
     
@@ -1359,13 +1401,13 @@ struct TBriefengScreen
     {
         if ( MbmapImg )
         {
-            Nucleus::Delete(MbmapImg);
+            MbmapImg->Delete();
             MbmapImg = NULL;
         }
 
         if ( BriefingMapImg )
         {
-            Nucleus::Delete(BriefingMapImg);
+            BriefingMapImg->Delete();
             BriefingMapImg = NULL;
         }
         
@@ -1373,7 +1415,7 @@ struct TBriefengScreen
         {
             if (gfx)
             {
-                Nucleus::Delete(gfx);
+                gfx->Delete();
                 gfx = NULL;
             }
         }
@@ -1494,65 +1536,39 @@ struct TMapRegionsNet
 
 struct sklt_wis
 {
-    int field_0;
-    NC_STACK_sklt *sklts[14];
-    UAskeleton::Data *sklts_intern[14];
-    int field_72;
-    int field_76;
-    int field_7A;
-    NC_STACK_ypabact *field_7E;
-    int field_82;
-    float field_86;
-    float field_8A;
-    float field_8E;
-    float field_92;
-    int field_96;
-    int field_9A;
-    int field_9E;
-    float cl1_r;
-    float cl1_g;
-    float cl1_b;
-    float cl2_r;
-    float cl2_g;
-    float cl2_b;
+    int field_0 = 0;
+    NC_STACK_sklt *sklts[14] = {NULL};
+    UAskeleton::Data *sklts_intern[14] = {NULL};
+    int field_72 = 0;
+    int field_76 = 0;
+    int field_7A = 0;
+    NC_STACK_ypabact *field_7E = NULL;
+    int field_82 = 0;
+    float field_86 = 0.0;
+    float field_8A = 0.0;
+    float field_8E = 0.0;
+    float field_92 = 0.0;
+    int field_96 = 0;
+    int field_9A = 0;
+    int field_9E = 0;
+    float cl1_r = 0.0;
+    float cl1_g = 0.0;
+    float cl1_b = 0.0;
+    float cl2_r = 0.0;
+    float cl2_g = 0.0;
+    float cl2_b = 0.0;
 };
 
 
-struct save_status
+struct TMFWinStatus
 {
-    int p1;
-    int p2;
-    int16_t p3;
-    int16_t p4;
-    int16_t p5;
-    int16_t p6;
-    std::array<int, 8> pX;
-
-    save_status()
-    {
-        clear();
-    }
-
-    void clear()
-    {
-        p1 = 0;
-        p2 = 0;
-        p3 = 0;
-        p4 = 0;
-        p5 = 0;
-        p6 = 0;
-        for (auto &t : pX)
-            t = 0;
-    }
+    bool Valid = false;
+    bool IsOpen = false;
+    Common::PointRect Rect;
+    std::array<int32_t, 8> Data = {0};
 };
 
-struct yw_81cb
-{
-    int field_0;
-    int field_4;
-    char field_8[128];
-    char field_C[128];
-};
+
 
 struct TSingleVoiceMessage
 {
@@ -1571,7 +1587,7 @@ struct TSingleVoiceMessage
         SFXEngine::SFXe.StopCarrier(&Carrier);
         
         if (Sample)
-            Nucleus::Delete(Sample);
+            Sample->Delete();
         
     }
     
@@ -1580,7 +1596,7 @@ struct TSingleVoiceMessage
         SFXEngine::SFXe.StopCarrier(&Carrier);
         
         if (Sample)
-            Nucleus::Delete(Sample);
+            Sample->Delete();
         
         Carrier.Resize(1);
         Priority = -1;
@@ -1589,36 +1605,14 @@ struct TSingleVoiceMessage
     }
 };
 
-struct yw_f80
+struct TPowerStationInfo
 {
-    int field_0;
-    int field_4;
-    int field_8;
-    int x;
-    int y;
-    char ownerID2;
-    uint8_t blg_ID;
-
-    yw_f80()
-    {
-        field_0 = 0;
-        field_4 = 0;
-        field_8 = 0;
-        x = 0;
-        y = 0;
-        ownerID2 = 0;
-        blg_ID = 0;
-    }
-};
-
-struct PowerStationRef
-{
-    Common::Point Cell; 
+    Common::Point CellId; 
     cellArea *pCell = NULL;
     int32_t Power = 0;
     int32_t EffectivePower = 0;
     
-    operator Common::Point() { return Cell; }
+    operator Common::Point() { return CellId; }
 };
 
 struct EnergyAccum
@@ -1627,42 +1621,37 @@ struct EnergyAccum
     int32_t Energy = 0;
 };
 
-struct lego_xyz
+struct TLego
 {
-    int field_0 = 0;
-    float pos_x = 0.0;
-    float pos_y = 0.0;
-    float pos_z = 0.0;
+    NC_STACK_base *Base = NULL;
+    NC_STACK_skeleton *CollisionSkelet = NULL;
+    NC_STACK_skeleton *UseCollisionSkelet = NULL;
+    uint8_t Shield = 0; // Percents
+    uint8_t GUIElementID = 0;
+    
+    /* Explode object and position */
+    struct ExFX
+    {
+        uint8_t Index = 0;
+        uint8_t ObjectID = 0;
+        vec3d Position;
+    };
+
+    std::vector<ExFX> Explosions;
 };
 
-struct cityBases
+struct TSubSectorDesc
 {
-    NC_STACK_base *base = NULL;
-    NC_STACK_sklt *sklt_obj = NULL;
-    UAskeleton::Data *sklt_obj_intern = NULL;
-    UAskeleton::Data *selected_sklt_intern = NULL;
-    char field_10 = 0;
-    char field_11 = 0;
-    char field_12 = 0;
-    char field_13 = 0;
-    std::array<uint8_t, 16> field_14 = {{0}};
-    std::array<lego_xyz, 16> field_24;
+    int32_t StartHealth = 0;
+    std::array<uint8_t, 4> HPModels = {{0}}; //Building health models 0 - 100%hp, 3 - 0%hp
 };
 
-struct subSec
+struct TSectorDesc
 {
-    int build_health = 0;
-    std::array<uint8_t, 4> health_models = {{0}}; //Building health models 0 - 100%hp, 3 - 0%hp
-    int field_8 = 0;
-};
-
-struct secType
-{
-    char field_0 = 0;
-    uint8_t field_1 = 0;
-    char field_2 = 0;
-    char field_3 = 0;
-    Common::PlaneArray<subSec *, 3, 3> buildings = {0};
+    uint8_t SectorType = 0;
+    uint8_t SurfaceType = 0;
+    uint8_t GUIElementID = 0;
+    Common::PlaneArray<TSubSectorDesc *, 3, 3> SubSectors = {0};
 };
 
 
@@ -1673,9 +1662,9 @@ struct yw_arg172
 {
     const char *usertxt;
     const char *field_4;
-    int field_8;
+    int UsageFlags;
     UserData *usr;
-    int field_10;
+    int InitGameShell;
 };
 
 struct yw_arg181
@@ -1705,11 +1694,8 @@ struct yw_130arg
 {
     float pos_x;
     float pos_z;
-    int sec_x;
-    int sec_z;
+    Common::Point CellId;
     cellArea *pcell;
-    float pos_x_cntr;
-    float pos_y_cntr;
 };
 
 struct ypaworld_arg136
@@ -1762,10 +1748,10 @@ struct yw_arg180
 
 struct ypaworld_arg148
 {
-    int ownerID;
-    int ownerID2;
+    int owner;
     int blg_ID;
     int field_C;
+    Common::Point CellId;
     int x;
     int y;
     int field_18;
@@ -1854,6 +1840,24 @@ public:
     };
 
 public:
+    struct TConstructInfo
+    {
+        Common::Point CellID;
+        int Time = 0;
+        int EndTime = 0;
+        int Owner = 0;
+        uint8_t BuildID = 0;
+    };
+    
+    struct TNetGameEvent
+    {
+        int8_t EventType = 0;
+        uint32_t TimeStamp = 0;
+        std::string PlayerName;
+        std::string Player2Name;
+    };
+
+public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     virtual size_t Process(base_64arg *arg);
@@ -1887,7 +1891,7 @@ public:
     virtual void ypaworld_func159(yw_arg159 *arg);
     virtual void ypaworld_func160(void *arg);
     virtual size_t ypaworld_func161(yw_arg161 *arg);
-    virtual size_t ypaworld_func162(const char *fname);
+    virtual size_t ypaworld_func162(const std::string &fname);
     virtual void ypaworld_func163(base_64arg *arg);
     virtual void ypaworld_func164();
     virtual void ypaworld_func165(yw_arg165 *arg);
@@ -1896,8 +1900,8 @@ public:
     virtual size_t ypaworld_func168(NC_STACK_ypabact *pbact);
     virtual size_t LoadGame(const std::string &saveFile);
     virtual size_t SaveGame(const std::string &saveFile);
-    virtual size_t ypaworld_func171(yw_arg172 *arg);
-    virtual size_t ypaworld_func172(yw_arg172 *arg, bool playIntro = false);
+    virtual bool SaveSettings(UserData *usr, const std::string &fileName, uint32_t sdfMask);
+    virtual size_t LoadSettings(const std::string &fileName, const std::string &userName, uint32_t sdfMask, bool updateGameShell, bool playIntro = false);
     virtual bool ReloadInput(size_t id);
     virtual size_t SetGameShellVideoMode(bool windowed);
     virtual size_t ReloadLanguage();
@@ -1968,7 +1972,7 @@ public:
     virtual void setYW_userVehicle(NC_STACK_ypabact *);
     virtual void setYW_screenW(int);
     virtual void setYW_screenH(int);
-    virtual void setYW_dontRender(int);
+    virtual void setYW_dontRender(bool);
 
     virtual int getYW_mapSizeX();
     virtual int getYW_mapSizeY();
@@ -1983,10 +1987,10 @@ public:
     virtual int getYW_visSectors();
     virtual NC_STACK_ypabact *getYW_userHostStation();
     virtual NC_STACK_ypabact *getYW_userVehicle();
-    virtual std::vector<World::TWeapProto> &GetWeaponsProtos() { return WeaponProtos; };
-    virtual std::vector<World::TBuildingProto> &GetBuildProtos() { return BuildProtos; };
-    virtual std::vector<World::TVhclProto> &GetVhclProtos() { return VhclProtos; };
-    virtual std::vector<World::TRoboProto> &GetRoboProtos() { return RoboProtos; };
+    virtual std::vector<World::TWeapProto> &GetWeaponsProtos() { return _weaponProtos; };
+    virtual std::vector<World::TBuildingProto> &GetBuildProtos() { return _buildProtos; };
+    virtual std::vector<World::TVhclProto> &GetVhclProtos() { return _vhclProtos; };
+    virtual std::vector<World::TRoboProto> &GetRoboProtos() { return _roboProtos; };
     virtual int getYW_lvlFinished();
     virtual int getYW_screenW();
     virtual int getYW_screenH();
@@ -2004,8 +2008,8 @@ protected:
 
     void GUI_Close();
 
-    void CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, InputState *inpt);
-    bool IsAnyInput(InputState *struc);
+    void CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, TInputState *inpt);
+    bool IsAnyInput(TInputState *struc);
 
 
     void GameShellUiOpenNetwork(); // On main menu "Multiplayer" press
@@ -2015,6 +2019,9 @@ protected:
     bool GameShellInitBkg();
 
     int  InputConfigLoadDefault();
+
+    static uint32_t PointToUint32(const Common::Point &point) 
+    { return (0xFFFF & point.y) << 16 | (0xFFFF & point.x); }
 
 public:
     void GuiWinToFront(GuiBase *);
@@ -2046,12 +2053,16 @@ public:
     int ypaworld_func158__sub4__sub1__sub3__sub0();
     void yw_ActivateWunderstein(cellArea *cell, int a3);
     void yw_InitTechUpgradeBuildings();
+    
+    void DoSectorsEnergyRecalc();
+    void RecalcSectorsPowerForPS(const TPowerStationInfo &ps);
+    
     void sub_4D12D8(int id, int a3);
     void sub_4D1594(int id);
     void sub_4D1444(int id);
     int LoadingParseSaveFile(const std::string &filename);
     void LoadingUnitsRefresh();
-    int ypaworld_func172__sub0(const std::string &fname, int parsers_mask);
+    int ParseSettingsFile(const std::string &fname, uint32_t sdfMask);
     void listSaveDir(const std::string &saveDir);
     bool InitMapRegionsNet();
     int yw_ParseWorldIni(const std::string &filename);
@@ -2107,15 +2118,19 @@ public:
     
     
     NC_STACK_ypabact *yw_createUnit(int model_id);
-    void sb_0x456384(int x, int y, int ownerid2, int blg_id, int a7);
-    void SetupPowerStationRef(const Common::Point &sec, int power);
-    void sb_0x456384__sub0__sub0();
+    void sb_0x456384(const Common::Point &cellId, int ownerid2, int blg_id, int a7);
+    void SetupPowerStationInfo(cellArea *cell, int power);
+    void ResetAccumMap();
     
-    void CellSetOwner(cellArea *cell, char secX, char secY, uint8_t owner);
-    int ypaworld_func148__sub1(int id, int a4, int x, int y, int ownerID2, char blg_ID);
+    void CellSetOwner(cellArea *cell, uint8_t owner);
     
-    void debug_info_draw(InputState *inpt);
+    void DestroyAllGunsInSector(cellArea *cell);
+    bool BuildingConstructBegin(cellArea *cell, uint8_t buildingID, int owner, int cTime);
+    void BuildingConstructUpdate(int dtime);
+    
+    void debug_info_draw(TInputState *inpt);
     void debug_count_units();
+    void ProfileCalcValues();
     
     
     void SendCRC(int lvlid);
@@ -2129,7 +2144,7 @@ public:
     void HistoryAktKill(NC_STACK_ypabact *bact);
     
     
-    int sub_449678(InputState *struc, int kkode);
+    int sub_449678(TInputState *struc, int kkode);
     
     bool yw_write_units(FSMgr::FileHandle *fil);
     bool yw_write_robo(NC_STACK_yparobo *robo, FSMgr::FileHandle *fil);
@@ -2153,27 +2168,27 @@ public:
     bool LngFileLoad(const std::string &filename);
 
     
-    void ypaworld_func64__sub7(InputState *inpt);
-    void ypaworld_func64__sub7__sub4(InputState *inpt);
+    void ypaworld_func64__sub7(TInputState *inpt);
+    void ypaworld_func64__sub7__sub4(TInputState *inpt);
     void ypaworld_func64__sub7__sub4__sub0(int a2);
     void ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypabact *bact);
     bool ypaworld_func64__sub7__sub3__sub2();
     
-    void yw_MouseSelect(InputState *arg);
-    void ypaworld_func64__sub21__sub1__sub0(InputState *arg);
+    void yw_MouseSelect(TInputState *arg);
+    void ypaworld_func64__sub21__sub1__sub0(TInputState *arg);
     
-    void yw_MAP_MouseSelect(ClickBoxInf *winp);
+    void yw_MAP_MouseSelect(TClickBoxInf *winp);
     
-    void ypaworld_func64__sub21__sub1__sub3__sub0(ClickBoxInf *winp);
-    void yw_3D_MouseSelect(ClickBoxInf *winp);
+    void ypaworld_func64__sub21__sub1__sub3__sub0(TClickBoxInf *winp);
+    void yw_3D_MouseSelect(TClickBoxInf *winp);
     
-    void ypaworld_func64__sub21(InputState *arg);
+    void ypaworld_func64__sub21(TInputState *arg);
     void ypaworld_func64__sub21__sub7();
     float sub_4498F4();
     
-    int ypaworld_func64__sub7__sub3__sub1(ClickBoxInf *winpt);
-    void yw_SMAN_MouseSelect(ClickBoxInf *winp);
-    void SquadManager_InputHandle(InputState *inpt);
+    int ypaworld_func64__sub7__sub3__sub1(TClickBoxInf *winpt);
+    void yw_SMAN_MouseSelect(TClickBoxInf *winp);
+    void SquadManager_InputHandle(TInputState *inpt);
     NC_STACK_ypabact * sub_4C7B0C(int sqid, int a3);
     
     bool recorder_create_camera();
@@ -2189,18 +2204,18 @@ public:
     void ypaworld_func163__sub1(recorder *rcrd, int a3);
     
     void sub_4811E8(int id);
-    void ypaworld_func64__sub1(InputState *inpt);
+    void ypaworld_func64__sub1(TInputState *inpt);
     void ypaworld_func64__sub21__sub5(int arg);
     
     
-    bool ypaworld_func64__sub21__sub6(ClickBoxInf *winp);
-    int ypaworld_func64__sub21__sub4(InputState *arg, int a3);
+    bool ypaworld_func64__sub21__sub6(TClickBoxInf *winp);
+    int ypaworld_func64__sub21__sub4(TInputState *arg, int a3);
     int ypaworld_func64__sub21__sub3();
-    int ypaworld_func64__sub21__sub2();
-    int sb_0x4d3d44(ClickBoxInf *winp);
-    void ypaworld_func64__sub7__sub6(InputState *inpt);
+    int UserActBuildCheck();
+    int sb_0x4d3d44(TClickBoxInf *winp);
+    void ypaworld_func64__sub7__sub6(TInputState *inpt);
     
-    int yw_MouseFindCreationPoint(ClickBoxInf *winp);
+    int yw_MouseFindCreationPoint(TClickBoxInf *winp);
     
     void sb_0x4c87fc(const std::string &a2, GuiBase *lstvw);
     void sub_47DB04(char a2);
@@ -2208,12 +2223,16 @@ public:
     
     void LoadKeyNames();
     
+    NC_STACK_ypabact *GetDefaultCmdr() const;
+    NC_STACK_ypabact *GetNextCmdrByCmdId(uint32_t cmdrId) const;
+    NC_STACK_ypabact *GetNextSquad() const;
+    
     
     void InitGates();
     void UpdatePowerEnergy();
-    void PowerStationErase(size_t id);
-    void CellSetNewOwner(int secX, int secY, cellArea *cell, NC_STACK_ypabact *a5, int newOwner);
-    void CellCheckHealth(cellArea *cell, int secX, int secY, int a5, NC_STACK_ypabact *a6);
+    void PowerStationErase(cellArea *cell);
+    void CellSetNewOwner(cellArea *cell, NC_STACK_ypabact *a5, int newOwner);
+    void CellCheckHealth(cellArea *cell, int a5, NC_STACK_ypabact *a6);
     void InitBuddies();
     void InitSuperItems();
     bool LoadBlgMap(const std::string &mapName);
@@ -2255,6 +2274,9 @@ public:
     bool ProtosInit();
     void ProtosFreeSounds();
     
+    void FreeGameDataCursors();
+    
+    void SetCmdrIdToSelect(int32_t id) { _cmdrIdToSelect = id; };
     
     void InitTooltips();
     
@@ -2272,8 +2294,8 @@ public:
   
     
     
-    UserData *GameShell;
-    base_64arg *b64_parms;
+    UserData *_GameShell = NULL;
+    
     Common::Point _mapSize;
 
     Common::PlaneVector<cellArea> _cells;
@@ -2283,289 +2305,362 @@ public:
     vec2d _mapLength;
 
     Common::PlaneVector<EnergyAccum> _energyAccumMap;
-    std::vector<PowerStationRef> _powerStations;
-    int _nextPSForUpdate;
-    int set_number;
-    NC_STACK_base *additionalSet;
+    std::map<int32_t, TPowerStationInfo> _powerStations;
+    
+    int32_t _nextPSForUpdate = 0;
+    int32_t _setId = 0;
+    
+    NC_STACK_base *_setData = NULL;
     World::RefBactList _unitsList;
     World::RefBactList _deadCacheList;
-    std::vector<NC_STACK_base *> vhcls_models;
-    std::array<cityBases, 256> legos;
-    std::array<subSec, 256> subSectors;
-    std::array<secType, 256> secTypes;
-    std::vector<World::TVhclProto> VhclProtos;
-    std::vector<World::TWeapProto> WeaponProtos;
-    std::vector<World::TBuildingProto> BuildProtos;
-    std::vector<World::TRoboProto> RoboProtos;
-    std::list<NC_STACK_base *> _Override;
-    yw_f80 field_80[8];
-    int16_t build_hp_ref[256];
-    uint8_t sqrt_table[64][64];
-    NC_STACK_ypabact *current_bact;
-    vec3d field_1334;
-    mat3x3 field_1340;
-    NC_STACK_base *sky_loaded_base;
-    int field_1368;
-    NC_STACK_base *additionalBeeBox;
-    NC_STACK_sklt *colsub_sklt;
-    NC_STACK_sklt *colcomp_sklt;
-    UAskeleton::Data *colsub_sklt_intrn;
-    UAskeleton::Data *colcomp_sklt_intrn;
-    NC_STACK_bitmap *tracyrmp_ilbm;
-    NC_STACK_bitmap *shadermp_ilbm;
-    int field_138c;
-    int str17_NOT_FALSE;
-    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersHorizontal = {NULL};
-    Common::PlaneArray<NC_STACK_base *, 6, 6> FillersVertical = {NULL};
-    NC_STACK_skeleton *FillerSide = NULL;
-    NC_STACK_skeleton *FillerCross = NULL;
-    int field_15e4;
-    int field_15e8;
-    int field_15ec;
-    int field_15f0;
-    int field_15f4;
-    int field_15f8;
-    int field_15fc;
-
-    int audio_volume;
-    int field_1604;
-    int field_1608;
-    int field_160c;
-    int field_1610;
-    int timeStamp;
-    int field_1618;
-    int field_161c;
-    std::string buildDate;
-    int field_1624;
-    int16_t field_1628;
-    int16_t field_162A;
-    int GUI_OK;
-    std::array<TileMap *, 92> tiles;
-    GuiBaseList field_17a0;
-    int16_t screen_width;
-    int16_t screen_height;
-
-    int isDragging;
-    GuiBase *draggingItem;
-    Common::Point draggingPos;
-    bool draggingLock;
-
-    int _mouseGrabbed; // Grab mouse for unit steer-turn
-    int field_17c4;
-    int field_17c8;
-    std::vector<std::string> tooltips;
-    std::array<SDL_Color, World::COLOR_MAX_NUMBER> _iniColors;
-    int field_1a00;
-    int field_1a04;
-    int field_1a08;
-    int field_1a0c;
-    int field_1a10;
-
-    int field_1a1c;
-    int field_1a20;
-    int font_default_h;
-    int font_default_w__a;
-    int font_yscrl_bkg_w;
-    int font_xscrl_h;
-    int font_default_w__b;
-    int field_1a38;
-    int font_yscrl_h;
-    int icon_order__w;
-    int icon_order__h;
-    int icon_help__w;
-    int icon_help__h;
-    int icon_energy__h;
-    int icon0___h;
-    int field_1a58;
-    int field_1a5c;
-    cellArea *field_1a60;
-    int field_1a64;
-    int field_1A66;
-    int field_1a68; //Network?
-    vec3d field_1a6c;
-
-    vec3d field_1a7c;
-
-    vec3d field_1a8c;
-    NC_STACK_ypabact *field_1a98;
-    float field_1a9c;
-    int field_1aa0;
-    int field_1aa4;
-    int field_1aa8;
-    NC_STACK_ypabact *field_1aac;
-    int field_1ab0;
-    int field_1ab4;
-    vec3d field_1ab8;
-
-    NC_STACK_bitmap *pointers[11];
-    ResBitmap *pointers__bitm[11];
-    int field_1b1c;
-    int field_1b20; // saved mouse x
-    int field_1b22; // saved mouse y
-    update_msg field_1b24;
-    int8_t _showDebugMode = 0; // debug info draw
-    int32_t field_1B6A;
-    int32_t field_1b6c;
-    uint16_t field_1B6E;
-    int field_1b70;
-    int field_1b74;
-    NC_STACK_ypabact *UserRobo;
-    NC_STACK_ypabact *UserUnit;
-    World::RefBactList *_UserRoboKidsList;
-    int sectors_count_by_owner[8];
-    int field_1bac[8];
-    float field_1bcc[8];
-    float field_1bec[8];
-    NC_STACK_ypabact *_cmdrsRemap[512];
-    int _activeCmdrID;
-    int _activeCmdrRemapIndex;
-    int _cmdrsCount;
-    int _kidsCount;
-    uint32_t field_241c;
-    NC_STACK_ypabact *_lastMsgSender;
-    int field_2424;
-    int do_screenshooting;
-    int screenshot_seq_id; //Screenshoting sequence id
-    int screenshot_seq_frame_id; //Screenshoting frame id
-    recorder *replayer; // For play replay
-    recorder *sceneRecorder; // For record replay
-    bact_hudi hudi;
-    std::vector<MapGem> _Gems;
-    int field_2b78;
-    int field_2b7c;
-    int last_modify_vhcl;
-    int last_modify_weapon;
-    int last_modify_build;
-
-    TMapRegionsNet _mapRegions;
-    TLevelInfo _levelInfo;
+    std::vector<NC_STACK_base *> _vhclModels;
+    std::array<TLego, 256> _legoArray; 
+    std::array<TSubSectorDesc, 256> _subSectorArray;
+    std::array<TSectorDesc, 256> _secTypeArray;  
     
-    TBriefengScreen brief;
+    std::vector<World::TVhclProto> _vhclProtos;
+    std::vector<World::TWeapProto> _weaponProtos;
+    std::vector<World::TBuildingProto> _buildProtos;
+    std::vector<World::TRoboProto> _roboProtos;
+    
+    std::list<NC_STACK_base *> _overrideModels;
+    
+    std::map<int32_t, TConstructInfo> _inBuildProcess; // Buildings in creation process
+    std::array<int16_t, 256> _buildHealthModelId = {0};
+    Common::PlaneArray<uint8_t, 64, 64> _sqrtTable = {0};
+    
+    NC_STACK_ypabact *_viewerBact = NULL;
+    vec3d _viewerPosition;
+    mat3x3 _viewerRotation;
+    
+    NC_STACK_base *_skyObject  = NULL;
+    
+    int32_t _renderSectors = 0; // Render distance in sectors 
+    
+    NC_STACK_base *_beeBox = NULL;
+    NC_STACK_skeleton *_colsubSkeleton  = NULL;
+    NC_STACK_skeleton *_colcompSkeleton  = NULL;
+    NC_STACK_bitmap *_tracyBitmap  = NULL;
+    NC_STACK_bitmap *_shadermpBitmap  = NULL;
+    
+    bool _doNotRender = false;
+    
+    Common::PlaneArray<NC_STACK_base *, 6, 6> _fillersHorizontal = {NULL};
+    Common::PlaneArray<NC_STACK_base *, 6, 6> _fillersVertical = {NULL};
+    
+    NC_STACK_skeleton *_fillerSide = NULL;
+    NC_STACK_skeleton *_fillerCross = NULL;
+    
+    int32_t _normalVizLimit = 0;
+    int32_t _normalFadeLength = 0;
+    int32_t _skyVizLimit = 0;
+    int32_t _skyFadeLength = 0;
+    int32_t _skyHeight = 0;
+    bool _skyRender = true;
+    bool _doEnergyRecalc = true; // Update powerstations energy give
+
+    int32_t audio_volume = 0;
+    
+    bool _hasSGMSave = false;
+    bool _hasRSTSave = false;
+    
+    bool _gamePaused = false;
+    uint32_t _gamePausedTimeStamp = 0;
+    
+    uint32_t _timeStamp = 0;
+    int32_t _frameTime = 0;
+    uint32_t _framesElapsed = 0;
+    
+    std::string _buildDate; 
+    
+    bool _playerHSDestroyed = false;
+    
+    bool _fireBtnIsDown = false; // true - fire btn is down, contigues
+    bool _fireBtnDownHappen = false; // true happen on down, single
+    bool _guiLoaded = false;
+    
+    std::array<TileMap *, 92> _guiTiles = {NULL};
+    
+    GuiBaseList _guiActive;
+    
+    Common::Point _screenSize;
+
+    bool _guiDragging = false;
+    GuiBase *_guiDragElement = NULL;
+    Common::Point _guiDragPos;
+    bool _guiDragDefaultMouse = false;
+
+    bool _mouseGrabbed = false; // Grab mouse for unit steer-turn
+    
+    int32_t _toolTipId = 0;
+    int32_t _toolTipHotKeyId = -1; // Used to display hotkey name
+    std::vector<std::string> _toolTips;
+    
+    std::array<SDL_Color, World::COLOR_MAX_NUMBER> _iniColors;
+    
+    uint32_t _msgTimestampGates = 0;
+    uint32_t _msgTimestampHSReturn = 0;
+    uint32_t _msgTimestampEnemySector = 0;
+    uint32_t _msgTimestampPSUnderAtk = 0;
+    
+    uint32_t _vehicleTakenControlTimestamp = 0;
+    uint32_t _vehicleTakenCommandId = 0;
+
+    bool _invulnerable = false;
+    
+    int32_t _fontH = 0;
+    int32_t _fontDefCloseW = 0;
+    int32_t _fontVBScrollW = 0;
+    int32_t _fontHScrollH = 0;
+    int32_t _fontBorderW = 0;
+    int32_t _fontBorderH = 2;
+    int32_t _fontVScrollH = 0;
+    
+    int32_t _iconOrderW = 0;
+    int32_t _iconOrderH = 0;
+    int32_t _iconHelpW = 0;
+    int32_t _iconHelpH = 0;
+    
+    int32_t _upScreenBorder = 0;
+    int32_t _downScreenBorder = 0; 
+    
+    uint32_t _guiActFlags = 0;
+    uint32_t _doAction = World::DOACTION_0;
+    
+    cellArea *_cellOnMouse = NULL;
+    vec3d _cellMouseIsectPos; // intersect position in cell
+
+    vec3d _mouseVector; // normalized mouse cursor vector
+    
+    NC_STACK_ypabact *_bactOnMouse = NULL;
+    float _mouseSelDistance = 0.0;
+    Common::Point _prevMousePos;
+    NC_STACK_ypabact *_bactPrevClicked = NULL; // used for dblclick
+    
+    bool _makingWaypointsMode = false;
+    int32_t _waypointCount = 0;
+    vec3d _firstWaypointPosition;
+
+    std::array<NC_STACK_bitmap *, 11> _mousePointers = {NULL};
+ 
+    bool _mouseCursorHidden = false;
+    Common::Point _mouseCursorHidePos;
+    
+    update_msg _updateMessage;
+    
+    int8_t _showDebugMode = 0; // debug info draw modes
+    
+    int32_t _polysCount = 0;
+    int32_t _polysDraw = 0;
+    uint16_t _FPS = 0;
+    
+    bool _playerInHSGun = false;
+    uint8_t _ownerOldCellUserUnit = 0; // Used to check entering enemy sector
+    
+    NC_STACK_ypabact *_userRobo = NULL;
+    NC_STACK_ypabact *_userUnit = NULL;
+    
+    std::array<int32_t, 8> _countSectorsPerOwner = {0};
+    std::array<int32_t, 8>  _countUnitsPerOwner = {0};
+    std::array<float, 8> _reloadRatioClamped = {0.0}; // clamped to 0.0..1.0
+    std::array<float, 8> _reloadRatioPositive = {0.0}; // 0 and positive
+    
+    std::vector<NC_STACK_ypabact *> _cmdrsRemap;
+    int32_t _activeCmdrID = 0; // active CMDR ID
+    int32_t _activeCmdrRemapIndex = 0; // index in _cmdrsRemap
+    int32_t _activeCmdrKidsCount = 0; // count of alive units in active squad
+    int32_t _cmdrIdToSelect = -1;
+    
+    uint32_t _prevUnitId = 0;
+    
+    NC_STACK_ypabact *_lastMsgSender = NULL;
+    
+    int32_t _screenShotCount = 0;
+    
+    bool _screenShotSeq = false;
+    int32_t _screenShotSeqId = 0; //Screenshoting sequence id
+    int32_t _screenShotSeqFrame = 0; //Screenshoting frame
+    
+    recorder *_replayPlayer = NULL; // For play replay
+    recorder *_replayRecorder = NULL; // For record replay
+    
+    bact_hudi _guiVisor;
+    
+    std::vector<TMapGem> _techUpgrades; // tech upgrades in level
+    int32_t _upgradeId = 0;
+    uint32_t _upgradeTimeStamp = 0;
+    int32_t _upgradeVehicleId = 0;
+    int32_t _upgradeWeaponId = 0;
+    int32_t _upgradeBuildId = 0;
+
+    TMapRegionsNet _globalMapRegions; // level selector
+    TLevelInfo _levelInfo; // current level information
+    
+    TBriefengScreen _briefScreen;
     
     // History
     Common::BlocksStream _history;
     World::History::Frame _historyLastFrame;
-    bool      _historyLastIsTimeStamp;
+    bool      _historyLastIsTimeStamp = false;
     
-    int superbomb_wall_vproto;
-    int superbomb_center_vproto;
-    int field_7278;
-    int field_727c;
-    int field_7280;
-    std::string _localeName;
+    int32_t _stoudsonWaveVehicleId = 0;
+    int32_t _stoudsonCenterVehicleId = 0; // Not used :-/
+    
+    bool _prepareDebrief = false; // prepare debrief and do it? or exit without
+    bool _gameWasNetGame = false;
+    uint8_t _userOwnerIdWasInNetGame = 0;
+    
+    std::string _localeName; // locale name
     std::vector<std::string> _localeStrings;
-    Common::PlaneBytes *typ_map;
-    Common::PlaneBytes *own_map;
-    Common::PlaneBytes *blg_map;
-    Common::PlaneBytes *hgt_map;
+    
+    Common::PlaneBytes _lvlTypeMap;
+    Common::PlaneBytes _lvlOwnMap;
+    Common::PlaneBytes _lvlBuildingsMap;
+    Common::PlaneBytes _lvlHeightMap;
 
-    Common::PlaneBytes *copyof_typemap;
-    Common::PlaneBytes *copyof_ownermap;
-    sklt_wis wis_skeletons;
-    int field_739A;
+    // copy of map datas on level start, for debrief
+    Common::PlaneBytes _lvlPrimevalTypeMap;
+    Common::PlaneBytes _lvlPrimevalOwnMap;
+    
+    
+    sklt_wis _hud;
+    
+    bool _shellConfIsParsed = false;
+    uint32_t  _preferences = 0;
+    TMFWinStatus _roboMapStatus;
+    TMFWinStatus _roboFinderStatus;
+    TMFWinStatus _vhclMapStatus;
+    TMFWinStatus _vhclFinderStatus;
+    
+    int32_t _fxLimit = 0;
+    
+    std::array<int32_t, World::CVFractionsCount> _dbgSquadCounter = {0};
+    std::array<int32_t, World::CVFractionsCount> _dbgVehicleCounter = {0};
+    std::array<int32_t, World::CVFractionsCount> _dbgFlakCounter = {0};
+    std::array<int32_t, World::CVFractionsCount> _dbgRoboCounter = {0};
+    std::array<int32_t, World::CVFractionsCount> _dbgWeaponCounter = {0};
+    
+    int32_t _dbgTotalSquadCount = 0;
+    int32_t _dbgTotalSquadCountMax = 0;
+    int32_t _dbgTotalVehicleCount = 0;
+    int32_t _dbgTotalVehicleCountMax = 0;
+    int32_t _dbgTotalFlakCount = 0;
+    int32_t _dbgTotalFlakCountMax = 0;
+    int32_t _dbgTotalRoboCount = 0;
+    int32_t _dbgTotalRoboCountMax = 0;
+    int32_t _dbgTotalWeaponCount = 0;
+    int32_t _dbgTotalWeaponCountMax = 0;
+    
+    uint32_t _ffTimeStamp = 0;
+    int32_t _ffEffectType = 0;
+    float _ffPeriod = 0.0;
+    float _ffMagnitude = 0.0;
+    
+    NC_STACK_windp *_netDriver = NULL;
+    uint32_t _netUpdateTimeStamp = 0;
+    bool _isNetGame = false;
+    bool _isNetGameStarted = false;
+    int32_t _netFlushTimer = 0;
 
-    uint32_t  field_73CE;
+    bool _netInfoOverkill = false;
 
-    save_status robo_map_status;
-    save_status robo_finder_status;
-    save_status vhcl_map_status;
-    save_status vhcl_finder_status;
-    int fxnumber;
-    int dbg_num_sqd_counter[8];
-    int dbg_num_vhcl_counter[8];
-    int dbg_num_flk_counter[8];
-    int dbg_num_robo_counter[8];
-    int dbg_num_wpn_counter[8];
-    int dbg_num_sqd;
-    int dbg_num_sqd_max;
-    int dbg_num_vhcl;
-    int dbg_num_vhcl_max;
-    int dbg_num_flk;
-    int dbg_num_flk_max;
-    int dbg_num_robo;
-    int dbg_num_robo_max;
-    int dbg_num_wpn;
-    int dbg_num_wpn_max;
-    NC_STACK_input *input_class;
-    int field_7562;
-    int field_7566;
-    float field_756A;
-    float field_756E;
-    TSoundSource *field_7572;
-    NC_STACK_windp *windp;
-    uint32_t netUpdateTime;
-    int isNetGame;
-    uint32_t netGameStarted;
-    int field_7586;
+    int32_t _netStartTimer = 0;
+    bool _netInterpolate = false;
+    
+    std::string _netTcpAddress; // your tcp address string (for printing)
 
-    int netInfoOverkill;
+    bool _netExclusiveGem = false;
+    
+    bool _netChatSystem = false;
 
-    int netStartTime;
-    int netInterpolate;
-    int field_759E;
-    char field_75A2; //array 64?
-
-    char field_75E2[64]; //array 64?
-
-
-    int netgame_exclusivegem;
-    int field_7626;
-
-    int p_1_grp_cnt;
-    int p_1_grp[4][8];
-    int _profile2DDraw;
-    std::array<World::TPlayerStatus, 8> playerstatus;
-    std::array<World::TPlayerStatus, 8> ingamePlayerStatus;
-    int _maxRoboEnergy;
-    int _maxReloadConst;
+    
+    enum PFID
+    {
+        PFID_FPS        = 0,
+        PFID_FRAMETIME  = 1,
+        PFID_MARKTIME   = 2, // time elapsed for change view mask of sectors
+        PFID_GUITIME    = 3,
+        PFID_UPDATETIME = 4,
+        PFID_RENDERTIME = 5,
+        PFID_NETTIME    = 6,
+        PFID_POLYGONS   = 7,
+        PFID_NEWGUITIME = 8,
+        
+        PFID_MAX        = 9
+    };
+    
+    int32_t _profileFramesCount = 0;   
+    std::array<uint32_t, PFID_MAX> _profileVals = {0};
+    std::array<uint32_t, PFID_MAX> _profileMax = {0};
+    std::array<uint32_t, PFID_MAX> _profileMin = {0};
+    std::array<uint32_t, PFID_MAX> _profileTotal = {0};
+    
+    std::array<World::TPlayerStatus, World::CVFractionsCount> _playersStats;
+    std::array<World::TPlayerStatus, World::CVFractionsCount> _gameplayStats;
+    
+    int32_t _maxRoboEnergy = 0;
+    int32_t _maxReloadConst = 0;
+    
     TSingleVoiceMessage _voiceMessage;
-    int field_7882;
-    int field_7886;
-    int field_788A;
-    float field_788E; //input sliders
-    float field_7892; //input sliders
-    float field_7896; //input sliders
-    float field_789A; //input sliders
-    float field_789E; //input sliders
-    std::array<std::string, World::MOVIE_MAX_NUMBER> movies;
-    int field_81AB;
-    std::string field_81AF;
-    std::string field_81B3;
-    bool one_game_res = false;
-    int shell_default_res;
-    int game_default_res;
+    
+    bool _joyIgnoreX = false;
+    bool _joyIgnoreY = false;
+    bool _joyIgnoreZ = false;
+    
+    float _oldJoyX = 0.0; // input slider 12
+    float _oldJoyY = 0.0; // input slider 13
+    float _oldJoyZ = 0.0; // input slider 14
+    float _oldJoyHatX = 0.0; // input slider 15
+    float _oldJoyHatY = 0.0; // input slider 16
+    
+    std::array<std::string, World::MOVIE_MAX_NUMBER> _movies;
+    
+    int8_t _firstContactFaction = 0;
+    
+    std::string _helpURL;
+    std::string _helpSavedURL; 
+    
+    bool _oneGameRes = false;
+    Common::Point _shellDefaultRes;
+    Common::Point _gameDefaultRes;
     
     GFX::GfxMode _gfxMode;
     Common::Point _shellGfxMode;
-    bool _gfxWindowed = false;
 
-    float max_impulse;
-    yw_81cb field_81CB;
-    float vehicle_sector_ratio_1;
-    int unit_limit;
-    int unit_limit_arg;
-    int unit_limit_type;
-    int unit_limit_1;
-    int unit_limit_arg_1;
-    int unit_limit_type_1;
-    int field_826F;
-    int TOD_ID;
-    int beam_energy_start;
-    int beam_energy_add;
-    int beamenergy;
-    int _currentBeamLoad;
-    int easy_cheat_keys;
-
-    std::string initScriptLoc;
-    int playerOwner;
+    float _maxImpulse = 0.0;
     
+
+    TNetGameEvent _netEvent;
+    
+    
+    float _vehicleSectorRatio = 0.0; // not used
+    uint32_t _defaultUnitLimit = 0;
+    uint32_t _defaultUnitLimitArg = 0;
+    uint32_t _defaultUnitLimitType = 0;
+    uint32_t _levelUnitLimit = 0;
+    uint32_t _levelUnitLimitArg = 0;
+    uint32_t _levelUnitLimitType = 0;
+    
+    int16_t _kbdLastKeyHit = Input::KC_NONE;
+    int32_t _tipOfDayId = 0;
+    int32_t _beamEnergyStart = 0;
+    int32_t _beamEnergyAdd = 0;
+    int32_t _beamEnergyCapacity = 0;
+    int32_t _beamEnergyCurrent = 0;
+    
+    bool _easyCheatKeys = false;
+
+    int8_t _playerOwner = 0;
+        
+    std::string _initScriptFilePath;
+
     std::string _luaScriptName;
 
 protected:
 
     /** On saved game load variables **/
-    bool _extraViewEnable; // If you seat in robo gun
-    int _extraViewNumber; // robo gun index
+    bool _extraViewEnable = false; // If you seat in robo gun
+    int _extraViewNumber = -1; // robo gun index
     
     World::ParticleSystem _particles;
 

@@ -33,7 +33,7 @@ protected:
         ~Mtl()
         {
             if (diffuseMap)
-                Nucleus::Delete(diffuseMap);
+                diffuseMap->Delete();
         }
         
         GFX::TRenderParams GenParams() const;

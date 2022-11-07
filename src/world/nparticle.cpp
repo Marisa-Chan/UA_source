@@ -69,7 +69,7 @@ void ParticleSystem::Render(Frak *p, float scale, area_arg_65 *rndrParams)
     const mat4x4f &Proj = GFX::Engine.GetProjectionMatrix();
     
     vec3d projPos = Proj.Transform(pos);
-    float w = pos.x * Proj.m30 + pos.y * Proj.m31 + pos.z * Proj.m32 + Proj.m33;
+    float w = Proj.CalcW(pos);
     
     /* Radius of 2.0 side square = sqrt(1.0^2 + 1.0^2) = 1.414
      * And applied W

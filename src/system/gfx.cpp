@@ -9,7 +9,7 @@
 
 #include "gfx.h"
 #include "../utils.h"
-#include "../common.h"
+#include "common/common.h"
 #include "../ini.h"
 #include "../gui/root.h"
 #include "../bitmap.h"
@@ -41,6 +41,11 @@ const std::array<vec3d, 8> GFXEngine::_clrEff
 ,   vec3d(0.57, 0.59, 0.59)
 ,   vec3d(1.4,  1.08,  1.12)
 ,   vec3d(0.3,  0.60, 0.7)};
+
+std::vector<TGFXDeviceInfo> GFXEngine::_devices
+{
+    TGFXDeviceInfo("Opengl", "<primary>")         
+};
 
 
 bool TRenderNode::CompareSolid(TRenderNode *a, TRenderNode *b)
@@ -140,17 +145,27 @@ GFXEngine::GFXEngine()
     _invClr = vec3d(0.0, 0.0, 0.0);
 }
 
+std::string read_guid(const std::string &filename)
+{
+    FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "r");
+    if ( !fil )
+        return "";
+    
+    std::string guid;
+    fil->ReadLine(&guid);
+    delete fil;
+    return guid;
+}
 
-int out_guid_to_file(const char *filename, const char *name)
+bool out_guid_to_file(const std::string &filename, const std::string &name)
 {
     FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "w");
-    if ( fil )
-    {
-        fil->puts(name);
-        delete fil;
-        return 1;
-    }
-    return 0;
+    if ( !fil )
+        return false;
+    
+    fil->puts(name);
+    delete fil;
+    return true;
 }
 
 void out_yes_no_status(const char *filename, int val)
@@ -1982,42 +1997,25 @@ void GFXEngine::windd_func322(windd_dlgBox *dlgBox)
 
 
 
-void GFXEngine::windd_func324(wdd_func324arg *inout)
+const std::vector<TGFXDeviceInfo>& GFXEngine::GetDevices()
 {
-    if ( inout->guid )
-    {
-        inout->name = NULL;
-        inout->guid = NULL;
-        inout->currr = 0;
-    }
-    else
-    {
-        inout->name = "OpenGL";
-        inout->guid = "<primary>";
-        inout->currr = 1;
-    }
+    return _devices;
 }
 
-void GFXEngine::windd_func325(wdd_func324arg *arg)
+void GFXEngine::SetDeviceByGUID(const std::string &guid)
 {
-    const char *v4 = arg->guid;
-    const char *v5 = "<error>";
-
-    if ( v4 )
+    for( TGFXDeviceInfo &dev: _devices )
     {
-        if ( !strcmp(v4, "<primary>") )
-        {
-            v5 = v4;
-            v4 = NULL;
-        }
-        if ( !strcmp(v4, "<software>") )
-        {
-            v5 = v4;
-            v4 = NULL;
-        }
+        if (dev.guid == guid)
+            dev.isCurrent = true;
+        else
+            dev.isCurrent = false;
     }
-
-    out_guid_to_file("env/guid3d.def", v5);
+    
+    if (guid == "<primary>" || guid == "<software>")
+        out_guid_to_file("env/guid3d.def", guid);
+    else
+        out_guid_to_file("env/guid3d.def", "<error>");
 }
 
 
@@ -2075,15 +2073,7 @@ UA_PALETTE *GFXEngine::GetPalette()
     return &_palette;
 }
 
-int16_t GFXEngine::GetWidth()
-{
-    return _resolution.x;
-}
 
-int16_t GFXEngine::GetHeight()
-{
-    return _resolution.y;
-}
 
 
 void GFXEngine::draw2DandFlush()
@@ -2262,7 +2252,7 @@ TileMap::TileMap()
 TileMap::~TileMap()
 {
     if (img)
-        Nucleus::Delete(img);
+        img->Delete();
 }
 
 void TileMap::Draw(SDL_Surface *surface, const Common::Point &pos, uint8_t c)
@@ -2586,6 +2576,16 @@ void GFXEngine::Init()
     
     _glext = Glext::init();
     
+    std::string wantGuid = read_guid("env/guid3d.def");
+    
+    for(TGFXDeviceInfo &dev : _devices)
+    {
+        if (dev.guid == wantGuid)
+            dev.isCurrent = true;
+        else
+            dev.isCurrent = false;
+    }
+    
     System::EventsAddHandler(EventsWatcher);
     
     System::IniConf::ReadFromNucleusIni();
@@ -2699,7 +2699,7 @@ void GFXEngine::Init()
     func0( stak );
 
     RecreateScreenSurface();
-    Gui::Instance.SetScreenSize(GetSize());
+    Gui::Instance.SetScreenSize(GetScreenSize());
     
     LoadPalette(System::IniConf::GfxPalette.Get<std::string>());
 
@@ -2886,16 +2886,6 @@ GfxMode GFXEngine::sub_41F68C()
     return graphicsModes.front();
 }
 
-int GFXEngine::GetScreenH()
-{
-    return GetHeight();
-}
-
-int GFXEngine::GetScreenW()
-{
-    return GetWidth();
-}
-
 
 GfxMode GFXEngine::windd_func0__sub0(const std::string &file)
 {
@@ -2972,7 +2962,7 @@ void GFXEngine::SetResolution(const Common::Point &res, bool windowed)
 
     EndFrame();
 
-    //delete_class_obj(cls3D);
+    //cls3D->Delete();
     
     GfxMode picked;
     if ( res )
@@ -3021,7 +3011,7 @@ void GFXEngine::SetResolution(const Common::Point &res, bool windowed)
         delete fil;
     }
     
-    Gui::Instance.SetScreenSize(GetSize());
+    Gui::Instance.SetScreenSize(GetScreenSize());
     
     UpdateFBOSizes();
 }
@@ -3078,7 +3068,7 @@ bool GFXEngine::LoadPalette(const std::string &palette_ilbm)
 
     SetPalette( *ilbm->getBMD_palette() );
 
-    delete_class_obj(ilbm);
+    ilbm->Delete();
 
     return true;
 }

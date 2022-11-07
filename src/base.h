@@ -67,7 +67,7 @@ struct base_64arg
 {
     int TimeStamp;
     int DTime;
-    InputState *field_8;
+    TInputState *field_8;
     int field_C;
     int field_10;
 };

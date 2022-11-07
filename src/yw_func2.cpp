@@ -37,7 +37,7 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos
 {
     //brf_obj *brobj = &yw->brief.brf_objs + obj_id; // Only one object
 
-    NC_STACK_base *model_base = yw->vhcls_models.at( yw->VhclProtos[ yw->brief.ViewingObject.ID ].vp_normal );
+    NC_STACK_base *model_base = yw->_vhclModels.at( yw->_vhclProtos[ yw->_briefScreen.ViewingObject.ID ].vp_normal );
     
     model_base->SetVizLimit(16000);
     model_base->SetFadeLength(100);
@@ -46,50 +46,50 @@ void sb_0x4eb94c__sub0(NC_STACK_ypaworld *yw, bool clockwise, int a3, vec3d *pos
 
     if (clockwise)
     {
-        yw->brief.ViewingObjectAngle += (arg->frameTime / 5);
-        if ( yw->brief.ViewingObjectAngle >= 360 )
-            yw->brief.ViewingObjectAngle -= 360;
+        yw->_briefScreen.ViewingObjectAngle += (arg->frameTime / 5);
+        if ( yw->_briefScreen.ViewingObjectAngle >= 360 )
+            yw->_briefScreen.ViewingObjectAngle -= 360;
     }
     else
     {
-        yw->brief.ViewingObjectAngle -= (arg->frameTime / 5);
-        if ( yw->brief.ViewingObjectAngle < 0 )
-            yw->brief.ViewingObjectAngle += 360;
+        yw->_briefScreen.ViewingObjectAngle -= (arg->frameTime / 5);
+        if ( yw->_briefScreen.ViewingObjectAngle < 0 )
+            yw->_briefScreen.ViewingObjectAngle += 360;
     }
 
-    model_base->SetEulerRotation( a3 + 10, yw->brief.ViewingObjectAngle, 0);
+    model_base->SetEulerRotation( a3 + 10, yw->_briefScreen.ViewingObjectAngle, 0);
     //printf("Try DRAW %d\n", (int)model_base);
     
-    NC_STACK_base::CheckOpts(&yw->brief.ViewingObject.VP, model_base);
+    NC_STACK_base::CheckOpts(&yw->_briefScreen.ViewingObject.VP, model_base);
     
-    model_base->Render(arg, yw->brief.ViewingObject.VP); //Draw vehicle
+    model_base->Render(arg, yw->_briefScreen.ViewingObject.VP); //Draw vehicle
 }
 
 void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *pos, baseRender_msg *arg)
 {
-    secType *scType = &yw->secTypes[yw->brief.ViewingObject.ID];
+    TSectorDesc *scType = &yw->_secTypeArray[yw->_briefScreen.ViewingObject.ID];
 
-    NC_STACK_base *v7 = yw->vhcls_models.at(0);
+    NC_STACK_base *v7 = yw->_vhclModels.at(0);
 
     if (clockwise)
     {
-        yw->brief.ViewingObjectAngle += (arg->frameTime / 5);
-        if ( yw->brief.ViewingObjectAngle >= 360 )
-            yw->brief.ViewingObjectAngle -= 360;
+        yw->_briefScreen.ViewingObjectAngle += (arg->frameTime / 5);
+        if ( yw->_briefScreen.ViewingObjectAngle >= 360 )
+            yw->_briefScreen.ViewingObjectAngle -= 360;
     }
     else
     {
-        yw->brief.ViewingObjectAngle -= (arg->frameTime / 5);
-        if ( yw->brief.ViewingObjectAngle < 0 )
-            yw->brief.ViewingObjectAngle += 360;
+        yw->_briefScreen.ViewingObjectAngle -= (arg->frameTime / 5);
+        if ( yw->_briefScreen.ViewingObjectAngle < 0 )
+            yw->_briefScreen.ViewingObjectAngle += 360;
     }
 
-    v7->SetEulerRotation(rot + 10, yw->brief.ViewingObjectAngle, 0);
+    v7->SetEulerRotation(rot + 10, yw->_briefScreen.ViewingObjectAngle, 0);
 
     int first;
     int demens;
 
-    if ( scType->field_0 == 1 )
+    if ( scType->SectorType == 1 )
     {
         first = 0;
         demens = 1;
@@ -108,17 +108,17 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
         {
             vec3d inSectorPos = vec3d(v30, 0.0, v22) * 300.0;
 
-            NC_STACK_base *lego = yw->legos[ scType->buildings.At(x, y)->health_models[0] ].base;
+            NC_STACK_base *lego = yw->_legoArray[ scType->SubSectors.At(x, y)->HPModels[0] ].Base;
             lego->SetStatic(false);
             lego->SetVizLimit(16000);
             lego->SetFadeLength(100);
 
-            lego->SetEulerRotation(rot + 10, yw->brief.ViewingObjectAngle, 0);
+            lego->SetEulerRotation(rot + 10, yw->_briefScreen.ViewingObjectAngle, 0);
             lego->SetPosition( *pos + v7->TForm().SclRot.Transform( inSectorPos ) );
             
-            NC_STACK_base::CheckOpts(&yw->brief.ViewingObject.VP, lego);
+            NC_STACK_base::CheckOpts(&yw->_briefScreen.ViewingObject.VP, lego);
             
-            lego->Render(arg, yw->brief.ViewingObject.VP);
+            lego->Render(arg, yw->_briefScreen.ViewingObject.VP);
             
             v30++;
         }
@@ -126,7 +126,7 @@ void sb_0x4eb94c__sub1(NC_STACK_ypaworld *yw, bool clockwise, int rot, vec3d *po
     }
 }
 
-void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc, int a5)
+void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, TInputState *struc, int a5)
 {
     brf->ObjRenderParams.frameTime = struc->Period;
     brf->ObjRenderParams.globTime = brf->CurrTime;
@@ -158,7 +158,7 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc,
         }
         else if ( brf->ViewingObject.ObjType == TBriefObject::TYPE_VEHICLE )
         {
-            float radius = yw->VhclProtos[brf->ViewingObject.ID].radius;
+            float radius = yw->_vhclProtos[brf->ViewingObject.ID].radius;
 
             v17 = radius * 7.0;
             v16 = radius * 32.0;
@@ -190,7 +190,7 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc,
     }
 }
 
-void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, InputState *struc)
+void ypaworld_func158__DrawVehicle(NC_STACK_ypaworld *yw, TBriefengScreen *brf, TInputState *struc)
 {
     GFX::Engine.SetFBOBlending(1);
     GFX::Engine.BeginScene();
@@ -236,7 +236,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             int v32;
             int v30;
 
-            if ( (size_t)v24 == usr->field_D36 )
+            if ( (size_t)v24 == usr->inpListActiveElement )
             {
                 v30 = 98;
                 v31 = 100;
@@ -251,7 +251,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                 v33 = 102;
             }
 
-            int v34 = usr->input_listview.entryWidth - 2 * usr->p_YW->font_default_w__b + 1;
+            int v34 = usr->input_listview.entryWidth - 2 * usr->p_YW->_fontBorderW + 1;
 
             std::string v19;
 
@@ -268,10 +268,10 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                 else
                     posKeyName = "-";
 
-                if ( usr->InputConfig[ v24 ].SetFlags & 1 )
+                if ( usr->InputConfig[ v24 ].SetFlags & UserData::TInputConf::IF_FIRST )
                     posKeyName = yw->GetLocaleString(308, "?");
 
-                if ( usr->InputConfig[ v24 ].SetFlags & 2 )
+                if ( usr->InputConfig[ v24 ].SetFlags & UserData::TInputConf::IF_SECOND )
                     negKeyName = yw->GetLocaleString(308, "?");
 
                 v19 = fmt::sprintf("%s/%s", negKeyName, posKeyName);
@@ -283,7 +283,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                 else
                     v19 = "-";
 
-                if ( usr->InputConfig[ v24 ].SetFlags & 1 )
+                if ( usr->InputConfig[ v24 ].SetFlags & UserData::TInputConf::IF_FIRST )
                     v19 = yw->GetLocaleString(308, "?");
             }
 
@@ -306,7 +306,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             FontUA::select_tileset(&v4, 0);
             FontUA::store_s8(&v4, '{'); // Left wnd border
 
-            if ( (size_t)v24 == usr->field_D36 )
+            if ( (size_t)v24 == usr->inpListActiveElement )
             {
                 FontUA::set_txtColor(&v4, usr->p_YW->_iniColors[62].r, usr->p_YW->_iniColors[62].g, usr->p_YW->_iniColors[62].b);
             }
@@ -465,7 +465,7 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
     std::string skyfilename = fmt::sprintf("data:%s", skyname);
 
     NC_STACK_base *sky = Utils::ProxyLoadBase(skyfilename);
-    yw->sky_loaded_base = sky;
+    yw->_skyObject = sky;
     if ( !sky )
     {
         ypa_log_out("Couldn't create %s\n", skyfilename.c_str());
@@ -475,8 +475,8 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
     Common::Env.SetPrefix("rsrc", tmprsrc);
     
     sky->SetStatic(true); // Don't rotate sky
-    sky->SetVizLimit(yw->field_15ec);
-    sky->SetFadeLength(yw->field_15f0);
+    sky->SetVizLimit(yw->_skyVizLimit);
+    sky->SetFadeLength(yw->_skyFadeLength);
     sky->ComputeStaticFog();
     sky->MakeVBO();
     return 1;
@@ -484,8 +484,8 @@ int yw_loadSky(NC_STACK_ypaworld *yw, const std::string &skyname)
 
 void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
 {
-    auto savedStatuses = playerstatus;
-    auto savedCallsign = GameShell->callSIGN;
+    auto savedStatuses = _playersStats;
+    auto savedCallsign = _GameShell->netPlayerName;
     auto savedMaxroboenrgy = _maxRoboEnergy;
     auto savedMaxreloadconst = _maxReloadConst;
 
@@ -499,8 +499,8 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
             {
                 if ( StriCmp(dirNode->getName(), ".") && StriCmp(dirNode->getName(), "..") )
                 {
-                    GameShell->profiles.emplace_back();
-                    ProfilesNode &profile = GameShell->profiles.back();
+                    _GameShell->profiles.emplace_back();
+                    ProfilesNode &profile = _GameShell->profiles.back();
 
                     profile.name = dirNode->getName();
 
@@ -514,7 +514,7 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
                         ypa_log_out("Warning, cannot parse %s for time scanning\n", buf.c_str());
 
                     profile.fraction = 1;
-                    profile.totalElapsedTime = playerstatus[1].ElapsedTime;
+                    profile.totalElapsedTime = _playersStats[1].ElapsedTime;
                 }
             }
         }
@@ -524,17 +524,15 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
         ypa_log_out("Unknown Game-Directory %s\n", saveDir.c_str());
     }
 
-    playerstatus = savedStatuses;
+    _playersStats = savedStatuses;
     _maxReloadConst = savedMaxreloadconst;
     _maxRoboEnergy = savedMaxroboenrgy;
-    GameShell->callSIGN = savedCallsign;
+    _GameShell->netPlayerName = savedCallsign;
 }
 
 
 void listLocaleDir(UserData *usr, const char *dirname)
 {
-    usr->lang_dlls_count = 0;
-
     std::string *deflng = NULL;
     FSMgr::DirIter dir = uaOpenDir(dirname);
     if ( dir )
@@ -571,8 +569,6 @@ void listLocaleDir(UserData *usr, const char *dirname)
 
                 if ( !finded )
                 {
-                    usr->lang_dlls_count++;
-
                     usr->lang_dlls.emplace_back();
                     std::string &elm = usr->lang_dlls.back();
 
@@ -599,7 +595,7 @@ void UserData::sub_46A7F8()
 
     p_YW->GuiWinClose( &disk_listvw );
 
-    if ( field_0x1760 )
+    if ( diskEnterFromMapSelect )
     {
         EnvMode = ENVMODE_SINGLEPLAY;
         sub_bar_button->Show();
@@ -615,21 +611,21 @@ void UserData::sub_46A7F8()
     v3.butID = 1156;
     video_button->button_func73(&v3);
 
-    field_0x1744 = 0;
+    diskScreenMode = 0;
 }
 
 
 
 void NC_STACK_ypaworld::PlayIntroMovie()
 {
-    if ( !movies[World::MOVIE_INTRO].empty() )
+    if ( !_movies[World::MOVIE_INTRO].empty() )
     {
-        std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(movies[World::MOVIE_INTRO]) );
+        std::string buf = correctSeparatorAndExt( Common::Env.ApplyPrefix(_movies[World::MOVIE_INTRO]) );
         
         if ( System::IniConf::GfxMoviePlayer.Get<bool>() )
         {
             GFX::Engine.EndFrame();
-            System::Movie.PlayMovie(buf, GameShell->snd__volume);
+            System::Movie.PlayMovie(buf, _GameShell->soundVolume);
             GFX::Engine.BeginFrame();
         }
 
@@ -640,27 +636,19 @@ void NC_STACK_ypaworld::PlayIntroMovie()
     }
 }
 
-bool sub_4DE9F4(const usr_str &a1, const usr_str &a2)
-{
-    return StriCmp(a1.pstring, a2.pstring) > 0;
-}
+
 
 void ypaworld_func156__sub1(UserData *usr)
 {
-    int v2 = 0;
-    for (size_t i = 0; i < usr->p_YW->_mapRegions.MapRegions.size(); i++)
+    usr->mapDescriptions.clear();
+    
+    for (size_t i = 0; i < usr->p_YW->_globalMapRegions.MapRegions.size(); i++)
     {
-        if (usr->p_YW->_mapRegions.MapRegions[i].Status == TMapRegionInfo::STATUS_NETWORK)
-        {
-            usr->map_descriptions[v2].id = i;
-            usr->map_descriptions[v2].pstring = usr->p_YW->GetLocaleString(i + 1800, usr->p_YW->_mapRegions.MapRegions[i].MapName);
-            v2++;
-        }
+        if (usr->p_YW->_globalMapRegions.MapRegions[i].Status == TMapRegionInfo::STATUS_NETWORK)
+            usr->mapDescriptions.push_back( UserData::TMapDescription(i, usr->p_YW->GetLocaleString(i + 1800, usr->p_YW->_globalMapRegions.MapRegions[i].MapName)) );
     }
 
-    usr->map_descriptions_count = v2;
-
-    std::stable_sort(std::begin(usr->map_descriptions), std::end(usr->map_descriptions), sub_4DE9F4);
+    std::stable_sort(usr->mapDescriptions.begin(), usr->mapDescriptions.end(), UserData::TMapDescription::compare);
 }
 
 
@@ -703,19 +691,19 @@ void  UserData::sb_0x46ca74()
 {
     std::string oldsave;
 
-    if ( field_1612 )
+    if ( diskListActiveElement )
     {
-        if ( StriCmp(usernamedir, UserName) )
-            sub_46D0F8(fmt::sprintf("save:%s", usernamedir));
+        if ( StriCmp(userNameDir, UserName) )
+            sub_46D0F8(fmt::sprintf("save:%s", userNameDir));
     }
     else
     {
         profiles.emplace_back();
         ProfilesNode &profile = profiles.back();
 
-        profile.name = usernamedir;
+        profile.name = userNameDir;
 
-        std::string tmp = fmt::sprintf("save:%s", usernamedir);
+        std::string tmp = fmt::sprintf("save:%s", userNameDir);
         if ( !uaCreateDir(tmp) )
         {
             ypa_log_out("Unable to create directory %s\n", tmp.c_str());
@@ -723,24 +711,15 @@ void  UserData::sb_0x46ca74()
         }
 
         disk_listvw.numEntries++;
-        field_1612 = disk_listvw.numEntries;
+        diskListActiveElement = disk_listvw.numEntries;
     }
 
-    oldsave = fmt::sprintf("%s/user.txt", usernamedir);
-
-    yw_arg172 v15;
-    v15.usertxt = oldsave.c_str();
-    v15.field_4 = usernamedir.c_str();
-    v15.usr = this;
-    v15.field_8 = 255;
-    v15.field_10 = 0;
-
-    if ( ! p_YW->ypaworld_func171(&v15) )
-        ypa_log_out("Warning! Error while saving user data for %s\n", usernamedir.c_str());
+    if ( ! p_YW->SaveSettings(this, fmt::sprintf("%s/user.txt", userNameDir), World::SDF_ALL) )
+        ypa_log_out("Warning! Error while saving user data for %s\n", userNameDir.c_str());
 
     oldsave = fmt::sprintf("save:%s", UserName);
 
-    if ( StriCmp(usernamedir, UserName) )
+    if ( StriCmp(userNameDir, UserName) )
     {
         FSMgr::DirIter dir = uaOpenDir(oldsave);
         if ( dir )
@@ -760,21 +739,21 @@ void  UserData::sb_0x46ca74()
                             || tmp.rfind(".DEF") != std::string::npos) )
                 {
                     std::string v11 = fmt::sprintf("%s/%s", oldsave, tmp);
-                    std::string v12 = fmt::sprintf("save:%s/%s", usernamedir, tmp);
+                    std::string v12 = fmt::sprintf("save:%s/%s", userNameDir, tmp);
                     sb_0x46ca74__sub0(v11.c_str(), v12.c_str());
                 }
             }
         }
     }
 
-    field_0x1744 = 0;
-    UserName = usernamedir;
+    diskScreenMode = 0;
+    UserName = userNameDir;
 
     disk_button->Hide();
 
     p_YW->GuiWinClose( &disk_listvw );
 
-    if ( field_0x1760 )
+    if ( diskEnterFromMapSelect )
     {
         EnvMode = ENVMODE_SINGLEPLAY;
 
@@ -790,19 +769,19 @@ void  UserData::sb_0x46ca74()
 
 void sb_0x47f810(NC_STACK_ypaworld *yw)
 {
-    yw->RoboProtos.clear();
-    yw->BuildProtos.clear();
+    yw->_roboProtos.clear();
+    yw->_buildProtos.clear();
     
-    yw->WeaponProtos.clear();
+    yw->_weaponProtos.clear();
 
-    yw->VhclProtos.clear();
+    yw->_vhclProtos.clear();
 }
 
 void sub_44A1FC(NC_STACK_ypaworld *yw)
 {
     int v2 = 0;
 
-    if ( yw->GameShell )
+    if ( yw->_GameShell )
     {
         FSMgr::FileHandle *fil = uaOpenFileAlloc("env:levels.def", "r");
 
@@ -818,7 +797,7 @@ void sub_44A1FC(NC_STACK_ypaworld *yw)
                     uint32_t tmp = std::stol(token, 0, 10);
 
                     if (tmp < 256)
-                        yw->_mapRegions.MapRegions[tmp].Status = TMapRegionInfo::STATUS_ENABLED;
+                        yw->_globalMapRegions.MapRegions[tmp].Status = TMapRegionInfo::STATUS_ENABLED;
                 }
             }
 
@@ -829,39 +808,30 @@ void sub_44A1FC(NC_STACK_ypaworld *yw)
 
     if ( !v2 )
     {
-        yw->_mapRegions.MapRegions[1].Status = TMapRegionInfo::STATUS_ENABLED;
-        yw->_mapRegions.MapRegions[25].Status = TMapRegionInfo::STATUS_ENABLED;
-        yw->_mapRegions.MapRegions[26].Status = TMapRegionInfo::STATUS_ENABLED;
-        yw->_mapRegions.MapRegions[27].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_globalMapRegions.MapRegions[1].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_globalMapRegions.MapRegions[25].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_globalMapRegions.MapRegions[26].Status = TMapRegionInfo::STATUS_ENABLED;
+        yw->_globalMapRegions.MapRegions[27].Status = TMapRegionInfo::STATUS_ENABLED;
     }
 }
 
 void UserData::sb_0x46cdf8()
 {
-    std::string a1a = fmt::sprintf("%s/user.txt", UserName);
-
-    yw_arg172 v12;
-    v12.usertxt = a1a.c_str();
-    v12.field_4 = UserName.c_str();
-    v12.usr = this;
-    v12.field_8 = 255;
-    v12.field_10 = 0;
-
-    if ( ! p_YW->ypaworld_func171(&v12) )
+    if ( ! p_YW->SaveSettings(this, fmt::sprintf("%s/user.txt", UserName), World::SDF_ALL) )
         ypa_log_out("Warning! Error while saving user data for %s\n", UserName.c_str());
 
-    if ( field_1612 )
+    if ( diskListActiveElement )
     {
-        sub_46D0F8(fmt::sprintf("save:%s", usernamedir));
+        sub_46D0F8(fmt::sprintf("save:%s", userNameDir));
     }
     else
     {
         profiles.emplace_back();
         ProfilesNode &profile = profiles.back();
 
-        profile.name = usernamedir;
+        profile.name = userNameDir;
 
-        std::string v10 = fmt::sprintf("save:%s", usernamedir);
+        std::string v10 = fmt::sprintf("save:%s", userNameDir);
 
         if ( !uaCreateDir(v10) )
         {
@@ -869,9 +839,9 @@ void UserData::sb_0x46cdf8()
             return;
         }
 
-        UserName = usernamedir;
+        UserName = userNameDir;
         disk_listvw.numEntries++;
-        field_1612 = disk_listvw.numEntries;
+        diskListActiveElement = disk_listvw.numEntries;
     }
 
     p_YW->_levelInfo.Buddies.clear();
@@ -882,7 +852,7 @@ void UserData::sb_0x46cdf8()
 
     if ( p_YW->ProtosInit() )
     {
-        for (TMapRegionInfo &mp : p_YW->_mapRegions.MapRegions)
+        for (TMapRegionInfo &mp : p_YW->_globalMapRegions.MapRegions)
         {
             if ( mp.Status != TMapRegionInfo::STATUS_NONE && mp.Status != TMapRegionInfo::STATUS_NETWORK )
                 mp.Status = TMapRegionInfo::STATUS_DISABLED;
@@ -893,15 +863,15 @@ void UserData::sb_0x46cdf8()
         p_YW->_maxRoboEnergy = 0;
         p_YW->_maxReloadConst = 0;
 
-        p_YW->playerstatus.fill(World::TPlayerStatus());
+        p_YW->_playersStats.fill(World::TPlayerStatus());
 
-        field_0x1744 = 0;
+        diskScreenMode = 0;
 
-        p_YW->beamenergy = p_YW->beam_energy_start;
+        p_YW->_beamEnergyCapacity = p_YW->_beamEnergyStart;
 
         p_YW->_levelInfo.JodieFoster.fill(0);
 
-        field_3426 = 0;
+        sgmSaveExist = 0;
 
         disk_button->Hide();
 
@@ -928,7 +898,7 @@ void UserData::sub_46D960()
 
     confirm_button->Hide();
 
-    field_0x2fb4 = 0;
+    confirmMode = 0;
 }
 
 void NC_STACK_ypaworld::SetFarView(bool farvw)
@@ -957,10 +927,10 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 0x200 )
     {
-        if ( field_0x13b0 & 0x10 )
+        if ( confSoundFlags & World::SF_CDSOUND )
         {
-            snd__flags2 |= 0x10;
-            yw->field_73CE |= World::PREF_CDMUSICDISABLE;
+            soundFlags |= World::SF_CDSOUND;
+            yw->_preferences |= World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(true);
             if ( shelltrack )
@@ -971,8 +941,8 @@ void UserData::sb_0x46aa8c()
         }
         else
         {
-            snd__flags2 &= 0xEF;
-            yw->field_73CE &= ~World::PREF_CDMUSICDISABLE;
+            soundFlags &= ~World::SF_CDSOUND;
+            yw->_preferences &= ~World::PREF_CDMUSICDISABLE;
 
             SFXEngine::SFXe.StopMusicTrack();
             SFXEngine::SFXe.SetMusicIgnoreCommandsFlag(false);
@@ -982,42 +952,42 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 2 )
     {
-        if ( field_0x13b0 & 1 )
+        if ( confSoundFlags & World::SF_INVERTLR )
         {
-            snd__flags2 |= 1;
+            soundFlags |= World::SF_INVERTLR;
             SFXEngine::SFXe.setReverseStereo(1);
         }
         else
         {
-            snd__flags2 &= ~1;
+            soundFlags &= ~World::SF_INVERTLR;
             SFXEngine::SFXe.setReverseStereo(0);
         }
     }
 
     if ( _settingsChangeOptions & 0x10 )
     {
-        if ( field_0x13a8 & 1 )
+        if ( confGFXFlags & World::GFX_FLAG_FARVIEW )
         {
-            GFX_flags |= World::GFX_FLAG_FARVIEW;
+            GFXFlags |= World::GFX_FLAG_FARVIEW;
             p_YW->SetFarView(true);
         }
         else
         {
-            GFX_flags &= ~World::GFX_FLAG_FARVIEW;
+            GFXFlags &= ~World::GFX_FLAG_FARVIEW;
             p_YW->SetFarView(false);
         }
     }
 
     if ( _settingsChangeOptions & 8 )
     {
-        if ( field_0x13a8 & 2 )
+        if ( confGFXFlags & World::GFX_FLAG_SKYRENDER )
         {
-            GFX_flags |= World::GFX_FLAG_SKYRENDER;
+            GFXFlags |= World::GFX_FLAG_SKYRENDER;
             yw->setYW_skyRender(1);
         }
         else
         {
-            GFX_flags &= ~World::GFX_FLAG_SKYRENDER;
+            GFXFlags &= ~World::GFX_FLAG_SKYRENDER;
             yw->setYW_skyRender(0);
         }
 
@@ -1025,16 +995,16 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 0x800 )
     {
-        if ( field_0x13a8 & 4 )
+        if ( confGFXFlags & World::GFX_FLAG_SOFTMOUSE )
         {
-            GFX_flags |= World::GFX_FLAG_SOFTMOUSE;
-            yw->field_73CE |= 0x40;
+            GFXFlags |= World::GFX_FLAG_SOFTMOUSE;
+            yw->_preferences |= World::PREF_SOFTMOUSE;
             GFX::Engine.setWDD_cursor(1);
         }
         else
         {
-            GFX_flags &= ~World::GFX_FLAG_SOFTMOUSE;
-            yw->field_73CE &= 0xBF;
+            GFXFlags &= ~World::GFX_FLAG_SOFTMOUSE;
+            yw->_preferences &= ~World::PREF_SOFTMOUSE;
             GFX::Engine.setWDD_cursor(0);
         }
 
@@ -1042,31 +1012,31 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 0x20 )
     {
-        enemyindicator = field_13BE;
+        enemyIndicator = confEnemyIndicator;
 
-        if ( enemyindicator )
-            p_YW->field_73CE |= 0x20;
+        if ( enemyIndicator )
+            p_YW->_preferences |= World::PREF_ENEMYINDICATOR;
         else
-            p_YW->field_73CE &= 0xDF;
+            p_YW->_preferences &= ~World::PREF_ENEMYINDICATOR;
     }
 
     if ( _settingsChangeOptions & 0x40 )
     {
-        fxnumber = field_0x13a4;
-        yw->fxnumber = fxnumber;
+        fxnumber = confFxNumber;
+        yw->_fxLimit = fxnumber;
     }
 
     if ( _settingsChangeOptions & 0x100 )
     {
-        snd__cdvolume = field_0x13b8;
+        musicVolume = confMusicVolume;
 
-        SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
+        SFXEngine::SFXe.SetMusicVolume(confMusicVolume);
     }
 
     if ( _settingsChangeOptions & 0x80 )
     {
-        snd__volume = field_0x13b4;
-        SFXEngine::SFXe.setMasterVolume(snd__volume);
+        soundVolume = confSoundVolume;
+        SFXEngine::SFXe.setMasterVolume(soundVolume);
     }
 
     if ( _settingsChangeOptions & 1 )
@@ -1077,21 +1047,14 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 0x1000 )
     {
-        if ( field_139A )
+        if ( !conf3DGuid.empty() )
         {
-            if ( strcasecmp(field_139A, win3d_guid) )
+            if ( StriCmp(conf3DGuid, win3d_guid) )
             {
-                strcpy(win3d_name, field_139E.c_str());
+                win3d_name = conf3DName;
+                win3d_guid = conf3DGuid;
 
-                strcpy(win3d_guid, field_139A);
-
-                GFX::wdd_func324arg v37;
-
-                v37.name = win3d_name;
-                v37.guid = win3d_guid;
-                v37.currr = 0;
-
-                GFX::Engine.windd_func325(&v37); //Save to file new resolution
+                GFX::Engine.SetDeviceByGUID(win3d_guid); //Save to file current gfx device
 
                 p_YW->_gfxMode = Common::Point(GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT);
                 forceChange = true;
@@ -1101,14 +1064,14 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 4 )
     {
-        if ( field_0x13a8 & 0x10 )
+        if ( confGFXFlags & World::GFX_FLAG_16BITTEXTURE )
         {
-            GFX_flags |= World::GFX_FLAG_16BITTEXTURE;
+            GFXFlags |= World::GFX_FLAG_16BITTEXTURE;
             GFX::Engine.setWDD_16bitTex(1);
         }
         else
         {
-            GFX_flags &= ~World::GFX_FLAG_16BITTEXTURE;
+            GFXFlags &= ~World::GFX_FLAG_16BITTEXTURE;
             GFX::Engine.setWDD_16bitTex(0);
         }
 
@@ -1117,17 +1080,17 @@ void UserData::sb_0x46aa8c()
 
     if ( _settingsChangeOptions & 0x400 )
     {
-        if ( field_0x13a8 & 8 )
-            p_YW->_gfxWindowed = true;
+        if ( confGFXFlags & World::GFX_FLAG_WINDOWED )
+            GFXFlags |= World::GFX_FLAG_WINDOWED;
         else
-            p_YW->_gfxWindowed = false;
+            GFXFlags &= ~World::GFX_FLAG_WINDOWED;
 
         forceChange = true;
     }
 
     if ( forceChange )
     {
-        yw->SetGameShellVideoMode(p_YW->_gfxWindowed);
+        yw->SetGameShellVideoMode( IsWindowedFlag() );
 
         int v24 = 0;
         for (const GFX::GfxMode &nod : GFX::GFXEngine::Instance.GetAvailableModes())
@@ -1185,13 +1148,13 @@ void UserData::sub_46DC1C()
     p_YW->ypaworld_func181(&v5);
 
     windp_arg82 v6;
-    v6.senderID = callSIGN.c_str();
+    v6.senderID = netPlayerName.c_str();
     v6.senderFlags = 1;
     v6.receiverID = 0;
     v6.receiverFlags = 2;
     v6.guarant = 1;
 
-    p_YW->windp->FlushBuffer(v6);
+    p_YW->_netDriver->FlushBuffer(v6);
 
     envAction.action = EnvAction::ACTION_NETPLAY;
     envAction.params[0] = netLevelID;
@@ -1199,20 +1162,11 @@ void UserData::sub_46DC1C()
     envAction.params[1] = netLevelID;
 
     int v12 = 1;
-    p_YW->windp->LockSession(&v12);
+    p_YW->_netDriver->LockSession(&v12);
 
     yw_NetPrintStartInfo();
 }
 
-int sub_47B388(int a1, const std::string &a2)
-{
-    FSMgr::FileHandle *fil = uaOpenFileAlloc(fmt::sprintf("save:%s/%d.sgm", a2, a1), "r");
-    if ( !fil )
-        return 0;
-
-    delete fil;
-    return 1;
-}
 
 int UserData::ypaworld_func158__sub0__sub7()
 {
@@ -1226,10 +1180,10 @@ int UserData::ypaworld_func158__sub0__sub7()
 
 void NC_STACK_ypaworld::sub_4811E8(int id)
 {
-    if ( id > field_17c4 )
+    if ( id > _toolTipId )
     {
-        field_17c8 = -1;
-        field_17c4 = id;
+        _toolTipHotKeyId = -1;
+        _toolTipId = id;
     }
 }
 
@@ -1354,7 +1308,7 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1105:
-        switch ( field_0x1744 )
+        switch ( diskScreenMode )
         {
         case 1:
             p_YW->sub_4811E8(0xAB);
@@ -1374,7 +1328,7 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1106:
-        switch ( field_0x1744 )
+        switch ( diskScreenMode )
         {
         case 0:
             p_YW->sub_4811E8(0xAE);
@@ -1580,9 +1534,9 @@ void UserData::sub_46C3E4()
 
     for( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++ )
     {
-        if ( !StriCmp(it->name.c_str(), UserName))
+        if ( !StriCmp(it->name, UserName))
         {
-            it->totalElapsedTime = p_YW->playerstatus[1].ElapsedTime;
+            it->totalElapsedTime = p_YW->_playersStats[1].ElapsedTime;
             break;
         }
     }
@@ -1603,7 +1557,7 @@ void UserData::ypaworld_func158__sub0__sub1()
 
 void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
     std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
 
@@ -1622,7 +1576,7 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
     {
         SFXEngine::SFXe.sub_424000(&usr->samples1_info, World::SOUND_ID_CHAT);
         SFXEngine::SFXe.ForceStopSource(&usr->samples1_info, World::SOUND_ID_CHAT);
-        Nucleus::Delete( pSmpl );
+        pSmpl->Delete();
         pSmpl = NULL;
     }
 
@@ -1642,50 +1596,33 @@ void sub_4D9550(NC_STACK_ypaworld *yw, int arg)
 
 void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string &a2)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
     if ( StriCmp(a1, usr->lastSender) )
     {
-        if ( usr->msgBuffLine >= 31 )
-        {
-            usr->msgBuffLine = 31;
+        if ( usr->msgBuffers.size() )
+            usr->msgBuffers.pop_front();
 
-            for (int i = 0; i < 31; i++ )
-                strcpy(usr->msgBuffers[i], usr->msgBuffers[i + 1]);
-        }
-
-        memset(usr->msgBuffers[usr->msgBuffLine], 0, 64);
-        sprintf(usr->msgBuffers[usr->msgBuffLine], "> %s:", a1.c_str());
-        memset(usr->lastSender, 0, 64);
-        strncpy(usr->lastSender, a1.c_str(), 63);
-
-        usr->msgBuffLine++;
+        usr->msgBuffers.push_back( fmt::sprintf("> %s:", a1));
+        usr->lastSender = a1;
     }
 
-    if ( usr->msgBuffLine >= 31 )
-    {
-        usr->msgBuffLine = 31;
+    if ( usr->msgBuffers.size() >= 31 )
+        usr->msgBuffers.pop_front();
 
-        for (int i = 0; i < 31; i++ )
-            strcpy(usr->msgBuffers[i], usr->msgBuffers[i + 1]);
-    }
-
-    memset(usr->msgBuffers[usr->msgBuffLine], 0, 64);
-    strncpy(usr->msgBuffers[usr->msgBuffLine], a2.c_str(), 63);
-
-    usr->msgBuffLine++;
-
+    usr->msgBuffers.push_back( a2 );
+   
     if ( usr->netSelMode == UserData::NETSCREEN_INSESSION )
     {
-        int v22 = usr->msgBuffLine - 6;
+        int v22 = usr->msgBuffers.size() - 6;
 
         if ( v22 < 0 )
             v22 = 0;
 
-        yw->GameShell->network_listvw.firstShownEntries = v22;
+        yw->_GameShell->network_listvw.firstShownEntries = v22;
 
 
-        yw->GameShell->network_listvw.numEntries = yw->GameShell->msgBuffLine;
+        yw->_GameShell->network_listvw.numEntries = yw->_GameShell->msgBuffers.size();
 
         int v24;
 
@@ -1694,7 +1631,7 @@ void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string 
         else
             v24 = usr->network_listvw.numEntries;
 
-        yw->GameShell->network_listvw.shownEntries = v24;
+        yw->_GameShell->network_listvw.shownEntries = v24;
     }
 }
 
@@ -1736,7 +1673,7 @@ void UserData::ypaworld_func158__sub0__sub3()
 
 void sub_4EDCD8(NC_STACK_ypaworld *yw)
 {
-    yw->brief.Stage = TBriefengScreen::STAGE_CANCEL;
+    yw->_briefScreen.Stage = TBriefengScreen::STAGE_CANCEL;
 }
 
 void UserData::ShowMenuMsgBox(int code, const std::string &txt1, const std::string &txt2, bool okOnly)
@@ -1755,7 +1692,7 @@ void UserData::ShowMenuMsgBox(int code, const std::string &txt1, const std::stri
 
 void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &txt2, int a5)
 {
-    field_0x2fb4 = a2;
+    confirmMode = a2;
 
     NC_STACK_button::button_66arg v12;
     v12.butID = 1300;
@@ -1767,7 +1704,7 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
     if ( a5 )
     {
         v10.butID = 1300;
-        v10.xpos = p_YW->screen_width * 0.4375;
+        v10.xpos = p_YW->_screenSize.x * 0.4375;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
@@ -1779,14 +1716,14 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
         confirm_button->button_func66(&v12);
 
         v10.butID = 1300;
-        v10.xpos = p_YW->screen_width * 0.25;
+        v10.xpos = p_YW->_screenSize.x * 0.25;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
         confirm_button->button_func76(&v10);
 
         v10.butID = 1301;
-        v10.xpos = p_YW->screen_width * 0.625;
+        v10.xpos = p_YW->_screenSize.x * 0.625;
         confirm_button->button_func76(&v10);
     }
 
@@ -1802,17 +1739,17 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
 
 void ypaworld_func158__sub0__sub9(NC_STACK_ypaworld *yw)
 {
-    yw->brief.Stage = TBriefengScreen::STAGE_PLAYLEVEL;
+    yw->_briefScreen.Stage = TBriefengScreen::STAGE_PLAYLEVEL;
 }
 
 void ypaworld_func158__sub0__sub12(NC_STACK_ypaworld *yw)
 {
-    yw->brief.TimerStatus = TBriefengScreen::TIMER_RESTART;
+    yw->_briefScreen.TimerStatus = TBriefengScreen::TIMER_RESTART;
 }
 
 void ypaworld_func158__sub0__sub11(NC_STACK_ypaworld *yw)
 {
-    yw->brief.TimerStatus = TBriefengScreen::TIMER_FAST;
+    yw->_briefScreen.TimerStatus = TBriefengScreen::TIMER_FAST;
 }
 
 
@@ -1835,18 +1772,18 @@ void UserData::InputPageCancel()
     v6.field_4 = 2;
     sub_bar_button->button_func73(&v6);
 
-    field_D5E = 0;
+    inputChangedParts = 0;
 
     v6.butID = 1050;
-    v6.field_4 = (inp_joystick == false) + 1;
+    v6.field_4 = (joystickEnabled == false) + 1;
     button_input_button->button_func73(&v6);
 
-    v6.field_4 = (inp_altjoystick == false) + 1;
+    v6.field_4 = (altJoystickEnabled == false) + 1;
     v6.butID = 1061;
     button_input_button->button_func73(&v6);
 
     v6.butID = 1055;
-    v6.field_4 = ((p_YW->field_73CE & 8) != 0) + 1;
+    v6.field_4 = ((p_YW->_preferences & World::PREF_FFDISABLE) != 0) + 1;
     button_input_button->button_func73(&v6);
 
     button_input_button->Hide();
@@ -1924,39 +1861,39 @@ void UserData::sub_46A3C0()
 
     video_button->button_func71(1172, win3d_name);
 
-    field_139A = win3d_guid;
-    field_139E = win3d_name;
+    conf3DGuid = win3d_guid;
+    conf3DName = win3d_name;
 
     NC_STACK_button::button_66arg v10;
     v10.butID = 1151;
-    v10.field_4 = ((snd__flags2 & 1) == 0) + 1;
+    v10.field_4 = ((soundFlags & World::SF_INVERTLR) == 0) + 1;
     video_button->button_func73(&v10);
 
-    v10.field_4 = ((snd__flags2 & 0x10) == 0) + 1;
+    v10.field_4 = ((soundFlags & World::SF_CDSOUND) == 0) + 1;
     v10.butID = 1164;
     video_button->button_func73(&v10);
 
     v10.butID = 1157;
-    v10.field_4 = ((GFX_flags & World::GFX_FLAG_FARVIEW) == 0) + 1;
+    v10.field_4 = ((GFXFlags & World::GFX_FLAG_FARVIEW) == 0) + 1;
     video_button->button_func73(&v10);
 
-    v10.field_4 = ((GFX_flags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
+    v10.field_4 = ((GFXFlags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
     v10.butID = 1160;
     video_button->button_func73(&v10);
 
     v10.butID = 1150;
-    v10.field_4 = ((GFX_flags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
+    v10.field_4 = ((GFXFlags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
     video_button->button_func73(&v10);
 
     v10.butID = 1166;
-    v10.field_4 = (!p_YW->_gfxWindowed) + 1;
+    v10.field_4 = (!IsWindowedFlag()) + 1;
     video_button->button_func73(&v10);
 
     v10.butID = 1165;
-    v10.field_4 = ((GFX_flags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
+    v10.field_4 = ((GFXFlags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
     video_button->button_func73(&v10);
 
-    v10.field_4 = (enemyindicator == 0) + 1;
+    v10.field_4 = (enemyIndicator == 0) + 1;
     v10.butID = 1163;
     video_button->button_func73(&v10);
 
@@ -1965,11 +1902,11 @@ void UserData::sub_46A3C0()
     video_button->button_func75(1159);
 
     tmp = video_button->button_func74(1152);
-    tmp->value = snd__volume;
+    tmp->value = soundVolume;
     video_button->button_func75(1152);
 
     tmp = video_button->button_func74(1154);
-    tmp->value = snd__cdvolume;
+    tmp->value = musicVolume;
     video_button->button_func75(1154);
 
     video_button->Hide();
@@ -1990,74 +1927,52 @@ void UserData::sub_46A3C0()
     video_button->button_func73(&v10);
 }
 
-void  UserData::ypaworld_func158__sub0__sub5(int a2)
+void  UserData::UpdateSelected3DDevFromList()
 {
-    int v4 = 0;
+    std::string name;
+    std::string guid;
 
-    GFX::wdd_func324arg a1;
-    a1.guid = 0;
-    a1.currr = 0;
-    a1.name = (const char *)-1;
-
-    std::string v2;
-    const char *v12;
-
-    while ( a1.name )
+    const std::vector<GFX::TGFXDeviceInfo> &devices = GFX::Engine.GetDevices();
+    
+    if (d3d_listvw.selectedEntry < devices.size())
     {
-        GFX::Engine.windd_func324(&a1);
-        if ( a1.name )
-        {
-            if ( v4 == d3d_listvw.selectedEntry )
-            {
-                if ( !strcmp(a1.name, "software") )
-                    v2 = p_YW->GetLocaleString(2472, "2472 = Software");
-                else
-                    v2 = a1.name;
+        const GFX::TGFXDeviceInfo &dev = devices.at(d3d_listvw.selectedEntry);
+        if ( !StriCmp(dev.name, "software") )
+            name = p_YW->GetLocaleString(2472, "2472 = Software");
+        else
+            name = dev.name;
 
-                v12 = a1.guid;
-            }
-        }
-        v4++;
+        guid = dev.guid;
     }
 
-    if ( !a2 )
-    {
-        field_139E = v2;
-        field_139A = v12;
+    conf3DName = name;
+    conf3DGuid = guid;
 
-        video_button->button_func71(1172, v2);
-    }
+    video_button->button_func71(1172, name);
 }
 
 void UserData::sub_46C914()
 {
-    if ( field_1612 )
+    if ( diskListActiveElement )
     {
         ProfileList::iterator it = profiles.begin();
 
-        for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
+        for (int i = 0; i < diskListActiveElement - 1; i++) // check usr->field_1612 - 1
             it++;
 
-        std::string a1a = fmt::sprintf("%s/user.txt", it->name);
-        
         EnvMode = ENVMODE_SINGLEPLAY;
 
-        yw_arg172 arg172;
-
-        arg172.usertxt = a1a.c_str();
-        arg172.field_4 = it->name.c_str();
-        arg172.field_8 = 255;
-        arg172.usr = this;
-        arg172.field_10 = 1;
-
-        p_YW->ypaworld_func172(&arg172);
+        p_YW->LoadSettings(fmt::sprintf("%s/user.txt", it->name),
+                           it->name,
+                           World::SDF_ALL,
+                           true);
 
         UserName = it->name;
-        usernamedir = it->name;
+        userNameDir = it->name;
 
 
-        field_0x1744 = 0;
-        field_3426 = 0;
+        diskScreenMode = 0;
+        sgmSaveExist = 0;
 
         disk_button->Hide();
 
@@ -2084,14 +1999,14 @@ void sub_46D0F8(const std::string &path)
 
 void UserData::sub_46C748()
 {
-    if ( field_1612 )
+    if ( diskListActiveElement )
     {
-        if ( StriCmp(usernamedir, UserName) )
+        if ( StriCmp(userNameDir, UserName) )
         {
 
             ProfileList::iterator it = profiles.begin();
 
-            for (int i = 0; i < field_1612 - 1; i++) // check usr->field_1612 - 1
+            for (int i = 0; i < diskListActiveElement - 1; i++) // check usr->field_1612 - 1
                 it++;
 
             ProfileList::iterator nextIt = std::next(it);
@@ -2117,29 +2032,29 @@ void UserData::sub_46C748()
             disk_listvw.numEntries--;
             if ( profiles.empty() )
             {
-                field_1612 = 0;
-                usernamedir = "NEWUSER";
+                diskListActiveElement = 0;
+                userNameDir = "NEWUSER";
             }
             else
             {
                 if ( !HasElements )
-                    field_1612--;
+                    diskListActiveElement--;
 
-                usernamedir = nextIt->name;
+                userNameDir = nextIt->name;
             }
 
-            usernamedir_len = usernamedir.size();
+            userNameDirCursor = userNameDir.size();
 
-            if ( field_1612 )
-                disk_listvw.PosOnSelected(field_1612 - 1);
+            if ( diskListActiveElement )
+                disk_listvw.PosOnSelected(diskListActiveElement - 1);
 
-            field_0x1744 = 0;
+            diskScreenMode = 0;
 
             disk_button->Hide();
 
             p_YW->GuiWinClose( &disk_listvw );
 
-            if ( field_0x1760 )
+            if ( diskEnterFromMapSelect )
             {
                 EnvMode = ENVMODE_SINGLEPLAY;
                 sub_bar_button->Show();
@@ -2168,9 +2083,8 @@ void UserData::sub_46B0E0()
         }
     }
 
-    field_19CA = 0;
     EnvMode = ENVMODE_TITLE;
-    field_19CA = 0;
+
     prev_lang = default_lang_dll;
 
     locale_button->Hide();
@@ -2183,7 +2097,7 @@ void UserData::sub_46B0E0()
 void UserData::sub_46AA0C()
 {
     EnvMode = ENVMODE_TITLE;
-    field_19CA = 0;
+
     prev_lang = default_lang_dll;
 
     locale_button->Hide();
@@ -2194,9 +2108,9 @@ void UserData::sub_46AA0C()
 }
 
 
-int NC_STACK_ypaworld::sub_449678(InputState *struc, int kkode)
+int NC_STACK_ypaworld::sub_449678(TInputState *struc, int kkode)
 {
-    return struc->KbdLastHit == kkode && ( (struc->ClickInf.flag & ClickBoxInf::FLAG_RM_HOLD) || easy_cheat_keys );
+    return struc->KbdLastHit == kkode && ( (struc->ClickInf.flag & TClickBoxInf::FLAG_RM_HOLD) || _easyCheatKeys );
 }
 
 void UserData::ypaworld_func158__sub0__sub4()
@@ -2227,7 +2141,7 @@ void UserData::GameShellUiHandleInput()
 {
     int v3 = 0;
 
-    if ( Input->ClickInf.flag & ClickBoxInf::FLAG_BTN_DOWN )
+    if ( Input->ClickInf.flag & TClickBoxInf::FLAG_BTN_DOWN )
         SFXEngine::SFXe.startSound(&samples1_info, 3);
 
     if ( netSelMode != NETSCREEN_MODE_SELECT )
@@ -2235,21 +2149,21 @@ void UserData::GameShellUiHandleInput()
 
     if ( netSelMode == NETSCREEN_SESSION_SELECT )
     {
-        if ( p_YW->windp->GetProvType() == 4 )
+        if ( p_YW->_netDriver->GetProvType() == 4 )
         {
             if ( modemAskSession )
             {
                 if ( Input->KbdLastHit == Input::KC_SPACE )
                 {
                     GFX::Engine.windd_func320(NULL);
-                    p_YW->windp->EnumSessions(NULL);
+                    p_YW->_netDriver->EnumSessions(NULL);
                     GFX::Engine.windd_func321(NULL);
                 }
             }
         }
-        else if ( p_YW->windp->GetProvType() != 3 || Input->KbdLastHit == Input::KC_SPACE )
+        else if ( p_YW->_netDriver->GetProvType() != 3 || Input->KbdLastHit == Input::KC_SPACE )
         {
-            p_YW->windp->EnumSessions(NULL);
+            p_YW->_netDriver->EnumSessions(NULL);
         }
     }
 
@@ -2296,7 +2210,7 @@ void UserData::GameShellUiHandleInput()
     sub_bar_button->button_func76(&v393);
 
     v393.butID = 1019;
-    v393.xpos = p_YW->screen_width - dword_5A50B6_h;
+    v393.xpos = p_YW->_screenSize.x - dword_5A50B6_h;
     sub_bar_button->button_func76(&v393);
 
     v393.butID = 1011;
@@ -2313,7 +2227,7 @@ void UserData::GameShellUiHandleInput()
             sub_bar_button->button_func66(&v410);
 
             v393.butID = 1014;
-            v393.xpos = p_YW->screen_width - dword_5A50B6_h;
+            v393.xpos = p_YW->_screenSize.x - dword_5A50B6_h;
             sub_bar_button->button_func76(&v393);
 
             v393.butID = 1019;
@@ -2362,7 +2276,7 @@ void UserData::GameShellUiHandleInput()
         titel_button->button_func66(&v410);
 
         v410.butID = 1008;
-        if ( lang_dlls_count > 1 )
+        if ( lang_dlls.size() > 1 )
             titel_button->button_func66(&v410);
         else
             titel_button->button_func67(&v410);
@@ -2381,15 +2295,15 @@ void UserData::GameShellUiHandleInput()
     }
     else if ( EnvMode == ENVMODE_SINGLEPLAY || EnvMode == ENVMODE_TUTORIAL )
     {
-        if ( !field_3426 )
+        if ( !sgmSaveExist )
         {
-            if ( sub_47B388(0, UserName) )
-                field_3426 = 1;
+            if ( IsHasSGM(UserName, 0) )
+                sgmSaveExist = 1;
             else
-                field_3426 = 2;
+                sgmSaveExist = 2; // No, and We check it, so do not check it twice
         }
 
-        if ( field_3426 == 1 )
+        if ( sgmSaveExist == 1 )
         {
             v410.butID = 1015;
             sub_bar_button->button_func66(&v410);
@@ -2402,7 +2316,7 @@ void UserData::GameShellUiHandleInput()
         sub_bar_button->button_func66(&v410);
     }
 
-    if ( field_0x2fb4 )
+    if ( confirmMode )
         v3 = 1;
 
     NC_STACK_button::ResCode r = confirm_button->button_func69(Input);
@@ -2414,12 +2328,12 @@ void UserData::GameShellUiHandleInput()
 
         if ( r.code == 1350 ) // OK
         {
-            switch ( field_0x2fb4 )
+            switch ( confirmMode )
             {
             case 1:
             {
-                field_3426 = 0;
-                p_YW->isNetGame = 0;
+                sgmSaveExist = 0;
+                p_YW->_isNetGame = false;
 
                 sub_bar_button->Hide();
 
@@ -2450,29 +2364,29 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1351 ) // Cancel
         {
-            if ( field_0x2fb4 == 3 || field_0x2fb4 == 6 )
-                field_0x1744 = 0;
+            if ( confirmMode == 3 || confirmMode == 6 )
+                diskScreenMode = 0;
 
             sub_46D960();
         }
     }
 
-    if ( field_0x2fb4 )
+    if ( confirmMode )
     {
         if ( Input->HotKeyID == 24 )
         {
-            if ( field_0x2fb4 == 3 || field_0x2fb4 == 6 )
-                field_0x1744 = 0;
+            if ( confirmMode == 3 || confirmMode == 6 )
+                diskScreenMode = 0;
             sub_46D960();
         }
         if ( Input->KbdLastHit == Input::KC_RETURN )
         {
-            switch ( field_0x2fb4 )
+            switch ( confirmMode )
             {
             case 1:
             {
-                field_3426 = 0;
-                p_YW->isNetGame = 0;
+                sgmSaveExist = 0;
+                p_YW->_isNetGame = false;
                 sub_bar_button->Hide();
                 envAction.action = EnvAction::ACTION_LOAD;
                 envAction.params[0] = 0;
@@ -2521,9 +2435,9 @@ void UserData::GameShellUiHandleInput()
 
                     fmt::printf("Connectiong to: %s\n", _connString);
 
-                    if ( p_YW->windp->Connect(_connString) )
+                    if ( p_YW->_netDriver->Connect(_connString) )
                     {
-                        if (p_YW->windp->HasLobby())
+                        if (p_YW->_netDriver->HasLobby())
                         {
                             netSelMode = NETSCREEN_SESSION_SELECT;
                             netSel = -1;
@@ -2552,7 +2466,7 @@ void UserData::GameShellUiHandleInput()
     
 
     if ( EnvMode == ENVMODE_TITLE && Input->HotKeyID == 43 )
-        p_YW->field_81AF = p_YW->GetLocaleString(750, "help\\start.html");
+        p_YW->_helpURL = p_YW->GetLocaleString(750, "help\\start.html");
 
     r = titel_button->button_func69(Input);
 
@@ -2564,7 +2478,7 @@ void UserData::GameShellUiHandleInput()
         if ( r.code == 1001 )
         {
             sub_46C3E4();
-            field_0x1760 = 0;
+            diskEnterFromMapSelect = false;
         }
         else if ( r.code == 1005 ) // Options button
         {
@@ -2599,7 +2513,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1025 )
         {
-            p_YW->field_81AF = p_YW->GetLocaleString(750, "help\\start.html");
+            p_YW->_helpURL = p_YW->GetLocaleString(750, "help\\start.html");
         }
     }
 
@@ -2608,7 +2522,7 @@ void UserData::GameShellUiHandleInput()
         if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
         {
             sub_4EDCD8(p_YW);
-            if ( p_YW->field_73CE & World::PREF_CDMUSICDISABLE )
+            if ( p_YW->_preferences & World::PREF_CDMUSICDISABLE )
             {
                 SFXEngine::SFXe.StopMusicTrack();
                 if ( shelltrack )
@@ -2642,7 +2556,7 @@ void UserData::GameShellUiHandleInput()
             if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
             {
                 sub_4EDCD8(p_YW);
-                if ( p_YW->field_73CE & World::PREF_CDMUSICDISABLE )
+                if ( p_YW->_preferences & World::PREF_CDMUSICDISABLE )
                 {
                     SFXEngine::SFXe.StopMusicTrack();
                     if ( shelltrack )
@@ -2666,8 +2580,8 @@ void UserData::GameShellUiHandleInput()
 
         case 1019:
         {
-            field_3426 = 0;
-            p_YW->isNetGame = 0;
+            sgmSaveExist = 0;
+            p_YW->_isNetGame = false;
 
             sub_bar_button->Hide();
 
@@ -2698,7 +2612,7 @@ void UserData::GameShellUiHandleInput()
 
         case 1026:
             sub_46C3E4();
-            field_0x1760 = 1;
+            diskEnterFromMapSelect = true;
             break;
 
         default:
@@ -2708,32 +2622,32 @@ void UserData::GameShellUiHandleInput()
 
     if ( EnvMode == ENVMODE_INPUT )
     {
-        if ( !field_D52 && Input->HotKeyID == 43 )
-            p_YW->field_81AF = p_YW->GetLocaleString(759, "help\\19.html");
+        if ( !keyCatchMode && Input->HotKeyID == 43 )
+            p_YW->_helpURL = p_YW->GetLocaleString(759, "help\\19.html");
 
         if ( Input->KbdLastHit != Input::KC_NONE )
         {
-            if ( field_D52 )
+            if ( keyCatchMode )
             {
                 input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
 
                 if ( !NC_STACK_input::KeyTitle.at( Input->KbdLastHit ).empty() )
                 {
-                    if ( field_D3A )
+                    if ( confFirstKey )
                     {
-                        InputConfig[field_D36].PKeyCode = Input->KbdLastHit;
+                        InputConfig[inpListActiveElement].PKeyCode = Input->KbdLastHit;
 
-                        if ( InputConfig[field_D36].Type == World::INPUT_BIND_TYPE_SLIDER )
-                            field_D3A = 0;
+                        if ( InputConfig[inpListActiveElement].Type == World::INPUT_BIND_TYPE_SLIDER )
+                            confFirstKey = false;
 
-                        field_D52 = 0;
-                        InputConfig[field_D36].SetFlags = 0;
+                        keyCatchMode = false;
+                        InputConfig[inpListActiveElement].SetFlags = 0;
                     }
                     else
                     {
-                        InputConfig[field_D36].NKeyCode = Input->KbdLastHit;
-                        InputConfig[field_D36].SetFlags &= ~2;
-                        field_D3A = 1;
+                        InputConfig[inpListActiveElement].NKeyCode = Input->KbdLastHit;
+                        InputConfig[inpListActiveElement].SetFlags &= ~TInputConf::IF_SECOND;
+                        confFirstKey = true;
                     }
                 }
                 Input->KbdLastHit = Input::KC_NONE;
@@ -2744,15 +2658,15 @@ void UserData::GameShellUiHandleInput()
 
                 if ( Input->KbdLastHit == Input::KC_BACKSPACE  || Input->KbdLastHit == Input::KC_DELETE)
                 {
-                    if (InputConfig[field_D36].Type != World::INPUT_BIND_TYPE_SLIDER)
-                        InputConfig[field_D36].PKeyCode = 0;
+                    if (InputConfig[inpListActiveElement].Type != World::INPUT_BIND_TYPE_SLIDER)
+                        InputConfig[inpListActiveElement].PKeyCode = 0;
                 }
                 else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
-                    InputConfig[field_D36].SetFlags = 3;
-                    field_D52 = 1;
-                    if ( InputConfig[field_D36].Type == World::INPUT_BIND_TYPE_SLIDER )
-                        field_D3A = 0;
+                    InputConfig[inpListActiveElement].SetFlags = (TInputConf::IF_FIRST | TInputConf::IF_SECOND);
+                    keyCatchMode = true;
+                    if ( InputConfig[inpListActiveElement].Type == World::INPUT_BIND_TYPE_SLIDER )
+                        confFirstKey = false;
                 }
                 else if ( Input->KbdLastHit == Input::KC_ESCAPE )
                 {
@@ -2762,7 +2676,7 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    if ( InputConfig[field_D36].Type == World::INPUT_BIND_TYPE_SLIDER )
+    if ( InputConfig[inpListActiveElement].Type == World::INPUT_BIND_TYPE_SLIDER )
     {
         v410.field_4 = 0;
         v410.butID = 1056;
@@ -2784,43 +2698,43 @@ void UserData::GameShellUiHandleInput()
 
         if (r.code == 1050)
         {
-            field_D42 = 1;
-            field_D5E |= 1;
+            confJoystickEnabled = true;
+            inputChangedParts |= ICHG_JOYSTICK;
         }
         else if (r.code == 1051)
         {
-            field_D42 = 0;
-            field_D5E |= 1;
+            confJoystickEnabled = false;
+            inputChangedParts |= ICHG_JOYSTICK;
         }
-        else if (r.code == 1052)
+        else if (r.code == 1052) // on OK press
         {
-            if ( field_D5E & 1 )
+            if ( inputChangedParts & ICHG_JOYSTICK )
             {
-                inp_joystick = field_D42;
-                if ( field_D42 )
-                    p_YW->field_73CE &= ~World::PREF_JOYDISABLE;
+                joystickEnabled = confJoystickEnabled;
+                if ( confJoystickEnabled )
+                    p_YW->_preferences &= ~World::PREF_JOYDISABLE;
                 else
-                    p_YW->field_73CE |= World::PREF_JOYDISABLE;
+                    p_YW->_preferences |= World::PREF_JOYDISABLE;
             }
 
-            if ( field_D5E & 4 )
+            if ( inputChangedParts & ICHG_ALTJOYSTICK )
             {
-                inp_altjoystick = field_D4A;
-                if ( field_D4A )
-                    p_YW->field_73CE |= World::PREF_ALTJOYSTICK;
+                altJoystickEnabled = confAltJoystickEnabled;
+                if ( confAltJoystickEnabled )
+                    p_YW->_preferences |= World::PREF_ALTJOYSTICK;
                 else
-                    p_YW->field_73CE &= ~World::PREF_ALTJOYSTICK;
+                    p_YW->_preferences &= ~World::PREF_ALTJOYSTICK;
             }
 
-            if ( field_D5E & 2 )
+            if ( inputChangedParts & ICHG_FORCEFEEDBACK )
             {
-                if ( field_D4E )
-                    p_YW->field_73CE &= 0xF7;
+                if ( confFFEnabled )
+                    p_YW->_preferences &= ~World::PREF_FFDISABLE;
                 else
-                    p_YW->field_73CE |= 8;
+                    p_YW->_preferences |= World::PREF_FFDISABLE;
             }
 
-            field_D5E = 0;
+            inputChangedParts = 0;
             sub_46D2B4();
             InputConfCopyToBackup();
 
@@ -2841,32 +2755,32 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1055 )
         {
-            field_D4E = 0;
-            field_D5E |= 2;
+            confFFEnabled = false;
+            inputChangedParts |= ICHG_FORCEFEEDBACK;
         }
         else if ( r.code == 1056 )
         {
-            field_D4E = 1;
-            field_D5E |= 2;
+            confFFEnabled = true;
+            inputChangedParts |= ICHG_FORCEFEEDBACK;
         }
         else if ( r.code == 1057 )
         {
-            InputConfig[ field_D36 ].PKeyCode = 0;
+            InputConfig[ inpListActiveElement ].PKeyCode = 0;
         }
         else if ( r.code == 1058 )
         {
-            field_D4A = 1;
-            field_D5E |= 4;
+            confAltJoystickEnabled = true;
+            inputChangedParts |= ICHG_ALTJOYSTICK;
         }
         else if ( r.code == 1059 )
         {
-            field_D4A = 0;
-            field_D5E |= 4;
+            confAltJoystickEnabled = false;
+            inputChangedParts |= ICHG_ALTJOYSTICK;
         }
         else if ( r.code == 1250 )
         {
-            p_YW->field_81AF = p_YW->GetLocaleString(759, "help\\19.html");
-            field_D52 = 0;
+            p_YW->_helpURL = p_YW->GetLocaleString(759, "help\\19.html");
+            keyCatchMode = false;
         }
     }
 
@@ -2874,13 +2788,13 @@ void UserData::GameShellUiHandleInput()
     {
         input_listview.InputHandle(p_YW, Input);
 
-        field_D36 = input_listview.selectedEntry + 1;
+        inpListActiveElement = input_listview.selectedEntry + 1;
 
         if ( input_listview.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
-            InputConfig[ field_D36 ].SetFlags = 0;
-            field_D3A = 1;
-            field_D52 = 0;
+            InputConfig[ inpListActiveElement ].SetFlags = 0;
+            confFirstKey = true;
+            keyCatchMode = false;
         }
         input_listview.Formate(p_YW);
     }
@@ -2925,7 +2839,7 @@ void UserData::GameShellUiHandleInput()
             EnvMode = ENVMODE_TITLE;
         }
         if ( Input->HotKeyID == 43 )
-            p_YW->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
+            p_YW->_helpURL = p_YW->GetLocaleString(760, "help\\110.html");
     }
 
 
@@ -2941,7 +2855,7 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinOpen( &video_listvw );
             SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            Input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
+            Input->ClickInf.flag &= ~TClickBoxInf::FLAG_LM_DOWN;
         }
         else if ( r.code == 1101 )
         {
@@ -2950,21 +2864,21 @@ void UserData::GameShellUiHandleInput()
         else if ( r.code == 1102 )
         {
             _settingsChangeOptions |= 0x10;
-            field_0x13a8 |= 1;
+            confGFXFlags |= World::GFX_FLAG_FARVIEW;
         }
         else if ( r.code == 1103 )
         {
-            field_0x13a8 &= 0xFFFE;
+            confGFXFlags &= ~World::GFX_FLAG_FARVIEW;
             _settingsChangeOptions |= 0x10;
         }
         else if ( r.code == 1106 )
         {
             _settingsChangeOptions |= 8;
-            field_0x13a8 |= 2;
+            confGFXFlags |= World::GFX_FLAG_SKYRENDER;
         }
         else if ( r.code == 1107 )
         {
-            field_0x13a8 &= 0xFFFD;
+            confGFXFlags &= ~World::GFX_FLAG_SKYRENDER;
             _settingsChangeOptions |= 8;
         }
         else if ( r.code == 1108 )
@@ -2974,21 +2888,21 @@ void UserData::GameShellUiHandleInput()
         else if ( r.code == 1111 )
         {
             _settingsChangeOptions |= 2;
-            field_0x13b0 &= 0xFFFE;
+            confSoundFlags &= ~World::SF_INVERTLR;
         }
         else if ( r.code == 1112 )
         {
-            field_0x13b0 |= 1;
+            confSoundFlags |= World::SF_INVERTLR;
             _settingsChangeOptions |= 2;
         }
         else if ( r.code == 1113 )
         {
-            field_0x13a8 |= 0x10;
+            confGFXFlags |= World::GFX_FLAG_16BITTEXTURE;
             _settingsChangeOptions |= 4;
         }
         else if ( r.code == 1114 )
         {
-            field_0x13a8 &= 0xEF;
+            confGFXFlags &= ~World::GFX_FLAG_16BITTEXTURE;
             _settingsChangeOptions |= 4;
         }
         else if ( r.code == 1115 )
@@ -3022,42 +2936,42 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1126 )
         {
-            field_13BE = 1;
+            confEnemyIndicator = true;
             _settingsChangeOptions |= 0x20;
         }
         else if ( r.code == 1127 )
         {
-            field_13BE = 0;
+            confEnemyIndicator = false;
             _settingsChangeOptions |= 0x20;
         }
         else if ( r.code == 1128 )
         {
             _settingsChangeOptions |= 0x200;
-            field_0x13b0 |= 0x10;
+            confSoundFlags |= World::SF_CDSOUND;
         }
         else if ( r.code == 1129 )
         {
-            field_0x13b0 &= 0xFFEF;
+            confSoundFlags &= ~World::SF_CDSOUND;
             _settingsChangeOptions |= 0x200;
         }
         else if ( r.code == 1130 )
         {
             _settingsChangeOptions |= 0x400;
-            field_0x13a8 |= 8;
+            confGFXFlags |= World::GFX_FLAG_WINDOWED;
         }
         else if ( r.code == 1131 )
         {
-            field_0x13a8 &= ~8;
+            confGFXFlags &= ~World::GFX_FLAG_WINDOWED;
             _settingsChangeOptions |= 0x400;
         }
         else if ( r.code == 1132 )
         {
             _settingsChangeOptions |= 0x800;
-            field_0x13a8 |= 4;
+            confGFXFlags |= World::GFX_FLAG_SOFTMOUSE;
         }
         else if ( r.code == 1133 )
         {
-            field_0x13a8 &= 0xFFFB;
+            confGFXFlags &= ~World::GFX_FLAG_SOFTMOUSE;
             _settingsChangeOptions |= 0x800;
         }
         else if ( r.code == 1134 )
@@ -3065,14 +2979,14 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinOpen( &d3d_listvw );
             SFXEngine::SFXe.startSound(&samples1_info, 7);
 
-            Input->ClickInf.flag &= ~ClickBoxInf::FLAG_LM_DOWN;
+            Input->ClickInf.flag &= ~TClickBoxInf::FLAG_LM_DOWN;
         }
         else if ( r.code == 1135 )
         {
             p_YW->GuiWinClose( &d3d_listvw );
         }
         else if ( r.code == 1250 )
-            p_YW->field_81AF = p_YW->GetLocaleString(760, "help\\110.html");
+            p_YW->_helpURL = p_YW->GetLocaleString(760, "help\\110.html");
     }
 
     if ( EnvMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
@@ -3104,13 +3018,10 @@ void UserData::GameShellUiHandleInput()
 
         if ( d3d_listvw.listFlags & GuiList::GLIST_FLAG_SEL_DONE )
         {
-            int v66 = 0;
-
-            if ( remoteMode )
-                v66 = 1;
-
             _settingsChangeOptions |= 0x1000;
-            ypaworld_func158__sub0__sub5(v66);
+            
+            if (!remoteMode)
+                UpdateSelected3DDevFromList();
         }
 
         if ( d3d_listvw.IsClosed() )
@@ -3127,47 +3038,47 @@ void UserData::GameShellUiHandleInput()
     NC_STACK_button::Slider *v67 = video_button->button_func74(1159);
     
     video_button->button_func71(1158, fmt::sprintf("%d", v67->value));
-    field_0x13a4 = v67->value;
+    confFxNumber = v67->value;
 
     v67 = video_button->button_func74(1152);
 
     video_button->button_func71(1153, fmt::sprintf("%d", v67->value));
-    field_0x13b4 = v67->value;
+    confSoundVolume = v67->value;
 
-    SFXEngine::SFXe.setMasterVolume(field_0x13b4);
+    SFXEngine::SFXe.setMasterVolume(confSoundVolume);
 
     v67 = video_button->button_func74(1154);
 
     video_button->button_func71(1155, fmt::sprintf("%d", v67->value));
-    field_0x13b8 = v67->value;
+    confMusicVolume = v67->value;
 
-    SFXEngine::SFXe.SetMusicVolume(field_0x13b8);
+    SFXEngine::SFXe.SetMusicVolume(confMusicVolume);
 
     if ( EnvMode == ENVMODE_SELPLAYER ) //Load/Save
     {
         if ( Input->KbdLastHit != Input::KC_NONE || Input->chr )
         {
-            if ( field_0x1744 )
+            if ( diskScreenMode )
             {
                 if ( Input->KbdLastHit == Input::KC_BACKSPACE )
                 {
-                    if ( usernamedir_len > 0 )
+                    if ( userNameDirCursor > 0 )
                     {
-                        usernamedir.erase( usernamedir_len - 1, 1 );
-                        usernamedir_len--;
+                        userNameDir.erase( userNameDirCursor - 1, 1 );
+                        userNameDirCursor--;
                     }
                 }
                 else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
-                    switch ( field_0x1744 )
+                    switch ( diskScreenMode )
                     {
                     case 1:
-                        if ( field_1612 )
+                        if ( diskListActiveElement )
                         {
                             sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                         , p_YW->GetLocaleString(2441, "2441"), 0);
                         }
-                        else if (usernamedir.size() > 0)
+                        else if (userNameDir.size() > 0)
                         {
                             sb_0x46ca74();
                         }
@@ -3178,12 +3089,12 @@ void UserData::GameShellUiHandleInput()
                         break;
 
                     case 3:
-                        if ( field_1612 )
+                        if ( diskListActiveElement )
                         {
                             sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                         , p_YW->GetLocaleString(2441, "2441"), 0);
                         }
-                        else if (usernamedir.size() > 0)
+                        else if (userNameDir.size() > 0)
                         {
                             sb_0x46cdf8();
                         }
@@ -3199,32 +3110,32 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( Input->KbdLastHit == Input::KC_ESCAPE )
                 {
-                    field_0x1744 = 0;
+                    diskScreenMode = 0;
                 }
                 else if ( Input->KbdLastHit == Input::KC_LEFT )
                 {
-                    if ( usernamedir_len > 0 )
-                        usernamedir_len--;
+                    if ( userNameDirCursor > 0 )
+                        userNameDirCursor--;
                 }
                 else if ( Input->KbdLastHit == Input::KC_RIGHT )
                 {
-                    if ( usernamedir_len < (int)usernamedir.size() )
-                        usernamedir_len++;
+                    if ( userNameDirCursor < (int)userNameDir.size() )
+                        userNameDirCursor++;
                 }
                 else if ( Input->KbdLastHit == Input::KC_DELETE )
                 {
-                    if ( usernamedir_len < (int)usernamedir.size() )
-                        usernamedir.erase(usernamedir_len, 1);
+                    if ( userNameDirCursor < (int)userNameDir.size() )
+                        userNameDir.erase(userNameDirCursor, 1);
                 }
 
-                if ( usernamedir.size() < 32 )
+                if ( userNameDir.size() < 32 )
                 {
                     if ( Input->chr >= ' ' )
                     {
                         if ( ypaworld_func158__sub0__sub6(Input->chr) )
                         {
-                            usernamedir.insert(usernamedir_len, 1, Input->chr);
-                            usernamedir_len++;
+                            userNameDir.insert(userNameDirCursor, 1, Input->chr);
+                            userNameDirCursor++;
                         }
                     }
                 }
@@ -3235,24 +3146,24 @@ void UserData::GameShellUiHandleInput()
                     sub_46A7F8();
 
                 if ( Input->HotKeyID == 43 )
-                    p_YW->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
+                    p_YW->_helpURL = p_YW->GetLocaleString(758, "help\\18.html");
 
             }
 
-            if ( field_1612 )
-                disk_listvw.PosOnSelected(field_1612 - 1);
+            if ( diskListActiveElement )
+                disk_listvw.PosOnSelected(diskListActiveElement - 1);
         }
     }
 
 
-    field_1612 = 0;
+    diskListActiveElement = 0;
     int v108 = 1;
 
     for ( ProfileList::iterator it = profiles.begin(); it != profiles.end(); it++)
     {
-        if ( !StriCmp(it->name, usernamedir) )
+        if ( !StriCmp(it->name, userNameDir) )
         {
-            field_1612 = v108;
+            diskListActiveElement = v108;
             break;
         }
         v108++;
@@ -3271,32 +3182,32 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1160 )
         {
-            field_0x1744 = 2;
+            diskScreenMode = 2;
 
-            if ( !field_1612 )
+            if ( !diskListActiveElement )
             {
-                usernamedir = p_YW->GetLocaleString(366, "NEW GAME");
+                userNameDir = p_YW->GetLocaleString(366, "NEW GAME");
             }
             
-            usernamedir_len = usernamedir.size();
+            userNameDirCursor = userNameDir.size();
                         
-            disk_button->button_func71(1100, usernamedir + 'h');
+            disk_button->button_func71(1100, userNameDir + 'h');
         }
         else if ( r.code == 1161 )
         {
-            field_0x1744 = 4;
-            if ( !field_1612 )
+            diskScreenMode = 4;
+            if ( !diskListActiveElement )
             {
-                usernamedir = p_YW->GetLocaleString(366, "NEW GAME");
+                userNameDir = p_YW->GetLocaleString(366, "NEW GAME");
             }
             
-            usernamedir_len = usernamedir.size();
+            userNameDirCursor = userNameDir.size();
 
-            disk_button->button_func71(1100, usernamedir + 'h');
+            disk_button->button_func71(1100, userNameDir + 'h');
         }
         else if ( r.code == 1162 )
         {
-            field_0x1744 = 3;
+            diskScreenMode = 3;
 
             std::string tmp = p_YW->GetLocaleString(366, "NEW GAME");
 
@@ -3313,30 +3224,30 @@ void UserData::GameShellUiHandleInput()
                 }
             }
 
-            usernamedir = fmt::sprintf("%s%d", tmp, maxN + 1);
+            userNameDir = fmt::sprintf("%s%d", tmp, maxN + 1);
             
-            usernamedir_len = usernamedir.size();
+            userNameDirCursor = userNameDir.size();
 
-            disk_button->button_func71(1100, usernamedir + 'h');
+            disk_button->button_func71(1100, userNameDir + 'h');
         }
         else if ( r.code == 1163 )
         {
-            field_0x1744 = 1;
-            if ( !field_1612 )
+            diskScreenMode = 1;
+            if ( !diskListActiveElement )
             {
-                usernamedir = p_YW->GetLocaleString(366, "NEW GAME");
+                userNameDir = p_YW->GetLocaleString(366, "NEW GAME");
             }
 
-            usernamedir_len = usernamedir.size();
+            userNameDirCursor = userNameDir.size();
 
-            disk_button->button_func71(1100, usernamedir + 'h');
+            disk_button->button_func71(1100, userNameDir + 'h');
         }
         else if ( r.code == 1164)
         {
-            switch ( field_0x1744 )
+            switch ( diskScreenMode )
             {
             case 1:
-                if ( field_1612 )
+                if ( diskListActiveElement )
                 {
                     sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                 , p_YW->GetLocaleString(2441, "2441"), 0);
@@ -3350,7 +3261,7 @@ void UserData::GameShellUiHandleInput()
                 sub_46C914();
                 break;
             case 3:
-                if ( field_1612 )
+                if ( diskListActiveElement )
                 {
                     sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                 , p_YW->GetLocaleString(2441, "2441"), 0);
@@ -3369,17 +3280,17 @@ void UserData::GameShellUiHandleInput()
         }
         else if (r.code == 1165)
         {
-            if ( field_0x1744 )
+            if ( diskScreenMode )
             {
-                field_0x1744 = 0;
+                diskScreenMode = 0;
             }
             else
                 sub_46A7F8();
         }
         else if (r.code == 1250)
         {
-            p_YW->field_81AF = p_YW->GetLocaleString(758, "help\\18.html");
-            field_0x1744 = 0;
+            p_YW->_helpURL = p_YW->GetLocaleString(758, "help\\18.html");
+            diskScreenMode = 0;
         }
     }
 
@@ -3389,22 +3300,22 @@ void UserData::GameShellUiHandleInput()
 
         if ( disk_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT || Input->KbdLastHit == Input::KC_UP || Input->KbdLastHit == Input::KC_DOWN )
         {
-            field_1612 = disk_listvw.selectedEntry + 1;
+            diskListActiveElement = disk_listvw.selectedEntry + 1;
 
-            if ( field_1612 < 1 )
-                field_1612 = 1;
+            if ( diskListActiveElement < 1 )
+                diskListActiveElement = 1;
 
-            if ( field_1612 > disk_listvw.numEntries  )
-                field_1612 = disk_listvw.numEntries;
+            if ( diskListActiveElement > disk_listvw.numEntries  )
+                diskListActiveElement = disk_listvw.numEntries;
 
 
             ProfileList::iterator it = profiles.begin();
 
-            for (int i = 0; i < field_1612 - 1; i++) // check field_1612 - 1
+            for (int i = 0; i < diskListActiveElement - 1; i++) // check field_1612 - 1
             {
                 if ( it == profiles.end() )
                 {
-                    field_1612 = 0;
+                    diskListActiveElement = 0;
                     break;
                 }
 
@@ -3413,14 +3324,14 @@ void UserData::GameShellUiHandleInput()
 
             if (it != profiles.end())
             {
-                usernamedir = it->name;
-                usernamedir_len = usernamedir.size();
+                userNameDir = it->name;
+                userNameDirCursor = userNameDir.size();
             }
         }
         disk_listvw.Formate(p_YW);
     }
 
-    if ( field_0x1744 )
+    if ( diskScreenMode )
     {
         v410.butID = 1105;
         disk_button->button_func66(&v410);
@@ -3441,32 +3352,32 @@ void UserData::GameShellUiHandleInput()
         v410.butID = 1100;
         disk_button->button_func67(&v410);
 
-        if ( field_0x1744 == 4 )
+        if ( diskScreenMode == 4 )
         {
             v410.field_4 = 0;
             v410.butID = 1105;
 
-            if ( !field_1612 || !StriCmp(usernamedir, UserName) )
+            if ( !diskListActiveElement || !StriCmp(userNameDir, UserName) )
                 disk_button->button_func67(&v410);
             else
                 disk_button->button_func66(&v410);
         }
 
-        if ( field_0x1744 == 2 && !field_1612 )
+        if ( diskScreenMode == 2 && !diskListActiveElement )
         {
             v410.field_4 = 0;
             v410.butID = 1105;
             disk_button->button_func67(&v410);
         }
 
-        if ( field_0x1744 == 1 || field_0x1744 == 3 )
+        if ( diskScreenMode == 1 || diskScreenMode == 3 )
         {
             v410.butID = 1100;
             disk_button->button_func66(&v410);
         }
 
-        std::string tmp = usernamedir;
-        tmp.insert(usernamedir_len, 1, '_');
+        std::string tmp = userNameDir;
+        tmp.insert(userNameDirCursor, 1, '_');
         
         disk_button->button_func71(1100, tmp);
     }
@@ -3489,12 +3400,12 @@ void UserData::GameShellUiHandleInput()
         disk_button->button_func67(&v410);
 
         v410.butID = 1102;
-        if ( !StriCmp(usernamedir, UserName) )
+        if ( !StriCmp(userNameDir, UserName) )
             disk_button->button_func67(&v410);
         else
             disk_button->button_func66(&v410);
 
-        disk_button->button_func71(1100, usernamedir);
+        disk_button->button_func71(1100, userNameDir);
     }
 
     if ( EnvMode == ENVMODE_SELLOCALE )
@@ -3510,7 +3421,7 @@ void UserData::GameShellUiHandleInput()
         }
 
         if ( Input->HotKeyID == 43 )
-            p_YW->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
+            p_YW->_helpURL = p_YW->GetLocaleString(761, "help\\111.html");
     }
 
 
@@ -3527,7 +3438,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_YW->field_81AF = p_YW->GetLocaleString(761, "help\\111.html");
+            p_YW->_helpURL = p_YW->GetLocaleString(761, "help\\111.html");
         }
         else if ( r.code == 1300 )
         {
@@ -3545,8 +3456,6 @@ void UserData::GameShellUiHandleInput()
 
         if ( local_listvw.listFlags & GuiList::GLIST_FLAG_IN_SELECT )
         {
-            field_19CA |= 1;
-
             Engine::StringList::iterator it = std::next(lang_dlls.begin(), local_listvw.selectedEntry);
 
             prev_lang = &(*it);
@@ -3581,50 +3490,50 @@ void UserData::GameShellUiHandleInput()
 
     if ( EnvMode == ENVMODE_TITLE )
     {
-        if ( field_19DA && GlobalTime - field_19D6 >= 700 )
+        if ( aboutDlgKeyCount && GlobalTime - aboutDlgLastKeyTime >= 700 )
         {
-            field_19DA = 0;
+            aboutDlgKeyCount = 0;
         }
         else
         {
-            switch ( field_19DA )
+            switch ( aboutDlgKeyCount )
             {
             case 0:
                 if ( p_YW->sub_449678(Input, Input::KC_A) ) // VK_A
                 {
-                    field_19D6 = GlobalTime;
-                    field_19DA++;
+                    aboutDlgLastKeyTime = GlobalTime;
+                    aboutDlgKeyCount++;
                 }
                 else
                 {
                     if ( Input->KbdLastHit != Input::KC_NONE )
-                        field_19DA = 0;
+                        aboutDlgKeyCount = 0;
                 }
                 break;
 
             case 1:
                 if ( p_YW->sub_449678(Input, Input::KC_M) )
                 {
-                    field_19D6 = GlobalTime;
-                    field_19DA++;
+                    aboutDlgLastKeyTime = GlobalTime;
+                    aboutDlgKeyCount++;
                 }
                 else
                 {
                     if ( Input->KbdLastHit != Input::KC_NONE )
-                        field_19DA = 0;
+                        aboutDlgKeyCount = 0;
                 }
                 break;
 
             case 2:
                 if ( p_YW->sub_449678(Input, Input::KC_O) )
                 {
-                    field_19D6 = GlobalTime;
-                    field_19DA++;
+                    aboutDlgLastKeyTime = GlobalTime;
+                    aboutDlgKeyCount++;
                 }
                 else
                 {
                     if ( Input->KbdLastHit != Input::KC_NONE )
-                        field_19DA = 0;
+                        aboutDlgKeyCount = 0;
                 }
                 break;
 
@@ -3637,7 +3546,7 @@ void UserData::GameShellUiHandleInput()
                 else
                 {
                     if ( Input->KbdLastHit != Input::KC_NONE )
-                        field_19DA = 0;
+                        aboutDlgKeyCount = 0;
                 }
                 break;
             default:
@@ -3647,39 +3556,34 @@ void UserData::GameShellUiHandleInput()
     }
     else
     {
-        field_19DA = 0;
+        aboutDlgKeyCount = 0;
     }
 
     switch ( netSelMode )
     {
     case NETSCREEN_MODE_SELECT:
         nInputMode = 0;
-        field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
-        field_0x1c30 = 3 * (p_YW->font_default_h + word_5A50C2);
+        netListY = 3 * (p_YW->_fontH + word_5A50C2);
         break;
     case NETSCREEN_SESSION_SELECT:
         nInputMode = 0;
-        field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
-        field_0x1c30 = 3 * (p_YW->font_default_h + word_5A50C2);
+        netListY = 3 * (p_YW->_fontH + word_5A50C2);
         break;
     case NETSCREEN_CHOOSE_MAP:
         nInputMode = 0;
-        field_1C36 = 1;
         network_listvw.maxShownEntries = 12;
-        field_0x1c30 = 3 * (p_YW->font_default_h + word_5A50C2);
+        netListY = 3 * (p_YW->_fontH + word_5A50C2);
         break;
     case NETSCREEN_ENTER_NAME:
-        field_1C36 = 0;
         network_listvw.maxShownEntries = 12;
         nInputMode = 1;
         break;
     case NETSCREEN_INSESSION:
         nInputMode = 1;
-        field_1C36 = 1;
         network_listvw.maxShownEntries = 6;
-        field_0x1c30 = p_YW->font_default_h * 9.5 + 2 * word_5A50C2;
+        netListY = p_YW->_fontH * 9.5 + 2 * word_5A50C2;
         break;
     default:
         break;
@@ -3688,8 +3592,6 @@ void UserData::GameShellUiHandleInput()
 
     yw_arg181 v346;
     uamessage_fraction fracMsg;
-
-    windp_arg79 v368;
 
     r = network_button->button_func69(Input);
 
@@ -3718,9 +3620,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = 1;
-            SelectedFraction = 1;
-            FreeFraction &= 0xFE;
+            fracMsg.newfrac = NET_FRACTION_RESISTANCE;
+            SelectedFraction = NET_FRACTION_RESISTANCE;
+            FreeFraction &= ~NET_FRACTION_RESISTANCE;
 
             p_YW->ypaworld_func181(&v346);
         }
@@ -3728,9 +3630,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = 2;
-            FreeFraction &= 0xFD;
-            SelectedFraction = 2;
+            fracMsg.newfrac = NET_FRACTION_GHORKOV;
+            FreeFraction &= ~NET_FRACTION_GHORKOV;
+            SelectedFraction = NET_FRACTION_GHORKOV;
 
             p_YW->ypaworld_func181(&v346);
         }
@@ -3738,9 +3640,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = 4;
-            SelectedFraction = 4;
-            FreeFraction &= 0xFB;
+            fracMsg.newfrac = NET_FRACTION_MIKO;
+            SelectedFraction = NET_FRACTION_MIKO;
+            FreeFraction &= ~NET_FRACTION_MIKO;
 
             p_YW->ypaworld_func181(&v346);
         }
@@ -3748,9 +3650,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = 8;
-            SelectedFraction = 8;
-            FreeFraction &= 0xF7;
+            fracMsg.newfrac = NET_FRACTION_TAER;
+            SelectedFraction = NET_FRACTION_TAER;
+            FreeFraction &= ~NET_FRACTION_TAER;
 
             p_YW->ypaworld_func181(&v346);
         }
@@ -3764,7 +3666,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
+                p_YW->_helpURL = p_YW->GetLocaleString(753, "help\\13.html");
             }
             break;
 
@@ -3775,14 +3677,14 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1201 )
             {
-                isHost = 1;
+                isHost = true;
                 netSel = -1;
                 network_listvw.firstShownEntries = 0;
                 netSelMode = NETSCREEN_CHOOSE_MAP;
             }
             else if ( r.code == 1250 )
             {
-                p_YW->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
+                p_YW->_helpURL = p_YW->GetLocaleString(755, "help\\15.html");
             }
             break;
 
@@ -3791,16 +3693,16 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( !netName.empty() )
                 {
-                    callSIGN = netName;
+                    netPlayerName = netName;
                     netName = "";
                 }
                 
-                p_YW->windp->SetWantedName(callSIGN);
+                p_YW->_netDriver->SetWantedName(netPlayerName);
 
-                switch ( p_YW->windp->GetMode() )
+                switch ( p_YW->_netDriver->GetMode() )
                 {
                     case 1:
-                        isHost = 1;
+                        isHost = true;
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
                         netSelMode = NETSCREEN_CHOOSE_MAP;
@@ -3855,7 +3757,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
+                p_YW->_helpURL = p_YW->GetLocaleString(754, "help\\14.html");
             }
             break;
 
@@ -3866,7 +3768,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
+                p_YW->_helpURL = p_YW->GetLocaleString(756, "help\\16.html");
             }
             break;
 
@@ -3878,14 +3780,10 @@ void UserData::GameShellUiHandleInput()
                     std::string v425;
                     std::string v425_1;
 
-                    if ( p_YW->windp->CountPlayers() <= 1 )
+                    if ( p_YW->_netDriver->GetPlayerCount() <= 1 )
                     {
                         sub_46D9E0(2, p_YW->GetLocaleString(2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?")
                                     , p_YW->GetLocaleString(2442, "2442"), 0);
-                    }
-                    else if ( ypaworld_func158__sub0__sub8(&v425, &v425_1) )
-                    {
-                        sub_46D9E0(4, v425, v425_1, 1);
                     }
                     else
                     {
@@ -3899,24 +3797,23 @@ void UserData::GameShellUiHandleInput()
                 {
                     netSel = -1;
                     network_listvw.firstShownEntries = 0;
-                    msgBuffLine = 0;
-                    lastSender[0] = 0;
+                    msgBuffers.clear();
+                    lastSender.clear();
                     netName = "";
                     netSelMode = NETSCREEN_CHOOSE_MAP;
                 }
             }
             else if ( r.code == 1208 )
             {
-                v368.mode = 0;
-                v368.ID = 0;
-                while ( p_YW->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
-                    v368.ID++;
-
                 yw_arg181 v353;
                 uamessage_ready rdyMsg;
 
-                rdyStart = 1;
-                players2[v368.ID].rdyStart = 1;
+                rdyStart = true;
+                
+                int myIndex = p_YW->_netDriver->GetMyIndex();
+                
+                if (myIndex >= 0)
+                    lobbyPlayers[myIndex].Ready = true;
 
                 rdyMsg.msgID = UAMSG_READY;
                 rdyMsg.owner = 0;
@@ -3934,24 +3831,22 @@ void UserData::GameShellUiHandleInput()
                 v387.receiverFlags = 2;
                 v387.receiverID = 0;
                 v387.senderFlags = 1;
-                v387.senderID = callSIGN.c_str();
+                v387.senderID = netPlayerName.c_str();
                 v387.guarant = 1;
 
-                p_YW->windp->FlushBuffer(v387);
+                p_YW->_netDriver->FlushBuffer(v387);
             }
             else if ( r.code == 1209 )
             {
-                v368.mode = 0;
-                v368.ID = 0;
-                while ( p_YW->windp->GetPlayerData(&v368) && StriCmp(v368.name, callSIGN) )
-                    v368.ID++;
-
-
                 yw_arg181 v353;
                 uamessage_ready rdyMsg;
 
-                rdyStart = 0;
-                players2[v368.ID].rdyStart = 0;
+                rdyStart = false;
+                
+                int myIndex = p_YW->_netDriver->GetMyIndex();
+                
+                if (myIndex >= 0)
+                    lobbyPlayers[myIndex].Ready = false;
 
                 rdyMsg.msgID = UAMSG_READY;
                 rdyMsg.owner = 0;
@@ -3969,10 +3864,10 @@ void UserData::GameShellUiHandleInput()
                 v387.receiverFlags = 2;
                 v387.receiverID = 0;
                 v387.senderFlags = 1;
-                v387.senderID = callSIGN.c_str();
+                v387.senderID = netPlayerName.c_str();
                 v387.guarant = 1;
 
-                p_YW->windp->FlushBuffer(v387);
+                p_YW->_netDriver->FlushBuffer(v387);
             }
             else if ( r.code == 1210 )
             {
@@ -4010,12 +3905,12 @@ void UserData::GameShellUiHandleInput()
                     v346.dataSize = sizeof(msgMsg);
                     v346.recvFlags = 2;
                     v346.recvID = 0;
-                    v346.senderID = callSIGN.c_str();
+                    v346.senderID = netPlayerName.c_str();
                     v346.garant = 1;
 
                     p_YW->ypaworld_func181(&v346);
 
-                    sub_4D0C24(p_YW, callSIGN, msgMsg.message);
+                    sub_4D0C24(p_YW, netPlayerName, msgMsg.message);
 
                     netName = "";
                     netNameCurPos = 0;
@@ -4027,7 +3922,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
+                p_YW->_helpURL = p_YW->GetLocaleString(757, "help\\17.html");
             }
             break;
         default:
@@ -4039,7 +3934,7 @@ void UserData::GameShellUiHandleInput()
     {
         int a4 = network_button->getBTN_y();
 
-        network_listvw.y = field_0x1c30 + a4;
+        network_listvw.y = netListY + a4;
 
         network_listvw.InputHandle(p_YW, Input);
 
@@ -4055,22 +3950,22 @@ void UserData::GameShellUiHandleInput()
                 break;
             case NETSCREEN_CHOOSE_MAP:
             {
-                uint32_t v227 = p_YW->windp->CountPlayers();
+                uint32_t playerCount = p_YW->_netDriver->GetPlayerCount();
 
-                int v228 = 0;
+                int filteredID = 0;
 
-                for (size_t i = 0; i < 256; i++)
+                for (const UserData::TMapDescription &desc : mapDescriptions)
                 {
-                    if ( v227 <= 1 || v227 <= p_YW->_mapRegions.MapRegions[ map_descriptions[i].id ].RoboCount)
+                    if ( playerCount <= 1 || playerCount <= p_YW->_globalMapRegions.MapRegions.at( desc.id ).RoboCount)
                     {
-                        if ( v228 == netSel )
+                        if ( filteredID == netSel )
                         {
-                            netLevelName = map_descriptions[i].pstring;
-                            netLevelID = map_descriptions[i].id;
+                            netLevelName = desc.pstring;
+                            netLevelID = desc.id;
                             break;
                         }
 
-                        v228++;
+                        filteredID++;
                     }
                 }
             }
@@ -4151,7 +4046,7 @@ void UserData::GameShellUiHandleInput()
                     }
                     else
                     {
-                        isHost = 1;
+                        isHost = true;
                         netSel = -1;
                         netSelMode = NETSCREEN_CHOOSE_MAP;
                         network_listvw.firstShownEntries = 0;
@@ -4161,7 +4056,7 @@ void UserData::GameShellUiHandleInput()
                 case NETSCREEN_ENTER_NAME:
                     if ( !netName.empty() )
                     {
-                        callSIGN = netName;
+                        netPlayerName = netName;
 
                         netSelMode = NETSCREEN_SESSION_SELECT;
                         netSel = -1;
@@ -4193,7 +4088,7 @@ void UserData::GameShellUiHandleInput()
 
                         p_YW->ypaworld_func181(&v325);
 
-                        sub_4D0C24(p_YW, callSIGN, msgMsg.message);
+                        sub_4D0C24(p_YW, netPlayerName, msgMsg.message);
                         netName.clear();
                         netNameCurPos = 0;
 
@@ -4216,19 +4111,19 @@ void UserData::GameShellUiHandleInput()
                 switch ( netSelMode )
                 {
                 case NETSCREEN_MODE_SELECT:
-                    p_YW->field_81AF = p_YW->GetLocaleString(753, "help\\13.html");
+                    p_YW->_helpURL = p_YW->GetLocaleString(753, "help\\13.html");
                     break;
                 case NETSCREEN_SESSION_SELECT:
-                    p_YW->field_81AF = p_YW->GetLocaleString(755, "help\\15.html");
+                    p_YW->_helpURL = p_YW->GetLocaleString(755, "help\\15.html");
                     break;
                 case NETSCREEN_ENTER_NAME:
-                    p_YW->field_81AF = p_YW->GetLocaleString(754, "help\\14.html");
+                    p_YW->_helpURL = p_YW->GetLocaleString(754, "help\\14.html");
                     break;
                 case NETSCREEN_CHOOSE_MAP:
-                    p_YW->field_81AF = p_YW->GetLocaleString(756, "help\\16.html");
+                    p_YW->_helpURL = p_YW->GetLocaleString(756, "help\\16.html");
                     break;
                 case NETSCREEN_INSESSION:
-                    p_YW->field_81AF = p_YW->GetLocaleString(757, "help\\17.html");
+                    p_YW->_helpURL = p_YW->GetLocaleString(757, "help\\17.html");
                     break;
                 default:
                     break;
@@ -4246,22 +4141,22 @@ void UserData::GameShellUiHandleInput()
     {
         if ( netSelMode == NETSCREEN_INSESSION && envAction.action != EnvAction::ACTION_NETPLAY )
         {
-            if ( p_YW->windp->CountPlayers()   <   p_YW->_mapRegions.MapRegions[ netLevelID ].RoboCount )
+            if ( p_YW->_netDriver->GetPlayerCount()   <   p_YW->_globalMapRegions.MapRegions[ netLevelID ].RoboCount )
             {
                 if ( blocked )
                 {
                     int v357 = 0;
-                    p_YW->windp->LockSession(&v357);
+                    p_YW->_netDriver->LockSession(&v357);
 
-                    blocked = 0;
+                    blocked = false;
                 }
             }
             else if ( !blocked )
             {
                 int v357 = 1;
-                p_YW->windp->LockSession(&v357);
+                p_YW->_netDriver->LockSession(&v357);
 
-                blocked = 1;
+                blocked = true;
             }
         }
     }
@@ -4335,8 +4230,8 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1217;
     network_button->button_func67(&v410);
 
-    if ( (netSelMode != NETSCREEN_SESSION_SELECT || p_YW->windp->GetProvType() != 3)
-            && (netSelMode != NETSCREEN_SESSION_SELECT || modemAskSession != 1 || p_YW->windp->GetProvType() != 4)
+    if ( (netSelMode != NETSCREEN_SESSION_SELECT || p_YW->_netDriver->GetProvType() != 3)
+            && (netSelMode != NETSCREEN_SESSION_SELECT || modemAskSession != 1 || p_YW->_netDriver->GetProvType() != 4)
             && netSelMode != NETSCREEN_MODE_SELECT )
     {
         v410.butID = 1228;
@@ -4352,10 +4247,9 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            if ( p_YW->field_75E2[0] )
+            if ( !p_YW->_netTcpAddress.empty() )
             {
-                char *v278 = p_YW->field_75E2;
-                v280 = fmt::sprintf("%s  %s",  p_YW->GetLocaleString(2437, "YOUR TCP/IP ADDRESS") , v278);
+                v280 = fmt::sprintf("%s  %s",  p_YW->GetLocaleString(2437, "YOUR TCP/IP ADDRESS") , p_YW->_netTcpAddress);
             }
             else
                 v280 = " ";
@@ -4383,12 +4277,12 @@ void UserData::GameShellUiHandleInput()
         if ( netSelMode == NETSCREEN_ENTER_NAME )
         {
             v393.width = dword_5A50B6;
-            v393.ypos = 3 * (word_5A50C2 + p_YW->font_default_h);
+            v393.ypos = 3 * (word_5A50C2 + p_YW->_fontH);
         }
         else
         {
             v393.width = dword_5A50B6 * 0.8;
-            v393.ypos = 14 * (word_5A50C2 + p_YW->font_default_h);
+            v393.ypos = 14 * (word_5A50C2 + p_YW->_fontH);
         }
 
         network_button->button_func76(&v393);
@@ -4406,11 +4300,11 @@ void UserData::GameShellUiHandleInput()
 
     if ( netSelMode == 2 )
     {
-        v393.ypos = 4 * (word_5A50C2 + p_YW->font_default_h);
+        v393.ypos = 4 * (word_5A50C2 + p_YW->_fontH);
     }
     else
     {
-        v393.ypos = (word_5A50C2 + p_YW->font_default_h) * 15.2;
+        v393.ypos = (word_5A50C2 + p_YW->_fontH) * 15.2;
     }
 
     network_button->button_func76(&v393);
@@ -4432,7 +4326,7 @@ void UserData::GameShellUiHandleInput()
 
     case NETSCREEN_SESSION_SELECT:
     {
-        if ( p_YW->windp->GetProvType() != 4 || !modemAskSession )
+        if ( p_YW->_netDriver->GetProvType() != 4 || !modemAskSession )
         {
             network_button->button_func71(1202, p_YW->GetLocaleString(402, "NEW"));
 
@@ -4449,11 +4343,11 @@ void UserData::GameShellUiHandleInput()
         windp_getNameMsg msg;
         msg.id = 0;
 
-        if ( p_YW->windp->GetSessionName(&msg) )
+        if ( p_YW->_netDriver->GetSessionName(&msg) )
         {
             network_button->button_func71(1201, p_YW->GetLocaleString(406, "JOIN"));
         }
-        else if ( p_YW->windp->GetProvType() != 4 || modemAskSession )
+        else if ( p_YW->_netDriver->GetProvType() != 4 || modemAskSession )
         {
             v410.butID = 1201;
             network_button->button_func67(&v410);
@@ -4541,25 +4435,25 @@ void UserData::GameShellUiHandleInput()
             else
             {
                 v410.butID = 1206;
-                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 2 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 2 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
 
                 v410.butID = 1207;
-                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 0x40 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 0x40 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
 
                 v410.butID = 1208;
-                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 8 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 8 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
 
                 v410.butID = 1209;
-                if ( p_YW->_mapRegions.MapRegions[ netLevelID ].FractionsBits & 0x10 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 0x10 )
                     network_button->button_func66(&v410);
                 else
                     network_button->button_func67(&v410);
@@ -4567,24 +4461,22 @@ void UserData::GameShellUiHandleInput()
 
             v408.butID = 0;
 
-            switch ( SelectedFraction - 1 )
+            switch ( SelectedFraction )
             {
-            case 0:
+            case NET_FRACTION_RESISTANCE:
                 v408.butID = 1206;
                 break;
-            case 1:
+            case NET_FRACTION_GHORKOV:
                 v408.butID = 1207;
                 break;
-            case 3:
+                case NET_FRACTION_MIKO:
                 v408.butID = 1208;
                 break;
-            case 7:
+            case NET_FRACTION_TAER:
                 v408.butID = 1209;
                 break;
-            case 2:
-            case 4:
-            case 5:
-            case 6:
+                
+            default:
                 break;
             }
 
@@ -4596,53 +4488,50 @@ void UserData::GameShellUiHandleInput()
 
             int v298 = 0;
 
-            v368.mode = 0;
-            v368.ID = 0;
+            netGameCanStart = true;
+            isWelcmd = true;
 
-            field_1CD7 = 1;
-            field_1CE8 = 1;
+            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 2) )
+                v298 = NET_FRACTION_RESISTANCE;
 
-            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 2) )
-                v298 = 1;
+            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 0x40) )
+                v298 |= NET_FRACTION_GHORKOV;
 
-            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 0x40) )
-                v298 |= 2;
+            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 8) )
+                v298 |= NET_FRACTION_MIKO;
 
-            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 8) )
-                v298 |= 4;
-
-            if ( !(p_YW->_mapRegions.MapRegions[netLevelID].FractionsBits & 0x10) )
-                v298 |= 8;
+            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 0x10) )
+                v298 |= NET_FRACTION_TAER;
 
             int v373, v374, v375, v376;
 
-            while ( p_YW->windp->GetPlayerData(&v368) )
+            for ( TDPPlayerData &p : p_YW->_netDriver->GetPlayersData() )
             {
                 int v299;
 
-                if ( v368.flags & 1 )
+                if ( p.IsItMe() )
                     v299 = SelectedFraction;
                 else
-                    v299 = players2[v368.ID].Fraction;
+                    v299 = lobbyPlayers[p.Index].NetFraction;
 
                 if ( v299 & v298 )
                 {
-                    players2[v368.ID].trbl = 1;
-                    field_1CD7 = 0;
+                    lobbyPlayers[p.Index].IsTrouble = true;
+                    netGameCanStart = false;
 
-                    switch ( v299 - 1 )
+                    switch ( v299 )
                     {
-                    case 0:
-                        players2[v375].trbl = 1;
+                    case NET_FRACTION_RESISTANCE:
+                        lobbyPlayers[v375].IsTrouble = true;
                         break;
-                    case 1:
-                        players2[v373].trbl = 1;
+                    case NET_FRACTION_GHORKOV:
+                        lobbyPlayers[v373].IsTrouble = true;
                         break;
-                    case 3:
-                        players2[v376].trbl = 1;
+                    case NET_FRACTION_MIKO:
+                        lobbyPlayers[v376].IsTrouble = true;
                         break;
-                    case 7:
-                        players2[v374].trbl = 1;
+                    case NET_FRACTION_TAER:
+                        lobbyPlayers[v374].IsTrouble = true;
                         break;
                     default:
                         break;
@@ -4650,47 +4539,40 @@ void UserData::GameShellUiHandleInput()
                 }
                 else
                 {
-                    players2[v368.ID].trbl = 0;
+                    lobbyPlayers[p.Index].IsTrouble = false;
 
-                    switch ( v299 - 1 )
+                    switch ( v299 )
                     {
-                    case 0:
-                        v375 = v368.ID;
+                    case NET_FRACTION_RESISTANCE:
+                        v375 = p.Index;
                         break;
-                    case 1:
-                        v373 = v368.ID;
+                    case NET_FRACTION_GHORKOV:
+                        v373 = p.Index;
                         break;
-                    case 3:
-                        v376 = v368.ID;
+                    case NET_FRACTION_MIKO:
+                        v376 = p.Index;
                         break;
-                    case 7:
-                        v374 = v368.ID;
+                    case NET_FRACTION_TAER:
+                        v374 = p.Index;
                         break;
                     default:
                         break;
                     }
 
                 }
-
-                v298 |= v299;
-                v368.ID++;
             }
         }
 
-        v368.mode = 0;
-        v368.ID = 0;
-
-        while ( p_YW->windp->GetPlayerData(&v368) )
+        for ( TDPPlayerData &p : p_YW->_netDriver->GetPlayersData() )
         {
-            if ( !(v368.flags & 1) )
+            if ( !p.IsItMe() )
             {
-                if ( !players2[v368.ID].rdyStart )
-                    field_1CD7 = 0;
+                if ( !lobbyPlayers[p.Index].Ready )
+                    netGameCanStart = false;
 
-                if ( !players2[v368.ID].welcmd )
-                    field_1CE8 = 0;
+                if ( !lobbyPlayers[p.Index].Welcomed )
+                    isWelcmd = false;
             }
-            v368.ID++;
         }
 
         if ( isHost )
@@ -4703,7 +4585,7 @@ void UserData::GameShellUiHandleInput()
 
             network_button->button_func71(1201, p_YW->GetLocaleString(407, "START"));
 
-            if ( !field_1CD7 )
+            if ( !netGameCanStart )
             {
                 v410.field_4 = 0;
                 v410.butID = 1201;
@@ -4718,7 +4600,7 @@ void UserData::GameShellUiHandleInput()
 
             network_button->button_func71(1223, p_YW->GetLocaleString(441, "18"));
 
-            if ( field_1CE8 )
+            if ( isWelcmd )
             {
                 v410.butID = 1219;
                 network_button->button_func66(&v410);
@@ -4754,15 +4636,11 @@ void UserData::GameShellUiHandleInput()
         v410.butID = 1217;
         network_button->button_func66(&v410);
 
-        v368.ID = 0;
-        v368.mode = 0;
-
-
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < World::CVMaxNetPlayers; i++)
         {
             int v370;
-
-            int v304 = p_YW->windp->GetPlayerData(&v368);
+            TDPPlayerData pData;
+            bool v304 = p_YW->_netDriver->GetPlayerData(i, &pData);
 
             std::string name = " ";
             int btID;
@@ -4773,28 +4651,28 @@ void UserData::GameShellUiHandleInput()
                 v370 = 1214;
                 btID = 1210;
                 if ( v304 )
-                    name = v368.name;
+                    name = pData.name;
                 break;
 
             case 1:
                 v370 = 1215;
                 btID = 1211;
                 if ( v304 )
-                    name = v368.name;
+                    name = pData.name;
                 break;
 
             case 2:
                 v370 = 1216;
                 btID = 1212;
                 if ( v304 )
-                    name = v368.name;
+                    name = pData.name;
                 break;
 
             case 3:
                 v370 = 1217;
                 btID = 1213;
                 if ( v304 )
-                    name = v368.name;
+                    name = pData.name;
                 break;
 
             default:
@@ -4809,45 +4687,40 @@ void UserData::GameShellUiHandleInput()
             {
                 int v305;
 
-                if ( v368.flags & 1 )
+                if ( pData.IsItMe() )
                 {
                     v305 = SelectedFraction;
                 }
                 else
                 {
-                    v305 = players2[v368.ID].Fraction;
+                    v305 = lobbyPlayers[pData.Index].NetFraction;
                 }
 
-                switch ( v305 - 1 )
+                switch ( v305 )
                 {
-                case 0:
+                case NET_FRACTION_RESISTANCE:
                     v339[0] = 'P';
                     break;
-                case 1:
+                case NET_FRACTION_GHORKOV:
                     v339[0] = 'R';
                     break;
-                case 3:
+                case NET_FRACTION_MIKO:
                     v339[0] = 'T';
                     break;
-                case 7:
+                case NET_FRACTION_TAER:
                     v339[0] = 'V';
                     break;
                 default:
                     break;
                 }
-                if ( players2[v368.ID].trbl && ((GlobalTime / 300) & 1) )
+                if ( lobbyPlayers[pData.Index].IsTrouble && ((GlobalTime / 300) & 1) )
                     v339[1] = 'f';
 
-                if ( players2[v368.ID].rdyStart )
+                if ( lobbyPlayers[pData.Index].Ready )
                     v339[2] = 'h';
-
-                if ( players2[v368.ID].cd )
-                    v339[3] = 'i';
             }
 
             network_button->button_func71(v370, v339);
-
-            v368.ID++;
         }
         break;
 
@@ -4948,3 +4821,14 @@ int UserData::InputIndexFromConfig(uint32_t type, uint32_t index)
         return HOTKEY[index];
     return -1;
 }
+
+bool UserData::IsHasSGM(const std::string &username, int id)
+{
+    return uaFileExist( fmt::sprintf("save:%s/%d.sgm", username, id) );
+}
+
+bool UserData::IsHasRestartForLevel(const std::string &username, int id)
+{
+    return uaFileExist( fmt::sprintf("save:%s/%d.rst", username, id) );
+}
+

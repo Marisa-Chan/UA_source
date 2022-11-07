@@ -44,7 +44,7 @@ bool NC_STACK_Obj3D::LoadFromFile(FSMgr::FileHandle *fil)
 {
     if (!ParseObj(fil))
         return false;
-    
+
     MakeCoordsCache();
         
     _skeleton = Nucleus::CInit<NC_STACK_skeleton>( {
@@ -90,7 +90,7 @@ NC_STACK_Obj3D *NC_STACK_Obj3D::LoadObj3D(const std::string &filename)
     if(tmp->LoadFromFile(&fil))
         return tmp;
     
-    Nucleus::Delete(tmp);
+    tmp->Delete();
     return NULL;
 }
 

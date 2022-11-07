@@ -4,7 +4,7 @@
 #include <list>
 #include <inttypes.h>
 #include <SDL2/SDL.h>
-#include "../common.h"
+#include "common/common.h"
 #include "root.h"
 
 namespace Gui

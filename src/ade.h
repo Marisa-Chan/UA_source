@@ -90,7 +90,7 @@ public:
 
 
 public:
-    char flags = 0;
+    uint8_t flags = 0;
     int16_t _pointID = 0;
     int16_t _polyID = 0;
 

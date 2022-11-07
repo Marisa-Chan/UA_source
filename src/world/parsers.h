@@ -4,7 +4,8 @@
 #include <string>
 #include "../types.h"
 #include "../utils.h"
-#include "../common.h"
+#include "common/common.h"
+#include "common/plane.h"
 
 #include "../def_parser.h"
 
@@ -16,12 +17,12 @@ class NC_STACK_ypabact;
 class NC_STACK_yparobo;
 class NC_STACK_bitmap;
 class UserData;
-struct save_status;
+struct TMFWinStatus;
 struct TLevelDescription;
 struct MapRobo;
-struct MapGem;
+struct TMapGem;
 struct MapSquad;
-struct MapGate;
+struct TMapGate;
 struct TBkgPicInfo;
 struct TMapSuperItem;
 struct TMapRegionsNet;
@@ -103,8 +104,6 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    bool shellGfxMode = false;
-    bool gfxMode = false;
 };
 
 
@@ -158,7 +157,7 @@ public:
     virtual int Handle(ScriptParser::Parser &parser, const std::string &p1, const std::string &p2);
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt) { return !StriCmp(word, "new_shell"); };
 protected:
-    void ParseStatus(ScriptParser::Parser &parser, save_status *status, const std::string &p2);
+    void ParseStatus(ScriptParser::Parser &parser, TMFWinStatus *status, const std::string &p2);
 
     NC_STACK_ypaworld &_o;
 };
@@ -260,7 +259,7 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    MapGem *_g;
+    TMapGem *_g;
 };
 
 class LevelSquadParser : public ScriptParser::DataHandler
@@ -282,7 +281,7 @@ public:
     virtual bool IsScope(ScriptParser::Parser &parser, const std::string &word, const std::string &opt);
 protected:
     NC_STACK_ypaworld &_o;
-    MapGate *_g;
+    TMapGate *_g;
 };
 
 class LevelMbMapParser : public ScriptParser::DataHandler
@@ -299,7 +298,7 @@ protected:
 class MapAsPlaneBytes
 {
 protected:
-    Common::PlaneBytes *ReadMapAsPlaneBytes(ScriptParser::Parser &parser);
+    Common::PlaneBytes ReadMapAsPlaneBytes(ScriptParser::Parser &parser);
 };
 
 class LevelMapsParser : public ScriptParser::DataHandler, public MapAsPlaneBytes

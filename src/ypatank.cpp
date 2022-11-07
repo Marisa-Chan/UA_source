@@ -1332,10 +1332,10 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 
                                 v12->_scale_time = -1;
 
-                                if ( _world->GameShell )
-                                    SFXEngine::SFXe.startSound(&_world->GameShell->samples1_info, World::SOUND_ID_PLASMA);
+                                if ( _world->_GameShell )
+                                    SFXEngine::SFXe.startSound(&_world->_GameShell->samples1_info, World::SOUND_ID_PLASMA);
 
-                                if ( _world->isNetGame )
+                                if ( _world->_isNetGame )
                                 {
                                     uamessage_endPlasma eplMsg;
                                     eplMsg.msgID = UAMSG_ENDPLASMA;
@@ -1446,7 +1446,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
 
                 for (int i = 0; i < v113; i++)
                 {
-                    if ( !_world->isNetGame || _owner == v80[i]->_owner )
+                    if ( !_world->_isNetGame || _owner == v80[i]->_owner )
                     {
                         float v40 = _mass * 8.0 * fabs(_fly_dir_length);
                         float v41 = _thraction * v124 * 100.0;
@@ -1681,7 +1681,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
                     }
                     else
                     {
-                        if ( arg130.pcell->comp_type != 1 )
+                        if ( arg130.pcell->SectorType != 1 )
                         {
                             int v17 = (arg130.pos_x + -150.0) / 300.0;
                             int v18 = (arg130.pos_z + 150.0) / 300.0;
@@ -1711,8 +1711,8 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     {
         v22 = &_world->GetWeaponsProtos().at( _weapon );
 
-        if ( v22->model_id & 1 )
-            v43 = v22->model_id & 0xFE;
+        if ( v22->_weaponFlags & 1 )
+            v43 = v22->_weaponFlags & 0xFE;
         else
             v22 = NULL;
     }
@@ -1782,7 +1782,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
 
 size_t NC_STACK_ypatank::TestTargetSector(NC_STACK_ypabact *tgt)
 {
-    if ( tgt->_sectX == _sectX || tgt->_sectY == _sectY )
+    if ( tgt->_cellId.x == _cellId.x || tgt->_cellId.y == _cellId.y )
     {
         if ( fabs(_pSector->height - tgt->_pSector->height) >= 500.0 )
             return 0;

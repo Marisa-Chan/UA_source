@@ -46,7 +46,7 @@ size_t NC_STACK_base::Init(IDVList &stak)
 size_t NC_STACK_base::Deinit()
 {
     if (_skeleton)
-        Nucleus::Delete(_skeleton);
+        _skeleton->Delete();
 
     while (!_ADES.empty())
     {
@@ -54,7 +54,7 @@ size_t NC_STACK_base::Deinit()
         _ADES.pop_front();
         
         ade->AttachedTo = NULL; //Clear ade attached, because we do erase in this list
-        Nucleus::Delete(ade);
+        ade->Delete();
     }
 
     if ( _parent )
@@ -66,11 +66,11 @@ size_t NC_STACK_base::Deinit()
         _KIDS.pop_front();
         
         kid->_parent = NULL; //Clear kid parent field, because we do erase in this list
-        Nucleus::Delete(kid);
+        kid->Delete();
     }
 
     if ( _embed )
-        Nucleus::Delete(_embed);
+        _embed->Delete();
 
     return NC_STACK_nucleus::Deinit();
 }
@@ -693,7 +693,7 @@ void NC_STACK_base::SetSkeleton(NC_STACK_skeleton *skel)
     if (skel)
     {
         if ( _skeleton )
-            Nucleus::Delete(_skeleton);
+            _skeleton->Delete();
 
         _skeleton = skel;
         _renderMsg.sklt = skel->GetSkelet();

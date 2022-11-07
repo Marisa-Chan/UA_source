@@ -56,7 +56,7 @@ void yw_netReportError(NC_STACK_ypabact *host, uint32_t id)
 {
     NC_STACK_ypaworld *ywo = host->getBACT_pWorld();
 
-    if ( ywo->UserRobo != host )
+    if ( ywo->_userRobo != host )
     {
         bool created = false;
         for (int i = 0; i < netDebug_CREATE_CNT; i++)
@@ -106,11 +106,11 @@ void NC_STACK_ypaworld::SendCRC(int lvlid)
     
     crc = fileCrc32( fmt::sprintf("levels:multi/L%02d%02d.ldf", lvlid, lvlid) , crc);
 
-    GameShell->netCRC = crc;
+    _GameShell->netCRC = crc;
 
     uamessage_crc crcmsg;
     crcmsg.msgID = UAMSG_CRC;
-    crcmsg.owner = GameShell->netPlayerOwner;
+    crcmsg.owner = _GameShell->netPlayerOwner;
     crcmsg.checksum = crc;
 
     yw_arg181 ywmsg;
@@ -125,7 +125,7 @@ void NC_STACK_ypaworld::SendCRC(int lvlid)
 
 void yw_CheckCRCs(NC_STACK_ypaworld *yw)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
     std::string strs[4];
 
@@ -137,20 +137,21 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
     {
         usr->takTime = 15000;
 
-        int plCnt = yw->windp->CountPlayers();
+        int plCnt = yw->_netDriver->GetPlayerCount();
 
         bool err = false;
         int errmsg = 0;
 
         for (int i = 0; i < plCnt; i++)
         {
-            if ( StriCmp(yw->GameShell->callSIGN, yw->GameShell->players2[i].name) &&
-                    usr->netCRC != yw->GameShell->players2[i].checksum &&
-                    yw->GameShell->players2[i].checksum != 0 &&
+            UserData::TNetPlayerLobbyData &pl = yw->_GameShell->lobbyPlayers[i];
+            if ( StriCmp(yw->_GameShell->netPlayerName, pl.Name) &&
+                    usr->netCRC != pl.DataChecksum &&
+                    pl.DataChecksum != 0 &&
                     usr->netCRC != 0 )
             {
                 err = true;
-                strs[errmsg] = fmt::sprintf("%s %s", yw->GameShell->players2[i].name, yw->GetLocaleString(2404, "HAS OTHER FILES THAN YOU") );
+                strs[errmsg] = fmt::sprintf("%s %s", pl.Name, yw->GetLocaleString(2404, "HAS OTHER FILES THAN YOU") );
                 errmsg++;
             }
         }
@@ -167,44 +168,6 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
     }
 }
 
-void UserData::yw_CheckCDs()
-{
-    if ( GlobalTime - last_cdchk >= 1500 )
-    {
-        last_cdchk = GlobalTime;
-
-        windp_arg79 plData;
-        plData.ID = 0;
-        plData.mode = 0;
-
-        while ( p_YW->windp->GetPlayerData(&plData) )
-        {
-            if ( !StriCmp(plData.name, callSIGN) )
-            {
-                players2[plData.ID].cd = 1;
-                break;
-            }
-            plData.ID++;
-        }
-
-        cd = 1;
-
-        uamessage_cd cdMsg;
-        cdMsg.cd = 1;
-        cdMsg.rdy = rdyStart;
-        cdMsg.msgID = UAMSG_CD;
-        cdMsg.owner = 0;
-
-        yw_arg181 ywMsg;
-        ywMsg.dataSize = sizeof(cdMsg);
-        ywMsg.recvFlags = 2;
-        ywMsg.recvID = 0;
-        ywMsg.garant = 1;
-        ywMsg.data = &cdMsg;
-
-        p_YW->ypaworld_func181(&ywMsg);
-    }
-}
 
 NC_STACK_ypabact * NC_STACK_ypaworld::yw_getHostByOwner(uint8_t owner)
 {
@@ -343,7 +306,7 @@ bool yw_prepareVHCLData(NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
 
     for( NC_STACK_ypabact* &robo : yw->_unitsList)
     {
-        if ( yw->UserRobo == robo )
+        if ( yw->_userRobo == robo )
         {
             fndRobo = robo;
             break;
@@ -356,7 +319,7 @@ bool yw_prepareVHCLData(NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
         return false;
     }
 
-    yw_netBakeVhcl(fndRobo, dat, 0, yw->netInterpolate);
+    yw_netBakeVhcl(fndRobo, dat, 0, yw->_netInterpolate);
     dat->owner = fndRobo->_owner;
 
     int num = 1;
@@ -366,14 +329,14 @@ bool yw_prepareVHCLData(NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
         if (num >= 1023)
             break;
 
-        yw_netBakeVhcl(comm, dat, num, yw->netInterpolate);
+        yw_netBakeVhcl(comm, dat, num, yw->_netInterpolate);
         num++;
 
         for( NC_STACK_ypabact* &unit : comm->_kidList )
         {
             if ( num >= 1023 )
                 break;
-            yw_netBakeVhcl(unit, dat, num, yw->netInterpolate);
+            yw_netBakeVhcl(unit, dat, num, yw->_netInterpolate);
 
             num++;
         }
@@ -381,7 +344,7 @@ bool yw_prepareVHCLData(NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
 
     dat->hdr.number = num;
 
-    if (yw->netInterpolate )
+    if (yw->_netInterpolate )
     {
         uamessage_vhclDataI *datI = static_cast<uamessage_vhclDataI *>(dat);
         for(int i = 0; i < datI->hdr.number; i++)
@@ -396,7 +359,7 @@ bool yw_prepareVHCLData(NC_STACK_ypaworld *yw, uamessage_vhclData *dat)
     return true;
 }
 
-void yw_cleanPlayer(NC_STACK_ypaworld *yw, const char *name, uint8_t owner, uint8_t mode)
+void yw_cleanPlayer(NC_STACK_ypaworld *yw, const std::string &name, uint8_t owner, uint8_t mode)
 {
     uint8_t own;
     if ( mode )
@@ -416,7 +379,7 @@ void yw_cleanPlayer(NC_STACK_ypaworld *yw, const char *name, uint8_t owner, uint
                 return;
             }
 
-            if ( !strcasecmp(yw->GameShell->players[own].name, name) && yw->GameShell->players[own].isKilled == 0 )
+            if ( !StriCmp(yw->_GameShell->netPlayers[own].Name, name) && yw->_GameShell->netPlayers[own].DestroyFlags == 0 )
                 break;
 
             own++;
@@ -427,7 +390,7 @@ void yw_cleanPlayer(NC_STACK_ypaworld *yw, const char *name, uint8_t owner, uint
     if ( bhost )
     {
         yw->NetRemove(bhost);
-        yw->GameShell->players[own].isKilled = 3;
+        yw->_GameShell->netPlayers[own].DestroyFlags = 3;
     }
 }
 
@@ -603,7 +566,7 @@ void NC_STACK_ypaworld::yw_processVhclDataMsgs(uamessage_vhclData *msg, NC_STACK
     uamessage_vhclDataI *datI = NULL;
     uamessage_vhclDataE *datE = NULL;
 
-    if (netInterpolate)
+    if (_netInterpolate)
         datI = static_cast<uamessage_vhclDataI *>(msg);
     else
         datE = static_cast<uamessage_vhclDataE *>(msg);
@@ -629,13 +592,13 @@ void NC_STACK_ypaworld::yw_processVhclDataMsgs(uamessage_vhclData *msg, NC_STACK
         bact = NetGetBactByID(host_node, ident);
 
         if ( !bact )
-            log_netlog("+++ EVD: Haven't found vehicle ident %d  from owner %d (%dsec)\n", ident, host_node->_owner, timeStamp / 1000);
+            log_netlog("+++ EVD: Haven't found vehicle ident %d  from owner %d (%dsec)\n", ident, host_node->_owner, _timeStamp / 1000);
         else
         {
-            if ( netInterpolate )
-                yw_netApplyVhclDataI(bact, datI, i, timeStamp);
+            if ( _netInterpolate )
+                yw_netApplyVhclDataI(bact, datI, i, _timeStamp);
             else
-                yw_netApplyVhclDataE(bact, datE, i, timeStamp);
+                yw_netApplyVhclDataE(bact, datE, i, _timeStamp);
         }
     }
 }
@@ -1089,43 +1052,44 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
     if (owner > 0 && owner < 8)
     {
-        yw->GameShell->players[owner].lastMsgTime = yw->field_1b24.gTime;
+        UserData::TNetPlayerData &pl = yw->_GameShell->netPlayers[owner];
+        pl.LastMessageTime = yw->_updateMessage.gTime;
 
         if ( msgID != UAMSG_VHCLENERGY && msgID != UAMSG_ENDPLASMA && msg->cast == 2 )
         {
-            if ( tstamp >= yw->GameShell->players[owner].tstamp )
+            if ( tstamp >= pl.TimeStamp )
             {
-                if ( tstamp - yw->GameShell->players[owner].tstamp > 6000 )
+                if ( tstamp - pl.TimeStamp > 6000 )
                     log_netlog(" Message %d from owner %d at %d sec is too fast...\n", msgID, owner, tstamp / 1000);
 
-                yw->GameShell->players[owner].tstamp = tstamp;
+                pl.TimeStamp = tstamp;
                 tv481 = 0;
             }
             else
             {
                 tv481 = 1;
                 log_netlog("Warning, Msg %d from owner %d is too old!\n", msgID, owner);
-                log_netlog("         old: at %d sec  new: at %d sec\n", yw->GameShell->players[owner].tstamp, tstamp);
+                log_netlog("         old: at %d sec  new: at %d sec\n", pl.TimeStamp, tstamp);
             }
 
-            if ( msgcnt == yw->GameShell->players[owner].msgCnt )
+            if ( msgcnt == pl.MessageCount )
             {
-                yw->GameShell->players[owner].msgCnt++;
+                pl.MessageCount++;
             }
             else
             {
-                if ( msgcnt <= yw->GameShell->players[owner].msgCnt )
+                if ( msgcnt <= pl.MessageCount )
                 {
                     log_netlog("HMM !!!  Late message received with count %d\n", msgcnt);
                     log_netlog("         from owner %d, id %d at time %d\n", owner, msgID, tstamp / 1000);
                 }
                 else
                 {
-                    log_netlog("PANIC!!! Msg lost! Last msg has count %d\n", yw->GameShell->players[owner].msgCnt - 1);
+                    log_netlog("PANIC!!! Msg lost! Last msg has count %d\n", pl.MessageCount - 1);
                     log_netlog("         Msg now (%d) has count %d\n", msgID, msgcnt);
                     log_netlog("         From Owner %d at time %d\n\n", owner, tstamp / 1000);
                 }
-                yw->GameShell->players[owner].msgCnt = msgcnt + 1;
+                pl.MessageCount = msgcnt + 1;
             }
         }
     }
@@ -1135,21 +1099,21 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             log_netlog("Warning, no or false owner (%d) specified for msg %d\n", owner, msgID);
         tv481 = 0;
     }
+    
+    UserData::TNetPlayerLobbyData *plr = NULL;
 
-    netType1 *plr = NULL;
-
-    for(int i = 0; i < 4; i++)
+    for(UserData::TNetPlayerLobbyData &pl : yw->_GameShell->lobbyPlayers)
     {
-        if (StriCmp(yw->GameShell->players2[i].name, msg->senderName) == 0)
+        if (StriCmp(pl.Name, msg->senderName) == 0)
         {
-            plr = &yw->GameShell->players2[i];
-
-            if (plr->w84upd)
+            plr = &pl;
+            
+            if (pl.UpdateCountDown)
             {
-                plr->w84upd -= yw->field_1b24.frameTime;
+                pl.UpdateCountDown -= yw->_updateMessage.frameTime;
 
-                if (plr->w84upd)
-                    plr->w84upd = 0;
+                if (pl.UpdateCountDown)
+                    pl.UpdateCountDown = 0;
             }
 
             break;
@@ -1164,16 +1128,16 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
     {
         szmsg = sizeof(uamessage_load);
 
-        if (yw->GameShell->players[owner].isKilled)
+        if (yw->_GameShell->netPlayers[owner].DestroyFlags)
             break;
 
         uamessage_load *ldMsg = (uamessage_load *)msg->data;
-        yw->GameShell->envAction.action = EnvAction::ACTION_NETPLAY;
-        yw->GameShell->envAction.params[0] = ldMsg->level;
-        yw->GameShell->envAction.params[1] = ldMsg->level;
+        yw->_GameShell->envAction.action = EnvAction::ACTION_NETPLAY;
+        yw->_GameShell->envAction.params[0] = ldMsg->level;
+        yw->_GameShell->envAction.params[1] = ldMsg->level;
 
-        yw->isNetGame = 1;
-        yw->GameShell->yw_NetPrintStartInfo();
+        yw->_isNetGame = true;
+        yw->_GameShell->yw_NetPrintStartInfo();
     }
     break;
 
@@ -1182,10 +1146,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_newVhcl);
         uamessage_newVhcl *nvMsg = (uamessage_newVhcl *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        if ( plr && plr->w84upd )
+        if ( plr && plr->UpdateCountDown )
             break;
 
         ypaworld_arg146 newVhcl;
@@ -1208,7 +1172,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( !host_node )
         {
-            log_netlog("\n+++ NV: Robo Owner %d not found (%ds)\n", nvMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ NV: Robo Owner %d not found (%ds)\n", nvMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -1248,7 +1212,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         bacto->_owner = nvMsg->owner;
         bacto->_gid = nvMsg->id;
         bacto->_commandID = nvMsg->commandID;
-        bacto->_lastFrmStamp = yw->timeStamp;
+        bacto->_lastFrmStamp = yw->_timeStamp;
         bacto->_host_station = dynamic_cast<NC_STACK_yparobo *>(host_node);
 
         yw->HistoryAktCreate( bacto );
@@ -1262,14 +1226,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_destroyVhcl);
         uamessage_destroyVhcl *dvMsg = (uamessage_destroyVhcl *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(dvMsg->owner);
 
         if ( !host_node )
         {
-            log_netlog("\n+++ DV:Havent found robo with owner %d (%ds)\n", dvMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ DV:Havent found robo with owner %d (%ds)\n", dvMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -1277,14 +1241,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( !bctt )
         {
-            log_netlog("\n+++ DV: Havent found vehicle %d (%ds)\n", dvMsg->id, yw->timeStamp / 1000);
+            log_netlog("\n+++ DV: Havent found vehicle %d (%ds)\n", dvMsg->id, yw->_timeStamp / 1000);
             *err = msg->senderName;
             break;
         }
 
         if ( !(bctt->_status_flg & BACT_STFLAG_DEATH1) )
         {
-            log_netlog("+++ DV: Release a non-logic-dead vehicle %d! (%ds)\n", dvMsg->id, yw->timeStamp / 1000);
+            log_netlog("+++ DV: Release a non-logic-dead vehicle %d! (%ds)\n", dvMsg->id, yw->_timeStamp / 1000);
             *err = msg->senderName;
             break;
         }
@@ -1294,7 +1258,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         while( !bctt->_kidList.empty() )
         {
             yw->ypaworld_func144(bctt->_kidList.front());
-            log_netlog("+++ DV: Released vehicle with slave! (%ds)\n", yw->timeStamp / 1000);
+            log_netlog("+++ DV: Released vehicle with slave! (%ds)\n", yw->_timeStamp / 1000);
             *err = msg->senderName;
         }
 
@@ -1307,7 +1271,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
             yw->NetReleaseMissiles(bctt);
 
-            log_netlog("+++ DV: Released vehicle with weapons! (%ds)\n", yw->timeStamp / 1000);
+            log_netlog("+++ DV: Released vehicle with weapons! (%ds)\n", yw->_timeStamp / 1000);
             *err = msg->senderName;
         }
 
@@ -1317,7 +1281,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( dvMsg->type != BACT_TYPES_MISSLE && yw_netGetUnitsCount(host_node) != (vnumb - 1) )
         {
-            log_netlog("\n+++ DV: Vehiclecount changed more than 1! (%ds)\n", yw->timeStamp / 1000);
+            log_netlog("\n+++ DV: Vehiclecount changed more than 1! (%ds)\n", yw->_timeStamp / 1000);
             *err = msg->senderName;
             break;
         }
@@ -1329,14 +1293,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_newLeader);
         uamessage_newLeader *nlMsg = (uamessage_newLeader *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(nlMsg->owner);
 
         if ( !host_node )
         {
-            log_netlog("\n+++ NC:Havent found robo with owner %d (%ds)\n", nlMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ NC:Havent found robo with owner %d (%ds)\n", nlMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -1346,7 +1310,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( !oldLeader )
         {
-            log_netlog("\n+++ NC: Havent found vehicle %d (%ds)\n", nlMsg->id, yw->timeStamp / 1000);
+            log_netlog("\n+++ NC: Havent found vehicle %d (%ds)\n", nlMsg->id, yw->_timeStamp / 1000);
             *err = msg->senderName;
             break;
         }
@@ -1368,7 +1332,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( yw_netGetUnitsCount(host_node) != unitscnt )
         {
-            log_netlog("\n+++ NC: Vehiclecount changed! (%ds)\n", yw->timeStamp / 1000);
+            log_netlog("\n+++ NC: Vehiclecount changed! (%ds)\n", yw->_timeStamp / 1000);
             *err = msg->senderName;
             break;
         }
@@ -1380,14 +1344,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_newWeapon);
         uamessage_newWeapon *nwMsg = (uamessage_newWeapon *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(nwMsg->owner);
 
         if ( !host_node )
         {
-            log_netlog("\n+++ NW: Havent found robo with owner %d (%ds)\n", nwMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ NW: Havent found robo with owner %d (%ds)\n", nwMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -1406,7 +1370,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         NC_STACK_ypabact *weapLauncher = NetGetBactByID(host_node, nwMsg->launcher);
         if ( !weapLauncher )
         {
-            log_netlog("\n+++ NW: Havent found vehicle %d (%ds)\n", nwMsg->id, yw->timeStamp / 1000);
+            log_netlog("\n+++ NW: Havent found vehicle %d (%ds)\n", nwMsg->id, yw->_timeStamp / 1000);
             yw->ypaworld_func144(weapo);
             *err = msg->senderName;
             break;
@@ -1421,7 +1385,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         weapo->_owner = nwMsg->owner;
         weapo->_gid = nwMsg->id;
-        weapo->_lastFrmStamp = yw->timeStamp;
+        weapo->_lastFrmStamp = yw->_timeStamp;
 
         netDebug_AddCreated(host_node->_owner, nwMsg->id);
 
@@ -1491,20 +1455,20 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_setState);
         uamessage_setState *ssMsg = (uamessage_setState *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(ssMsg->owner);
         if ( !host_node )
         {
-            log_netlog("\n+++ SS: Havent found robo with owner %d (%ds)\n", ssMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ SS: Havent found robo with owner %d (%ds)\n", ssMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
         NC_STACK_ypabact *bct = NetGetBactByID(host_node, ssMsg->id);
         if ( !bct )
         {
-            log_netlog("\n+++ SS: Havent found vehicle %d (%ds)\n", ssMsg->id, yw->timeStamp / 1000);
+            log_netlog("\n+++ SS: Havent found vehicle %d (%ds)\n", ssMsg->id, yw->_timeStamp / 1000);
             *err = msg->senderName;
             break;
         }
@@ -1522,17 +1486,17 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_vhclData *vdMsg = (uamessage_vhclData *)msg->data;
         szmsg = msg->_data.size();
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) || tv481 )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) || tv481 )
             break;
 
-        if ( yw->netInterpolate )
+        if ( yw->_netInterpolate )
         {
             NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(vdMsg->owner);
 
             if ( host_node )
                 yw->yw_processVhclDataMsgs(vdMsg, host_node);
             else
-                log_netlog("\n+++ VD: Havent found robo with owner %d (%ds)\n", vdMsg->owner, yw->timeStamp / 1000);
+                log_netlog("\n+++ VD: Havent found robo with owner %d (%ds)\n", vdMsg->owner, yw->_timeStamp / 1000);
         }
         else
         {
@@ -1546,10 +1510,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_vhclData *vdMsg = (uamessage_vhclData *)msg->data;
         szmsg = msg->_data.size();
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) || tv481 )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) || tv481 )
             break;
 
-        if ( yw->netInterpolate )
+        if ( yw->_netInterpolate )
         {
             log_netlog("\n+++ VD: An interpolate-Program gets extrapolate data!!!\n");
         }
@@ -1560,7 +1524,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             if ( host_node )
                 yw->yw_processVhclDataMsgs(vdMsg, host_node);
             else
-                log_netlog("\n+++ VD: Havent found robo with owner %d (%ds)\n", vdMsg->owner, yw->timeStamp / 1000);
+                log_netlog("\n+++ VD: Havent found robo with owner %d (%ds)\n", vdMsg->owner, yw->_timeStamp / 1000);
         }
     }
     break;
@@ -1570,14 +1534,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_dead);
         uamessage_dead *ddMsg = (uamessage_dead *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(ddMsg->owner);
 
         if ( !host_node )
         {
-            log_netlog("\n+++ D: Havent found robo with owner %d (%ds)\n", ddMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ D: Havent found robo with owner %d (%ds)\n", ddMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -1589,7 +1553,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
             if ( !fndBact )
             {
-                log_netlog("\n+++ D: Havent found weapon %d (%ds)\n", ddMsg->id, yw->timeStamp / 1000);
+                log_netlog("\n+++ D: Havent found weapon %d (%ds)\n", ddMsg->id, yw->_timeStamp / 1000);
                 *err = msg->senderName;
                 break;
             }
@@ -1601,7 +1565,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
             if ( !fndBact )
             {
-                log_netlog("\n+++ D: Havent found vehicle %d (%ds)\n", ddMsg->id, yw->timeStamp / 1000);
+                log_netlog("\n+++ D: Havent found vehicle %d (%ds)\n", ddMsg->id, yw->_timeStamp / 1000);
                 *err = msg->senderName;
                 break;
             }
@@ -1666,9 +1630,9 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             else
             {
                 if ( ddMsg->newParent )
-                    log_netlog("\n+++ D: No master (%d) found for my slaves (%ds)\n", ddMsg->newParent, yw->timeStamp / 1000);
+                    log_netlog("\n+++ D: No master (%d) found for my slaves (%ds)\n", ddMsg->newParent, yw->_timeStamp / 1000);
                 else
-                    log_netlog("\n+++ D: No master given for my slaves (%ds)\n", yw->timeStamp / 1000);
+                    log_netlog("\n+++ D: No master given for my slaves (%ds)\n", yw->_timeStamp / 1000);
 
                 *err = msg->senderName;
             }
@@ -1705,7 +1669,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         fndBact->CleanAttackersTarget();
 
         for ( NC_STACK_ypabact* &k : fndBact->_kidList )
-            log_netlog("+++ D: I am dead, but I have slave ident %d class %d with state %d (%ds)\n", k->_gid, k->_bact_type, k->_status, yw->timeStamp / 1000);
+            log_netlog("+++ D: I am dead, but I have slave ident %d class %d with state %d (%ds)\n", k->_gid, k->_bact_type, k->_status, yw->_timeStamp / 1000);
 
         fndBact->_status_flg |= BACT_STFLAG_DEATH1;
 
@@ -1730,17 +1694,17 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_vhclEnergy);
         uamessage_vhclEnergy *veMsg = (uamessage_vhclEnergy *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(veMsg->owner);
         if ( !host_node )
         {
-            log_netlog("\n+++ VE: Havent found robo with owner %d (%ds)\n", veMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ VE: Havent found robo with owner %d (%ds)\n", veMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
-        if ( host_node != yw->UserRobo )
+        if ( host_node != yw->_userRobo )
             break;
 
         NC_STACK_ypabact *fbact = NetGetBactByID(host_node, veMsg->id);
@@ -1790,7 +1754,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_sectorEnergy);
         uamessage_sectorEnergy *seMsg = (uamessage_sectorEnergy *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         NC_STACK_ypabact *host_node = yw->yw_getHostByOwner(seMsg->owner);
@@ -1802,7 +1766,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            log_netlog("\n+++ VE: Havent found robo with owner %d (%ds)\n", seMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ VE: Havent found robo with owner %d (%ds)\n", seMsg->owner, yw->_timeStamp / 1000);
             arg129.unit = 0;
         }
 
@@ -1819,25 +1783,23 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_startBuild);
         uamessage_startBuild *sbMsg = (uamessage_startBuild *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         if ( yw->yw_getHostByOwner(sbMsg->owner) )
         {
             ypaworld_arg148 arg148;
-            arg148.ownerID = sbMsg->owner;
-            arg148.ownerID2 = sbMsg->owner;
+            arg148.owner = sbMsg->owner;
             arg148.blg_ID = sbMsg->bproto;
             arg148.field_C = 0;
-            arg148.x = sbMsg->sec_x;
-            arg148.y = sbMsg->sec_y;
+            arg148.CellId = {sbMsg->sec_x, sbMsg->sec_y};
             arg148.field_18 = 0;
 
             yw->ypaworld_func148(&arg148);
         }
         else
         {
-            log_netlog("\n+++ SB: Havent found robo with owner %d (%ds)\n", sbMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ SB: Havent found robo with owner %d (%ds)\n", sbMsg->owner, yw->_timeStamp / 1000);
         }
     }
     break;
@@ -1847,7 +1809,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_bldVhcl *bvMsg = (uamessage_bldVhcl *)msg->data;
         szmsg = sizeof(uamessage_bldVhcl);
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) || !bvMsg->vhcl[0].protoID )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) || !bvMsg->vhcl[0].protoID )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(bvMsg->owner);
@@ -1913,7 +1875,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             }
         }
         else
-            log_netlog("\n+++ BV: Havent found robo with owner %d (%ds)\n", bvMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ BV: Havent found robo with owner %d (%ds)\n", bvMsg->owner, yw->_timeStamp / 1000);
     }
     break;
 
@@ -1922,13 +1884,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_viewer);
         uamessage_viewer *vwMsg = (uamessage_viewer *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(vwMsg->owner);
         if ( !bhost )
         {
-            log_netlog("\n+++ V: Havent found robo with owner %d (%ds)\n", vwMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ V: Havent found robo with owner %d (%ds)\n", vwMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -1939,7 +1901,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             fndbct = yw_netGetMissileOfBact(bhost, vwMsg->id, vwMsg->launcher);
             if ( !fndbct )
             {
-                log_netlog("\n+++ V: Havent found weapon %d of rifleman %d (%ds)\n", vwMsg->id, vwMsg->launcher, yw->timeStamp / 1000);
+                log_netlog("\n+++ V: Havent found weapon %d of rifleman %d (%ds)\n", vwMsg->id, vwMsg->launcher, yw->_timeStamp / 1000);
                 *err = msg->senderName;
                 break;
             }
@@ -1949,7 +1911,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             fndbct = NetGetBactByID(bhost, vwMsg->id);
             if ( !fndbct )
             {
-                log_netlog("\n+++ V: Havent found vehicle %d (%ds)\n", vwMsg->id, yw->timeStamp / 1000);
+                log_netlog("\n+++ V: Havent found vehicle %d (%ds)\n", vwMsg->id, yw->_timeStamp / 1000);
                 *err = msg->senderName;
                 break;
             }
@@ -1967,7 +1929,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_syncgame);
         uamessage_syncgame *sgMsg = (uamessage_syncgame *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
         {
             log_netlog("\n+++SG: received sync of a dead player %s\n", msg->senderName.c_str());
             break;
@@ -1976,7 +1938,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(sgMsg->owner);
         if ( !bhost )
         {
-            log_netlog("\n+++ SG: Havent found robo with owner %d (%ds)\n", sgMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ SG: Havent found robo with owner %d (%ds)\n", sgMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2000,7 +1962,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             }
         }
 
-        yw->GameShell->players[sgMsg->owner].rdyStart = 1;
+        yw->_GameShell->netPlayers[sgMsg->owner].Ready = true;
 
         log_netlog("received READY TO PLAY from owner %d\n", sgMsg->owner);
     }
@@ -2011,14 +1973,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_hostDie *hdMsg = (uamessage_hostDie *)msg->data;
         szmsg = sizeof(uamessage_hostDie);
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(hdMsg->owner);
 
         if ( !bhost )
         {
-            log_netlog("\n+++ RD: Havent found robo with owner %d (%ds)\n", hdMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ RD: Havent found robo with owner %d (%ds)\n", hdMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2074,19 +2036,19 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         bhost->_status_flg |= BACT_STFLAG_DEATH1;
 
-        if ( yw->GameShell->netPlayerOwner != bhost->_owner )
+        if ( yw->_GameShell->netPlayerOwner != bhost->_owner )
         {
             int nwee = 0;
             int wee = 0;
             for ( NC_STACK_ypabact* &bnd : yw->_unitsList )
             {
                 if ( bnd->_bact_type == BACT_TYPES_ROBO &&
-                        yw->GameShell->netPlayerOwner == bnd->_owner &&
+                        yw->_GameShell->netPlayerOwner == bnd->_owner &&
                         bnd->_status != BACT_STATUS_DEAD )
                     wee = 1;
 
                 if ( bnd->_bact_type == BACT_TYPES_ROBO &&
-                        yw->GameShell->netPlayerOwner != bnd->_owner &&
+                        yw->_GameShell->netPlayerOwner != bnd->_owner &&
                         bnd->_status != BACT_STATUS_DEAD )
                     nwee = 1;
             }
@@ -2099,31 +2061,31 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                 arg159.unit = 0;
                 yw->ypaworld_func159(&arg159);
 
-                yw->field_81CB.field_0 = 1;
-                yw->field_81CB.field_4 = yw->timeStamp;
+                yw->_netEvent.EventType = 1;
+                yw->_netEvent.TimeStamp = yw->_timeStamp;
             }
             else
             {
                 if ( !hdMsg->killerOwner )
                 {
-                    yw->field_81CB.field_0 = 4;
-                    yw->field_81CB.field_4 = yw->timeStamp;
+                    yw->_netEvent.EventType = 4;
+                    yw->_netEvent.TimeStamp = yw->_timeStamp;
 
-                    strncpy(yw->field_81CB.field_8, msg->senderName.c_str(), sizeof(yw->field_81CB.field_8) - 1);
+                    yw->_netEvent.PlayerName = msg->senderName;
                 }
-                else if ( hdMsg->killerOwner == yw->GameShell->netPlayerOwner )
+                else if ( hdMsg->killerOwner == yw->_GameShell->netPlayerOwner )
                 {
-                    yw->field_81CB.field_0 = 2;
-                    yw->field_81CB.field_4 = yw->timeStamp;
-                    strncpy(yw->field_81CB.field_8, msg->senderName.c_str(), sizeof(yw->field_81CB.field_8) - 1);
+                    yw->_netEvent.EventType = 2;
+                    yw->_netEvent.TimeStamp = yw->_timeStamp;
+                    yw->_netEvent.PlayerName = msg->senderName;
                 }
                 else
                 {
-                    yw->field_81CB.field_0 = 3;
-                    yw->field_81CB.field_4 = yw->timeStamp;
-                    strncpy(yw->field_81CB.field_8, msg->senderName.c_str(), sizeof(yw->field_81CB.field_8) - 1);
+                    yw->_netEvent.EventType = 3;
+                    yw->_netEvent.TimeStamp = yw->_timeStamp;
+                    yw->_netEvent.PlayerName = msg->senderName;
 
-                    strncpy(yw->field_81CB.field_C, yw->GameShell->players[hdMsg->killerOwner].name, sizeof(yw->field_81CB.field_C) - 1);
+                    yw->_netEvent.Player2Name = yw->_GameShell->netPlayers[hdMsg->killerOwner].Name;
                 }
 
                 yw_arg159 arg159;
@@ -2162,7 +2124,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         
         yw->HistoryAktKill(bhost);
 
-        if ( hdMsg->killer && hdMsg->killerOwner == yw->UserRobo->_owner )
+        if ( hdMsg->killer && hdMsg->killerOwner == yw->_userRobo->_owner )
         {
             NC_STACK_ypabact *nde = yw->yw_getHostByOwner(hdMsg->killerOwner);
 
@@ -2195,47 +2157,39 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_message *msgMsg = (uamessage_message *)msg->data;
         szmsg = sizeof(uamessage_message);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        windp_arg79 plDat;
-        plDat.mode = 0;
-        plDat.ID = 0;
 
-        while( yw->windp->GetPlayerData(&plDat) )
+        if ( yw->_netDriver->IsPlayer( msg->senderName ) )
         {
-            if ( !StriCmp(msg->senderName, plDat.name) )
-            {
-                int nmb = strtol(msgMsg->message, 0, 0);
+            int nmb = strtol(msgMsg->message, 0, 0);
 
-                if (nmb > 0)
+            if (nmb > 0)
+            {
+                sub_4D9550(yw, nmb);
+            }
+            else
+            {
+                if ( yw->_isNetGameStarted )
                 {
-                    sub_4D9550(yw, nmb);
+                    std::string bff = fmt::sprintf("%s: %s", msg->senderName, msgMsg->message);
+
+                    yw_arg159 arg159;
+                    arg159.txt = bff;
+                    arg159.MsgID = 93;
+                    arg159.Priority = 10;
+                    arg159.unit = NULL;
+
+                    yw->ypaworld_func159(&arg159);
                 }
                 else
                 {
-                    if ( yw->netGameStarted )
-                    {
-                        std::string bff = fmt::sprintf("%s: %s", msg->senderName, msgMsg->message);
-
-                        yw_arg159 arg159;
-                        arg159.txt = bff;
-                        arg159.MsgID = 93;
-                        arg159.Priority = 10;
-                        arg159.unit = NULL;
-
-                        yw->ypaworld_func159(&arg159);
-                    }
-                    else
-                    {
-                        sub_4D0C24(yw, msg->senderName, msgMsg->message);
-                    }
+                    sub_4D0C24(yw, msg->senderName, msgMsg->message);
                 }
-
-                break;
             }
 
-            plDat.ID++;
+            break;
         }
     }
     break;
@@ -2245,39 +2199,39 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_kick *kcMsg = (uamessage_kick *)msg->data;
         szmsg = sizeof(uamessage_kick);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw->GameShell->netProblemOwner = kcMsg->owner;
+        yw->_GameShell->netProblemOwner = kcMsg->owner;
 
-        strcpy(yw->GameShell->netProblemName, kcMsg->text);
+        yw->_GameShell->netProblemName = kcMsg->text;
 
-        if ( !StriCmp(kcMsg->text, yw->GameShell->callSIGN) )
+        if ( !StriCmp(kcMsg->text, yw->_GameShell->netPlayerName) )
         {
-            yw->GameShell->players[owner].isKilled = 1;
-            yw->GameShell->noSent = 1;
-            yw->GameShell->netProblem = 3;
-            yw->GameShell->netProblemCount = 10000;
+            yw->_GameShell->netPlayers[owner].DestroyFlags = 1;
+            yw->_GameShell->noSent = true;
+            yw->_GameShell->netProblem = 3;
+            yw->_GameShell->netProblemCountDown = 10000;
         }
         else
         {
-            yw_cleanPlayer(yw, 0, kcMsg->owner, 1);
+            yw_cleanPlayer(yw, "", kcMsg->owner, 1);
             yw_DestroyPlayer(yw, kcMsg->text);
 
-            if ( yw->GameShell->netProblem != 3 )
+            if ( yw->_GameShell->netProblem != 3 )
             {
-                yw->GameShell->netProblem = 4;
-                yw->GameShell->netProblemCount = 15000;
+                yw->_GameShell->netProblem = 4;
+                yw->_GameShell->netProblemCountDown = 15000;
             }
         }
 
-        if ( !StriCmp(kcMsg->text, yw->GameShell->callSIGN) )
+        if ( !StriCmp(kcMsg->text, yw->_GameShell->netPlayerName) )
         {
-            log_netlog(">>> I was kicked off by the host! (time %d)\n", yw->timeStamp / 1000);
+            log_netlog(">>> I was kicked off by the host! (time %d)\n", yw->_timeStamp / 1000);
         }
         else
         {
-            log_netlog(">>> Host told me he has kicked off %s (time %d)\n", kcMsg->text, yw->timeStamp / 1000);
+            log_netlog(">>> Host told me he has kicked off %s (time %d)\n", kcMsg->text, yw->_timeStamp / 1000);
         }
     }
     break;
@@ -2287,25 +2241,25 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_upgrade *upMsg = (uamessage_upgrade *)msg->data;
         szmsg = sizeof(uamessage_upgrade);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        MapGem &gemProt = yw->_Gems[upMsg->upgradeID];
-        cellArea &cl = yw->SectorAt(gemProt);
+        TMapGem &gemProt = yw->_techUpgrades[upMsg->upgradeID];
+        cellArea &cl = yw->SectorAt(gemProt.CellId);
 
         int vhcl, bld;
         sub_47C1EC(yw, &gemProt, &vhcl, &bld);
 
         if ( vhcl )
-            yw->VhclProtos[vhcl].disable_enable_bitmask = 0;
+            yw->_vhclProtos[vhcl].disable_enable_bitmask = 0;
 
         if ( bld )
-            yw->BuildProtos[bld].EnableMask = 0;
+            yw->_buildProtos[bld].EnableMask = 0;
       
         uint16_t lastVhcl = 0;
         uint16_t lastBuild = 0;
 
-        switch ( yw->GameShell->netPlayerOwner )
+        switch ( yw->_GameShell->netPlayerOwner )
         {
         case 1:
             lastVhcl = gemProt.NwVprotoNum1;
@@ -2330,9 +2284,9 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
         }
 
-        yw->HistoryEventAdd( World::History::Upgrade(gemProt.SecX, gemProt.SecY, owner, gemProt.Type, lastVhcl, 0, lastBuild) );
+        yw->HistoryEventAdd( World::History::Upgrade(gemProt.CellId.x, gemProt.CellId.y, owner, gemProt.Type, lastVhcl, 0, lastBuild) );
 
-        if ( cl.w_type != 4 )
+        if ( cl.PurposeType != cellArea::PT_TECHUPGRADE )
         {
             std::string bff = yw->GetLocaleString(229, "TECH-UPGRADE LOST! ");
             bff += gemProt.MsgDefault;
@@ -2349,13 +2303,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( upMsg->enable )
         {
-            cl.w_type = 4;
-            cl.w_id = upMsg->upgradeID;
+            cl.PurposeType = cellArea::PT_TECHUPGRADE;
+            cl.PurposeIndex = upMsg->upgradeID;
         }
         else
         {
-            cl.w_id = 0;
-            cl.w_type = 0;
+            cl.PurposeIndex = 0;
+            cl.PurposeType = cellArea::PT_NONE;
         }
     }
     break;
@@ -2365,25 +2319,17 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_fraction);
         uamessage_fraction *frMsg = (uamessage_fraction *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw->GameShell->FreeFraction &= ~frMsg->newfrac;
-        yw->GameShell->FreeFraction |= frMsg->freefrac;
+        yw->_GameShell->FreeFraction &= ~frMsg->newfrac;
+        yw->_GameShell->FreeFraction |= frMsg->freefrac;
 
-        windp_arg79 plDat;
-        plDat.ID = 0;
-        plDat.mode = 0;
-
-        while ( yw->windp->GetPlayerData(&plDat) )
+        int32_t indx = yw->_netDriver->GetPlayerIndex( msg->senderName );
+        if ( indx != -1 )
         {
-            if ( !StriCmp(msg->senderName, plDat.name) )
-            {
-                yw->GameShell->players2[plDat.ID].Fraction = frMsg->newfrac;
-                break;
-            }
-
-            plDat.ID++;
+            yw->_GameShell->lobbyPlayers[indx].NetFraction = frMsg->newfrac;
+            break;
         }
     }
     break;
@@ -2393,57 +2339,49 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_welcome);
         uamessage_welcome *wmMsg = (uamessage_welcome *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        windp_arg79 plDat;
-        plDat.mode = 0;
-        plDat.ID = 0;
-
-        while ( yw->windp->GetPlayerData(&plDat) )
+        int32_t indx = yw->_netDriver->GetPlayerIndex( msg->senderName );
+        if ( indx != -1 )
         {
-            if ( !StriCmp(msg->senderName, plDat.name) )
-            {
-                if ( yw->GameShell->remoteMode )
-                    yw->GameShell->FreeFraction |= yw->GameShell->players2[plDat.ID].Fraction;
+            if ( yw->_GameShell->remoteMode )
+                yw->_GameShell->FreeFraction |= yw->_GameShell->lobbyPlayers[indx].NetFraction;
 
-                yw->GameShell->players2[plDat.ID].Fraction = wmMsg->fraction;
-                yw->GameShell->players2[plDat.ID].rdyStart = wmMsg->rdy;
-                yw->GameShell->players2[plDat.ID].welcmd = 1;
-                yw->GameShell->players2[plDat.ID].cd = wmMsg->cd;
-            }
-            plDat.ID++;
+            yw->_GameShell->lobbyPlayers[indx].NetFraction = wmMsg->fraction;
+            yw->_GameShell->lobbyPlayers[indx].Ready = wmMsg->rdy;
+            yw->_GameShell->lobbyPlayers[indx].Welcomed = true;
         }
 
-        yw->GameShell->FreeFraction &= ~wmMsg->fraction;
+        yw->_GameShell->FreeFraction &= ~wmMsg->fraction;
 
-        if ( yw->GameShell->SelectedFraction == wmMsg->fraction )
+        if ( yw->_GameShell->SelectedFraction == wmMsg->fraction )
         {
-            if ( yw->GameShell->FreeFraction & 1 )
+            if ( yw->_GameShell->FreeFraction & NET_FRACTION_RESISTANCE )
             {
-                yw->GameShell->SelectedFraction = 1;
+                yw->_GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
             }
-            else if ( yw->GameShell->FreeFraction & 2 )
+            else if ( yw->_GameShell->FreeFraction & NET_FRACTION_GHORKOV )
             {
-                yw->GameShell->SelectedFraction = 2;
+                yw->_GameShell->SelectedFraction = NET_FRACTION_GHORKOV;
             }
-            else if ( yw->GameShell->FreeFraction & 4 )
+            else if ( yw->_GameShell->FreeFraction & NET_FRACTION_MIKO )
             {
-                yw->GameShell->SelectedFraction = 4;
+                yw->_GameShell->SelectedFraction = NET_FRACTION_MIKO;
             }
-            else
+            else if ( yw->_GameShell->FreeFraction & NET_FRACTION_TAER )
             {
-                yw->GameShell->SelectedFraction = 8;
+                yw->_GameShell->SelectedFraction = NET_FRACTION_TAER;
             }
         }
 
-        yw->GameShell->FreeFraction &= ~yw->GameShell->SelectedFraction;
+        yw->_GameShell->FreeFraction &= ~yw->_GameShell->SelectedFraction;
 
         uamessage_fraction frMsg;
         frMsg.msgID = UAMSG_FRACTION;
         frMsg.freefrac = 0;
-        frMsg.newfrac = yw->GameShell->SelectedFraction;
-        frMsg.owner = yw->GameShell->netPlayerOwner;
+        frMsg.newfrac = yw->_GameShell->SelectedFraction;
+        frMsg.owner = yw->_GameShell->netPlayerOwner;
 
         yw_arg181 nMsg;
         nMsg.dataSize = sizeof(uamessage_fraction);
@@ -2461,21 +2399,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_ready *rdMsg = (uamessage_ready *)msg->data;
         szmsg = sizeof(uamessage_ready);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        windp_arg79 plDat;
-        plDat.mode = 0;
-        plDat.ID = 0;
-
-        while(yw->windp->GetPlayerData(&plDat))
+        int32_t index = yw->_netDriver->GetPlayerIndex( msg->senderName );
+        if ( index != -1 )
         {
-            if ( !StriCmp(msg->senderName, plDat.name) )
-            {
-                yw->GameShell->players2[plDat.ID].rdyStart = rdMsg->rdy;
-                break;
-            }
-            plDat.ID++;
+            yw->_GameShell->lobbyPlayers[index].Ready = rdMsg->rdy;
+            break;
         }
     }
     break;
@@ -2484,10 +2415,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
     {
         szmsg = sizeof(uamessage_requpdate);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw_netSendUpdate(yw, yw->GameShell->netPlayerOwner, msg->senderName.c_str());
+        yw_netSendUpdate(yw, yw->_GameShell->netPlayerOwner, msg->senderName.c_str());
     }
     break;
 
@@ -2496,10 +2427,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_update *updMsg = (uamessage_update *)msg->data;
         szmsg = updMsg->sz;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
         {
-            log_netlog("\n+++UPD: got update from DEAD %s (%d)", msg->senderName.c_str(), yw->timeStamp / 1000);
-            plr->w84upd = 0;
+            log_netlog("\n+++UPD: got update from DEAD %s (%d)", msg->senderName.c_str(), yw->_timeStamp / 1000);
+            plr->UpdateCountDown = 0;
         }
         else
         {
@@ -2522,10 +2453,10 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_impulse);
         uamessage_impulse *impMsg = (uamessage_impulse *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        if ( plr && plr->w84upd )
+        if ( plr && plr->UpdateCountDown )
             break;
 
         yw_130arg secInfo;
@@ -2551,7 +2482,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                     curUnit->_bact_type != BACT_TYPES_GUN &&
                     curUnit->_bact_type != BACT_TYPES_HOVER &&
                     !(curUnit->_status_flg & BACT_STFLAG_DEATH2) &&
-                    curUnit->_owner == yw->UserRobo->_owner)
+                    curUnit->_owner == yw->_userRobo->_owner)
                 curUnit->ApplyImpulse(&impls);
         }
     }
@@ -2562,17 +2493,17 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_logmsg);
         uamessage_logmsg *lgMsg = (uamessage_logmsg *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(lgMsg->senderOwner);
         if ( !bhost )
         {
-            log_netlog("\n+++ RD: Havent found robo with owner %d (%ds)\n", lgMsg->senderOwner, yw->timeStamp / 1000);
+            log_netlog("\n+++ RD: Havent found robo with owner %d (%ds)\n", lgMsg->senderOwner, yw->_timeStamp / 1000);
             break;
         }
 
-        if ( bhost != yw->UserRobo )
+        if ( bhost != yw->_userRobo )
             break;
 
         robo_arg134 rarg134;
@@ -2605,14 +2536,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_reorder *ordMsg = (uamessage_reorder *)msg->data;
         szmsg = ordMsg->sz;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(ordMsg->owner);
 
         if ( !bhost )
         {
-            log_netlog("\n+++ NORG: Havent found robo with owner %d (%ds)\n", ordMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ NORG: Havent found robo with owner %d (%ds)\n", ordMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2621,7 +2552,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         NC_STACK_ypabact *fnd = yw_netFindReorderUnit(bhost, ordMsg->comm);
         if ( !fnd )
         {
-            log_netlog("\n+++ NORG: Commander %d of owner %d not found (%ds)\n", ordMsg->comm, owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ NORG: Commander %d of owner %d not found (%ds)\n", ordMsg->comm, owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2637,7 +2568,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             }
             else
             {
-                log_netlog("\n+++ NORG: Slave %d of Owner %d not found (%ds)\n", ordMsg->units[i], owner, yw->timeStamp / 1000);
+                log_netlog("\n+++ NORG: Slave %d of Owner %d not found (%ds)\n", ordMsg->units[i], owner, yw->_timeStamp / 1000);
             }
         }
     }
@@ -2648,114 +2579,101 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_lobbyInit *lobbyMsg = (uamessage_lobbyInit *)msg->data;
         szmsg = sizeof(uamessage_lobbyInit);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw->GameShell->netLevelID = lobbyMsg->lvlID;
-        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->_mapRegions.MapRegions[yw->GameShell->netLevelID].MapName);
+        yw->_GameShell->netLevelID = lobbyMsg->lvlID;
+        yw->_GameShell->netLevelName = yw->GetLocaleString(1800 + yw->_GameShell->netLevelID, yw->_globalMapRegions.MapRegions[yw->_GameShell->netLevelID].MapName);
 
-        windp_arg79 plDat;
-        plDat.ID = 0;
-        plDat.mode = 0;
-
-
-        while ( yw->windp->GetPlayerData(&plDat) )
+        int32_t index = yw->_netDriver->GetPlayerIndex( lobbyMsg->hostName );
+        if ( index != -1 )
         {
-            if ( !StriCmp(plDat.name, lobbyMsg->hostName) )
-            {
-                yw->GameShell->players2[plDat.ID].rdyStart = 1;
-                break;
-            }
-            plDat.ID++;
+            yw->_GameShell->lobbyPlayers[index].Ready = true;
+            break;
         }
 
-        TMapRegionInfo &minf = yw->_mapRegions.MapRegions[lobbyMsg->lvlID];
-        int tmp = yw->windp->CountPlayers();
+        TMapRegionInfo &minf = yw->_globalMapRegions.MapRegions[lobbyMsg->lvlID];
+        int plCount = yw->_netDriver->GetPlayerCount();
 
-        plDat.ID = 0;
-        plDat.mode = 0;
+        index = 0;
+        
         if ( minf.FractionsBits & 2 )
         {
-            if ( tmp )
+            if ( plCount > 0 )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_RESISTANCE;
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_RESISTANCE;
 
-                yw->windp->GetPlayerData(&plDat);
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_RESISTANCE;
-
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
         }
 
         if ( minf.FractionsBits & 0x40 )
         {
-            if ( tmp )
+            if ( plCount > 0 )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_GHORKOV;
-                yw->windp->GetPlayerData(&plDat);
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_GHORKOV;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_GHORKOV;
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_GHORKOV;
 
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
         }
 
         if ( minf.FractionsBits & 8 )
         {
-            if ( tmp )
+            if ( plCount > 0 )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_MIKO;
-                yw->windp->GetPlayerData(&plDat);
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_MIKO;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_MIKO;
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_MIKO;
 
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
         }
 
         if ( minf.FractionsBits & 0x10 )
         {
-            if ( tmp )
+            if ( plCount > 0 )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_TAER;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_TAER;
-                yw->windp->GetPlayerData(&plDat);
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_TAER;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_TAER;
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_TAER;
 
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_TAER;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
         }
 
-        yw->SendCRC(yw->GameShell->netLevelID);
+        yw->SendCRC(yw->_GameShell->netLevelID);
     }
     break;
 
@@ -2764,106 +2682,97 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_setLevel *stlvlMsg = (uamessage_setLevel *)msg->data;
         szmsg = sizeof(uamessage_setLevel);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw->GameShell->netLevelID = stlvlMsg->lvlID;
-        yw->GameShell->netLevelName = yw->GetLocaleString(1800 + yw->GameShell->netLevelID, yw->_mapRegions.MapRegions[yw->GameShell->netLevelID].MapName);
+        yw->_GameShell->netLevelID = stlvlMsg->lvlID;
+        yw->_GameShell->netLevelName = yw->GetLocaleString(1800 + yw->_GameShell->netLevelID, yw->_globalMapRegions.MapRegions[yw->_GameShell->netLevelID].MapName);
 
-        for (int i = 0; i < 4; i++)
-        {
-            yw->GameShell->players2[i].checksum = 0;
-        }
+        for (UserData::TNetPlayerLobbyData &pl : yw->_GameShell->lobbyPlayers)
+            pl.DataChecksum = 0;
 
-        TMapRegionInfo &minf = yw->_mapRegions.MapRegions[stlvlMsg->lvlID];
-        int tmp = yw->windp->CountPlayers();
-
-        windp_arg79 plDat;
-        plDat.ID = 0;
-        plDat.mode = 0;
-
+        TMapRegionInfo &minf = yw->_globalMapRegions.MapRegions[stlvlMsg->lvlID];
+        
+        int plCount = yw->_netDriver->GetPlayerCount();
+        int32_t index = 0;
+        
         if ( minf.FractionsBits & 2 )
         {
-            if ( tmp )
+            if ( plCount )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_RESISTANCE;
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_RESISTANCE;
 
-                yw->windp->GetPlayerData(&plDat);
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_RESISTANCE;
-
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_RESISTANCE;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
         }
 
         if ( minf.FractionsBits & 0x40 )
         {
-            if ( tmp )
+            if ( plCount )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_GHORKOV;
-                yw->windp->GetPlayerData(&plDat);
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_GHORKOV;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_GHORKOV;
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_GHORKOV;
 
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_GHORKOV;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
         }
 
         if ( minf.FractionsBits & 8 )
         {
-            if ( tmp )
+            if ( plCount )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_MIKO;
-                yw->windp->GetPlayerData(&plDat);
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_MIKO;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_MIKO;
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_MIKO;
 
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_MIKO;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
         }
 
         if ( minf.FractionsBits & 0x10 )
         {
-            if ( tmp )
+            if ( plCount )
             {
-                yw->GameShell->FreeFraction &= ~FREE_FRACTION_TAER;
-                yw->GameShell->players2[plDat.ID].Fraction = FREE_FRACTION_TAER;
-                yw->windp->GetPlayerData(&plDat);
+                yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_TAER;
+                
+                if ( index == yw->_netDriver->GetMyIndex() )
+                    yw->_GameShell->SelectedFraction = NET_FRACTION_TAER;
 
-                if ( !StriCmp(plDat.name, yw->GameShell->callSIGN) )
-                    yw->GameShell->SelectedFraction = FREE_FRACTION_TAER;
-
-                tmp--;
-                plDat.ID++;
+                plCount--;
+                index++;
             }
         }
         else
         {
-            yw->GameShell->FreeFraction &= ~FREE_FRACTION_TAER;
+            yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
         }
 
-        yw->SendCRC(yw->GameShell->netLevelID);
+        yw->SendCRC(yw->_GameShell->netLevelID);
     }
     break;
 
@@ -2872,13 +2781,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_startPlasma);
         uamessage_startPlasma *plasmaMsg = (uamessage_startPlasma *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(plasmaMsg->owner);
         if ( !bhost )
         {
-            log_netlog("\n+++ SP: Havent found robo with owner %d (%ds)\n", plasmaMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ SP: Havent found robo with owner %d (%ds)\n", plasmaMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2907,18 +2816,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_endPlasma);
         uamessage_endPlasma *endpMsg = (uamessage_endPlasma *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled || (plr && plr->w84upd) )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags || (plr && plr->UpdateCountDown) )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(endpMsg->owner);
 
         if ( !bhost )
         {
-            log_netlog("\n+++ EP: Havent found robo with owner %d (%ds)\n", endpMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ EP: Havent found robo with owner %d (%ds)\n", endpMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
-        if ( bhost != yw->UserRobo )
+        if ( bhost != yw->_userRobo )
             break;
 
         NC_STACK_ypabact *bbact = NetGetBactByID(bhost, endpMsg->id);
@@ -2938,13 +2847,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_startBeam);
         uamessage_startBeam *stbmMsg = (uamessage_startBeam *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(stbmMsg->owner);
         if ( !bhost )
         {
-            log_netlog("\n+++ STB: Havent found robo with owner %d (%ds)\n", stbmMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ STB: Havent found robo with owner %d (%ds)\n", stbmMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2965,13 +2874,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_endBeam *enbmMsg = (uamessage_endBeam *)msg->data;
         szmsg = sizeof(uamessage_endBeam);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(enbmMsg->owner);
         if ( !bhost )
         {
-            log_netlog("\n+++ EP: Havent found robo with owner %d (%ds)\n", enbmMsg->owner, yw->timeStamp / 1000);
+            log_netlog("\n+++ EP: Havent found robo with owner %d (%ds)\n", enbmMsg->owner, yw->_timeStamp / 1000);
             break;
         }
 
@@ -2986,13 +2895,13 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_exit);
         uamessage_exit *exitMsg = (uamessage_exit *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled && exitMsg->norm )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags && exitMsg->norm )
             break;
 
         if ( exitMsg->norm )
         {
-            log_netlog(">>> received ANNOUNCEQUIT from %s at %d\n", msg->senderName.c_str(), yw->timeStamp / 1000);
-            yw->GameShell->players[owner].status = 3;
+            log_netlog(">>> received ANNOUNCEQUIT from %s at %d\n", msg->senderName.c_str(), yw->_timeStamp / 1000);
+            yw->_GameShell->netPlayers[owner].Status = 3;
         }
 
         NC_STACK_ypabact *bhost = yw->yw_getHostByOwner(exitMsg->owner);
@@ -3003,9 +2912,9 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                 break;
         }
 
-        yw->field_81CB.field_0 = 5;
-        yw->field_81CB.field_4 = yw->timeStamp;
-        strcpy(yw->field_81CB.field_8, msg->senderName.c_str());
+        yw->_netEvent.EventType = 5;
+        yw->_netEvent.TimeStamp = yw->_timeStamp;
+        yw->_netEvent.PlayerName = msg->senderName;
 
         yw_arg159 arg159;
         arg159.Priority = 50;
@@ -3042,22 +2951,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         szmsg = sizeof(uamessage_crc);
         uamessage_crc *crcMsg = (uamessage_crc *)msg->data;
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        windp_arg79 plDat;
-        plDat.mode = 0;
-        plDat.ID = 0;
+        int32_t index = yw->_netDriver->GetPlayerIndex(msg->senderName);
+        if ( index != -1 )
+            yw->_GameShell->lobbyPlayers[index].DataChecksum = crcMsg->checksum;
 
-        while ( yw->windp->GetPlayerData(&plDat) )
-        {
-            if ( !StriCmp(msg->senderName, plDat.name) )
-                yw->GameShell->players2[plDat.ID].checksum = crcMsg->checksum;
-
-            plDat.ID++;
-        }
-
-        yw->GameShell->takTime = 0;
+        yw->_GameShell->takTime = 0;
     }
     break;
 
@@ -3066,11 +2967,11 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_ping *pingMsg = (uamessage_ping *)msg->data;
         szmsg = sizeof(uamessage_ping);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
         uamessage_ping pongMsg;
-        pongMsg.owner = yw->GameShell->netPlayerOwner;
+        pongMsg.owner = yw->_GameShell->netPlayerOwner;
         pongMsg.msgID = UAMSG_PONG;
         pongMsg.timestamp = pingMsg->timestamp;
 
@@ -3083,17 +2984,17 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         yw->ypaworld_func181(&nMsg);
 
-        if ( yw->field_1b24.frameTime >= 3 )
+        if ( yw->_updateMessage.frameTime >= 3 )
             break;
 
         windp_arg82 warg82;
         warg82.senderFlags = 1;
-        warg82.senderID = yw->GameShell->callSIGN.c_str();
+        warg82.senderID = yw->_GameShell->netPlayerName.c_str();
         warg82.receiverID = 0;
         warg82.guarant = 0;
         warg82.receiverFlags = 2;
 
-        yw->windp->FlushBuffer(warg82);
+        yw->_netDriver->FlushBuffer(warg82);
     }
     break;
 
@@ -3102,24 +3003,24 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_ping *pongMsg = (uamessage_ping *)msg->data;
         szmsg = sizeof(uamessage_ping);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        int latency = yw->GameShell->players[owner].latency;
+        int latency = yw->_GameShell->netPlayers[owner].Latency;
 
         if (latency)
-            yw->GameShell->players[owner].latency = (4 * latency + yw->timeStamp - pongMsg->timestamp) / 5;
+            yw->_GameShell->netPlayers[owner].Latency = (4 * latency + yw->_timeStamp - pongMsg->timestamp) / 5;
         else
-            yw->GameShell->players[owner].latency = yw->timeStamp - pongMsg->timestamp;
+            yw->_GameShell->netPlayers[owner].Latency = yw->_timeStamp - pongMsg->timestamp;
 
-        if ( yw->GameShell->isHost && yw->GameShell->netProblem != 1 && yw->GameShell->players[owner].latency >= 7000 )
+        if ( yw->_GameShell->isHost && yw->_GameShell->netProblem != 1 && yw->_GameShell->netPlayers[owner].Latency >= 7000 )
         {
-            yw->GameShell->netProblem = 1;
-            yw->GameShell->netProblemCount = 200;
-            yw->GameShell->latencyCheck = 5;
+            yw->_GameShell->netProblem = 1;
+            yw->_GameShell->netProblemCountDown = 200;
+            yw->_GameShell->latencyCheck = 5;
 
             uamessage_startproblem prblm;
-            prblm.owner = yw->GameShell->netPlayerOwner;
+            prblm.owner = yw->_GameShell->netPlayerOwner;
             prblm.msgID = UAMSG_STARTPROBLEM;
             prblm.problem = 1;
 
@@ -3140,15 +3041,15 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_startproblem *prblmMsg = (uamessage_startproblem *)msg->data;
         szmsg = sizeof(uamessage_startproblem);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw->GameShell->netProblem = prblmMsg->problem;
+        yw->_GameShell->netProblem = prblmMsg->problem;
 
         if ( prblmMsg->problem != 1 )
             break;
 
-        yw->GameShell->netProblemCount = 500;
+        yw->_GameShell->netProblemCountDown = 500;
     }
     break;
 
@@ -3157,47 +3058,16 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_endproblem *eprblmMsg = (uamessage_endproblem *)msg->data;
         szmsg = sizeof(uamessage_endproblem);
 
-        if ( yw->GameShell->players[owner].isKilled )
+        if ( yw->_GameShell->netPlayers[owner].DestroyFlags )
             break;
 
-        yw->GameShell->netAllOk = eprblmMsg->solved;
-        yw->GameShell->netAllOkCount = 3000;
+        yw->_GameShell->netAllOk = eprblmMsg->solved;
+        yw->_GameShell->netAllOkCountDown = 3000;
 
         if ( eprblmMsg->solved == 3 )
-            yw->GameShell->netAllOkCount = 0;
+            yw->_GameShell->netAllOkCountDown = 0;
 
-        yw->GameShell->netProblem = 0;
-    }
-    break;
-
-    case UAMSG_CD:
-    {
-        uamessage_cd *cdMsg = (uamessage_cd *)msg->data;
-        szmsg = sizeof(uamessage_cd);
-
-        if ( yw->GameShell->players[owner].isKilled )
-            break;
-
-        windp_arg79 plDat;
-        plDat.mode = 0;
-        plDat.ID = 0;
-
-        while ( yw->windp->GetPlayerData(&plDat) )
-        {
-            if ( !StriCmp(msg->senderName, plDat.name) )
-            {
-                yw->GameShell->players2[plDat.ID].cd = cdMsg->cd;
-
-                if ( cdMsg->rdy != -1 )
-                {
-                    yw->GameShell->players2[plDat.ID].rdyStart = cdMsg->rdy;
-                }
-                break;
-            }
-
-            plDat.ID++;
-        }
-
+        yw->_GameShell->netProblem = 0;
     }
     break;
 
@@ -3206,10 +3076,8 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         uamessage_score *scoreMsg = (uamessage_score *)msg->data;
         szmsg = sizeof(uamessage_score);
 
-        for(int i = 0; i < 8; i++)
-        {
-            yw->ingamePlayerStatus[i] = scoreMsg->status[i];
-        }
+        yw->_gameplayStats = scoreMsg->status;
+
     }
     break;
 
@@ -3221,14 +3089,14 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
     return szmsg;
 }
 
-const char *yw_corruptionCheck(UserData *usr)
+std::string yw_corruptionCheck(UserData *usr)
 {
     NC_STACK_ypaworld *ywo = usr->p_YW;
     NC_STACK_ypabact *found = NULL;
 
-    if ( ywo->timeStamp - usr->deadCheck >= 100000 )
+    if ( ywo->_timeStamp - usr->deadCheckTime >= 100000 )
     {
-        usr->deadCheck = ywo->timeStamp;
+        usr->deadCheckTime = ywo->_timeStamp;
 
         for ( NC_STACK_ypabact* &station : ywo->_unitsList )
         {
@@ -3238,7 +3106,7 @@ const char *yw_corruptionCheck(UserData *usr)
                 {
                     for ( NC_STACK_ypabact* &unit : comm->_kidList )
                     {
-                        if ( ywo->timeStamp - unit->_lastFrmStamp > 180000 )
+                        if ( ywo->_timeStamp - unit->_lastFrmStamp > 180000 )
                         {
                             found = unit;
                             break;
@@ -3248,7 +3116,7 @@ const char *yw_corruptionCheck(UserData *usr)
                     if ( found )
                         break;
 
-                    if ( ywo->timeStamp - comm->_lastFrmStamp > 180000 )
+                    if ( ywo->_timeStamp - comm->_lastFrmStamp > 180000 )
                     {
                         found = comm;
                         break;
@@ -3258,7 +3126,7 @@ const char *yw_corruptionCheck(UserData *usr)
                 if ( found )
                     break;
 
-                if ( ywo->timeStamp - station->_lastFrmStamp > 180000 )
+                if ( ywo->_timeStamp - station->_lastFrmStamp > 180000 )
                 {
                     found = station;
                     break;
@@ -3269,16 +3137,16 @@ const char *yw_corruptionCheck(UserData *usr)
 
         if ( found )
         {
-            log_netlog("\n+++ CC: found old vehicle id %d, class %d, owner %d at time %d. Request update\n", found->_gid, found->_bact_type, found->_owner, ywo->timeStamp / 1000);
-            return usr->players[found->_owner].name;
+            log_netlog("\n+++ CC: found old vehicle id %d, class %d, owner %d at time %d. Request update\n", found->_gid, found->_bact_type, found->_owner, ywo->_timeStamp / 1000);
+            return usr->netPlayers[found->_owner].Name;
         }
     }
-    return NULL;
+    return "";
 }
 
 void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
     uint32_t upd_time;
 
@@ -3287,10 +3155,10 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
     else
         upd_time = usr->update_time_norm;
 
-    if ( yw->timeStamp - yw->netUpdateTime > upd_time && usr->netProblem != 1 )
+    if ( yw->_timeStamp - yw->_netUpdateTimeStamp > upd_time && usr->netProblem != 1 )
     {
         uamessage_vhclData *vhcldata;
-        if ( yw->netInterpolate )
+        if ( yw->_netInterpolate )
         {
             vhcldata = &vhcldata_interpolate;
             vhcldata_interpolate.msgID = UAMSG_VHCLDATA_I;
@@ -3301,19 +3169,19 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
             vhcldata_exact.msgID = UAMSG_VHCLDATA_E;
         }
 
-        vhcldata->tstamp = yw->timeStamp;
+        vhcldata->tstamp = yw->_timeStamp;
 
         if ( yw_prepareVHCLData(yw, vhcldata) )
         {
             yw_arg181 ywMsg;
             ywMsg.data = vhcldata;
 
-            if ( yw->netInterpolate )
+            if ( yw->_netInterpolate )
                 vhcldata->hdr.size = ((char *)&vhcldata_interpolate.data[ vhcldata->hdr.number ]) - ((char *)vhcldata);
             else
                 vhcldata->hdr.size = ((char *)&vhcldata_exact.data[ vhcldata->hdr.number ]) - ((char *)vhcldata);
 
-            vhcldata->hdr.diffTime = yw->timeStamp - yw->netUpdateTime;
+            vhcldata->hdr.diffTime = yw->_timeStamp - yw->_netUpdateTimeStamp;
 
             ywMsg.dataSize = vhcldata->hdr.size;
             ywMsg.recvID = 0;
@@ -3323,21 +3191,21 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
             yw->ypaworld_func181(&ywMsg);
         }
 
-        yw->netUpdateTime = yw->timeStamp;
+        yw->_netUpdateTimeStamp = yw->_timeStamp;
     }
 
     if ( usr->isHost )
     {
-        if ( yw->netGameStarted )
+        if ( yw->_isNetGameStarted )
         {
-            if ( usr->sendScore < 0 )
+            if ( usr->sendScoreCountDown < 0 )
             {
                 uamessage_score scoreMsg;
                 scoreMsg.owner = usr->netPlayerOwner;
                 scoreMsg.msgID = UAMSG_SCORE;
 
                 for(int i = 0; i < 8; i++)
-                    scoreMsg.status[i] = yw->ingamePlayerStatus[i];
+                    scoreMsg.status[i] = yw->_gameplayStats[i];
 
                 yw_arg181 ywMsg;
                 ywMsg.data = &scoreMsg;
@@ -3347,11 +3215,11 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                 ywMsg.recvFlags = 2;
                 yw->ypaworld_func181(&ywMsg);
 
-                usr->sendScore = 1500;
+                usr->sendScoreCountDown = 1500;
             }
             else
             {
-                usr->sendScore -= usr->DTime;
+                usr->sendScoreCountDown -= usr->DTime;
             }
 
         }
@@ -3362,7 +3230,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
     windp_recvMsg recvMsg;
 
-    while ( yw->windp->Recv(&recvMsg) )
+    while ( yw->_netDriver->Recv(&recvMsg) )
     {
         if (recvMsg.msgType != RECVMSG_NONE)
         {
@@ -3370,17 +3238,17 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
             msgcount++;
 
-            if ( yw->_levelInfo.State != TLevelInfo::STATE_ABORTED || !yw->netGameStarted )
+            if ( yw->_levelInfo.State != TLevelInfo::STATE_ABORTED || !yw->_isNetGameStarted )
             {
-                if ( yw->windp->CountPlayers() * 5 >= msgcount )
+                if ( yw->_netDriver->GetPlayerCount() * 5 >= msgcount )
                 {
-                    yw->netInfoOverkill = 0;
+                    yw->_netInfoOverkill = false;
                 }
                 else
                 {
-                    yw->netInfoOverkill = 1;
-                    log_netlog("Info overkill !!! (msg-count %d at %ds)\n", msgcount, yw->timeStamp / 1000);
-                    usr->problemCnt = 4000;
+                    yw->_netInfoOverkill = true;
+                    log_netlog("Info overkill !!! (msg-count %d at %ds)\n", msgcount, yw->_timeStamp / 1000);
+                    usr->problemTimer = 4000;
                 }
 
                 err_sender[0] = 0;
@@ -3395,7 +3263,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                         if ( usr->netLevelID > 0 && usr->netLevelID < 256 )
                         {
                             uamessage_lobbyInit lbyMsg;
-                            strncpy(lbyMsg.hostName, usr->callSIGN.c_str(), 64);
+                            strncpy(lbyMsg.hostName, usr->netPlayerName.c_str(), 64);
                             lbyMsg.msgID = UAMSG_LOBBYINIT;
                             lbyMsg.lvlID = usr->netLevelID;
                             lbyMsg.owner = 0;
@@ -3414,7 +3282,6 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                     wlcmMsg.owner = 0;
                     wlcmMsg.msgID = UAMSG_WELCOME;
                     wlcmMsg.fraction = usr->SelectedFraction;
-                    wlcmMsg.cd = usr->cd;
                     wlcmMsg.rdy = usr->rdyStart;
 
                     yw_arg181 ywMsg;
@@ -3428,11 +3295,11 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                     if ( usr->netLevelID )
                         yw->SendCRC(usr->netLevelID);
 
-                    int plid = yw->windp->getNumPlayers();
+                    int plid = yw->_netDriver->GetPlayerCount();
 
                     
-                    strncpy(usr->players2[plid - 1].name, recvMsg.senderName.c_str(), 64);
-                    usr->players2[plid - 1].welcmd = 1;
+                    usr->lobbyPlayers[plid - 1].Name = recvMsg.senderName;
+                    usr->lobbyPlayers[plid - 1].Welcomed = true;
                 }
                 break;
 
@@ -3441,50 +3308,48 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                     bool itisI = false;
                     bool plFound = false;
 
-                    if ( !StriCmp(usr->callSIGN, recvMsg.senderName) )
+                    if ( !StriCmp(usr->netPlayerName, recvMsg.senderName) )
                     {
                         itisI = true;
                         yw->_levelInfo.State = TLevelInfo::STATE_ABORTED;
                     }
 
-                    for(int i = 0; i < 4; i++)
+                    for(int i = 0; i < usr->lobbyPlayers.size(); i++)
                     {
-                        if ( !StriCmp(usr->players2[i].name, recvMsg.senderName) )
+                        if ( !StriCmp(usr->lobbyPlayers[i].Name, recvMsg.senderName) )
                         {
-                            for (int j = i; j < 3; j++)
-                            {
-                                usr->players2[j] = usr->players2[ j + 1 ];
-                            }
+                            for (int j = i; j < usr->lobbyPlayers.size() - 1; j++)
+                                usr->lobbyPlayers[j] = usr->lobbyPlayers[ j + 1 ];
 
                             plFound = true;
                             break;
                         }
                     }
 
-                    log_netlog(">>> Received a destroy player for %s at %d\n", recvMsg.senderName.c_str(), yw->timeStamp / 1000);
+                    log_netlog(">>> Received a destroy player for %s at %d\n", recvMsg.senderName.c_str(), yw->_timeStamp / 1000);
 
                     if ( !usr->HasInited && plFound)
                     {
-                        for (int i = 0; i < 8; i++)
+                        for ( UserData::TNetPlayerData &pl : usr->netPlayers )
                         {
-                            if ( !StriCmp(usr->players[i].name, recvMsg.senderName) )
+                            if ( !StriCmp(pl.Name, recvMsg.senderName) )
                             {
-                                if ( usr->players[i].status != 3 )
-                                    usr->players[i].status = 4;
+                                if ( pl.Status != 3 )
+                                    pl.Status = 4;
                                 break;
                             }
                         }
 
-                        if ( !yw->netGameStarted && !itisI )
+                        if ( !yw->_isNetGameStarted && !itisI )
                         {
                             if ( usr->netProblem != 3 )
                             {
                                 usr->netProblem = 4;
-                                usr->netProblemCount = 15000;
+                                usr->netProblemCountDown = 15000;
                             }
                         }
 
-                        yw_cleanPlayer(yw, recvMsg.senderName.c_str(), 0, 0);
+                        yw_cleanPlayer(yw, recvMsg.senderName, 0, 0);
                     }
                     else
                     {
@@ -3497,28 +3362,18 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                 break;
 
                 case RECVMSG_HOST:
-                    usr->isHost = 1;
-                    if ( !yw->netGameStarted )
+                    usr->isHost = true;
+                    if ( !yw->_isNetGameStarted )
                     {
                         int v70 = 0;
-                        yw->windp->LockSession(&v70);
+                        yw->_netDriver->LockSession(&v70);
 
-                        usr->rdyStart = 1;
-                        usr->blocked = 0;
+                        usr->rdyStart = true;
+                        usr->blocked = false;
 
-                        windp_arg79 plData;
-                        plData.ID = 0;
-                        plData.mode = 0;
-                        while ( yw->windp->GetPlayerData(&plData) )
-                        {
-                            if ( !StriCmp(usr->callSIGN, plData.name) )
-                            {
-                                usr->players2[plData.ID].rdyStart = 1;
-                                break;
-                            }
-
-                            plData.ID++;
-                        }
+                        int32_t index = yw->_netDriver->GetMyIndex();
+                        if ( index != -1 )
+                            usr->lobbyPlayers[index].Ready = true;
                     }
                     break;
 
@@ -3564,8 +3419,8 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                             recvMsg.data = (char *)recvMsg.data + msg_size;
                     }
 
-                    const char *crpt = yw_corruptionCheck(usr);
-                    if ( crpt )
+                    std::string crpt = yw_corruptionCheck(usr);
+                    if ( !crpt.empty() )
                         err_sender = crpt;
                 }
                 break;
@@ -3576,11 +3431,11 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
                 if ( !err_sender.empty() )
                 {
-                    for (int i = 0; i < 4; i++)
+                    for (UserData::TNetPlayerLobbyData &pl : usr->lobbyPlayers)
                     {
-                        if (StriCmp(usr->players2[i].name, err_sender) == 0)
+                        if (StriCmp(pl.Name, err_sender) == 0)
                         {
-                            if ( !usr->players2[i].w84upd )
+                            if ( pl.UpdateCountDown == 0 )
                             {
                                 log_netlog("Drastic Error: Request Update from %s\n", err_sender.c_str());
 
@@ -3596,7 +3451,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                                 ywMsg.recvID = err_sender.c_str();
                                 yw->ypaworld_func181(&ywMsg);
 
-                                usr->players2[i].w84upd = 2000;
+                                pl.UpdateCountDown = 2000;
                             }
                             break;
                         }
@@ -3606,7 +3461,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
         }
     }
 
-    usr->netrecv_time += yw->field_1b24.frameTime;
+    usr->netrecv_time += yw->_updateMessage.frameTime;
 
     if ( usr->netrecv_time > 3000 )
     {
@@ -3666,20 +3521,20 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
     _levelInfo.OwnerMask = 0;
     _levelInfo.UserMask = 0;
 
-    for (int i = 0; i < 8; i++)
-        GameShell->players[i].rdyStart = 0;
+    for (int i = 0; i < _GameShell->netPlayers.size(); i++)
+    {
+        UserData::TNetPlayerData &pl = _GameShell->netPlayers[i];
+        pl.Ready = false;
+        pl.Owner = i;
+    }
 
     const MapRobo *selHost = NULL;
 
     int owner = 0;
 
-    windp_arg79 plData;
-    plData.ID = 0;
-    plData.mode = 0;
-
-    while ( windp->GetPlayerData(&plData) )
+    for ( const TDPPlayerData &plData :  _netDriver->GetPlayersData() )
     {
-        if ( (size_t)plData.ID == Robos.size() )
+        if ( (size_t)plData.Index >= Robos.size() )
         {
             log_netlog("No Robo declared for player %d\n", Robos.size());
             return false;
@@ -3687,44 +3542,41 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 
         int selFraction;
 
-        if ( plData.flags & 1 )
+        if ( plData.IsItMe() )
         {
-            selFraction = GameShell->SelectedFraction;
+            selFraction = _GameShell->SelectedFraction;
         }
         else
         {
-            selFraction = GameShell->players2[plData.ID].Fraction;
+            selFraction = _GameShell->lobbyPlayers[plData.Index].NetFraction;
         }
 
-        if ( !selFraction )
+        if ( selFraction == 0 )
         {
             log_netlog("Error no race for robo %s found\n", plData.name.c_str());
             return false;
         }
 
-        switch ( selFraction - 1 )
+        switch ( selFraction )
         {
-        case 0:
+        case NET_FRACTION_RESISTANCE:
             owner = 1;
             break;
-        case 1:
+        case NET_FRACTION_GHORKOV:
             owner = 6;
             break;
-        case 3:
+        case NET_FRACTION_MIKO:
             owner = 3;
             break;
-        case 7:
+        case NET_FRACTION_TAER:
             owner = 4;
             break;
-        case 2:
-        case 4:
-        case 5:
-        case 6:
+        default:
             break;
         }
 
         selHost = NULL;
-        GameShell->players2[plData.ID].owner = owner;
+        _GameShell->lobbyPlayers[plData.Index].Owner = owner;
 
         for ( const MapRobo &host: Robos )
         {
@@ -3743,7 +3595,7 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 
         vec3d place(selHost->Pos);
 
-        strncpy(GameShell->players[owner].name, plData.name.c_str(), 64);
+        _GameShell->netPlayers[owner].Name = plData.name;
 
         ypaworld_arg136 arg136;
         arg136.stPos = place.X0Z() - vec3d::OY(30000.0);
@@ -3758,24 +3610,21 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
             log_netlog("Warning: Robo placed without y-correction\n");
 
         ypaworld_arg146 arg146;
-        switch ( selFraction - 1 )
+        switch ( selFraction )
         {
-        case 0:
+        case NET_FRACTION_RESISTANCE:
             arg146.vehicle_id = 56;
             break;
-        case 1:
+        case NET_FRACTION_GHORKOV:
             arg146.vehicle_id = 57;
             break;
-        case 3:
+        case NET_FRACTION_MIKO:
             arg146.vehicle_id = 58;
             break;
-        case 7:
+        case NET_FRACTION_TAER:
             arg146.vehicle_id = 60;
             break;
-        case 2:
-        case 4:
-        case 5:
-        case 6:
+        default:
             break;
         }
         arg146.pos = place;
@@ -3784,7 +3633,7 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 
         if ( !hostObj )
         {
-            log_netlog("NetPlaceRobos: Unable to create robo (owner %d, type %d)\n", plData.ID + 1, arg146.vehicle_id);
+            log_netlog("NetPlaceRobos: Unable to create robo (owner %d, type %d)\n", plData.Index + 1, arg146.vehicle_id);
             return false;
         }
 
@@ -3799,11 +3648,11 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
             bct->_owner = owner;
         }
 
-        if ( plData.flags & 1 )
+        if ( plData.IsItMe() )
         {
             hostObj->setBACT_viewer(1);
             hostObj->setBACT_inputting(1);
-            GameShell->netPlayerOwner = owner;
+            _GameShell->netPlayerOwner = owner;
             _levelInfo.UserMask |= 1 << owner;
         }
 
@@ -3827,8 +3676,6 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
             hostObj->_reload_const = selHost->ReloadConst;
         else
             hostObj->_reload_const = hostObj->_energy_max;
-
-        plData.ID++;
     }
     return true;
 }
@@ -3860,7 +3707,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
                             {
                                 for (int x = 0; x < _mapSize.x; x++)
                                 {
-                                    CellCheckHealth(&_cells(x, y), x, y, World::OWNER_RECALC, NULL);
+                                    CellCheckHealth(&_cells(x, y), World::OWNER_RECALC, NULL);
                                 }
                             }
 
@@ -3887,69 +3734,54 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
         return 0;
     }
 
-    if ( copyof_typemap )
+    _lvlPrimevalTypeMap = _lvlTypeMap;
+    _lvlPrimevalOwnMap = _lvlOwnMap;
+
+    _GameShell->msgcount = 0;
+
+    for (UserData::TNetPlayerLobbyData &pl : _GameShell->lobbyPlayers)
     {
-        delete copyof_typemap;
-        copyof_typemap = 0;
+        pl.Msg.clear();
+        pl.IsTrouble = false;
+        pl.UpdateCountDown = 0;
     }
 
-    if ( copyof_ownermap )
+    for (UserData::TNetPlayerData &pl : _GameShell->netPlayers)
     {
-        delete copyof_ownermap;
-        copyof_ownermap = 0;
-    }
-
-    if ( typ_map )
-        copyof_typemap = typ_map->Copy();
-
-    if ( own_map )
-        copyof_ownermap = own_map->Copy();
-
-    GameShell->msgcount = 0;
-
-    for (int i = 0; i < 4; i++)
-    {
-        GameShell->players2[i].msg[0] = 0;
-        GameShell->players2[i].trbl = 0;
-        GameShell->players2[i].w84upd = 0;
-    }
-
-    for (int i = 0; i < 8; i++)
-    {
-        GameShell->players[i].isKilled = 0;
-        GameShell->players[i].rdyStart = 0;
-        GameShell->players[i].lastMsgTime = timeStamp + 1000;
-        GameShell->players[i].tstamp = 0;
-        GameShell->players[i].status = 0;
-        GameShell->players[i].problemCnt = 0;
+        pl.DestroyFlags = 0;
+        pl.Ready = false;
+        pl.LastMessageTime = _timeStamp + 1000;
+        pl.TimeStamp = 0;
+        pl.Status = 0;
+        pl.ProblemCountDown = 0;
     }
 
     for ( NC_STACK_ypabact* &bct : _unitsList )
-        GameShell->players[ bct->_owner ].status = 1;
+        _GameShell->netPlayers[ bct->_owner ].Status = 1;
 
     NC_STACK_ypabact *fndHost = NULL;
     for ( NC_STACK_ypabact* &host : _unitsList )
     {
-        if (host->_owner == GameShell->netPlayerOwner)
+        if (host->_owner == _GameShell->netPlayerOwner)
         {
             fndHost = host;
             break;
         }
     }
 
-    GameShell->players[ GameShell->netPlayerOwner ].rdyStart = 1;
-    netGameStarted = 0;
+    _GameShell->netPlayers[ _GameShell->netPlayerOwner ].Ready = true;
+    _isNetGameStarted = false;
 
-    netStartTime = System::IniConf::NetWaitStart.Get<int>();
-    GameShell->kickTime = System::IniConf::NetKickoff.Get<int>();
+    _netStartTimer = System::IniConf::NetWaitStart.Get<int>();
+    _GameShell->kickTime = System::IniConf::NetKickoff.Get<int>();
 
-    log_netlog("netstarttime was initialized with %d sec\n", netStartTime / 1000);
-    log_netlog("kickoff was initialized with      %d sec\n", GameShell->kickTime / 1000);
+    log_netlog("netstarttime was initialized with %d sec\n", _netStartTimer / 1000);
+    log_netlog("kickoff was initialized with      %d sec\n", _GameShell->kickTime / 1000);
 
     if ( fndHost )
     {
         uamessage_syncgame syncMsg;
-        syncMsg.owner = GameShell->netPlayerOwner;
+        syncMsg.owner = _GameShell->netPlayerOwner;
         syncMsg.msgID = UAMSG_SYNCGM;
         syncMsg.hostID = fndHost->_gid;
 
@@ -3982,37 +3814,37 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
         windp82.senderFlags = 1;
         windp82.receiverFlags = 2;
         windp82.receiverID = 0;
-        windp82.senderID = GameShell->callSIGN.c_str();
+        windp82.senderID = _GameShell->netPlayerName.c_str();
         windp82.guarant = 1;
 
-        windp->FlushBuffer(windp82);
+        _netDriver->FlushBuffer(windp82);
 
-        log_netlog("Sent a READY TO PLAY to all for my Owner %d\n", GameShell->netPlayerOwner);
+        log_netlog("Sent a READY TO PLAY to all for my Owner %d\n", _GameShell->netPlayerOwner);
 
         fndHost->setBACT_viewer(1);
     }
 
-    GameShell->netsend_count = 0;
-    GameShell->netrecv_count = 0;
-    GameShell->netrecv_time = 0;
-    GameShell->netsend_speed = 0;
-    GameShell->netrecv_speed = 0;
-    GameShell->netrecv_bpsMin = 0;
-    GameShell->netrecv_bpsMax = 0;
-    GameShell->netrecv_bpsAvr = 0;
-    GameShell->netsend_bpsMin = 0;
-    GameShell->netsend_bpsMax = 0;
-    GameShell->netsend_bpsAvr = 0;
-    GameShell->net_gcnt = 0;
-    GameShell->net_packet_size = 0;
-    GameShell->net_packet_min = 0;
-    GameShell->net_packet_max = 0;
-    GameShell->net_packet_cnt = 0;
-    GameShell->net_packet_avr = 0;
-    GameShell->deadCheck = timeStamp + 300000;
-    GameShell->sendScore = 3000;
+    _GameShell->netsend_count = 0;
+    _GameShell->netrecv_count = 0;
+    _GameShell->netrecv_time = 0;
+    _GameShell->netsend_speed = 0;
+    _GameShell->netrecv_speed = 0;
+    _GameShell->netrecv_bpsMin = 0;
+    _GameShell->netrecv_bpsMax = 0;
+    _GameShell->netrecv_bpsAvr = 0;
+    _GameShell->netsend_bpsMin = 0;
+    _GameShell->netsend_bpsMax = 0;
+    _GameShell->netsend_bpsAvr = 0;
+    _GameShell->net_gcnt = 0;
+    _GameShell->net_packet_size = 0;
+    _GameShell->net_packet_min = 0;
+    _GameShell->net_packet_max = 0;
+    _GameShell->net_packet_cnt = 0;
+    _GameShell->net_packet_avr = 0;
+    _GameShell->deadCheckTime = _timeStamp + 300000;
+    _GameShell->sendScoreCountDown = 3000;
 
-    playerstatus.fill(World::TPlayerStatus());
+    _playersStats.fill(World::TPlayerStatus());
 
     return 1;
 }
@@ -4020,21 +3852,21 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 
 void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
     switch ( usr->netProblem )
     {
     case 1:
         usr->ResetInputPeriod = true;
-        usr->netProblemCount--;
+        usr->netProblemCountDown--;
 
-        if ( usr->netProblemCount <= 0 )
+        if ( usr->netProblemCountDown <= 0 )
         {
             usr->netProblem = 0;
             usr->netAllOk = 3;
-            usr->netAllOkCount = 0;
+            usr->netAllOkCountDown = 0;
 
-            for (int i = 0; i < 4; i++)
-                usr->players[i].latency = 0;
+            for (UserData::TNetPlayerData &pl : usr->netPlayers)
+                pl.Latency = 0;
 
             if ( usr->isHost )
             {
@@ -4056,8 +3888,8 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
         break;
 
     case 3:
-        usr->netProblemCount -= yw->field_1b24.frameTime;
-        if ( usr->netProblemCount < 0 )
+        usr->netProblemCountDown -= yw->_updateMessage.frameTime;
+        if ( usr->netProblemCountDown < 0 )
         {
             yw->_levelInfo.State = TLevelInfo::STATE_ABORTED;
             usr->netProblem = 0;
@@ -4065,13 +3897,13 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
         break;
 
     case 4:
-        usr->netProblemCount -= yw->field_1b24.frameTime;
+        usr->netProblemCountDown -= yw->_updateMessage.frameTime;
 
-        if ( usr->netProblemCount < 0 )
+        if ( usr->netProblemCountDown < 0 )
         {
             usr->netProblem = 0;
             for (int i = 0; i < 8; i++)
-                usr->players[i].isKilled &= ~2;
+                usr->netPlayers[i].DestroyFlags &= ~2;
         }
         break;
 
@@ -4083,74 +3915,65 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
 int yw_NetCheckPlayers(NC_STACK_ypaworld *yw)
 {
     int v2 = 0;
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
-    windp_arg79 arg79;
-    arg79.ID = 0;
-    arg79.mode = 0;
-    while ( yw->windp->GetPlayerData(&arg79) )
+    for ( const TDPPlayerData &plData : yw->_netDriver->GetPlayersData() )
     {
-        if ( arg79.flags & 1 )
+        if ( !plData.IsItMe() )
         {
-            arg79.ID++;
-        }
-        else
-        {
-            int owner = 0;
-            netType2 *plr = NULL;
+            UserData::TNetPlayerData *plr = NULL;
 
-            for ( int i = 0; i < 8; i++ )
+            for ( UserData::TNetPlayerData &pl : usr->netPlayers )
             {
-                if ( StriCmp(usr->players[i].name, arg79.name.c_str()) == 0 )
+                if ( StriCmp(pl.Name, plData.name) == 0 )
                 {
-                    owner = i;
-                    plr = &usr->players[i];
+                    plr = &pl;
                     break;
                 }
             }
 
             if ( plr )
             {
-                if ( plr->problemCnt > 0 )
+                if ( plr->ProblemCountDown > 0 )
                 {
-                    plr->problemCnt -= yw->field_1b24.frameTime;
-                    if ( plr->problemCnt <= 0 )
-                        plr->status = 1;
+                    plr->ProblemCountDown -= yw->_updateMessage.frameTime;
+                    if ( plr->ProblemCountDown <= 0 )
+                        plr->Status = 1;
                 }
 
-                int tm = yw->field_1b24.gTime - plr->lastMsgTime;
+                int tm = yw->_updateMessage.gTime - plr->LastMessageTime;
 
-                if ( yw->netGameStarted && tm > 7000 )
+                if ( yw->_isNetGameStarted && tm > 7000 )
                 {
                     SPEED_DOWN_NET = 1;
 
-                    if ( tm / 1000 != (tm - yw->field_1b24.frameTime) / 1000 )
+                    if ( tm / 1000 != (tm - yw->_updateMessage.frameTime) / 1000 )
                     {
-                        log_netlog("Waiting for player %s. (time %ds at %ds)\n", arg79.name.c_str(), tm / 1000, yw->timeStamp / 1000);
+                        log_netlog("Waiting for player %s. (time %ds at %ds)\n", plData.name.c_str(), tm / 1000, yw->_timeStamp / 1000);
                         log_netlog("    Reduce data transfer rate\n");
                     }
 
-                    usr->problemCnt = 4000;
+                    usr->problemTimer = 4000;
 
-                    plr->status = 2;
-                    plr->problemCnt = 5000;
+                    plr->Status = 2;
+                    plr->ProblemCountDown = 5000;
 
-                    if ( (yw->field_1b24.gTime - (int)plr->lastMsgTime) > usr->kickTime )
+                    if ( (yw->_updateMessage.gTime - (int)plr->LastMessageTime) > usr->kickTime )
                     {
                         if ( usr->isHost )
                         {
                             uamessage_kick msgKk;
-                            msgKk.owner = owner;
+                            msgKk.owner = plr->Owner;
                             msgKk.msgID = UAMSG_KICK;
-                            strcpy(msgKk.text, plr->name);
+                            strcpy(msgKk.text, plr->Name.c_str());
 
-                            yw_cleanPlayer(yw, plr->name, 0, 0);
+                            yw_cleanPlayer(yw, plr->Name, 0, 0);
 
                             if ( usr->netProblem != 3 )
                             {
-                                strcpy(usr->netProblemName, msgKk.text);
+                                usr->netProblemName = msgKk.text;
                                 usr->netProblem = 4;
-                                usr->netProblemCount = 15000;
+                                usr->netProblemCountDown = 15000;
                             }
 
                             v2 = 1;
@@ -4165,36 +3988,33 @@ int yw_NetCheckPlayers(NC_STACK_ypaworld *yw)
 
                             yw_DestroyPlayer(yw, msgKk.text);
 
-                            log_netlog(">>> I have kicked off %s because I haven't heard anything for %d sec (at time %d)\n", msgKk.text, usr->kickTime / 1000, yw->timeStamp / 1000);
+                            log_netlog(">>> I have kicked off %s because I haven't heard anything for %d sec (at time %d)\n", msgKk.text, usr->kickTime / 1000, yw->_timeStamp / 1000);
                         }
                     }
 
-                    if ( (yw->field_1b24.gTime - plr->lastMsgTime) > 20000 )
+                    if ( (yw->_updateMessage.gTime - plr->LastMessageTime) > 20000 )
                     {
                         if ( !usr->isHost )
                         {
                             if ( usr->netProblem != 4 && usr->netProblem != 3 )
                             {
                                 usr->netProblem = 5;
-                                usr->netProblemCount = 10;
+                                usr->netProblemCountDown = 10;
                                 v2 = 1;
                             }
                         }
                     }
 
-                    plr->connProblem = 1;
-                    arg79.ID++;
+                    plr->ConnectionProblem = 1;
                 }
                 else
                 {
-                    plr->connProblem = 0;
-                    arg79.ID++;
+                    plr->ConnectionProblem = 0;
                 }
             }
             else
             {
-                log_netlog("Warning: No Playerdata for player %s in PlayersOK() (%ds)\n", arg79.name.c_str(), yw->timeStamp / 1000);
-                arg79.ID++;
+                log_netlog("Warning: No Playerdata for player %s in PlayersOK() (%ds)\n", plData.name.c_str(), yw->_timeStamp / 1000);
             }
         }
     }
@@ -4207,46 +4027,37 @@ int yw_NetCheckPlayers(NC_STACK_ypaworld *yw)
 
 int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
-    int numpl = yw->windp->CountPlayers();
+    int numpl = yw->_netDriver->GetPlayerCount();
 
-    if ( yw->netGameStarted )
+    if ( yw->_isNetGameStarted )
         return 1;
 
     int rdypl = 0;
-    netType2 *wting[8];
+    std::vector<UserData::TNetPlayerData*> wting;
+    wting.reserve(World::CVMaxNetPlayers);
 
-    for(int i = 0; i < 8; i++)
+    for(UserData::TNetPlayerData &pl : usr->netPlayers)
     {
-        if (usr->players[i].name[0])
+        if (!pl.Name.empty())
         {
-            if ( usr->players[i].rdyStart )
-            {
+            if ( pl.Ready )
                 rdypl++;
-                wting[i] = NULL;
-            }
-            else
-            {
-                wting[i] = &usr->players[i];
-            }
-        }
-        else
-        {
-            wting[i] = NULL;
+            else if (pl.Owner != 0)
+                wting.push_back(&pl);
         }
     }
 
     if ( rdypl == numpl )
     {
-        yw->netGameStarted = 1;
+        yw->_isNetGameStarted = true;
         return 1;
     }
 
     SDL_Delay(50);
 
-    InputState inpt;
-    inpt.Clear();
+    TInputState inpt;
     INPe.QueryInput(&inpt);
 
     char buf[1024];
@@ -4256,72 +4067,69 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     FontUA::set_xpos(&cur, 0);
     FontUA::set_ypos(&cur, 0);
     FontUA::copy_position(&cur);
-    FontUA::add_txt(&cur, 2 * yw->screen_width / 3 - 1, 1,  yw->GetLocaleString(651, "WAITING FOR PLAYERS: ") );
+    FontUA::add_txt(&cur, 2 * yw->_screenSize.x / 3 - 1, 1,  yw->GetLocaleString(651, "WAITING FOR PLAYERS: ") );
     FontUA::next_line(&cur);
 
-    yw->netStartTime -= inpt.Period;
-    if ( yw->netStartTime > 0 )
+    yw->_netStartTimer -= inpt.Period;
+    if ( yw->_netStartTimer > 0 )
     {
-        std::string timeStr = fmt::sprintf("(%d)", yw->netStartTime / 1000);
+        std::string timeStr = fmt::sprintf("(%d)", yw->_netStartTimer / 1000);
 
         FontUA::copy_position(&cur);
-        FontUA::add_txt(&cur, yw->screen_width / 3 - 1, 1, timeStr);
+        FontUA::add_txt(&cur, yw->_screenSize.x / 3 - 1, 1, timeStr);
         FontUA::next_line(&cur);
     }
 
-    for(int i = 1; i < 8; i++)
+    for(UserData::TNetPlayerData *pl : wting)
     {
-        if (wting[i])
+        if ( yw->_netStartTimer <= 0 && usr->isHost )
         {
-            if ( yw->netStartTime <= 0 && usr->isHost )
+            uamessage_kick msgKk;
+            strcpy(msgKk.text, pl->Name.c_str());
+            msgKk.msgID = UAMSG_KICK;
+            msgKk.owner = pl->Owner;
+
+            yw_cleanPlayer(yw, pl->Name, 0, 0);
+
+            yw_arg181 yw181;
+            yw181.recvFlags = 2;
+            yw181.data = &msgKk;
+            yw181.recvID = 0;
+            yw181.garant = 1;
+            yw181.dataSize = sizeof(uamessage_kick);
+
+            yw->ypaworld_func181(&yw181);
+
+            yw_DestroyPlayer(yw, msgKk.text);
+
+            if ( usr->netProblem != 3 )
             {
-                uamessage_kick msgKk;
-                strcpy(msgKk.text, wting[i]->name);
-                msgKk.msgID = UAMSG_KICK;
-                msgKk.owner = i;
+                usr->netProblemName = msgKk.text;
 
-                yw_cleanPlayer(yw, wting[i]->name, 0, 0);
-
-                yw_arg181 yw181;
-                yw181.recvFlags = 2;
-                yw181.data = &msgKk;
-                yw181.recvID = 0;
-                yw181.garant = 1;
-                yw181.dataSize = sizeof(uamessage_kick);
-
-                yw->ypaworld_func181(&yw181);
-
-                yw_DestroyPlayer(yw, msgKk.text);
-
-                if ( usr->netProblem != 3 )
-                {
-                    strcpy(usr->netProblemName, msgKk.text);
-
-                    yw->GameShell->netProblem = 4;
-                    yw->GameShell->netProblemCount = 15000;
-                }
-                log_netlog(">>> I have kicked off %s because I didn't heard anything after loading (time %d)\n", msgKk.text, yw->timeStamp / 1000);
-                log_netlog("    netstarttime was %d\n", yw->netStartTime);
+                yw->_GameShell->netProblem = 4;
+                yw->_GameShell->netProblemCountDown = 15000;
             }
-            else
-            {
-                std::string tmpstr = "   ";
-                tmpstr += wting[i]->name;
+            log_netlog(">>> I have kicked off %s because I didn't heard anything after loading (time %d)\n", msgKk.text, yw->_timeStamp / 1000);
+            log_netlog("    netstarttime was %d\n", yw->_netStartTimer);
+        }
+        else
+        {
+            std::string tmpstr = "   ";
+            tmpstr += pl->Name;
 
-                FontUA::copy_position(&cur);
-                FontUA::add_txt(&cur, yw->screen_width - 1, 1, tmpstr);
-                FontUA::next_line(&cur);
-            }
+            FontUA::copy_position(&cur);
+            FontUA::add_txt(&cur, yw->_screenSize.x - 1, 1, tmpstr);
+            FontUA::next_line(&cur);
         }
     }
 
-    if ( yw->netStartTime <= 0 )
+    if ( yw->_netStartTimer <= 0 )
     {
-        if ( yw->GameShell->isHost )
+        if ( yw->_GameShell->isHost )
             return 1;
 
         FontUA::copy_position(&cur);
-        FontUA::add_txt(&cur, yw->screen_width - 1, 1, "WAITING FOR HOST");
+        FontUA::add_txt(&cur, yw->_screenSize.x - 1, 1, "WAITING FOR HOST");
         FontUA::next_line(&cur);
     }
 
@@ -4342,7 +4150,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
 
 void yw_NetCheckPing(NC_STACK_ypaworld *yw)
 {
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
     if ( usr->latencyCheck <= 0 && usr->isHost && (usr->netProblem == 0 || usr->netProblem == 1) )
     {
@@ -4354,7 +4162,7 @@ void yw_NetCheckPing(NC_STACK_ypaworld *yw)
         uamessage_ping rPing;
         rPing.owner = usr->netPlayerOwner;
         rPing.msgID = UAMSG_REQPING;
-        rPing.timestamp = yw->timeStamp;
+        rPing.timestamp = yw->_timeStamp;
 
         yw_arg181 yw181;
         yw181.recvFlags = 2;
@@ -4365,20 +4173,20 @@ void yw_NetCheckPing(NC_STACK_ypaworld *yw)
 
         yw->ypaworld_func181(&yw181);
 
-        if ( yw->field_1b24.frameTime < 3 )
+        if ( yw->_updateMessage.frameTime < 3 )
         {
             windp_arg82 dp82;
             dp82.senderFlags = 1;
             dp82.receiverID = 0;
-            dp82.senderID = usr->callSIGN.c_str();
+            dp82.senderID = usr->netPlayerName.c_str();
             dp82.guarant = 0;
             dp82.receiverFlags = 2;
-            yw->windp->FlushBuffer(dp82);
+            yw->_netDriver->FlushBuffer(dp82);
         }
     }
     else
     {
-        usr->latencyCheck -= yw->field_1b24.frameTime;
+        usr->latencyCheck -= yw->_updateMessage.frameTime;
     }
 }
 
@@ -4387,10 +4195,10 @@ void yw_NetMsgHndlLoop(NC_STACK_ypaworld *yw)
 {
     while ( 1 )
     {
-        if ( yw->GameShell->netProblem != 0 )
+        if ( yw->_GameShell->netProblem != 0 )
             yw_NetHandleProblems(yw);
 
-        yw->GameShell->netAllOkCount -= yw->field_1b24.frameTime;
+        yw->_GameShell->netAllOkCountDown -= yw->_updateMessage.frameTime;
 
         yw_HandleNetMsg(yw);
 
@@ -4403,8 +4211,8 @@ void yw_NetMsgHndlLoop(NC_STACK_ypaworld *yw)
         {
             yw_NetCheckPing(yw);
 
-            if ( yw->GameShell->problemCnt > 0 )
-                yw->GameShell->problemCnt -= yw->field_1b24.frameTime;
+            if ( yw->_GameShell->problemTimer > 0 )
+                yw->_GameShell->problemTimer -= yw->_updateMessage.frameTime;
             break;
         }
     }
@@ -4417,19 +4225,19 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
 
     std::string t[16];
 
-    UserData *usr = yw->GameShell;
+    UserData *usr = yw->_GameShell;
 
-    TileMap *font29 = yw->tiles[29];
+    TileMap *font29 = yw->_guiTiles[29];
     char drawbuf[2000];
     char *cur = drawbuf;
 
     FontUA::select_tileset(&cur, 29);
-    FontUA::set_center_xpos(&cur, font29->h - (yw->screen_width / 2) );
-    FontUA::set_center_ypos(&cur, font29->h - (yw->screen_height / 2) );
+    FontUA::set_center_xpos(&cur, font29->h - (yw->_screenSize.x / 2) );
+    FontUA::set_center_ypos(&cur, font29->h - (yw->_screenSize.y / 2) );
 
-    if ( usr->disconnected == 0 && usr->problemCnt > 0 )
+    if ( usr->disconnected == false && usr->problemTimer > 0 )
     {
-        if ( (yw->field_1b24.gTime / 300) & 1 )
+        if ( (yw->_updateMessage.gTime / 300) & 1 )
         {
             FontUA::store_u8(&cur, 65);
         }
@@ -4455,20 +4263,20 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
             if ( usr->isHost )
             {
                 t[0] = yw->GetLocaleString(2405, "HOST: LATENCY PROBLEMS.");
-                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2423, "PLEASE WAIT"), usr->netProblemCount);
+                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2423, "PLEASE WAIT"), usr->netProblemCountDown);
                 numelm = 2;
             }
             else
             {
                 t[0] = yw->GetLocaleString(2406, "CLIENT: LATENCY PROBLEMS.");
-                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2424, "PLEASE WAIT"), usr->netProblemCount);
+                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2424, "PLEASE WAIT"), usr->netProblemCountDown);
                 numelm = 2;
             }
             break;
 
         case 3:
             t[0] = yw->GetLocaleString(2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE");
-            t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCount / 1000);
+            t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCountDown / 1000);
             numelm = 2;
             break;
 
@@ -4477,11 +4285,11 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
             t[1] = fmt::sprintf(yw->GetLocaleString(2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
             numelm = 2;
 
-            for(int i = 0; i < 8; i++)
+            for(UserData::TNetPlayerData &pl : usr->netPlayers)
             {
-                if (usr->players[i].isKilled & 2)
+                if (pl.DestroyFlags & 2)
                 {
-                    t[numelm] = usr->players[i].name;
+                    t[numelm] = pl.Name;
                     numelm++;
                 }
             }
@@ -4492,15 +4300,15 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
             t[1] = fmt::sprintf(yw->GetLocaleString(2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
             numelm = 2;
 
-            for(int i = 0; i < 8; i++)
+            for(UserData::TNetPlayerData &pl : usr->netPlayers)
             {
-                if ( (yw->field_1b24.gTime - usr->players[i].lastMsgTime) > 20000 )
+                if ( (yw->_updateMessage.gTime - pl.LastMessageTime) > 20000 )
                 {
-                    if ( usr->players[i].rdyStart )
+                    if ( pl.Ready )
                     {
-                        if ( StriCmp(usr->players[i].name, usr->callSIGN) )
+                        if ( StriCmp(pl.Name, usr->netPlayerName) )
                         {
-                            t[numelm] = usr->players[i].name;
+                            t[numelm] = pl.Name;
                             numelm++;
                         }
                     }
@@ -4514,7 +4322,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
     }
     else
     {
-        if ( usr->netAllOkCount > 0 )
+        if ( usr->netAllOkCountDown > 0 )
         {
             numelm = 1;
             toDraw = true;
@@ -4541,16 +4349,16 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
 
     if ( toDraw )
     {
-        TileMap *font0 = yw->tiles[0];
+        TileMap *font0 = yw->_guiTiles[0];
         cur = drawbuf;
 
         FontUA::select_tileset(&cur, 0);
-        FontUA::set_center_xpos(&cur, yw->screen_width / 4 - yw->screen_width / 2);
-        FontUA::set_center_ypos(&cur, 12 - yw->screen_height / 2);
+        FontUA::set_center_xpos(&cur, yw->_screenSize.x / 4 - yw->_screenSize.x / 2);
+        FontUA::set_center_ypos(&cur, 12 - yw->_screenSize.y / 2);
 
-        cur = GuiBase::FormateTitle(yw, yw->screen_width / 4 - yw->screen_width / 2,
-                                    12 - yw->screen_height / 2,
-                                    yw->screen_width / 2,
+        cur = GuiBase::FormateTitle(yw, yw->_screenSize.x / 4 - yw->_screenSize.x / 2,
+                                    12 - yw->_screenSize.y / 2,
+                                    yw->_screenSize.x / 2,
                                     yw->GetLocaleString(2407, "NETZWERKSTATUS"),
                                     cur, 0, 0);
 
@@ -4563,12 +4371,12 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
             FontUA::store_u8(&cur, '{');
 
             FontUA::copy_position(&cur);
-            FontUA::op17(&cur, yw->screen_width / 2 - font0->map['}'].w);
+            FontUA::op17(&cur, yw->_screenSize.x / 2 - font0->map['}'].w);
 
             FontUA::store_u8(&cur, ' ');
             FontUA::store_u8(&cur, '}');
 
-            FontUA::add_txt(&cur, yw->screen_width / 2 - 2 * font0->map['W'].w, 4, t[i] );
+            FontUA::add_txt(&cur, yw->_screenSize.x / 2 - 2 * font0->map['W'].w, 4, t[i] );
 
             FontUA::next_line(&cur);
         }
@@ -4576,7 +4384,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         FontUA::set_yoff(&cur, font0->h - 1);
 
         FontUA::store_u8(&cur, 'x');
-        FontUA::op17(&cur, yw->screen_height / 2 - font0->map['z'].w);
+        FontUA::op17(&cur, yw->_screenSize.y / 2 - font0->map['z'].w);
         FontUA::store_u8(&cur, 'y');
         FontUA::store_u8(&cur, 'z');
 

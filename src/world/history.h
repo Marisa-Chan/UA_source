@@ -39,7 +39,7 @@ public:
     virtual void WriteBytes(void *dst) const {} ;
     virtual void ReadBytes(const void *bt) {};
     
-    virtual void AddScore(std::array<TPlayerStatus, 8> *score) const {};
+    virtual void AddScore(std::array<TPlayerStatus, World::CVFractionsCount> *score) const {};
     
     Record& operator=(const Record& b)
     {

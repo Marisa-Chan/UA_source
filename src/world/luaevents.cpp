@@ -354,28 +354,28 @@ int LuaEvents::Lua_BactGetPSector(lua_State *l)
 int LuaEvents::Lua_WrldGetUserRobo(lua_State *l)
 {
     NC_STACK_ypaworld *wrld = (NC_STACK_ypaworld *)lua_touserdata(l, 1);
-    lua_pushlightuserdata(l, wrld->UserRobo);
+    lua_pushlightuserdata(l, wrld->_userRobo);
     return 1;
 }
 
 int LuaEvents::Lua_WrldGetUserUnit(lua_State *l)
 {
     NC_STACK_ypaworld *wrld = (NC_STACK_ypaworld *)lua_touserdata(l, 1);
-    lua_pushlightuserdata(l, wrld->UserUnit);
+    lua_pushlightuserdata(l, wrld->_userUnit);
     return 1;
 }
 
 int LuaEvents::Lua_WrldIsInRoboGun(lua_State *l)
 {
     NC_STACK_ypaworld *wrld = (NC_STACK_ypaworld *)lua_touserdata(l, 1);
-    lua_pushboolean(l, wrld->field_1b70 != 0);
+    lua_pushboolean(l, wrld->_playerInHSGun );
     return 1;
 }
 
 int LuaEvents::Lua_WrldGetUserSquadsCount(lua_State *l)
 {
     NC_STACK_ypaworld *wrld = (NC_STACK_ypaworld *)lua_touserdata(l, 1);
-    lua_pushinteger(l, wrld->_cmdrsCount);
+    lua_pushinteger(l, wrld->_cmdrsRemap.size());
     return 1;
 }
 
@@ -405,13 +405,13 @@ int LuaEvents::Lua_WrldGetSectorInfo(lua_State *l)
         lua_pushinteger(l, area->owner);
         lua_setfield(l, -2, "owner");
 
-        lua_pushinteger(l, area->w_type);
+        lua_pushinteger(l, area->PurposeType);
         lua_setfield(l, -2, "w_type");
 
-        lua_pushinteger(l, area->PosID.x);
+        lua_pushinteger(l, area->CellId.x);
         lua_setfield(l, -2, "x");
 
-        lua_pushinteger(l, area->PosID.y);
+        lua_pushinteger(l, area->CellId.y);
         lua_setfield(l, -2, "y");
 
         lua_pushinteger(l, area->type_id);
@@ -428,18 +428,18 @@ int LuaEvents::Lua_WrldGetPowerStations(lua_State *l)
     lua_newtable(l);
     
     int32_t i = 0;
-    for(const PowerStationRef &ps : wrld->_powerStations)
+    for(const auto it : wrld->_powerStations)
     {
         lua_pushinteger(l, i);
         lua_newtable(l);
         
-        PushPointer(l, ps.pCell);
+        PushPointer(l, it.second.pCell);
         lua_setfield(l, -2, "sector");
         
-        lua_pushinteger(l, ps.Power);
+        lua_pushinteger(l, it.second.Power);
         lua_setfield(l, -2, "power");
         
-        lua_pushinteger(l, ps.EffectivePower);
+        lua_pushinteger(l, it.second.EffectivePower);
         lua_setfield(l, -2, "effpwr");
         
         lua_settable(l, -3);
@@ -456,7 +456,7 @@ int LuaEvents::Lua_WrldGetGates(lua_State *l)
     lua_newtable(l);
     
     int32_t i = 0;
-    for(const MapGate &gate : wrld->_levelInfo.Gates)
+    for(const TMapGate &gate : wrld->_levelInfo.Gates)
     {
         lua_pushinteger(l, i);
         lua_newtable(l);
@@ -469,7 +469,7 @@ int LuaEvents::Lua_WrldGetGates(lua_State *l)
         
         lua_newtable(l);
         int32_t j = 0;
-        for(const MapKeySector &sctr : gate.KeySectors)
+        for(const TMapKeySector &sctr : gate.KeySectors)
         {
             lua_pushinteger(l, j);
             PushPointer(l, sctr.PCell);

@@ -31,7 +31,7 @@ struct ResBmpAnm
     {
         for (NC_STACK_bitmap *bitm : Bitmaps)
         {
-            Nucleus::Delete(bitm);
+            bitm->Delete();
         }
     }
 };

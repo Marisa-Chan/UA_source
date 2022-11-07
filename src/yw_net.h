@@ -60,7 +60,7 @@ enum UAMSG
     UAMSG_PONG = UAMSG_BASE + 39,
     UAMSG_STARTPROBLEM = UAMSG_BASE + 40,
     UAMSG_ENDPROBLEM = UAMSG_BASE + 41,
-    UAMSG_CD = UAMSG_BASE + 42,
+    //UAMSG_CD = UAMSG_BASE + 42,
     UAMSG_SCORE = UAMSG_BASE + 43
 };
 
@@ -277,7 +277,7 @@ struct uamessage_welcome : uamessage_base
 {
     int16_t fraction;
     uint8_t rdy;
-    uint8_t cd;
+    //uint8_t cd;
 };
 
 struct uamessage_ready : uamessage_base
@@ -411,7 +411,7 @@ struct uamessage_cd : uamessage_base
 
 struct uamessage_score : uamessage_base
 {
-    World::TPlayerStatus status[8];
+    std::array<World::TPlayerStatus, World::CVFractionsCount> status;
 };
 
 

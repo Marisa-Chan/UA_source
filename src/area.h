@@ -124,8 +124,8 @@ public:
 public:
     NC_STACK_bitmap *_texImg = NULL;
     NC_STACK_bitmap *_tracyImg = NULL;
-    char _colorVal = 0;
-    char _tracyVal = 0;
+    int32_t _colorVal = 0;
+    int32_t _tracyVal = 0;
     int32_t _shadeVal = 0;
     int16_t _polflags = 0;
 };
