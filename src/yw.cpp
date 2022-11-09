@@ -1686,6 +1686,11 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
 {
+    if (  !arg->field_C 
+       && !_allowMultiBuildLevel 
+       && IsAnyBuildingProcess(arg->owner))
+            return false;
+        
     cellArea &cell = _cells(arg->CellId);
 
     bool UserInSec = false;
@@ -1703,6 +1708,9 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
     if ( _userUnit  &&  &cell == _userUnit->_pSector )
         UserInSec = true;
 
+    if (cell.IsBorder())
+        return 0;
+    
     if ( cell.PurposeType == cellArea::PT_CONSTRUCTING )
         return 0;
     else if ( UserInSec  && !arg->field_C )
@@ -1713,16 +1721,13 @@ size_t NC_STACK_ypaworld::ypaworld_func148(ypaworld_arg148 *arg)
         return 0;
     else if ( cell.PurposeType == cellArea::PT_TECHDEACTIVE && _isNetGame )
         return 0;
-    
-    if (cell.IsBorder())
-        return 0;
 
     if ( arg->field_C )
     {
         sb_0x456384(arg->CellId, arg->owner, arg->blg_ID, arg->field_18 & 1);
     }
     else
-    {
+    {        
         DestroyAllGunsInSector(&cell);
 
         if ( !BuildingConstructBegin(&cell, arg->blg_ID, arg->owner, World::CVBuildConstructTime) )

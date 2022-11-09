@@ -2394,6 +2394,16 @@ void NC_STACK_ypaworld::BuildingConstructUpdate(int dtime)
     }
 }
 
+bool NC_STACK_ypaworld::IsAnyBuildingProcess(int owner) const
+{
+    for(const auto &it : _inBuildProcess)
+    {
+        if (it.second.Owner == owner)
+            return true;
+    }
+    return false;
+}
+
 void NC_STACK_ypaworld::ypaworld_func64__sub6__sub0()
 {
     for(int i = 0; i < 8; i++)

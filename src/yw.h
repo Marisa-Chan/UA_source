@@ -2127,6 +2127,7 @@ public:
     void DestroyAllGunsInSector(cellArea *cell);
     bool BuildingConstructBegin(cellArea *cell, uint8_t buildingID, int owner, int cTime);
     void BuildingConstructUpdate(int dtime);
+    bool IsAnyBuildingProcess(int owner) const;
     
     void debug_info_draw(TInputState *inpt);
     void debug_count_units();
@@ -2655,6 +2656,13 @@ public:
     std::string _initScriptFilePath;
 
     std::string _luaScriptName;
+    
+    /* Allow to build multiple buildings at the same time 
+       Can be set in
+       world: misc scope  - "multi_building" 
+       level: level scope  - "multi_building" */
+    bool _allowMultiBuildWorld = false;
+    bool _allowMultiBuildLevel = false;
 
 protected:
 

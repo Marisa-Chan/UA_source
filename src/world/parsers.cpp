@@ -2014,6 +2014,10 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     {
         _o._easyCheatKeys = parser.stol(p2, NULL, 0) != 0;
     }
+    else if ( !StriCmp(p1, "multi_building") )
+    {
+        _o._allowMultiBuildWorld = StrGetBool(p2);
+    }
     else
         return ScriptParser::RESULT_UNKNOWN;
 
@@ -2102,6 +2106,7 @@ bool LevelDataParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     _o._levelInfo.MovieLoseStr.clear();
     _o._vehicleSectorRatio = 0;
     _o._levelUnitLimit = _o._defaultUnitLimit;
+    _o._allowMultiBuildLevel = _o._allowMultiBuildWorld;
     _o._levelUnitLimitType = _o._defaultUnitLimitType;
     _o._levelUnitLimitArg = _o._defaultUnitLimitArg;
     _o._luaScriptName = "";
@@ -2256,6 +2261,10 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     else if ( !StriCmp(p1, "lua_script") )
     {
         _o._luaScriptName = p2;
+    }
+    else if ( !StriCmp(p1, "multi_building") )
+    {
+        _o._allowMultiBuildLevel = StrGetBool(p2);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
