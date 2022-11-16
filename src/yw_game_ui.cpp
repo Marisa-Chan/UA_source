@@ -10235,37 +10235,38 @@ int NC_STACK_ypaworld::sb_0x4d3d44(TClickBoxInf *winp)
 int NC_STACK_ypaworld::UserActBuildCheck()
 {
     if ( !(_guiActFlags & 0x10) || bzda.field_8F4 == -1 )
-        return 1;
+        return 1; // NO with no tip
 
     NC_STACK_yparobo *robo = dynamic_cast<NC_STACK_yparobo *>(_userRobo);
 
     int a4 = robo->getROBO_battVehicle();
 
     if ( _updateMessage.energy > a4 )
-        return 6;
+        return 6; // TIP_NOENERGY
 
     if ( _cellOnMouse->owner && _cellOnMouse->owner != _userRobo->_owner )
-        return 2;
+        return 2; // TIP_NOTOWN
 
     Common::Point cellDist = _cellOnMouse->CellId.AbsDistance( _userRobo->_cellId );
 
     if ( cellDist.IsNull() )
-        return 3;
+        return 3; // TIP_BUILD_TOOCLOSE
 
     if ( cellDist.x > 1 || cellDist.y > 1 )
-        return 4;
+        return 4; // TIP_BUILD_TOOFAR
 
-    if ( _cellOnMouse->PurposeType == cellArea::PT_CONSTRUCTING )
-        return 5;
+    if ( _cellOnMouse->PurposeType == cellArea::PT_CONSTRUCTING ||
+         (!_allowMultiBuildLevel && IsAnyBuildingProcess(_playerOwner)) )
+        return 5; // TIP_BUILD_INPROC
 
     if ( _cellOnMouse->PurposeType == cellArea::PT_TECHUPGRADE || 
          _cellOnMouse->PurposeType == cellArea::PT_GATECLOSED || 
          _cellOnMouse->PurposeType == cellArea::PT_GATEOPENED || 
          _cellOnMouse->PurposeType == cellArea::PT_STOUDSON || 
          (_cellOnMouse->PurposeType == cellArea::PT_TECHDEACTIVE && _isNetGame) )
-        return 1;
+        return 1; // NO with no tip
 
-    return 0;
+    return 0; // Can build
 }
 
 
