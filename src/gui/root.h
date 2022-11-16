@@ -34,7 +34,7 @@ public:
 struct StreamTex
 {
     Common::Point Size;
-    std::array<uint32_t, 2> Texs {{0}};
+    std::array<uint32_t, 2> Texs = Common::ArrayInit<uint32_t, 2>(0);
     int32_t nextTex = 0;
     
     StreamTex();

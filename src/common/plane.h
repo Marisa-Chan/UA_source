@@ -273,6 +273,13 @@ public:
     {
         return XH;
     }
+    
+    static constexpr PlaneArray ArrayInit(const T& val)
+    {
+            PlaneArray t;
+            t.fill(val);
+            return t;
+    }
 };
 
 }

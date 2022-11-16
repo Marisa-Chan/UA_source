@@ -482,7 +482,7 @@ public:
     bool returnToTitle;
 
     TSndCarrier samples1_info;
-    std::array<NC_STACK_sample *, World::SOUND_ID_MAX> samples1 = {{NULL}};
+    std::array<NC_STACK_sample *, World::SOUND_ID_MAX> samples1 = Common::ArrayInit<NC_STACK_sample *, World::SOUND_ID_MAX>(NULL);
     
     NC_STACK_button *sub_bar_button;
 
@@ -860,8 +860,8 @@ struct cellArea
     int32_t type_id; // Index in array
     uint8_t SectorType; // Complex (3x3) or simple
     int32_t energy_power; // Cell electric power
-    Common::PlaneArray<int16_t, 3, 3> buildings_health = {0};
-    Common::PlaneArray<NC_STACK_base::Instance *, 3, 3> BldVPOpts = {NULL};
+    Common::PlaneArray<int16_t, 3, 3> buildings_health = Common::PlaneArray<int16_t, 3, 3>::ArrayInit(0);
+    Common::PlaneArray<NC_STACK_base::Instance *, 3, 3> BldVPOpts = Common::PlaneArray<NC_STACK_base::Instance *, 3, 3>::ArrayInit(NULL);
     uint8_t view_mask; // Who can view this sector (mask)
     
     enum PTYPE
@@ -1218,7 +1218,7 @@ struct TLevelInfo
     std::vector<TMapBuddy> Buddies;
     std::vector<TMapGate> Gates;
     std::vector<TMapSuperItem> SuperItems;
-    std::array<int, 8> JodieFoster = {{0}};
+    std::array<int, 8> JodieFoster = Common::ArrayInit<int, 8>(0);
     std::string MovieStr;
     std::string MovieWinStr;
     std::string MovieLoseStr;
@@ -1382,7 +1382,7 @@ struct TBriefengScreen
 
     bool ZoomFromGate = false;
     
-    std::array<NC_STACK_sklt *, 4> VectorGfx = {{NULL}};
+    std::array<NC_STACK_sklt *, 4> VectorGfx = Common::ArrayInit<NC_STACK_sklt *, 4>(NULL);
     Common::PlaneBytes OwnMap;
     Common::PlaneBytes TypMap;
     //int _owner;
@@ -1565,7 +1565,7 @@ struct TMFWinStatus
     bool Valid = false;
     bool IsOpen = false;
     Common::PointRect Rect;
-    std::array<int32_t, 8> Data = {0};
+    std::array<int32_t, 8> Data = Common::ArrayInit<int32_t, 8>(0);
 };
 
 
@@ -1643,7 +1643,7 @@ struct TLego
 struct TSubSectorDesc
 {
     int32_t StartHealth = 0;
-    std::array<uint8_t, 4> HPModels = {{0}}; //Building health models 0 - 100%hp, 3 - 0%hp
+    std::array<uint8_t, 4> HPModels = Common::ArrayInit<uint8_t, 4>(0); //Building health models 0 - 100%hp, 3 - 0%hp
 };
 
 struct TSectorDesc
@@ -1651,7 +1651,7 @@ struct TSectorDesc
     uint8_t SectorType = 0;
     uint8_t SurfaceType = 0;
     uint8_t GUIElementID = 0;
-    Common::PlaneArray<TSubSectorDesc *, 3, 3> SubSectors = {0};
+    Common::PlaneArray<TSubSectorDesc *, 3, 3> SubSectors = Common::PlaneArray<TSubSectorDesc *, 3, 3>::ArrayInit(0);
 };
 
 
@@ -2327,8 +2327,8 @@ public:
     std::list<NC_STACK_base *> _overrideModels;
     
     std::map<int32_t, TConstructInfo> _inBuildProcess; // Buildings in creation process
-    std::array<int16_t, 256> _buildHealthModelId = {0};
-    Common::PlaneArray<uint8_t, 64, 64> _sqrtTable = {0};
+    std::array<int16_t, 256> _buildHealthModelId = Common::ArrayInit<int16_t, 256>(0);
+    Common::PlaneArray<uint8_t, 64, 64> _sqrtTable = Common::PlaneArray<uint8_t, 64, 64>::ArrayInit(0);
     
     NC_STACK_ypabact *_viewerBact = NULL;
     vec3d _viewerPosition;
@@ -2346,8 +2346,8 @@ public:
     
     bool _doNotRender = false;
     
-    Common::PlaneArray<NC_STACK_base *, 6, 6> _fillersHorizontal = {NULL};
-    Common::PlaneArray<NC_STACK_base *, 6, 6> _fillersVertical = {NULL};
+    Common::PlaneArray<NC_STACK_base *, 6, 6> _fillersHorizontal = Common::PlaneArray<NC_STACK_base *, 6, 6>::ArrayInit(NULL);
+    Common::PlaneArray<NC_STACK_base *, 6, 6> _fillersVertical = Common::PlaneArray<NC_STACK_base *, 6, 6>::ArrayInit(NULL);
     
     NC_STACK_skeleton *_fillerSide = NULL;
     NC_STACK_skeleton *_fillerCross = NULL;
@@ -2380,7 +2380,7 @@ public:
     bool _fireBtnDownHappen = false; // true happen on down, single
     bool _guiLoaded = false;
     
-    std::array<TileMap *, 92> _guiTiles = {NULL};
+    std::array<TileMap *, 92> _guiTiles = Common::ArrayInit<TileMap *, 92>(NULL);
     
     GuiBaseList _guiActive;
     
@@ -2442,7 +2442,7 @@ public:
     int32_t _waypointCount = 0;
     vec3d _firstWaypointPosition;
 
-    std::array<NC_STACK_bitmap *, 11> _mousePointers = {NULL};
+    std::array<NC_STACK_bitmap *, 11> _mousePointers = Common::ArrayInit<NC_STACK_bitmap *, 11>(NULL);
  
     bool _mouseCursorHidden = false;
     Common::Point _mouseCursorHidePos;
@@ -2461,10 +2461,10 @@ public:
     NC_STACK_ypabact *_userRobo = NULL;
     NC_STACK_ypabact *_userUnit = NULL;
     
-    std::array<int32_t, 8> _countSectorsPerOwner = {0};
-    std::array<int32_t, 8>  _countUnitsPerOwner = {0};
-    std::array<float, 8> _reloadRatioClamped = {0.0}; // clamped to 0.0..1.0
-    std::array<float, 8> _reloadRatioPositive = {0.0}; // 0 and positive
+    std::array<int32_t, 8> _countSectorsPerOwner = Common::ArrayInit<int32_t, 8>(0);
+    std::array<int32_t, 8>  _countUnitsPerOwner = Common::ArrayInit<int32_t, 8>(0);
+    std::array<float, 8> _reloadRatioClamped = Common::ArrayInit<float, 8>(0.0); // clamped to 0.0..1.0
+    std::array<float, 8> _reloadRatioPositive = Common::ArrayInit<float, 8>(0.0); // 0 and positive
     
     std::vector<NC_STACK_ypabact *> _cmdrsRemap;
     int32_t _activeCmdrID = 0; // active CMDR ID
@@ -2535,11 +2535,11 @@ public:
     
     int32_t _fxLimit = 0;
     
-    std::array<int32_t, World::CVFractionsCount> _dbgSquadCounter = {0};
-    std::array<int32_t, World::CVFractionsCount> _dbgVehicleCounter = {0};
-    std::array<int32_t, World::CVFractionsCount> _dbgFlakCounter = {0};
-    std::array<int32_t, World::CVFractionsCount> _dbgRoboCounter = {0};
-    std::array<int32_t, World::CVFractionsCount> _dbgWeaponCounter = {0};
+    std::array<int32_t, World::CVFractionsCount> _dbgSquadCounter = Common::ArrayInit<int32_t, World::CVFractionsCount>(0);
+    std::array<int32_t, World::CVFractionsCount> _dbgVehicleCounter = Common::ArrayInit<int32_t, World::CVFractionsCount>(0);
+    std::array<int32_t, World::CVFractionsCount> _dbgFlakCounter = Common::ArrayInit<int32_t, World::CVFractionsCount>(0);
+    std::array<int32_t, World::CVFractionsCount> _dbgRoboCounter = Common::ArrayInit<int32_t, World::CVFractionsCount>(0);
+    std::array<int32_t, World::CVFractionsCount> _dbgWeaponCounter = Common::ArrayInit<int32_t, World::CVFractionsCount>(0);
     
     int32_t _dbgTotalSquadCount = 0;
     int32_t _dbgTotalSquadCountMax = 0;
@@ -2591,10 +2591,10 @@ public:
     };
     
     int32_t _profileFramesCount = 0;   
-    std::array<uint32_t, PFID_MAX> _profileVals = {0};
-    std::array<uint32_t, PFID_MAX> _profileMax = {0};
-    std::array<uint32_t, PFID_MAX> _profileMin = {0};
-    std::array<uint32_t, PFID_MAX> _profileTotal = {0};
+    std::array<uint32_t, PFID_MAX> _profileVals = Common::ArrayInit<uint32_t, PFID_MAX>(0);
+    std::array<uint32_t, PFID_MAX> _profileMax = Common::ArrayInit<uint32_t, PFID_MAX>(0);
+    std::array<uint32_t, PFID_MAX> _profileMin = Common::ArrayInit<uint32_t, PFID_MAX>(0);
+    std::array<uint32_t, PFID_MAX> _profileTotal = Common::ArrayInit<uint32_t, PFID_MAX>(0);
     
     std::array<World::TPlayerStatus, World::CVFractionsCount> _playersStats;
     std::array<World::TPlayerStatus, World::CVFractionsCount> _gameplayStats;

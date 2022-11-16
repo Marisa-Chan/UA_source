@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <deque>
+#include <utility>
 #include <SDL2/SDL.h>
 
 #ifdef ABS
@@ -26,6 +27,34 @@ template<typename T> inline T ABS(T x)		{ return (x >= 0) ? x : -x; }
 template<typename T> inline T MIN(T a, T b)	{ return (a < b) ? a : b; }
 template<typename T> inline T MAX(T a, T b)	{ return (a > b) ? a : b; }
 template<typename T> inline void DeleteAndNull(T *a) { if (*a) {delete *a; *a = NULL;} }
+
+
+template<typename _Tp, std::size_t _Nm>
+constexpr std::array<_Tp, _Nm> ArrayInit(const _Tp& val)
+{
+	std::array<_Tp, _Nm> t;
+	t.fill(val);
+	return t;
+}
+
+template<typename _Tp, std::size_t _Nm>
+constexpr std::array<_Tp, _Nm> ArrayInit(const _Tp& defval, std::initializer_list<std::pair<std::size_t, _Tp>> vals)
+{
+	std::array<_Tp, _Nm> t;
+	t.fill(defval);
+        for(const std::pair<std::size_t, _Tp> &v : vals)
+            t.at(v.first) = v.second;
+	return t;
+}
+
+template<typename _Tp, std::size_t _Nm>
+constexpr std::array<_Tp, _Nm> ArrayInit(std::initializer_list<std::pair<std::size_t, _Tp>> vals)
+{
+	std::array<_Tp, _Nm> t;
+        for(const std::pair<std::size_t, _Tp> &v : vals)
+            t.at(v.first) = v.second;
+	return t;
+}
 
 
 template <typename T> struct TPoint;

@@ -41,7 +41,7 @@ struct Vertex: public vec3d
 struct Polygon
 {
     int8_t num_vertices = 0;
-    std::array<int32_t, GFX_MAX_VERTEX> v {{0}};
+    std::array<int32_t, GFX_MAX_VERTEX> v = Common::ArrayInit<int32_t, GFX_MAX_VERTEX>(0);
 
     // Geometry plane Ax + Bx + Cz + D = 0
     // A,B,C plane vector normal n

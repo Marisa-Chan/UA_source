@@ -81,7 +81,7 @@ struct TInputState
     int16_t  HotKeyID = 0;
     uint8_t  chr = 0;
 
-    std::array<float, 32> Sliders = {0.0};
+    std::array<float, 32> Sliders = Common::ArrayInit<float, 32>(0.0);
     Common::BitMan<32> Buttons;
     TClickBoxInf ClickInf;
 };
