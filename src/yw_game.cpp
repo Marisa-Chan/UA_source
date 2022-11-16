@@ -204,6 +204,8 @@ int NC_STACK_ypaworld::LevelCommonLoader(TLevelDescription *mapp, int levelID, i
     _dbgTotalFlakCountMax = 0;
     _dbgTotalWeaponCountMax = 0;
     _dbgTotalRoboCountMax = 0;
+    
+    _playerOwner = 0;
 
     if ( _gfxMode != GFX::Engine.GetGfxMode() || _GameShell->IsWindowedFlag() != GFX::Engine.GetGfxMode().windowed )
     {

@@ -2006,11 +2006,6 @@ void NC_STACK_ypaworld::DeleteLevel()
         _gameWasNetGame = false;
     }
 
-    if ( _userUnit )
-        _playerOwner = _userUnit->_owner;
-    else
-        _playerOwner = 0;
-
     if ( _replayRecorder->do_record )
         recorder_stoprec(this);
 
@@ -6909,6 +6904,7 @@ void NC_STACK_ypaworld::setYW_visSectors(int visSectors)
 void NC_STACK_ypaworld::setYW_userHostStation(NC_STACK_ypabact *host)
 {
     _userRobo = host;
+    _playerOwner = host->_owner;
 }
 
 void NC_STACK_ypaworld::setYW_userVehicle(NC_STACK_ypabact *bact)
