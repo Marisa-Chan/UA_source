@@ -1178,14 +1178,7 @@ int UserData::ypaworld_func158__sub0__sub7()
     return 1;
 }
 
-void NC_STACK_ypaworld::sub_4811E8(int id)
-{
-    if ( id > _toolTipId )
-    {
-        _toolTipHotKeyId = -1;
-        _toolTipId = id;
-    }
-}
+
 
 void UserData::sub_4DE248(int id)
 {
@@ -1195,47 +1188,47 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1001:
-        p_YW->sub_4811E8(0x7B);
+        p_YW->SetShowingTooltip(World::TIP_MENU_PROFILESCREEN);
         break;
 
     case 1003:
-        p_YW->sub_4811E8(0x78);
+        p_YW->SetShowingTooltip(World::TIP_MENU_INPUTSCREEN);
         break;
 
     case 1004:
-        p_YW->sub_4811E8(0x79);
+        p_YW->SetShowingTooltip(World::TIP_MENU_VIDEOSCREEN);
         break;
 
     case 1005:
-        p_YW->sub_4811E8(0x7A);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SOUNDSCREEN);
         break;
 
     case 1007:
-        p_YW->sub_4811E8(0x83);
+        p_YW->SetShowingTooltip(World::TIP_MENU_QUIT);
         break;
 
     case 1008:
-        p_YW->sub_4811E8(0x7C);
+        p_YW->SetShowingTooltip(World::TIP_MENU_LANGSCREEN);
         break;
 
     case 1011:
-        p_YW->sub_4811E8(0x81);
+        p_YW->SetShowingTooltip(World::TIP_MENU_BRIEFRESET);
         break;
 
     case 1013:
-        p_YW->sub_4811E8(0x80);
+        p_YW->SetShowingTooltip(World::TIP_MENU_BRIEFFAST);
         break;
 
     case 1014:
-        p_YW->sub_4811E8(0x82);
+        p_YW->SetShowingTooltip(World::TIP_MENU_PLAYLEVEL);
         break;
 
     case 1015:
-        p_YW->sub_4811E8(0x7F);
+        p_YW->SetShowingTooltip(World::TIP_MENU_LOADLAST);
         break;
 
     case 1016:
-        p_YW->sub_4811E8(0x88);
+        p_YW->SetShowingTooltip(World::TIP_MENU_NETSCREEN);
         break;
 
     case 1017:
@@ -1243,84 +1236,84 @@ void UserData::sub_4DE248(int id)
     case 1107:
     case 1167:
     case 1218:
-        p_YW->sub_4811E8(0x89);
+        p_YW->SetShowingTooltip(World::TIP_MENU_HELP);
         break;
 
     case 1018:
-        p_YW->sub_4811E8(0x6A);
+        p_YW->SetShowingTooltip(World::TIP_MENU_LVLSELECTMAP);
         break;
 
     case 1019:
         if ( p_YW->_levelInfo.State == TLevelInfo::STATE_MENU )
-            p_YW->sub_4811E8(0x8A);
+            p_YW->SetShowingTooltip(World::TIP_MENU_TOMAIN);
         else if ( p_YW->_levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
-            p_YW->sub_4811E8(0x49);
+            p_YW->SetShowingTooltip(World::TIP_MENU_EXITDEBRIEF);
         else
-            p_YW->sub_4811E8(0x8B);
+            p_YW->SetShowingTooltip(World::TIP_MENU_BACKTOLVLSEL);
         break;
 
     case 1020:
-        p_YW->sub_4811E8(0x4A);
+        p_YW->SetShowingTooltip(World::TIP_MENU_GOTOLOADSAVE);
         break;
 
     case 1050:
-        p_YW->sub_4811E8(0xC4);
+        p_YW->SetShowingTooltip(World::TIP_INPUT_USEJOY);
         break;
 
     case 1051:
-        p_YW->sub_4811E8(0xC1);
+        p_YW->SetShowingTooltip(World::TIP_INPUT_APPLY);
         break;
 
     case 1053:
-        p_YW->sub_4811E8(0xC3);
+        p_YW->SetShowingTooltip(World::TIP_INPUT_RESET);
         break;
 
     case 1054:
-        p_YW->sub_4811E8(0xC2);
+        p_YW->SetShowingTooltip(World::TIP_INPUT_CANCEL);
         break;
 
     case 1055:
-        p_YW->sub_4811E8(0xC5);
+        p_YW->SetShowingTooltip(World::TIP_INPUT_FFJOY);
         break;
 
     case 1056:
-        p_YW->sub_4811E8(0xC6);
+        p_YW->SetShowingTooltip(World::TIP_INPUT_REMOVEKEY);
         break;
 
     case 1061:
-        p_YW->sub_4811E8(0x4D);
+        p_YW->SetShowingTooltip(World::TIP_MENU_ALTJOY);
         break;
 
     case 1101:
-        p_YW->sub_4811E8(0x76);
+        p_YW->SetShowingTooltip(World::TIP_MENU_LOADUSER);
         break;
 
     case 1102:
-        p_YW->sub_4811E8(0xA8);
+        p_YW->SetShowingTooltip(World::TIP_PROFILE_DEL);
         break;
 
     case 1103:
-        p_YW->sub_4811E8(0xA9);
+        p_YW->SetShowingTooltip(World::TIP_PFOFILE_NEW);
         break;
 
     case 1104:
-        p_YW->sub_4811E8(0x77);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SAVEUSER);
         break;
 
     case 1105:
         switch ( diskScreenMode )
         {
         case 1:
-            p_YW->sub_4811E8(0xAB);
+            p_YW->SetShowingTooltip(World::TIP_PFOFILE_SAVETHIS);
             break;
         case 2:
-            p_YW->sub_4811E8(0xAA);
+            p_YW->SetShowingTooltip(World::TIP_PFOFILE_LOADTHIS);
             break;
         case 3:
-            p_YW->sub_4811E8(0xAD);
+            p_YW->SetShowingTooltip(World::TIP_PFOFILE_NEWTHIS);
             break;
         case 4:
-            p_YW->sub_4811E8(0xAC);
+            p_YW->SetShowingTooltip(World::TIP_PFOFILE_DELTHIS);
             break;
         default:
             break;
@@ -1331,101 +1324,101 @@ void UserData::sub_4DE248(int id)
         switch ( diskScreenMode )
         {
         case 0:
-            p_YW->sub_4811E8(0xAE);
+            p_YW->SetShowingTooltip(World::TIP_PFOFILE_CLOSE);
             break;
         case 1:
-            p_YW->sub_4811E8(0xB0);
+            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELSAVE);
             break;
         case 2:
-            p_YW->sub_4811E8(0xAF);
+            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELLOAD);
             break;
         case 3:
-            p_YW->sub_4811E8(0xB2);
+            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELNEW);
             break;
         case 4:
-            p_YW->sub_4811E8(0xB1);
+            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELDEL);
             break;
         default:
             break;
         }
         break;
     case 1150:
-        p_YW->sub_4811E8(0x4E);
+        p_YW->SetShowingTooltip(World::TIP_MENU_16BITTEX);
         break;
 
     case 1151:
-        p_YW->sub_4811E8(0xB7);
+        p_YW->SetShowingTooltip(World::TIP_CONF_CHANNELS);
         break;
 
     case 1152:
-        p_YW->sub_4811E8(0xBE);
+        p_YW->SetShowingTooltip(World::TIP_CONF_FXVOLUME);
         break;
 
     case 1154:
-        p_YW->sub_4811E8(0xBF);
+        p_YW->SetShowingTooltip(World::TIP_CONF_MUSICVOLUME);
         break;
 
     case 1156:
-        p_YW->sub_4811E8(0xB5);
+        p_YW->SetShowingTooltip(World::TIP_CONF_RESOLUTION);
         break;
 
     case 1157:
-        p_YW->sub_4811E8(0xB8);
+        p_YW->SetShowingTooltip(World::TIP_CONF_FARDEPTH);
         break;
 
     case 1159:
-        p_YW->sub_4811E8(0xC0);
+        p_YW->SetShowingTooltip(World::TIP_CONF_EXPLODES);
         break;
 
     case 1160:
-        p_YW->sub_4811E8(0xB9);
+        p_YW->SetShowingTooltip(World::TIP_CONF_SKY);
         break;
 
     case 1161:
-        p_YW->sub_4811E8(0xB4);
+        p_YW->SetShowingTooltip(World::TIP_CONF_APPLY);
         break;
 
     case 1162:
-        p_YW->sub_4811E8(0xB3);
+        p_YW->SetShowingTooltip(World::TIP_CONF_CLOSE);
         break;
 
     case 1163:
-        p_YW->sub_4811E8(0xBD);
+        p_YW->SetShowingTooltip(World::TIP_CONF_ENEMYSIGNS);
         break;
 
     case 1164:
-        p_YW->sub_4811E8(0xBB);
+        p_YW->SetShowingTooltip(World::TIP_CONF_MUSIC);
         break;
 
     case 1165:
-        p_YW->sub_4811E8(0xBC);
+        p_YW->SetShowingTooltip(World::TIP_CONF_HWSWMOUSE);
         break;
 
     case 1166:
-        p_YW->sub_4811E8(85); // windowed
+        p_YW->SetShowingTooltip(World::TIP_MENU_WINDOWED); // windowed
         break;
 
     case 1172:
-        p_YW->sub_4811E8(0x4B);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SEL3DDEV);
         break;
 
     case 1201:
         switch ( netSelMode )
         {
         case NETSCREEN_MODE_SELECT:
-            p_YW->sub_4811E8(0x8E);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETSELPROV);
             break;
         case NETSCREEN_SESSION_SELECT:
-            p_YW->sub_4811E8(0x91);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETSELSESS);
             break;
         case NETSCREEN_ENTER_NAME:
-            p_YW->sub_4811E8(0x8F);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETPLNAME);
             break;
         case NETSCREEN_CHOOSE_MAP:
-            p_YW->sub_4811E8(0x90);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETSELLVL);
             break;
         case NETSCREEN_INSESSION:
-            p_YW->sub_4811E8(0x92);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETSTART);
             break;
         default:
             break;
@@ -1435,30 +1428,30 @@ void UserData::sub_4DE248(int id)
     case 1202:
         if ( netSelMode == NETSCREEN_SESSION_SELECT )
         {
-            p_YW->sub_4811E8(0x6E);
+            p_YW->SetShowingTooltip(World::TIP_MENU_SELNEWLEVEL);
         }
         else if ( netSelMode == NETSCREEN_INSESSION )
         {
-            p_YW->sub_4811E8(0x6F);
+            p_YW->SetShowingTooltip(World::TIP_MENU_SENDTOALL);
         }
         break;
 
     case 1203:
-        p_YW->sub_4811E8(0x8C);
+        p_YW->SetShowingTooltip(World::TIP_MENU_NETCLOSE);
         break;
 
     case 1205:
         switch ( netSelMode )
         {
         case NETSCREEN_SESSION_SELECT:
-            p_YW->sub_4811E8(0x94);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETBACKPLAYER);
             break;
         case NETSCREEN_ENTER_NAME:
-            p_YW->sub_4811E8(0x93);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETBACKPROV);
             break;
         case NETSCREEN_CHOOSE_MAP:
         case NETSCREEN_INSESSION:
-            p_YW->sub_4811E8(0x95);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NETBACKSESS);
             break;
         default:
             break;
@@ -1466,42 +1459,42 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1206:
-        p_YW->sub_4811E8(0x70);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SELRESIST);
         break;
 
     case 1207:
-        p_YW->sub_4811E8(0x71);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SELGHOR);
         break;
 
     case 1208:
-        p_YW->sub_4811E8(0x72);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SELMYKO);
         break;
 
     case 1209:
-        p_YW->sub_4811E8(0x73);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SELTAER);
         break;
 
     case 1219:
         if ( rdyStart )
-            p_YW->sub_4811E8(0x75);
+            p_YW->SetShowingTooltip(World::TIP_MENU_NOTREADY);
         else
-            p_YW->sub_4811E8(0x74);
+            p_YW->SetShowingTooltip(World::TIP_MENU_READY);
         break;
 
     case 1225:
-        p_YW->sub_4811E8(0x4C);
+        p_YW->SetShowingTooltip(World::TIP_MENU_SENDMSG);
         break;
 
     case 1250:
-        p_YW->sub_4811E8(0x6C);
+        p_YW->SetShowingTooltip(World::TIP_MENU_LANGCHOOSE);
         break;
 
     case 1251:
-        p_YW->sub_4811E8(0x6D);
+        p_YW->SetShowingTooltip(World::TIP_MENU_LANGEXIT);
         break;
 
     case 1252:
-        p_YW->sub_4811E8(0x89);
+        p_YW->SetShowingTooltip(World::TIP_MENU_HELP);
         break;
     }
 }

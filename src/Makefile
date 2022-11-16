@@ -99,6 +99,7 @@ OBJS =  \
 	winp.cpp\
 	wintimer.cpp\
 	world/analyzer.cpp\
+	world/defstr.cpp\
 	world/luaevents.cpp\
 	world/parsers.cpp\
 	world/nparticle.cpp\

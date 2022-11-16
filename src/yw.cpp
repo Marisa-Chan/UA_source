@@ -297,8 +297,6 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
         Deinit();
         return 0;
     }
-    
-    InitTooltips();
 
     _shellGfxMode = Common::Point( GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT );
     _gfxMode = Common::Point( GFX::DEFAULT_WIDTH, GFX::DEFAULT_HEIGHT );
@@ -5268,7 +5266,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 
         FontUA::set_txtColor(&pos, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
-        pos = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pos,  yw->GetLocaleString(yw->_toolTipId + 800, yw->_toolTips[ yw->_toolTipId ]) , yw->_screenSize.x);
+        pos = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pos,  yw->GetTooltipString() , yw->_screenSize.x);
 
         FontUA::set_end(&pos);
 
@@ -5279,6 +5277,7 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
 
         GFX::Engine.raster_func209(&v10);
     }
+    
     yw->_toolTipHotKeyId = -1;
     yw->_toolTipId = 0;
 }

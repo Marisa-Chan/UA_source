@@ -15,6 +15,7 @@
 #include "ypagun.h"
 #include "windp.h"
 #include "world/analyzer.h"
+#include "world/stringids.h"
 
 
 extern uint32_t bact_id;
@@ -121,14 +122,7 @@ bzd bzda;
 ////////////////////////////////////////
 
 
-void sub_481204(NC_STACK_ypaworld *yw, int a2, int a3)
-{
-    if ( a2 > yw->_toolTipId )
-    {
-        yw->_toolTipHotKeyId = a3;
-        yw->_toolTipId = a2;
-    }
-}
+
 
 
 void NC_STACK_ypaworld::sb_0x4c87fc(const std::string &a2, GuiBase *lstvw)
@@ -4426,7 +4420,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         if ( bzda.field_1D0 & 0x16 )
                         {
                             bzda.field_1D0 = bzda.field_1CC & 1;
-                            sub_481204(yw, 3, 2);
+                            yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
                         }
                         else
                         {
@@ -4446,14 +4440,14 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         }
                     }
                     else
-                        sub_481204(yw, 3, 2);
+                        yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
 
                 }
                 else if ( bzda.field_1D0 & 0x16 )
                 {
                     bzda.field_1D0 = bzda.field_1CC & 1;
 
-                    sub_481204(yw, 3, 2);
+                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
                 }
                 else
                 {
@@ -4473,7 +4467,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         bzda.field_1D0 = 2;
 
                     a2a = 0;
-                    sub_481204(yw, 3, 2);
+                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
                 }
                 break;
 
@@ -4486,7 +4480,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         bzda.field_1D0 = 8;
                 }
 
-                sub_481204(yw, 5, 4);
+                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_TAKECONTROL, 4);
                 break;
 
             case 2: //MAP
@@ -4516,9 +4510,9 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 }
 
                 if ( winpt->selected_btnID == 2 )
-                    sub_481204(yw, 8, 8);
+                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_MAPWND, 8);
                 else if ( winpt->selected_btnID == 3 )
-                    sub_481204(yw, 9, 9);
+                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_FINDERWND, 9);
 
                 break;
 
@@ -4534,7 +4528,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         bzda.field_1D0 = 1;
                 }
 
-                sub_481204(yw, 17, 21);
+                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_GOTOHS, 21);
                 break;
 
             case 5:
@@ -4544,7 +4538,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     bact1 = yw->_userUnit->_parent;
 
-                sub_481204(yw, 18, 23);
+                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_GOTOCMDR, 23);
                 break;
 
             case 6: // Cycle through units in squad
@@ -4556,14 +4550,14 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                     if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                         bact1 = ypaworld_func64__sub7__sub2__sub5(yw);
 
-                    sub_481204(yw, 2, 22);
+                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_GOINTOGUNS, 22);
                 }
                 else
                 {
                     if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                         bact1 = ypaworld_func64__sub7__sub2__sub4(yw);
 
-                    sub_481204(yw, 19, 22);
+                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEXTUNIT, 22);
                 }
                 break;
 
@@ -4574,7 +4568,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     bact1 = yw->GetNextSquad();
 
-                sub_481204(yw, 20, 20);
+                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEXTCMDR, 20);
                 break;
 
             case 8:
@@ -4584,7 +4578,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     yw->SituationAnalyzer();
 
-                sub_481204(yw, 47, 46);
+                yw->SetShowingTooltipWithHotkey(World::TIP_ANALYZER, 46);
                 break;
 
             case 9:
@@ -4596,7 +4590,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                     yw->sub_449DE8(yw->GetLocaleString(767, "help\\l17.html")); //MAKE ME
                 }
 
-                sub_481204(yw, 48, 43);
+                yw->SetShowingTooltipWithHotkey(World::TIP_ONLINEHELP, 43);
                 break;
 
             case 10:
@@ -4611,7 +4605,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         ypaworld_func64__sub7__sub2__sub9(yw);
                 }
 
-                sub_481204(yw, 21, 24);
+                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_PAUSECANCEL, 24);
                 break;
 
             default:
@@ -5051,19 +5045,19 @@ void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, TInputState *inpt)
         switch ( winpt->selected_btnID )
         {
         case 0:
-            yw->sub_4811E8(35);
+            yw->SetShowingTooltip(World::TIP_ENERGY_RELOAD);
             break;
 
         case 1:
-            yw->sub_4811E8(36);
+            yw->SetShowingTooltip(World::TIP_ENERGY_MAIN);
             break;
 
         case 2:
-            yw->sub_4811E8(37);
+            yw->SetShowingTooltip(World::TIP_ENERGY_CREATION);
             break;
 
         case 3:
-            yw->sub_4811E8(39);
+            yw->SetShowingTooltip(World::TIP_ENERGY_TELEPORT);
             break;
 
         default:
@@ -5655,14 +5649,14 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypabact *bact
     if ( bact->_status == BACT_STATUS_NORMAL )
     {
         if ( bact->_status_flg & BACT_STFLAG_ESCAPE )
-            sub_4811E8(34);
+            SetShowingTooltip(World::TIP_FINDER_ESCAPE);
         else if ( bact->_secndTtype )
-            sub_4811E8(32);
+            SetShowingTooltip(World::TIP_FINDER_FIGHTING);
         else if ( bact->_primTtype )
-            sub_4811E8(33);
+            SetShowingTooltip(World::TIP_FINDER_MOVE);
     }
     else if (bact->_status == BACT_STATUS_IDLE)
-        sub_4811E8(31);
+        SetShowingTooltip(World::TIP_FINDER_WAITORDER);
 }
 
 NC_STACK_ypabact * NC_STACK_ypaworld::sub_4C7B0C(int sqid, int a3)
@@ -5807,7 +5801,7 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(TInputState *inpt)
                 {
                     sub_449DE8(GetLocaleString(765, "help\\l15.html")); //MAKE ME
                 }
-                sub_4811E8(0x30);
+                SetShowingTooltip(World::TIP_ONLINEHELP);
             }
             if ( winpt->selected_btnID == 6 && this->_activeCmdrRemapIndex != -1 && !(bzda.field_1D0 & 0x20) )
             {
@@ -5827,23 +5821,23 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(TInputState *inpt)
                 switch ( v9 )
                 {
                 case 0:
-                    sub_481204(this, 12, 38);
+                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_0, 38);
                     break;
 
                 case 1:
-                    sub_481204(this, 13, 39);
+                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_1, 39);
                     break;
 
                 case 2:
-                    sub_481204(this, 14, 40);
+                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_2, 40);
                     break;
 
                 case 3:
-                    sub_481204(this, 15, 41);
+                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_3, 41);
                     break;
 
                 case 4:
-                    sub_481204(this, 16, 42);
+                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_4, 42);
                     break;
 
                 default:
@@ -5851,7 +5845,7 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(TInputState *inpt)
                 }
 
                 if ( winpt->move.BtnPos.x >= squadron_manager.field_2D8 )
-                    sub_4811E8(46);
+                    SetShowingTooltip(World::TIP_COUNTINSQUAD);
             }
 
             if ( winpt->flag & (TClickBoxInf::FLAG_RM_DOWN | TClickBoxInf::FLAG_LM_DOWN) )
@@ -6363,7 +6357,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, TInputState *inpt)
                     yw->sub_449DE8(yw->GetLocaleString(764, "help\\l14.html")); //MAKE ME
                 }
 
-                yw->sub_4811E8(48);
+                yw->SetShowingTooltip(World::TIP_ONLINEHELP);
                 break;
 
             case 7:
@@ -6391,31 +6385,31 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, TInputState *inpt)
             switch ( winpt->selected_btnID )
             {
             case 3:
-                sub_481204(yw, 22, 10);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_DETAIL, 10);
                 break;
 
             case 4:
-                sub_481204(yw, 23, 11);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_OWNERS, 11);
                 break;
 
             case 5:
-                sub_481204(yw, 24, 12);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_EINFO, 12);
                 break;
 
             case 6:
-                sub_481204(yw, 26, 14);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_LOCKVIEWER, 14);
                 break;
 
             case 7:
-                sub_481204(yw, 29, 16);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_ZOOMIN, 16);
                 break;
 
             case 8:
-                sub_481204(yw, 28, 17);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_ZOOMOUT, 17);
                 break;
 
             case 9:
-                sub_481204(yw, 30, 18);
+                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_SIZE, 18);
                 break;
 
             default:
@@ -6745,7 +6739,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     sub_449DE8(GetLocaleString(766, "help\\l16.html"));
 
-                sub_4811E8(0x30);
+                SetShowingTooltip(World::TIP_ONLINEHELP);
                 break;
 
             case 8:
@@ -10845,27 +10839,27 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
         yw_MouseSelect(arg);
         ypaworld_func64__sub21__sub7();
 
-        int v5 = 0;
-        int v6 = 0;
-        int v8 = World::DOACTION_0;
+        int tooltip = 0;
+        int mousePointer = 0;
+        int doAction = World::DOACTION_0;
 
         if ( _mouseGrabbed )
         {
-            v6 = -1;
+            mousePointer = -1;
         }
         else if ( _guiDragDefaultMouse || ((_guiActFlags & 4) && !(_guiActFlags & 0x48)) )
         {
-            v6 = 0;
+            mousePointer = 0;
         }
         else if ( robo_map.field_1E8 & 0x200 )
         {
-            v6 = 2;
+            mousePointer = 2;
         }
         else
         {
 
-            v6 = 1;
-            v8 = World::DOACTION_0;
+            mousePointer = 1;
+            doAction = World::DOACTION_0;
 
             if ( bzda.field_1D0 == 1 )
             {
@@ -10875,15 +10869,15 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         if ( _userRobo->_owner == _bactOnMouse->_owner )
                         {
-                            v8 = World::DOACTION_8;
-                            v6 = 2;
-                            v5 = 64;
+                            doAction = World::DOACTION_8;
+                            mousePointer = 2;
+                            tooltip = World::TIP_DO_SELECT;
                         }
                         else if ( _activeCmdrRemapIndex != -1 )
                         {
-                            v8 = World::DOACTION_2;
-                            v6 = 3;
-                            v5 = 67;
+                            doAction = World::DOACTION_2;
+                            mousePointer = 3;
+                            tooltip = World::TIP_DO_ATKVHCL;
                         }
                     }
                 }
@@ -10891,15 +10885,15 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 {
                     if ( _userRobo->_owner == _cellOnMouse->owner && _cellOnMouse->IsCanSee(_userRobo->_owner) )
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 4;
-                        v5 = 65;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 4;
+                        tooltip = World::TIP_DO_MOVE;
                     }
                     else
                     {
-                        v8 = World::DOACTION_2;
-                        v5 = 66;
-                        v6 = 3;
+                        doAction = World::DOACTION_2;
+                        tooltip = World::TIP_DO_ATKSECTOR;
+                        mousePointer = 3;
                     }
                 }
             }
@@ -10909,30 +10903,30 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 {
                     if ( (_guiActFlags & 0x20) && _userRobo->_owner == _bactOnMouse->_owner )
                     {
-                        v8 = World::DOACTION_8;
-                        v6 = 2;
-                        v5 = 64;
+                        doAction = World::DOACTION_8;
+                        mousePointer = 2;
+                        tooltip = World::TIP_DO_SELECT;
                     }
                     else
                     {
                         switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
-                            v8 = World::DOACTION_ADD_UNIT1;
-                            v6 = 6;
-                            v5 = 68;
+                            doAction = World::DOACTION_ADD_UNIT1;
+                            mousePointer = 6;
+                            tooltip = World::TIP_DO_NEWSQUAD;
                             break;
 
                         case 1:
-                            v5 = 97;
+                            tooltip = World::TIP_ERR_NOROOM;
                             break;
 
                         case 2:
-                            v5 = 98;
+                            tooltip = World::TIP_ERR_NOENERGY;
                             break;
 
                         case 3:
-                            v5 = 81;
+                            tooltip = World::TIP_UNITLIMIT;
                             break;
 
                         default:
@@ -10948,29 +10942,29 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                         {
                             if ( _userRobo->_owner == _bactOnMouse->_owner )
                             {
-                                v8 = World::DOACTION_8;
-                                v6 = 2;
-                                v5 = 64;
+                                doAction = World::DOACTION_8;
+                                mousePointer = 2;
+                                tooltip = World::TIP_DO_SELECT;
                             }
                             else
                             {
-                                v8 = World::DOACTION_2;
-                                v6 = 3;
-                                v5 = 67;
+                                doAction = World::DOACTION_2;
+                                mousePointer = 3;
+                                tooltip = World::TIP_DO_ATKVHCL;
                             }
                         }
                     }
                     else if ( _userRobo->_owner == _cellOnMouse->owner && _cellOnMouse->IsCanSee(_userRobo->_owner) )
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 4;
-                        v5 = 65;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 4;
+                        tooltip = World::TIP_DO_MOVE;
                     }
                     else
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 3;
-                        v5 = 66;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 3;
+                        tooltip = World::TIP_DO_ATKSECTOR;
                     }
                 }
             }
@@ -10980,30 +10974,30 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 {
                     if ( (_guiActFlags & 0x20) && _userRobo->_owner == _bactOnMouse->_owner )
                     {
-                        v8 = World::DOACTION_8;
-                        v6 = 2;
-                        v5 = 64;
+                        doAction = World::DOACTION_8;
+                        mousePointer = 2;
+                        tooltip = World::TIP_DO_SELECT;
                     }
                     else if ( _activeCmdrRemapIndex != -1 )
                     {
                         switch ( sb_0x4d3d44(&arg->ClickInf) )
                         {
                         case 0:
-                            v8 = World::DOACTION_ADD_UNIT2;
-                            v6 = 7;
-                            v5 = 69;
+                            doAction = World::DOACTION_ADD_UNIT2;
+                            mousePointer = 7;
+                            tooltip = World::TIP_DO_ADDSQUAD;
                             break;
 
                         case 1:
-                            v5 = 97;
+                            tooltip = World::TIP_ERR_NOROOM;
                             break;
 
                         case 2:
-                            v5 = 98;
+                            tooltip = World::TIP_ERR_NOENERGY;
                             break;
 
                         case 3:
-                            v5 = 81;
+                            tooltip = World::TIP_UNITLIMIT;
                             break;
 
                         default:
@@ -11020,29 +11014,29 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                         {
                             if ( _userRobo->_owner == _bactOnMouse->_owner )
                             {
-                                v8 = World::DOACTION_8;
-                                v6 = 2;
-                                v5 = 64;
+                                doAction = World::DOACTION_8;
+                                mousePointer = 2;
+                                tooltip = World::TIP_DO_SELECT;
                             }
                             else
                             {
-                                v8 = World::DOACTION_2;
-                                v6 = 3;
-                                v5 = 67;
+                                doAction = World::DOACTION_2;
+                                mousePointer = 3;
+                                tooltip = World::TIP_DO_ATKVHCL;
                             }
                         }
                     }
                     else if ( _userRobo->_owner == _cellOnMouse->owner && _cellOnMouse->IsCanSee(_userRobo->_owner) )
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 4;
-                        v5 = 65;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 4;
+                        tooltip = World::TIP_DO_MOVE;
                     }
                     else
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 3;
-                        v5 = 66;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 3;
+                        tooltip = World::TIP_DO_ATKSECTOR;
                     }
                 }
             }
@@ -11052,14 +11046,14 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 {
                     if ( arg->KbdLastDown == Input::KC_F7 && (arg->ClickInf.flag & TClickBoxInf::FLAG_RM_HOLD) )
                     {
-                        v8 = World::DOACTION_19;
-                        v6 = 8;
+                        doAction = World::DOACTION_19;
+                        mousePointer = 8;
                     }
                     else if ( _userRobo->_owner == _bactOnMouse->_owner )
                     {
-                        v8 = World::DOACTION_5;
-                        v6 = 8;
-                        v5 = 70;
+                        doAction = World::DOACTION_5;
+                        mousePointer = 8;
+                        tooltip = World::TIP_DO_CONTROL;
                     }
                 }
             }
@@ -11069,15 +11063,15 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 {
                     if ( _userRobo->_owner == _bactOnMouse->_owner )
                     {
-                        v8 = World::DOACTION_8;
-                        v6 = 2;
-                        v5 = 64;
+                        doAction = World::DOACTION_8;
+                        mousePointer = 2;
+                        tooltip = World::TIP_DO_SELECT;
                     }
                     else
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 3;
-                        v5 = 67;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 3;
+                        tooltip = World::TIP_DO_ATKVHCL;
                     }
                 }
                 else
@@ -11085,29 +11079,29 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     switch ( UserActBuildCheck() )
                     {
                     case 0:
-                        v8 = World::DOACTION_6;
-                        v6 = 10;
-                        v5 = 71;
+                        doAction = World::DOACTION_6;
+                        mousePointer = 10;
+                        tooltip = World::TIP_DO_BUILD;
                         break;
 
                     case 6:
-                        v5 = 98;
+                        tooltip = World::TIP_ERR_NOENERGY;
                         break;
 
                     case 2:
-                        v5 = 99;
+                        tooltip = World::TIP_ERR_NOTOWNED;
                         break;
 
                     case 3:
-                        v5 = 101;
+                        tooltip = World::TIP_ERR_BUILD_TOOCLOSE;
                         break;
 
                     case 4:
-                        v5 = 100;
+                        tooltip = World::TIP_ERR_BUILD_TOOFAR;
                         break;
 
                     case 5:
-                        v5 = 102;
+                        tooltip = World::TIP_ERR_BUILD_INPROC;
                         break;
 
                     default:
@@ -11121,15 +11115,15 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 {
                     if ( _userRobo->_owner == _bactOnMouse->_owner )
                     {
-                        v8 = World::DOACTION_8;
-                        v6 = 2;
-                        v5 = 64;
+                        doAction = World::DOACTION_8;
+                        mousePointer = 2;
+                        tooltip = World::TIP_DO_SELECT;
                     }
                     else
                     {
-                        v8 = World::DOACTION_2;
-                        v6 = 3;
-                        v5 = 67;
+                        doAction = World::DOACTION_2;
+                        mousePointer = 3;
+                        tooltip = World::TIP_DO_ATKVHCL;
                     }
                 }
                 else
@@ -11137,25 +11131,25 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     switch ( ypaworld_func64__sub21__sub3() )
                     {
                     case 0:
-                        v8 = World::DOACTION_10;
-                        v6 = 9;
-                        v5 = 72;
+                        doAction = World::DOACTION_10;
+                        mousePointer = 9;
+                        tooltip = World::TIP_DO_TELEPORT;
                         break;
 
                     case 5:
-                        v5 = 103;
+                        tooltip = World::TIP_ERR_UNITSINSECTOR;
                         break;
 
                     case 1:
-                        v5 = 98;
+                        tooltip = World::TIP_ERR_NOENERGY;
                         break;
 
                     case 2:
-                        v5 = 104;
+                        tooltip = World::TIP_ERR_SECTORJAGGY;
                         break;
 
                     case 3:
-                        v5 = 105;
+                        tooltip = World::TIP_ERR_LOCUNKNOWN;
                         break;
 
                     default:
@@ -11164,13 +11158,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 }
             }
 
-            int v18 = ypaworld_func64__sub21__sub4(arg, v8);
-            _doAction = v18;
+            _doAction = ypaworld_func64__sub21__sub4(arg, doAction);
+            int v18 = _doAction;
 
             if ( ypaworld_func64__sub21__sub6(&arg->ClickInf) )
             {
                 v18 = World::DOACTION_5;
-                v6 = 8;
+                mousePointer = 8;
                 arg->ClickInf.flag |= TClickBoxInf::FLAG_LM_DOWN;
             }
 
@@ -11178,20 +11172,20 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                 ypaworld_func64__sub21__sub5(v18);
 
             if ( (arg->ClickInf.flag & TClickBoxInf::FLAG_LM_HOLD) && v18 != World::DOACTION_0 )
-                v6 = 0;
+                mousePointer = 0;
         }
 
         if ( _mouseCursorHidden )
-            v6 = -1;
+            mousePointer = -1;
 
         GFX::displ_arg263 v19;
 
-        if ( v6 == -1 )
+        if ( mousePointer == -1 )
             v19.bitm = NULL;
-        else if (_mousePointers[v6])
-            v19.bitm = _mousePointers[v6]->GetBitmap();
+        else if (_mousePointers[mousePointer])
+            v19.bitm = _mousePointers[mousePointer]->GetBitmap();
 
-        switch ( v6 )
+        switch ( mousePointer )
         {
         case 0:
             v19.pointer_id = 1;
@@ -11247,8 +11241,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
 
         GFX::Engine.SetCursor(v19.pointer_id, 0);
 
-        if ( v5 )
-            sub_4811E8(v5);
+        if ( tooltip )
+            SetShowingTooltip(tooltip);
     }
 }
 
@@ -11342,7 +11336,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(TInputState *inpt)
         if ( winp->flag & TClickBoxInf::FLAG_MM_HOLD )
             inpt->Buttons.Set(3);
 
-        sub_4811E8(0x50);
+        SetShowingTooltip(World::TIP_MOUSECAPTURED);
     }
 
     if ( !v38 )

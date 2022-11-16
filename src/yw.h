@@ -369,6 +369,8 @@ inline uint32_t GetUpgradeLogID(uint8_t upg)
 
 
 #include "world/history.h"
+#include "world/stringids.h"
+#include "world/defstr.h"
 
 
 
@@ -2204,7 +2206,34 @@ public:
     NC_STACK_ypabact *recorder_newObject(trec_bct *oinf);
     void ypaworld_func163__sub1(recorder *rcrd, int a3);
     
-    void sub_4811E8(int id);
+    void SetShowingTooltip(int32_t id)
+    {
+        if ( id > _toolTipId ) // avoid flickr of tooltips
+        {
+            _toolTipHotKeyId = -1;
+            _toolTipId = id;
+        }
+    }
+    
+    void SetShowingTooltipWithHotkey(int32_t id, int32_t hotkey)
+    {
+        if ( id > _toolTipId ) // avoid flickr of tooltips
+        {
+            _toolTipHotKeyId = hotkey;
+            _toolTipId = id;
+        }
+    }
+    
+    std::string GetTooltipString(uint32_t id) const
+    {
+        return GetLocaleString(World::LBL_TIPS + id, World::DefaultStrings::Tooltips[ id ]);
+    }
+    
+    std::string GetTooltipString() const
+    {
+        return GetTooltipString(_toolTipId);
+    }
+    
     void ypaworld_func64__sub1(TInputState *inpt);
     void ypaworld_func64__sub21__sub5(int arg);
     
@@ -2278,9 +2307,7 @@ public:
     void FreeGameDataCursors();
     
     void SetCmdrIdToSelect(int32_t id) { _cmdrIdToSelect = id; };
-    
-    void InitTooltips();
-    
+        
     World::ParticleSystem &ParticleSystem() { return _particles; };
     
     int32_t GetLegoBld(const cellArea *cell, int bldX, int bldY);
@@ -2395,7 +2422,6 @@ public:
     
     int32_t _toolTipId = 0;
     int32_t _toolTipHotKeyId = -1; // Used to display hotkey name
-    std::vector<std::string> _toolTips;
     
     std::array<SDL_Color, World::COLOR_MAX_NUMBER> _iniColors;
     
