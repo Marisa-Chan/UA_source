@@ -1,5 +1,5 @@
 CDEFS = 
-CFLAGS = -std=c++11 -O0 -g -Wall -fexceptions -mno-ms-bitfields -Wno-class-memaccess -Wshadow -I./
+CFLAGS = -std=c++11 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I./
 TARGET = UA_source
 LDFLAGS = 
 OBJDIR := obj
