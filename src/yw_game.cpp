@@ -2002,7 +2002,6 @@ void NC_STACK_ypaworld::SetupPowerStationInfo(cellArea *cell, int power)
 void NC_STACK_ypaworld::sb_0x456384(const Common::Point &cellId, int ownerid2, int blg_id, int a7)
 {
     uamessage_bldVhcl bvMsg;
-    memset(&bvMsg, 0, sizeof(bvMsg));
 
     cellArea &cell = _cells(cellId);
     World::TBuildingProto *bld = &_buildProtos[ blg_id ];

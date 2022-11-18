@@ -41,10 +41,6 @@ int SFXEngine::init()
     audio_num_palfx = 0;
     dword_546E14 = 0;
 
-    memset(soundSources, 0, sizeof(soundSources));
-    memset(palFXs, 0, sizeof(palFXs));
-    memset(ShakeFXs, 0, sizeof(ShakeFXs));
-
     audio_rev_stereo = false;
     dword_546F0C = 0;
     currentTime = 0;
@@ -1022,9 +1018,9 @@ void SFXEngine::sub_423EFC(int a1, const vec3d &a2, const vec3d &a3, const mat3x
     stru_547024 = a3;
     stru_547030 = a4;
 
-    memset(soundSources, 0, sizeof(soundSources));
-    memset(palFXs, 0, sizeof(palFXs));
-    memset(ShakeFXs, 0, sizeof(ShakeFXs));
+    soundSources.fill(NULL);
+    palFXs.fill(NULL);
+    ShakeFXs.fill(NULL);
 }
 
 void SFXEngine::StopPlayingSounds()

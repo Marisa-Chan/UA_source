@@ -539,7 +539,7 @@ int WinMain__sub0__sub0()
     dword_520400 = 0;
     userdata.clear();
     input_states = TInputState();
-    memset(&world_update_arg, 0, sizeof(world_update_arg));
+    world_update_arg = base_64arg();
 
     if ( !init_classesLists_and_variables() )
     {

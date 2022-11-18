@@ -65,11 +65,11 @@ struct baseRender_msg
 
 struct base_64arg
 {
-    int TimeStamp;
-    int DTime;
-    TInputState *field_8;
-    int field_C;
-    int field_10;
+    int TimeStamp = 0;
+    int DTime = 0;
+    TInputState *field_8 = NULL;
+    int field_C = 0;
+    int field_10 = 0;
 };
 
 

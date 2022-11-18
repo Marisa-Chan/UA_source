@@ -319,10 +319,10 @@ public:
     int audio_channels;
     int audio_num_palfx;
     int dword_546E14; // num_shakeFX
-    TSoundChannel snd_channels[AUDIO_CHANNELS];
-    TSoundSource *soundSources[AUDIO_CHANNELS];
-    TSoundSource *palFXs[8];
-    TSoundSource *ShakeFXs[4];
+    std::array<TSoundChannel, AUDIO_CHANNELS> snd_channels;
+    std::array<TSoundSource *, AUDIO_CHANNELS> soundSources = Common::ArrayInit<TSoundSource *, AUDIO_CHANNELS>(NULL);
+    std::array<TSoundSource *, 8> palFXs = Common::ArrayInit<TSoundSource *, 8>(NULL);
+    std::array<TSoundSource *, 4> ShakeFXs = Common::ArrayInit<TSoundSource *, 4>(NULL);
     bool audio_rev_stereo;
     int dword_546F0C;
     size_t currentTime;

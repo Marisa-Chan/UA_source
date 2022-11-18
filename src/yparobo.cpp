@@ -2903,12 +2903,12 @@ void NC_STACK_yparobo::buildRobo()
             NC_STACK_ypabact *force = AllocForce(&loct);
             if ( force )
             {
-                for (int i = 0; i < 16; i++)
+                for ( robo_t1 &ataker : _roboAttackers )
                 {
-                    if ( !_roboAttackers[i].field_0 )
+                    if ( !ataker.field_0 )
                     {
-                        _roboAttackers[i].field_0 = force->_commandID;
-                        _roboAttackers[i].field_4 = arg132.tgt.pbact->_commandID;
+                        ataker.field_0 = force->_commandID;
+                        ataker.field_4 = arg132.tgt.pbact->_commandID;
                         break;
                     }
                 }
@@ -3306,14 +3306,14 @@ void NC_STACK_yparobo::AI_clearAttackerSlots()
     if ( _clock - _roboAttackersClearTime > 4000 )
     {
         _roboAttackersClearTime = _clock;
-        for (int i = 0; i < 16; i++)
+        for ( robo_t1 &ataker : _roboAttackers )
         {
-            if ( _roboAttackers[i].field_0 )
+            if ( ataker.field_0 )
             {
                 int v6 = 0;
                 for (NC_STACK_ypabact* &node : _kidList )
                 {
-                    if (node->_commandID == _roboAttackers[i].field_0)
+                    if (node->_commandID == ataker.field_0)
                     {
                         v6 = 1;
                         break;
@@ -3322,8 +3322,8 @@ void NC_STACK_yparobo::AI_clearAttackerSlots()
 
                 if ( !v6 )
                 {
-                    _roboAttackers[i].field_0 = 0;
-                    _roboAttackers[i].field_4 = 0;
+                    ataker.field_0 = 0;
+                    ataker.field_4 = 0;
                 }
             }
         }
@@ -3483,11 +3483,11 @@ void NC_STACK_yparobo::checkCommander()
                 {
                     _roboAttackersTime = _clock;
 
-                    for (int i = 0; i < 16; i++)
+                    for ( robo_t1 &ataker : _roboAttackers )
                     {
-                        if ( _roboAttackers[i].field_0 == commander->_commandID)
+                        if ( ataker.field_0 == commander->_commandID)
                         {
-                            sb_0x4a7010__sub1(commander, &_roboAttackers[i]);
+                            sb_0x4a7010__sub1(commander, &ataker);
                             break;
                         }
                     }
@@ -5283,7 +5283,7 @@ void NC_STACK_yparobo::Renew()
 
     _roboGuns.clear();
     
-    memset(_roboAttackers, 0, sizeof(_roboAttackers));
+    _roboAttackers.fill( robo_t1() );
 
     _commandID = dword_5B1128;
 

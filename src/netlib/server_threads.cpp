@@ -54,19 +54,16 @@ int ZNDServer::_SendThread(void *data)
 {
     ZNDServer *_this = (ZNDServer *)data;
 
-    uint8_t *sendBuffer;
-    uint32_t *syncThings;
     uint32_t loop = 1;
     bool lastloop = false;
     UDPpacket pkt;
 
     if (_this)
     {
-        sendBuffer = new uint8_t[ZNDNET_BUFF_SIZE];
-        syncThings = new uint32_t[ZNDNET_SYNC_CHANNELS + 1]; // +extra channel for incorrect channels
-        memset(syncThings, 0, (ZNDNET_SYNC_CHANNELS + 1) * sizeof(uint32_t));
+        std::vector<uint8_t> sendBuffer(ZNDNET_BUFF_SIZE);
+        std::vector<uint32_t> syncThings(ZNDNET_SYNC_CHANNELS + 1, 0); // +extra channel for incorrect channels
 
-        pkt.data = sendBuffer;
+        pkt.data = sendBuffer.data();
         pkt.maxlen = ZNDNET_BUFF_SIZE;
         pkt.channel = -1;
 
@@ -198,9 +195,6 @@ int ZNDServer::_SendThread(void *data)
             else
                 SDL_Delay(ZNDNET_TUNE_MAXDELAY);
         }
-
-        delete[] sendBuffer;
-        delete[] syncThings;
     }
 
     return 0;

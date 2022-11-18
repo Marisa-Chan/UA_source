@@ -11,11 +11,11 @@ typedef std::list<GuiBase *> GuiBaseList;
 class GuiBase : public ClickBox
 {
 public:
-    int flags;
+    int flags = 0;
     ClickBox iconBox;
-    char *iconString;
+    char *iconString = NULL;
     w3d_a209 cmdstrm;
-    void (*postDraw)(NC_STACK_ypaworld *);
+    void (*postDraw)(NC_STACK_ypaworld *) = NULL;
 
     enum FLAG
     {
@@ -35,9 +35,6 @@ public:
 
     static char * FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, char *in, uint8_t postf_char, int flag);
 
-    GuiBase() : flags(0), iconString(NULL), postDraw(NULL), AttachedTo(NULL) {};
-
-
     inline bool IsClosed() const {
         return ((flags & FLAG_CLOSED) != 0);
     };
@@ -46,7 +43,7 @@ public:
     };
 
 protected:
-    GuiBaseList *AttachedTo;
+    GuiBaseList *AttachedTo = NULL;
 };
 
 class GuiList : public GuiBase

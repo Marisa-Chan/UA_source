@@ -132,7 +132,6 @@ void sb_0x4eb94c(NC_STACK_ypaworld *yw, TBriefengScreen *brf, TInputState *struc
     brf->ObjRenderParams.globTime = brf->CurrTime;
 
     TF::TForm3D v14;
-    memset(&v14, 0, sizeof(TF::TForm3D));
     v14.Scale = vec3d(1.0, 1.0, 1.0);
     v14.SclRot = mat3x3::Ident();
 

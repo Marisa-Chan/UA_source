@@ -115,7 +115,7 @@ void sub_4C40AC(NC_STACK_ypaworld *yw);
 class squadMan: public GuiList
 {
 public:
-    NC_STACK_ypabact *squads[24];
+    std::array<NC_STACK_ypabact *, 24> squads;
     int field_2A8;
     int field_2AC;
     int field_2B0;
@@ -138,74 +138,74 @@ public:
 class energPanel : public GuiBase
 {
 public:
-    int field_1CC;
-    int field_1D0;
-    int field_1D4;
-    int field_1D8;
-    int field_1DC;
-    int field_1E0;
-    int field_1E4;
+    int field_1CC = 0;
+    int field_1D0 = 0;
+    int field_1D4 = 0;
+    int field_1D8 = 0;
+    int field_1DC = 0;
+    int field_1E0 = 0;
+    int field_1E4 = 0;
 };
 
 struct bzd_t1
 {
-    int i;
-    int d;
+    int i = 0;
+    int d = 0;
 };
 
 class bzd : public GuiBase
 {
 public:
-    int field_1CC;
-    int field_1D0;
-    int field_1D4;
-    int field_1D8;
-    uint8_t field_1DC[256];
-    uint8_t field_2DC[256];
-    uint8_t field_3DC[256];
+    int field_1CC = 0;
+    int field_1D0 = 0;
+    int field_1D4 = 0;
+    int field_1D8 = 0;
+    uint8_t field_1DC[256] = {0};
+    uint8_t field_2DC[256] = {0};
+    uint8_t field_3DC[256] = {0};
     bzd_t1 field_4DC[512];
-    int field_8DC;
-    int field_8E0;
-    int field_8E4;
-    int field_8E8;
-    int field_8EC;
-    int field_8F0;
-    int field_8F4;
-    int field_8F8;
-    int field_8FC;
-    int field_900;
-    int field_904;
-    int field_908;
-    int field_90C;
-    int field_910;
-    int field_914;
-    int field_918;
-    int field_91C;
-    int field_920;
+    int field_8DC = 0;
+    int field_8E0 = 0;
+    int field_8E4 = 0;
+    int field_8E8 = 0;
+    int field_8EC = 0;
+    int field_8F0 = 0;
+    int field_8F4 = 0;
+    int field_8F8 = 0;
+    int field_8FC = 0;
+    int field_900 = 0;
+    int field_904 = 0;
+    int field_908 = 0;
+    int field_90C = 0;
+    int field_910 = 0;
+    int field_914 = 0;
+    int field_918 = 0;
+    int field_91C = 0;
+    int field_920 = 0;
 };
 
 struct inflog_msg
 {
-    int id;
-    int field_4;
-    int field_8;
-    char txt[128];
+    int id = 0;
+    int field_4 = 0;
+    int field_8 = 0;
+    char txt[128] = {0};
 };
 
 class yw_infolog : public GuiList
 {
 public:
-    int field_248;
-    int field_24C;
-    int field_250;
-    int field_254;
-    int msg_count;
+    int field_248 = 0;
+    int field_24C = 0;
+    int field_250 = 0;
+    int field_254 = 0;
+    int msg_count = 0;
     inflog_msg msgs[64];
-    uint32_t field_255C;
-    int field_2560;
-    int field_2564;
-    int field_2568;
-    int field_256C;
+    uint32_t field_255C = 0;
+    int field_2560 = 0;
+    int field_2564 = 0;
+    int field_2568 = 0;
+    int field_256C = 0;
 };
 
 class tehMap : public GuiBase

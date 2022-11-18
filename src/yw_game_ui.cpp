@@ -240,7 +240,7 @@ void sub_4C3A54(NC_STACK_ypaworld *yw)
 
 void sb_0x451034__sub8(NC_STACK_ypaworld *yw)
 {
-    memset(&up_panel, 0, sizeof(up_panel));
+    up_panel = energPanel();
 
     TileMap *f30 = yw->_guiTiles[30];
 
@@ -2494,7 +2494,7 @@ void sub_4C1970(NC_STACK_ypaworld *yw, int a2)
 
 int sb_0x451034__sub3(NC_STACK_ypaworld *yw)
 {
-    memset(&bzda, 0, sizeof(bzd));
+    bzda = bzd();
 
     int v3 = yw->_screenSize.x - 11 * yw->_iconOrderW;
     bzda.field_8FC = v3 / 4;
@@ -2648,7 +2648,7 @@ void NC_STACK_ypaworld::FFeedback_Init()
 
 void create_info_log(NC_STACK_ypaworld *yw)
 {
-    memset(&info_log, 0, sizeof(info_log));
+    info_log = yw_infolog();
 
     GuiList::tInit args;
     args.title = yw->GetLocaleString(52, "MESSAGE LOG");
@@ -2801,7 +2801,7 @@ void sb_0x451034__sub9(NC_STACK_ypaworld *yw)
 
     sklt_wis *wis = &yw->_hud;
 
-    memset(wis, 0, sizeof(sklt_wis));
+    *wis = sklt_wis();
 
     wis->field_0 = 1;
 
@@ -5484,7 +5484,7 @@ void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, TInputState *inpt)
 
 void sub_4C707C(NC_STACK_ypaworld *yw)
 {
-    memset(squadron_manager.squads, 0, sizeof(squadron_manager.squads));
+    squadron_manager.squads.fill(NULL);
 
     if ( (size_t)(squadron_manager.firstShownEntries + squadron_manager.shownEntries) >= yw->_cmdrsRemap.size() + 1 )
     {

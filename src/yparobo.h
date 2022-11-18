@@ -10,8 +10,8 @@ class NC_STACK_yparobo;
 
 struct robo_t1
 {
-    uint32_t field_0;
-    uint32_t field_4;
+    uint32_t field_0 = 0;
+    uint32_t field_4 = 0;
 };
 
 struct robo_arg128
@@ -433,7 +433,7 @@ public:
     vec3d _roboBeamPos;
     int _roboBeamFXTime;
     
-    robo_t1 _roboAttackers[16];
+    std::array<robo_t1, 16> _roboAttackers;
     int _roboAttackersTime;
     int _roboAttackersClearTime; //FIX IT
 };

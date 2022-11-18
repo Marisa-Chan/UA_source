@@ -56,19 +56,16 @@ int ZNDClient::_SendThread(void *data)
 {
     ZNDClient *_this = (ZNDClient *)data;
 
-    uint8_t *sendBuffer;
     uint32_t loop = 1;
     bool lastloop = false;
     UDPpacket pkt;
 
     if (_this)
     {
-        sendBuffer = new uint8_t[ZNDNET_BUFF_SIZE];
+        std::vector<uint8_t> sendBuffer(ZNDNET_BUFF_SIZE);
+        std::vector<uint32_t> syncThings(ZNDNET_USER_SCHNLS + 1, 0); // +extra channel for incorrect channels
 
-        uint32_t syncThings[ZNDNET_USER_SCHNLS + 1]; // +extra channel for incorrect channels
-        memset(syncThings, 0, (ZNDNET_USER_SCHNLS + 1) * sizeof(uint32_t));
-
-        pkt.data = sendBuffer;
+        pkt.data = sendBuffer.data();
         pkt.maxlen = ZNDNET_BUFF_SIZE;
         pkt.channel = -1;
 
@@ -200,8 +197,6 @@ int ZNDClient::_SendThread(void *data)
             else
                 SDL_Delay(ZNDNET_TUNE_MAXDELAY);
         }
-
-        delete[] sendBuffer;
     }
 
     return 0;

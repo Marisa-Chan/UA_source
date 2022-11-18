@@ -106,16 +106,14 @@ size_t NC_STACK_nucleus::LoadingFromIFF(IFFile **file)
         }
         if ( mfile->GetCurrentChunk().Is(TAG_NAME) )
         {
-            char a4[33];
-            memset(a4, 0, 33);
-
-            if ( !mfile->read(a4, 32) )
+            std::string name = mfile->readStr(32);
+            if ( name.empty() )
             {
                 Deinit();
                 return 0;
             }
 
-            setName(a4);
+            setName(name);
             mfile->parse();
         }
         else
@@ -180,10 +178,9 @@ NC_STACK_nucleus *NC_STACK_nucleus::LoadObjectFromIFF(IFFile *mfile)
 
         if ( chunk.Is(TAG_CLID) )
         {
-            char classname[300];
-            memset(classname, 0, 300);
-
-            if ( mfile->read(classname, 256) < 0 )
+            std::string classname = mfile->readStr(256);
+            
+            if ( classname.empty() )
                 return NULL;
 
             clss = Nucleus::ClassList.find(classname);
