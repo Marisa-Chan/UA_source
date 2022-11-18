@@ -4292,11 +4292,11 @@ void sb_0x4c66f8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact1, NC_STACK_ypabac
         {
             yw->_hud.field_76 = yw->_timeStamp;
 
-            bact2->setBACT_viewer(0);
-            bact2->setBACT_inputting(0);
+            bact2->setBACT_viewer(false);
+            bact2->setBACT_inputting(false);
 
-            bact1->setBACT_viewer(1);
-            bact1->setBACT_inputting(1);
+            bact1->setBACT_viewer(true);
+            bact1->setBACT_inputting(true);
 
             yw->GuiWinClose( &gui_lstvw );
 
@@ -5486,7 +5486,7 @@ void sub_4C707C(NC_STACK_ypaworld *yw)
 {
     memset(squadron_manager.squads, 0, sizeof(squadron_manager.squads));
 
-    if ( squadron_manager.firstShownEntries + squadron_manager.shownEntries >= yw->_cmdrsRemap.size() + 1 )
+    if ( (size_t)(squadron_manager.firstShownEntries + squadron_manager.shownEntries) >= yw->_cmdrsRemap.size() + 1 )
     {
         squadron_manager.firstShownEntries = yw->_cmdrsRemap.size() + 1 - squadron_manager.shownEntries;
 
@@ -5495,7 +5495,7 @@ void sub_4C707C(NC_STACK_ypaworld *yw)
     }
 
     int v5 = squadron_manager.firstShownEntries;
-    for (int i = 0; i < yw->_cmdrsRemap.size() + 1; i++ )
+    for (int i = 0; i < (int)yw->_cmdrsRemap.size() + 1; i++ )
     {
         NC_STACK_ypabact *v6;
 
@@ -5540,7 +5540,7 @@ void ypaworld_func64__sub7__sub3__sub3(NC_STACK_ypaworld *yw, TClickBoxInf *winp
 {
     if ( winpt->selected_btn != &squadron_manager
             || winpt->selected_btnID < 8
-            || squadron_manager.numEntries <= winpt->selected_btnID - 8 + squadron_manager.firstShownEntries
+            || squadron_manager.numEntries <= (int32_t)(winpt->selected_btnID - 8 + squadron_manager.firstShownEntries)
             || squadron_manager.squads[ winpt->selected_btnID - 8 ] == 0
             || squadron_manager.squads[ winpt->selected_btnID - 8 ] == yw->_userRobo )
     {
@@ -5718,7 +5718,7 @@ int NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub1(TClickBoxInf *winpt)
         return 0;
     if ( bzda.field_1D0 & 8 )
         return 0;
-    if ( winpt->selected_btnID - 8 + squadron_manager.firstShownEntries >= squadron_manager.numEntries )
+    if ( (int32_t)(winpt->selected_btnID - 8 + squadron_manager.firstShownEntries) >= squadron_manager.numEntries )
         return 0;
 
     NC_STACK_ypabact *v5 = sub_4C7B0C(winpt->selected_btnID - 8, winpt->move.BtnPos.x);
@@ -7256,7 +7256,7 @@ void NC_STACK_ypaworld::sub_4C40AC()
         {
             for (size_t i = 0; i < _cmdrsRemap.size(); i++)
             {
-                if (_cmdrIdToSelect == _cmdrsRemap[i]->_commandID)
+                if (_cmdrIdToSelect == (int32_t)_cmdrsRemap[i]->_commandID)
                 {
                     _activeCmdrRemapIndex = i;
                     _activeCmdrID = _cmdrIdToSelect;
@@ -8045,26 +8045,26 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
     {
         if ( yw->_netEvent.EventType )
         {
-            int v6;
+            uint32_t timeDelay;
             std::string str;
             
             if ( yw->_netEvent.EventType == 1 )
             {
                 str = yw->GetLocaleString(2468, "2468 == *** VICTORY IS YOURS ***");
-                v6 = 40000;
+                timeDelay = 40000;
             }
             else if ( yw->_netEvent.EventType > 1 && yw->_netEvent.EventType <= 4 )
             {
                 str = fmt::sprintf( yw->GetLocaleString(2469, "2469 == *** %s HAS BEEN DEFEATED ***") , yw->_netEvent.PlayerName);
 
-                v6 = 20000;
+                timeDelay = 20000;
             }
             else
             {
-                v6 = 0;
+                timeDelay = 0;
             }
 
-            if ( !str.empty() && yw->_timeStamp - yw->_netEvent.TimeStamp < v6 )
+            if ( !str.empty() && yw->_timeStamp - yw->_netEvent.TimeStamp < timeDelay )
             {
                 if ( yw->_timeStamp / 300 & 1 )
                 {
@@ -10449,7 +10449,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub1__sub0(TInputState *arg)
             }
             else if ( winp->selected_btn == &squadron_manager )
             {
-                if ( winp->selected_btnID >= 8 && (squadron_manager.firstShownEntries + winp->selected_btnID - 8) < squadron_manager.numEntries )
+                if ( winp->selected_btnID >= 8 && (int32_t)(squadron_manager.firstShownEntries + winp->selected_btnID - 8) < squadron_manager.numEntries )
                     _guiActFlags |= 0x40;
             }
         }
@@ -10822,9 +10822,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21__sub5(int arg)
         break;
 
     case World::DOACTION_19:
-        _viewerBact->setBACT_viewer(0);
-        _viewerBact->setBACT_inputting(0);
-        _bactOnMouse->setBACT_viewer(1);
+        _viewerBact->setBACT_viewer(false);
+        _viewerBact->setBACT_inputting(false);
+        _bactOnMouse->setBACT_viewer(true);
         break;
 
     default:

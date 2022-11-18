@@ -559,11 +559,9 @@ void NC_STACK_ypacar::User_layer(update_msg *arg)
 
 int NC_STACK_ypacar::AlignVehicleAI(float dtime, vec3d *pNormal)
 {
-    int a4 = getBACT_viewer();
-
     float v5;
 
-    if ( a4 )
+    if ( getBACT_viewer() )
         v5 = _viewer_overeof;
     else
         v5 = _overeof;
@@ -613,10 +611,9 @@ vec3d NC_STACK_ypacar::CarTip(float dtime, const vec3d &oldDir, vec3d rot)
     vec2d tmp = _rotation.AxisZ().XZ();
     vec2d varg = oldDir.XZ();
 
-    int a4 = getBACT_viewer();
     float v73;
 
-    if ( a4 )
+    if ( getBACT_viewer() )
         v73 = -0.5;
     else
         v73 = -0.2;
@@ -669,12 +666,12 @@ int NC_STACK_ypacar::AlignVehicleUser(float dtime, const vec3d &oldDir)
     int v160 = 0;
     int v161 = 0;
 
-    int a4 = getBACT_viewer();
+    bool isViewer = getBACT_viewer();
     int v149 = getBACT_inputting();
 
     float v5;
 
-    if ( a4 )
+    if ( isViewer )
         v5 = _viewer_overeof;
     else
         v5 = _overeof;
@@ -874,7 +871,7 @@ int NC_STACK_ypacar::AlignVehicleUser(float dtime, const vec3d &oldDir)
         v161 = 1;
     }
 
-    if ( a4 )
+    if ( isViewer )
     {
         if ( v167 > 0.0 )
         {

@@ -2111,7 +2111,7 @@ public:
     
     static TileMap * yw_LoadFont(const std::string &fontname);
     static TileMap * yw_LoadTileSet(const std::string &bitmap, Common::Point chrSz, Common::Point delta, Common::Point cr, Common::Point offset);
-    NC_STACK_ypabact * FindBactByCmdOwn(int commandID, char owner);
+    NC_STACK_ypabact * FindBactByCmdOwn(uint32_t commandID, char owner);
     
     
     bool yw_createRobos(const std::vector<MapRobo> &Robos);
@@ -2487,13 +2487,13 @@ public:
     NC_STACK_ypabact *_userRobo = NULL;
     NC_STACK_ypabact *_userUnit = NULL;
     
-    std::array<int32_t, 8> _countSectorsPerOwner = Common::ArrayInit<int32_t, 8>(0);
-    std::array<int32_t, 8>  _countUnitsPerOwner = Common::ArrayInit<int32_t, 8>(0);
+    std::array<uint32_t, 8> _countSectorsPerOwner = Common::ArrayInit<uint32_t, 8>(0);
+    std::array<uint32_t, 8>  _countUnitsPerOwner = Common::ArrayInit<uint32_t, 8>(0);
     std::array<float, 8> _reloadRatioClamped = Common::ArrayInit<float, 8>(0.0); // clamped to 0.0..1.0
     std::array<float, 8> _reloadRatioPositive = Common::ArrayInit<float, 8>(0.0); // 0 and positive
     
     std::vector<NC_STACK_ypabact *> _cmdrsRemap;
-    int32_t _activeCmdrID = 0; // active CMDR ID
+    uint32_t _activeCmdrID = 0; // active CMDR ID
     int32_t _activeCmdrRemapIndex = 0; // index in _cmdrsRemap
     int32_t _activeCmdrKidsCount = 0; // count of alive units in active squad
     int32_t _cmdrIdToSelect = -1;

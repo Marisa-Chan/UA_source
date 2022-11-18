@@ -197,7 +197,7 @@ struct update_msg
 struct setTarget_msg
 {
     uint8_t tgt_type;
-    int priority;
+    uint32_t priority;
     BactTarget tgt;
     vec3d tgt_pos;
 };
@@ -443,56 +443,87 @@ public:
     {
         BACT_ATT_WORLD = 0x80001001,
         BACT_ATT_PTRANSFORM = 0x80001002,
-        BACT_ATT_VIEWER = 0x80001004,
-        BACT_ATT_INPUTTING = 0x80001005,
-        BACT_ATT_EXACTCOLL = 0x80001006,
-        BACT_ATT_BACTCOLL = 0x80001007,
+        BACT_ATT_VIEWER = 0x80001004,       // bool
+        BACT_ATT_INPUTTING = 0x80001005,    // bool
+        BACT_ATT_EXACTCOLL = 0x80001006,    // bool
+        BACT_ATT_BACTCOLL = 0x80001007,     // bool
         BACT_ATT_ATTACKLIST = 0x80001008,
         BACT_ATT_AIRCONST = 0x80001009,
-        BACT_ATT_LANDINGONWAIT = 0x8000100A,
+        BACT_ATT_LANDINGONWAIT = 0x8000100A, // bool
         BACT_ATT_YOURLS = 0x8000100B,
         BACT_ATT_VISPROT = 0x8000100C,
         BACT_ATT_AGGRESSION = 0x8000100D,
         BACT_ATT_COLLNODES = 0x8000100E,
         //BACT_ATT_VPTRANSFORM = 0x8000100F,
-        BACT_ATT_EXTRAVIEWER = 0x80001010,
+        BACT_ATT_EXTRAVIEWER = 0x80001010,  // bool
         BACT_ATT_P_ATTACKNODE = 0x80001011,
         BACT_ATT_S_ATTACKNODE = 0x80001012,
-        BACT_ATT_ALWAYSRENDER = 0x80001013
+        BACT_ATT_ALWAYSRENDER = 0x80001013  // bool
     };
 
-    virtual void setBACT_viewer(int);
-    virtual void setBACT_inputting(int);
-    virtual void setBACT_exactCollisions(int);
-    virtual void setBACT_bactCollisions(int);
+    virtual void setBACT_viewer(bool);
+    virtual void setBACT_inputting(bool);
+    virtual void setBACT_exactCollisions(bool);
+    virtual void setBACT_bactCollisions(bool);
     virtual void setBACT_airconst(int);
-    virtual void setBACT_landingOnWait(int);
+    virtual void setBACT_landingOnWait(bool);
     virtual void setBACT_yourLastSeconds(int);
     virtual void SetVP(NC_STACK_base *vp);
     virtual void setBACT_aggression(int);
-    virtual void setBACT_extraViewer(int);
-    virtual void setBACT_alwaysRender(int);
+    virtual void setBACT_extraViewer(bool);
+    virtual void setBACT_alwaysRender(bool);
 
 
-    virtual NC_STACK_ypaworld *getBACT_pWorld();
-    virtual TF::TForm3D *getBACT_pTransform();
-    virtual int getBACT_viewer();
-    virtual int getBACT_inputting();
-    virtual int getBACT_exactCollisions();
-    virtual int getBACT_bactCollisions();
-    virtual int getBACT_landingOnWait();
-    virtual int getBACT_yourLastSeconds();
-    virtual NC_STACK_base *GetVP();
-    virtual int getBACT_aggression();
-    virtual World::rbcolls *getBACT_collNodes();
-    virtual int getBACT_extraViewer();
-    virtual int getBACT_alwaysRender();
+    virtual NC_STACK_ypaworld *getBACT_pWorld()
+    { return _world; }
+    
+    virtual TF::TForm3D *getBACT_pTransform()
+    { return &_tForm; }
+    
+    virtual bool getBACT_viewer() const 
+    { return (_oflags & BACT_OFLAG_VIEWER) != 0; }
+    
+    virtual bool getBACT_inputting() const 
+    { return (_oflags & BACT_OFLAG_USERINPT) != 0; }
+
+    virtual bool getBACT_exactCollisions() const 
+    { return (_oflags & BACT_OFLAG_EXACTCOLL) != 0; }
+    
+    virtual bool getBACT_bactCollisions() const 
+    { return (_oflags & BACT_OFLAG_BACTCOLL) != 0; }
+    
+    virtual bool getBACT_landingOnWait() const 
+    { return (_oflags & BACT_OFLAG_LANDONWAIT) != 0; }
+    
+    virtual int getBACT_yourLastSeconds() const 
+    { return _yls_time; }
+    
+    virtual NC_STACK_base *GetVP()
+    {
+        if (_current_vp)
+            return _current_vp->Bas;
+
+        return NULL;
+    }
+    
+    virtual int getBACT_aggression() const
+    { return _aggr; }
+    
+    virtual World::rbcolls *getBACT_collNodes()
+    { return NULL; }
+    
+    virtual bool getBACT_extraViewer() const
+    { return (_oflags & BACT_OFLAG_EXTRAVIEW) != 0; }    
+    
+    virtual bool getBACT_alwaysRender() const
+    { return (_oflags & BACT_OFLAG_ALWAYSREND) != 0; }
+    
     
     void ChangeEscapeFlag(bool escape);
     
-    virtual bool IsGroundUnit() { return false; };
+    virtual bool IsGroundUnit() const { return false; };
     
-    static bool IsNeedsWaypoints( NC_STACK_ypabact *bact);
+    bool IsNeedsWaypoints() const;
     
     void sub_4843BC(NC_STACK_ypabact *bact2, int a3);
     void sub_493480(NC_STACK_ypabact *bact2, int mode);
@@ -541,10 +572,10 @@ public:
     Common::Point _wrldSectors;
  
     int _bact_type;
-    uint32_t _gid; // global bact id
+    uint32_t _gid = 0; // global bact id
     uint8_t _vehicleID; // vehicle id, from scr files
     uint8_t _bflags;
-    int32_t _commandID;
+    uint32_t _commandID = 0;
     NC_STACK_yparobo *_host_station; // parent robo?
     NC_STACK_ypabact *_parent;
     World::RefBactList _kidList;
@@ -569,8 +600,8 @@ public:
 //    int field_3DA;
     uint8_t _primTtype;
     uint8_t _secndTtype;
-    int _primT_cmdID;
-    int _secndT_cmdID;
+    uint32_t _primT_cmdID;
+    uint32_t _secndT_cmdID;
     BactTarget _primT;
     vec3d _primTpos;
     BactTarget _secndT;
@@ -585,7 +616,7 @@ public:
     int16_t _waypoints_count;
     int _m_cmdID;
     uint8_t _m_owner;
-    int _fe_cmdID; // found enemy group ID
+    uint32_t _fe_cmdID; // found enemy group ID
     int _fe_time; //
     float _mass;
     float _force;

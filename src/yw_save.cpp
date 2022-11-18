@@ -486,23 +486,17 @@ void yw_write_energymap(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 
 int yw_write_bact(NC_STACK_ypabact *bct, FSMgr::FileHandle *fil)
 {
-    int a4 = bct->getBACT_viewer();
-
-    if ( a4 )
+    if ( bct->getBACT_viewer() )
         fil->printf("    viewer         = yes\n");
     else
         fil->printf("    viewer         = no\n");
-
-    a4 = bct->getBACT_inputting();
-
-    if ( a4 )
+    
+    if ( bct->getBACT_inputting() )
         fil->printf("    user           = yes\n");
     else
         fil->printf("    user           = no\n");
 
-    a4 = bct->getBACT_bactCollisions();
-
-    if ( a4 )
+    if ( bct->getBACT_bactCollisions() )
         fil->printf("    collision      = yes\n");
     else
         fil->printf("    collision      = no\n");
@@ -719,9 +713,7 @@ bool NC_STACK_ypaworld::yw_write_units(FSMgr::FileHandle *fil)
                 }
                 else
                 {
-                    int v8 = commander->getBACT_viewer();
-
-                    if ( v8 )
+                    if ( commander->getBACT_viewer() )
                     {
                         if ( !yw_write_extraviewer(commander, fil) )
                             return false;
@@ -743,15 +735,10 @@ bool NC_STACK_ypaworld::yw_write_units(FSMgr::FileHandle *fil)
                         if ( !yw_write_slave(slave, fil) )
                             return false;
                     }
-                    else
+                    else if ( slave->getBACT_viewer() )
                     {
-                        int v10 = slave->getBACT_viewer();
-
-                        if ( v10 )
-                        {
-                            if ( !yw_write_extraviewer(slave, fil) )
-                                return false;
-                        }
+                        if ( !yw_write_extraviewer(slave, fil) )
+                            return false;
                     }
                 }
             }

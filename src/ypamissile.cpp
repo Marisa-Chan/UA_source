@@ -34,7 +34,7 @@ size_t NC_STACK_ypamissile::Init(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_VIEWER:
-                setBACT_viewer(val.Get<int32_t>());
+                setBACT_viewer(val.Get<bool>());
                 break;
 
             case MISS_ATT_LAUNCHER:
@@ -88,7 +88,7 @@ size_t NC_STACK_ypamissile::func2(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_VIEWER:
-                setBACT_viewer(val.Get<int32_t>());
+                setBACT_viewer(val.Get<bool>());
                 break;
 
             case MISS_ATT_LAUNCHER:
@@ -188,7 +188,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
     int collisionCount = 0;
     float collisionSumRadius = 0.0;
 
-    int a5 = _mislEmitter->getBACT_inputting();
+    bool a5 = _mislEmitter->getBACT_inputting();
 
     if ( !a5 )
         a5 = getBACT_viewer();
@@ -389,7 +389,7 @@ bool NC_STACK_ypamissile::TubeCollisionTest()
                                     float v46;
                                     float v47;
 
-                                    if ( v83 || bct->_status_flg & BACT_STFLAG_ISVIEW )
+                                    if ( v83 || bct->getBACT_viewer() )
                                     {
                                         v46 = v92 * (100 - bct->_shield);
                                         v47 = 250;
@@ -782,18 +782,18 @@ void NC_STACK_ypamissile::ResetViewing()
 {
     if ( getBACT_viewer() )
     {
-        setBACT_viewer(0);
-        setBACT_inputting(0);
+        setBACT_viewer(false);
+        setBACT_inputting(false);
 
         if ( _mislEmitter->_status != BACT_STATUS_DEAD || _mislEmitter->_parent == NULL )
         {
-            _mislEmitter->setBACT_viewer(1);
-            _mislEmitter->setBACT_inputting(1);
+            _mislEmitter->setBACT_viewer(true);
+            _mislEmitter->setBACT_inputting(true);
         }
         else
         {
-            _mislEmitter->_parent->setBACT_viewer(1);
-            _mislEmitter->_parent->setBACT_inputting(1);
+            _mislEmitter->_parent->setBACT_viewer(true);
+            _mislEmitter->_parent->setBACT_inputting(true);
         }
 
     }
@@ -940,7 +940,7 @@ NC_STACK_ypamissile::NC_STACK_ypamissile()
 }
 
 
-void NC_STACK_ypamissile::setBACT_viewer(int vwr)
+void NC_STACK_ypamissile::setBACT_viewer(bool vwr)
 {
     NC_STACK_ypabact::setBACT_viewer(vwr);
 

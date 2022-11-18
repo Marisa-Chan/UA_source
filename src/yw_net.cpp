@@ -3314,11 +3314,11 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                         yw->_levelInfo.State = TLevelInfo::STATE_ABORTED;
                     }
 
-                    for(int i = 0; i < usr->lobbyPlayers.size(); i++)
+                    for(size_t i = 0; i < usr->lobbyPlayers.size(); i++)
                     {
                         if ( !StriCmp(usr->lobbyPlayers[i].Name, recvMsg.senderName) )
                         {
-                            for (int j = i; j < usr->lobbyPlayers.size() - 1; j++)
+                            for (size_t j = i; j < usr->lobbyPlayers.size() - 1; j++)
                                 usr->lobbyPlayers[j] = usr->lobbyPlayers[ j + 1 ];
 
                             plFound = true;
@@ -3521,7 +3521,7 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
     _levelInfo.OwnerMask = 0;
     _levelInfo.UserMask = 0;
 
-    for (int i = 0; i < _GameShell->netPlayers.size(); i++)
+    for (size_t i = 0; i < _GameShell->netPlayers.size(); i++)
     {
         UserData::TNetPlayerData &pl = _GameShell->netPlayers[i];
         pl.Ready = false;
@@ -3650,8 +3650,8 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 
         if ( plData.IsItMe() )
         {
-            hostObj->setBACT_viewer(1);
-            hostObj->setBACT_inputting(1);
+            hostObj->setBACT_viewer(true);
+            hostObj->setBACT_inputting(true);
             _GameShell->netPlayerOwner = owner;
             _levelInfo.UserMask |= 1 << owner;
         }
@@ -3821,7 +3821,7 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
 
         log_netlog("Sent a READY TO PLAY to all for my Owner %d\n", _GameShell->netPlayerOwner);
 
-        fndHost->setBACT_viewer(1);
+        fndHost->setBACT_viewer(true);
     }
 
     _GameShell->netsend_count = 0;

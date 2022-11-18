@@ -1140,9 +1140,7 @@ size_t NC_STACK_ypatank::SetPosition(bact_arg80 *arg)
             if ( !arg136.isect )
                 return 0;
 
-            int a4 = getBACT_viewer();
-
-            if ( a4 )
+            if ( getBACT_viewer() )
                 _position.y = arg136.isectPos.y - _viewer_overeof;
             else
                 _position.y = arg136.isectPos.y - _overeof;
@@ -1819,11 +1817,9 @@ void NC_STACK_ypatank::CorrectPositionOnLand()
 
     if ( _status_flg & BACT_STFLAG_LAND )
     {
-        int a4 = getBACT_viewer();
-
         float v6;
 
-        if ( a4 )
+        if ( getBACT_viewer() )
             v6 = _viewer_overeof;
         else
             v6 = _overeof;
@@ -1857,11 +1853,9 @@ vec3d NC_STACK_ypatank::TankTip(vec3d v)
 
 int NC_STACK_ypatank::AlignVehicleAI(float dtime, vec3d *pNormal)
 {
-    int a4 = getBACT_viewer();
-
     float v5;
 
-    if ( a4 )
+    if ( getBACT_viewer() )
         v5 = _viewer_overeof;
     else
         v5 = _overeof;
@@ -1922,12 +1916,12 @@ int NC_STACK_ypatank::AlignVehicleUser(float dtime, const vec3d &oldDir)
     int v151 = 0;
     int v148 = 0;
 
-    int a4 = getBACT_viewer();
+    bool isViewer = getBACT_viewer();
 
     int v143 = getBACT_inputting();
 
     float v5;
-    if ( a4 )
+    if ( isViewer )
         v5 = _viewer_overeof;
     else
         v5 = _overeof;
@@ -1976,7 +1970,7 @@ int NC_STACK_ypatank::AlignVehicleUser(float dtime, const vec3d &oldDir)
 
     arg136_2.vect = (v122 - arg136_2.stPos) * v155;
 
-    if ( a4 )
+    if ( isViewer )
     {
         arg136.flags = 0;
         arg136_1.flags = 0;
@@ -2137,7 +2131,7 @@ int NC_STACK_ypatank::AlignVehicleUser(float dtime, const vec3d &oldDir)
         v148 = 1;
     }
 
-    if ( a4 )
+    if ( isViewer )
     {
         if ( v156 > 0.0 )
         {
@@ -2231,7 +2225,7 @@ int NC_STACK_ypatank::AlignVehicleUser(float dtime, const vec3d &oldDir)
             arg136_4.stPos = _position - vec3d::OY(v92);
             arg136_4.vect = vec3d::OY( v92 * 2.0 );
 
-            arg136_4.flags = a4 == 0;
+            arg136_4.flags = isViewer == 0;
 
             _world->ypaworld_func136(&arg136_4);
 

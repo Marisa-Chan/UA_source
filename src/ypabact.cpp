@@ -268,11 +268,11 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
                     break;
 
                 case BACT_ATT_EXACTCOLL:
-                    setBACT_exactCollisions(val.Get<int32_t>());
+                    setBACT_exactCollisions(val.Get<bool>());
                     break;
 
                 case BACT_ATT_BACTCOLL:
-                    setBACT_bactCollisions ( val.Get<int32_t>() );
+                    setBACT_bactCollisions ( val.Get<bool>() );
                     break;
 
                 case BACT_ATT_AIRCONST:
@@ -280,7 +280,7 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
                     break;
 
                 case BACT_ATT_LANDINGONWAIT:
-                    setBACT_landingOnWait ( val.Get<int32_t>() );
+                    setBACT_landingOnWait ( val.Get<bool>() );
                     break;
 
                 case BACT_ATT_YOURLS:
@@ -296,11 +296,11 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
                     break;
 
                 case BACT_ATT_EXTRAVIEWER:
-                    setBACT_extraViewer ( val.Get<int32_t>() );
+                    setBACT_extraViewer ( val.Get<bool>() );
                     break;
 
                 case BACT_ATT_ALWAYSRENDER:
-                    setBACT_alwaysRender ( val.Get<int32_t>() );
+                    setBACT_alwaysRender ( val.Get<bool>() );
                     break;
 
                 default:
@@ -459,19 +459,19 @@ size_t NC_STACK_ypabact::func2(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_VIEWER:
-                setBACT_viewer(val.Get<int32_t>());
+                setBACT_viewer(val.Get<bool>());
                 break;
 
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.Get<int32_t>());
+                setBACT_inputting(val.Get<bool>());
                 break;
 
             case BACT_ATT_EXACTCOLL:
-                setBACT_exactCollisions ( val.Get<int32_t>() );
+                setBACT_exactCollisions ( val.Get<bool>() );
                 break;
 
             case BACT_ATT_BACTCOLL:
-                setBACT_bactCollisions ( val.Get<int32_t>() );
+                setBACT_bactCollisions ( val.Get<bool>() );
                 break;
 
             case BACT_ATT_AIRCONST:
@@ -479,7 +479,7 @@ size_t NC_STACK_ypabact::func2(IDVList &stak)
                 break;
 
             case BACT_ATT_LANDINGONWAIT:
-                setBACT_landingOnWait ( val.Get<int32_t>() );
+                setBACT_landingOnWait ( val.Get<bool>() );
                 break;
 
             case BACT_ATT_YOURLS:
@@ -495,11 +495,11 @@ size_t NC_STACK_ypabact::func2(IDVList &stak)
                 break;
 
             case BACT_ATT_EXTRAVIEWER:
-                setBACT_extraViewer ( val.Get<int32_t>() );
+                setBACT_extraViewer ( val.Get<bool>() );
                 break;
 
             case BACT_ATT_ALWAYSRENDER:
-                setBACT_alwaysRender ( val.Get<int32_t>() );
+                setBACT_alwaysRender ( val.Get<bool>() );
                 break;
 
             default:
@@ -3182,7 +3182,7 @@ void NC_STACK_ypabact::Die()
         if ( !(_oflags & BACT_OFLAG_VIEWER) )
         {
             if ( _parent )
-                setBACT_inputting(0);
+                setBACT_inputting(false);
         }
     }
 
@@ -3442,8 +3442,8 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
             {
                 if ( _oflags & BACT_OFLAG_VIEWER )
                 {
-                    setBACT_viewer(0);
-                    wobj->setBACT_viewer(1);
+                    setBACT_viewer(false);
+                    wobj->setBACT_viewer(true);
                 }
             }
         }
@@ -3465,8 +3465,8 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
     {
         if ( _oflags & BACT_OFLAG_USERINPT )
         {
-            setBACT_viewer(0);
-            wobj->setBACT_viewer(1);
+            setBACT_viewer(false);
+            wobj->setBACT_viewer(true);
         }
 
         bact_arg84 arg84;
@@ -4152,10 +4152,10 @@ void CollisionWithBact__sub0(NC_STACK_ypabact *bact, NC_STACK_ypabact *a2)
 
 size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 {
-    int a4 = getBACT_viewer();
+    bool isViewer = getBACT_viewer();
 
     float trad;
-    if ( a4 )
+    if ( isViewer )
         trad = _viewer_radius;
     else
         trad = _radius;
@@ -4289,7 +4289,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
 
     if ( !(_status_flg & BACT_STFLAG_BCRASH) )
     {
-        if ( a4 )
+        if ( isViewer )
         {
             SFXEngine::SFXe.startSound(&_soundcarrier, 6);
 
@@ -4400,9 +4400,7 @@ NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact 
                 {
                     float radivs = (unit->_position - cel_unit->_position).length();
 
-                    int v33 = cel_unit->getBACT_viewer();
-
-                    if ( *radius >= radivs || v33 )
+                    if ( *radius >= radivs || cel_unit->getBACT_viewer() )
                     {
                         if ( unit->_bact_type == BACT_TYPES_GUN || unit->_bact_type == BACT_TYPES_ROBO )
                         {
@@ -5438,11 +5436,9 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
                                             {
                                                 if ( !v22 )
                                                 {
-                                                    int v88 = cellUnit->getBACT_inputting();
-
                                                     int energ;
 
-                                                    if ( v88 || cellUnit->_status_flg & BACT_STFLAG_ISVIEW )
+                                                    if ( cellUnit->getBACT_inputting() || cellUnit->getBACT_viewer() )
                                                     {
                                                         float v39 = (_gun_power * arg->field_C) * (100.0 - (float)cellUnit->_shield);
                                                         energ = (v39 * 0.004);
@@ -7788,7 +7784,7 @@ size_t NC_STACK_ypabact::SetPath(bact_arg124 *arg)
 
 
 
-void NC_STACK_ypabact::setBACT_viewer(int vwr)
+void NC_STACK_ypabact::setBACT_viewer(bool vwr)
 {
     uamessage_viewer viewMsg;
 
@@ -7863,7 +7859,7 @@ void NC_STACK_ypabact::setBACT_viewer(int vwr)
     }
 }
 
-void NC_STACK_ypabact::setBACT_inputting(int inpt)
+void NC_STACK_ypabact::setBACT_inputting(bool inpt)
 {
     if ( inpt )
     {
@@ -7879,7 +7875,7 @@ void NC_STACK_ypabact::setBACT_inputting(int inpt)
     }
 }
 
-void NC_STACK_ypabact::setBACT_exactCollisions(int col)
+void NC_STACK_ypabact::setBACT_exactCollisions(bool col)
 {
     if ( col )
         _oflags |= BACT_OFLAG_EXACTCOLL;
@@ -7887,7 +7883,7 @@ void NC_STACK_ypabact::setBACT_exactCollisions(int col)
         _oflags &= ~BACT_OFLAG_EXACTCOLL;
 }
 
-void NC_STACK_ypabact::setBACT_bactCollisions(int col)
+void NC_STACK_ypabact::setBACT_bactCollisions(bool col)
 {
     if ( col )
         _oflags |= BACT_OFLAG_BACTCOLL;
@@ -7901,7 +7897,7 @@ void NC_STACK_ypabact::setBACT_airconst(int air)
     _airconst_static = air;
 }
 
-void NC_STACK_ypabact::setBACT_landingOnWait(int lnding)
+void NC_STACK_ypabact::setBACT_landingOnWait(bool lnding)
 {
     if ( lnding )
         _oflags |= BACT_OFLAG_LANDONWAIT;
@@ -7929,7 +7925,7 @@ void NC_STACK_ypabact::setBACT_aggression(int aggr)
         nod->_aggr = aggr;
 }
 
-void NC_STACK_ypabact::setBACT_extraViewer(int vwr)
+void NC_STACK_ypabact::setBACT_extraViewer(bool vwr)
 {
     if ( vwr )
         _oflags |= BACT_OFLAG_EXTRAVIEW;
@@ -7937,7 +7933,7 @@ void NC_STACK_ypabact::setBACT_extraViewer(int vwr)
         _oflags &= ~BACT_OFLAG_EXTRAVIEW;
 }
 
-void NC_STACK_ypabact::setBACT_alwaysRender(int rndr)
+void NC_STACK_ypabact::setBACT_alwaysRender(bool rndr)
 {
     if ( rndr )
         _oflags |= BACT_OFLAG_ALWAYSREND;
@@ -7947,82 +7943,14 @@ void NC_STACK_ypabact::setBACT_alwaysRender(int rndr)
 
 
 
-NC_STACK_ypaworld *NC_STACK_ypabact::getBACT_pWorld()
+
+
+bool NC_STACK_ypabact::IsNeedsWaypoints() const
 {
-    return _world;
-}
-
-TF::TForm3D *NC_STACK_ypabact::getBACT_pTransform()
-{
-    return &_tForm;
-}
-
-int NC_STACK_ypabact::getBACT_viewer()
-{
-    return (_oflags & BACT_OFLAG_VIEWER) != 0;
-}
-
-int NC_STACK_ypabact::getBACT_inputting()
-{
-    return (_oflags & BACT_OFLAG_USERINPT) != 0;
-}
-
-int NC_STACK_ypabact::getBACT_exactCollisions()
-{
-    return (_oflags & BACT_OFLAG_EXACTCOLL) != 0;
-}
-
-int NC_STACK_ypabact::getBACT_bactCollisions()
-{
-    return (_oflags & BACT_OFLAG_BACTCOLL) != 0;
-}
-
-
-int NC_STACK_ypabact::getBACT_landingOnWait()
-{
-    return (_oflags & BACT_OFLAG_LANDONWAIT) != 0;
-}
-
-int NC_STACK_ypabact::getBACT_yourLastSeconds()
-{
-    return _yls_time;
-}
-
-NC_STACK_base *NC_STACK_ypabact::GetVP()
-{
-    if (_current_vp)
-        return _current_vp->Bas;
-    
-    return NULL;
-}
-
-int NC_STACK_ypabact::getBACT_aggression()
-{
-    return _aggr;
-}
-
-World::rbcolls *NC_STACK_ypabact::getBACT_collNodes()
-{
-    return NULL;
-}
-
-int NC_STACK_ypabact::getBACT_extraViewer()
-{
-    return (_oflags & BACT_OFLAG_EXTRAVIEW) != 0;
-}
-
-int NC_STACK_ypabact::getBACT_alwaysRender()
-{
-    return (_oflags & BACT_OFLAG_ALWAYSREND) != 0;
-}
-
-
-bool NC_STACK_ypabact::IsNeedsWaypoints( NC_STACK_ypabact *bact)
-{
-    if (bact->IsGroundUnit())
+    if (IsGroundUnit())
         return true;
     
-    for (NC_STACK_ypabact* &unit : bact->_kidList)
+    for (NC_STACK_ypabact* const &unit : _kidList)
     {
         if (unit->IsGroundUnit())
             return true;

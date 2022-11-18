@@ -76,7 +76,7 @@ public:
         MISS_ATT_STHEIGHT = 0x80002010
     };
 
-    virtual void setBACT_viewer(int);
+    virtual void setBACT_viewer(bool) override;
     virtual void setMISS_launcher(NC_STACK_ypabact *);
     virtual void setMISS_type(int);
     virtual void setMISS_lifeTime(int);

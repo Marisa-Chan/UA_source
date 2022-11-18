@@ -287,7 +287,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
     if ( v88 > 0.0 )
         _target_dir = _target_vec / v88;
 
-    int a4 = getBACT_viewer();
+    bool isViewer = getBACT_viewer();
     int v82 = getBACT_exactCollisions();
     int v79 = getBACT_bactCollisions();
 
@@ -295,7 +295,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
 
     float v91;
 
-    if ( a4 )
+    if ( isViewer )
         v91 = _viewer_radius;
     else
         v91 = _radius;
@@ -350,7 +350,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         arg136_1.isect = 0;
         arg136_1.flags = 0;
 
-        if ( a4 || _status_flg & BACT_STFLAG_DODGE_RIGHT || (v90 && v82) )
+        if ( isViewer || _status_flg & BACT_STFLAG_DODGE_RIGHT || (v90 && v82) )
         {
             arg136_1.stPos = _old_pos;
 
@@ -366,7 +366,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
         arg136_2.isect = 0;
         arg136_2.flags = 0;
 
-        if ( a4 || _status_flg & BACT_STFLAG_DODGE_LEFT || (v90 && v82) )
+        if ( isViewer || _status_flg & BACT_STFLAG_DODGE_LEFT || (v90 && v82) )
         {
             arg136_2.stPos = _old_pos;
             arg136_2.vect.x = arg136.vect.x * 0.93969 + arg136.vect.z * 0.34202;
@@ -376,7 +376,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
             _world->ypaworld_func136(&arg136_2);
         }
 
-        if ( a4 || !(_status_flg & (BACT_STFLAG_DODGE_LEFT | BACT_STFLAG_DODGE_RIGHT)) || (v90 && v82) )
+        if ( isViewer || !(_status_flg & (BACT_STFLAG_DODGE_LEFT | BACT_STFLAG_DODGE_RIGHT)) || (v90 && v82) )
             _world->ypaworld_func136(&arg136);
 
         int v18 = 0;
@@ -658,9 +658,7 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
             }
         }
 
-        int v80 = getBACT_landingOnWait();
-
-        if ( v80 )
+        if ( getBACT_landingOnWait() )
         {
             _thraction = 0;
             _flyerBoost = 0;

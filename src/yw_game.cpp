@@ -524,8 +524,8 @@ bool NC_STACK_ypaworld::yw_createRobos(const std::vector<MapRobo> &Robos)
 
                 if ( first )
                 {
-                    robo->setBACT_viewer(1);
-                    robo->setBACT_inputting(1);
+                    robo->setBACT_viewer(true);
+                    robo->setBACT_inputting(true);
                 }
             }
             
@@ -2310,7 +2310,7 @@ void NC_STACK_ypaworld::ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSect
     }
 }
 
-NC_STACK_ypabact * NC_STACK_ypaworld::FindBactByCmdOwn(int commandID, char owner)
+NC_STACK_ypabact * NC_STACK_ypaworld::FindBactByCmdOwn(uint32_t commandID, char owner)
 {
     for ( NC_STACK_ypabact * &robo : _unitsList )
     {
@@ -4067,8 +4067,8 @@ bool NC_STACK_ypaworld::recorder_create_camera()
 
     ypaworld_func134(bacto);
 
-    bacto->setBACT_viewer(1);
-    bacto->setBACT_inputting(1);
+    bacto->setBACT_viewer(true);
+    bacto->setBACT_inputting(true);
 
     _userRobo = bacto;
 
@@ -4446,7 +4446,7 @@ void NC_STACK_ypaworld::ypaworld_func163__sub1(recorder *rcrd, int dTime)
     {
         rcrd->field_78 &= 0xFFFFFFFE;
 
-        while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (dTime + _timeStamp) > rcrd->time )
+        while ( rcrd->field_74 - 1 != rcrd->frame_id  &&  (int32_t)(dTime + _timeStamp) > rcrd->time )
         {
             if ( rcrd->mfile.parse() != IFFile::IFF_ERR_EOF )
             {

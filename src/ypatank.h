@@ -57,7 +57,7 @@ public:
     };
     
     
-    virtual bool IsGroundUnit() { return true; };
+    virtual bool IsGroundUnit() const { return true; };
 
     enum TANK_ATT
     {

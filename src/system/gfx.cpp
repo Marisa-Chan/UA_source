@@ -1295,7 +1295,7 @@ void GFXEngine::RenderingMesh(TRenderNode *nod)
     if (flags & RFLAGS_TEXTURED)
     {
         if ( (flags & RFLAGS_DYNAMIC_TEXTURE) && nod->coordsID >= 0 )
-            Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(tUtV), (void *)nod->Mesh->CoordsCache.at( nod->coordsID ).BufferPos);
+            Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(tUtV), (void *)(size_t)nod->Mesh->CoordsCache.at( nod->coordsID ).BufferPos);
         else
             Glext::GLVertexAttribPointer(_lastStates.Prog.UVLoc, 2, GL_FLOAT, GL_FALSE,  sizeof(TVertex), (void *)offsetof(TVertex, TexCoord));
     }

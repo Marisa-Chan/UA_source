@@ -625,7 +625,7 @@ void NC_STACK_ypagun::Renew()
     _gunFlags = 0;
     _gunDownTime = 0;
 
-    setBACT_extraViewer(1);
+    setBACT_extraViewer(true);
 
     _viewer_position = vec3d(0, 0, 0);
 

@@ -51,7 +51,7 @@ size_t NC_STACK_yparobo::Init(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.Get<int32_t>());
+                setBACT_inputting(val.Get<bool>());
                 break;
 
             case ROBO_ATT_EP_CONQUER:
@@ -171,7 +171,7 @@ size_t NC_STACK_yparobo::func2(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.Get<int32_t>());
+                setBACT_inputting(val.Get<bool>());
                 break;
 
             case ROBO_ATT_PROTO:
@@ -367,7 +367,7 @@ void NC_STACK_yparobo::sub_4A9F24(NC_STACK_ypabact *unit)
             arg124.field_12 = 1;
             arg124.steps_cnt = 32;
 
-            if ( IsNeedsWaypoints(unit) && unit->PathFinder(&arg124) )
+            if ( unit->IsNeedsWaypoints() && unit->PathFinder(&arg124) )
             {
                 arg124.steps_cnt = 32;
 
@@ -834,7 +834,7 @@ void NC_STACK_yparobo::sub_4A10E8(float angle)
 
 size_t NC_STACK_yparobo::checkCollisions(float a2)
 {
-    int a4 = getBACT_viewer();
+    bool isViewer = getBACT_viewer();
     int v81 = getBACT_inputting();
     int v79 = getBACT_exactCollisions();
 
@@ -918,7 +918,7 @@ size_t NC_STACK_yparobo::checkCollisions(float a2)
 
         int v26 = _world->ypaworld_func145(this);
 
-        if ( (a4 || (v26 && v79)) && rcoll.robo_coll_radius > 0.01 )
+        if ( (isViewer || (v26 && v79)) && rcoll.robo_coll_radius > 0.01 )
         {
             vec3d tmp = rcoll.field_10;
             vec3d t = _position + _rotation.Transform( rcoll.coll_pos );
@@ -3507,7 +3507,7 @@ void NC_STACK_yparobo::checkCommander()
             for (NC_STACK_ypabact* &nod : commander->_kidList)
                 nod->_status_flg &= ~BACT_STFLAG_UNUSE;
 
-            if ( IsNeedsWaypoints(commander) )
+            if ( commander->IsNeedsWaypoints() )
             {
                 bact_arg124 arg124;
                 arg124.steps_cnt = 32;
@@ -4973,11 +4973,11 @@ void NC_STACK_yparobo::Die()
 
                 if ( this == _world->_userRobo )
                 {
-                    _world->_userUnit->setBACT_inputting(0);
-                    _world->_userUnit->setBACT_viewer(0);
+                    _world->_userUnit->setBACT_inputting(false);
+                    _world->_userUnit->setBACT_viewer(false);
 
-                    setBACT_inputting(1);
-                    setBACT_viewer(1);
+                    setBACT_inputting(true);
+                    setBACT_viewer(true);
                 }
             }
         }
@@ -5445,7 +5445,7 @@ void NC_STACK_yparobo::yparobo_func128(robo_arg128 *arg)
                     Common::Point tgsec = World::PositionToSectorID(arg->tgt_pos);
                     Common::Point rbtg;
 
-                    int v16;
+                    uint32_t v16;
                     if ( node->_commandID == _roboDockUser && _roboDockUser )
                     {
                         rbtg = World::PositionToSectorID( _roboDockTargetPos );
@@ -5844,17 +5844,18 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
     {
         if ( _clock - _beam_time > 2000 )
         {
-            int i = 0;
+            bool isNotViewBeaming = false;
 
             for ( NC_STACK_ypabact* &v1 : _pSector->unitsList )
             {
-                int a4 = v1->getBACT_viewer();
-
-                if ( v1->_status == BACT_STATUS_BEAM && v1->_owner == _owner && !a4 )
-                    i = 1;
+                if ( v1->_status == BACT_STATUS_BEAM && v1->_owner == _owner && !v1->getBACT_viewer() )
+                {
+                    isNotViewBeaming = true;
+                    break;
+                }
             }
 
-            if ( !i )
+            if ( !isNotViewBeaming )
             {
                 _world->ypaworld_func168(this);
 
@@ -5924,7 +5925,7 @@ void NC_STACK_yparobo::ypabact_func65__sub0()
 
 
 
-void NC_STACK_yparobo::setBACT_inputting(int inpt)
+void NC_STACK_yparobo::setBACT_inputting(bool inpt)
 {
     NC_STACK_ypabact::setBACT_inputting(inpt);
 
@@ -6003,8 +6004,8 @@ void NC_STACK_yparobo::setROBO_proto(World::TRoboProto *proto)
     _viewer_max_down = proto->robo_viewer_max_down;
     _viewer_max_side = proto->robo_viewer_max_side;
 
-    setBACT_extraViewer(1);
-    setBACT_alwaysRender(1);
+    setBACT_extraViewer(true);
+    setBACT_alwaysRender(true);
 
     _roboColls = proto->coll;
 }
@@ -6134,10 +6135,6 @@ void NC_STACK_yparobo::setROBO_recDelay(int delay)
 
 
 
-World::rbcolls *NC_STACK_yparobo::getBACT_collNodes()
-{
-    return &_roboColls;
-}
 
 int NC_STACK_yparobo::getROBO_epConquer()
 {

@@ -516,7 +516,7 @@ void NC_STACK_3ds::RecalcInternal(bool kids)
     {
         UAskeleton::Data *skeldat = _skeleton->GetSkelet();
         
-        for(size_t i = 0; i < faceNum; ++i)
+        for(int32_t i = 0; i < faceNum; ++i)
         {
             GFX::TRenderParams mat;
             if (faceMaterial[i])

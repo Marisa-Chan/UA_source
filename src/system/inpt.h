@@ -67,7 +67,7 @@ struct TClickBoxInf
 
     int flag = 0;
     ClickBox *selected_btn = NULL;
-    uint32_t selected_btnID = 0;
+    int32_t selected_btnID = 0;
     TMousePos move;
     TMousePos ldw_pos;
     TMousePos lup_pos;

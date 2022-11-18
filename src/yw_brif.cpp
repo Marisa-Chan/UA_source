@@ -1876,13 +1876,13 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
     World::TWeapProto *wpn  = NULL;
     World::TBuildingProto *bld = NULL;
 
-    if ( lastVhcl && lastVhcl < yw->_vhclProtos.size() )
+    if ( lastVhcl && lastVhcl < (int32_t)yw->_vhclProtos.size() )
         vhcl = &yw->_vhclProtos.at(lastVhcl);
 
-    if ( lastBuild && lastBuild < yw->_buildProtos.size() )
+    if ( lastBuild && lastBuild < (int32_t)yw->_buildProtos.size() )
         bld = &yw->_buildProtos.at(lastBuild);
 
-    if ( lastWeapon && lastWeapon < yw->_weaponProtos.size() )
+    if ( lastWeapon && lastWeapon < (int32_t)yw->_weaponProtos.size() )
         wpn = &yw->_weaponProtos.at(lastWeapon);
 
     std::string v13 = " ";

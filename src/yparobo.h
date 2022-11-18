@@ -10,8 +10,8 @@ class NC_STACK_yparobo;
 
 struct robo_t1
 {
-    int field_0;
-    int field_4;
+    uint32_t field_0;
+    uint32_t field_4;
 };
 
 struct robo_arg128
@@ -20,8 +20,8 @@ struct robo_arg128
     BactTarget tgt;
     uint8_t tgType;
     vec3d tgt_pos;
-    int prim_comm_id;
-    int comm_id;
+    uint32_t prim_comm_id;
+    uint32_t comm_id;
     float distance;
     NC_STACK_ypabact *comm_bact;
     NC_STACK_ypabact *comm_bacto;
@@ -168,7 +168,7 @@ public:
     };
 
 
-    virtual void setBACT_inputting(int);
+    virtual void setBACT_inputting(bool) override;
     virtual void setROBO_proto(World::TRoboProto *);
     virtual void setROBO_epConquer(int);
     virtual void setROBO_epDefense(int);
@@ -194,7 +194,9 @@ public:
     virtual void setROBO_robDelay(int);
     virtual void setROBO_recDelay(int);
 
-    virtual World::rbcolls *getBACT_collNodes();
+    virtual World::rbcolls *getBACT_collNodes()
+    { return &_roboColls; }
+    
     virtual int getROBO_epConquer();
     virtual int getROBO_epDefense();
     virtual int getROBO_epRadar();
@@ -332,13 +334,13 @@ public:
 
     int _roboDockEnerg;
     int _roboDockCnt;
-    int _roboDockUser;
+    uint32_t _roboDockUser;
     int _roboDockTime;
     vec3d _roboDockTargetPos;
     NC_STACK_ypabact *_roboDockTargetBact;
     uint8_t _roboDockTargetType;
     uint8_t _roboDockAggr;
-    int _roboDockTargetCommandID;
+    uint32_t _roboDockTargetCommandID;
     vec3d _roboDockPos;
 
     int _roboRadarValue;
@@ -367,7 +369,7 @@ public:
     int _roboEnemyValue;
     cellArea *_roboEnemyCell;  //For AI
     int _roboEnemyCellID;  //For AI
-    int _roboEnemyCommandID;  //For AI
+    uint32_t _roboEnemyCommandID;  //For AI
     int _roboEnemyTime;
     uint32_t _roboEnemyDiv;
     int _roboEnemyDelay; //??
@@ -396,14 +398,14 @@ public:
     int _roboDangerValue;
     cellArea *_roboDangerCell;  //For AI
     int _roboDangerCellID;  //For AI
-    int _roboDangerCommandID;  //For AI
+    uint32_t _roboDangerCommandID;  //For AI
     int _roboDangerTime;
     int _roboDangerDelay; //??
     
     int _roboVehicleCellID;  //For AI
     cellArea *_roboVehicleCell;  //For AI
     int _roboVehicleDuty;  //For AI
-    int _roboVehicleCommandID;  //For AI
+    uint32_t _roboVehicleCommandID;  //For AI
     
     
     int _roboBuildingCellID;  //For AI

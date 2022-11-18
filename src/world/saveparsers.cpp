@@ -7,7 +7,7 @@
 #include "history.h"
 
 
-extern int dword_5A7A80;
+extern uint32_t dword_5A7A80;
 extern uint32_t bact_id;
 
 namespace World

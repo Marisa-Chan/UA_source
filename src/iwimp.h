@@ -45,7 +45,7 @@ public:
 protected:
     std::list<ClickBox *> cboxList;
     ClickBox *selectedCbox;
-    int selectedButton;
+    int32_t selectedButton;
 };
 
 #endif // IWIMP_H_INCLUDED

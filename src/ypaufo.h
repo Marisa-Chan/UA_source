@@ -39,7 +39,7 @@ public:
         UFO_ATT_TOGO = 0x80002000
     };
 
-    virtual void setBACT_inputting(int);
+    virtual void setBACT_inputting(bool) override;
     virtual void setUFO_togo(int);
 
     virtual int getUFO_togo();

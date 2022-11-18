@@ -30,7 +30,7 @@ size_t NC_STACK_ypaufo::Init(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.Get<int32_t>());
+                setBACT_inputting(val.Get<bool>());
                 break;
 
             case UFO_ATT_TOGO:
@@ -64,7 +64,7 @@ size_t NC_STACK_ypaufo::func2(IDVList &stak)
             switch (val.ID)
             {
             case BACT_ATT_INPUTTING:
-                setBACT_inputting(val.Get<int32_t>());
+                setBACT_inputting(val.Get<bool>());
                 break;
 
             case UFO_ATT_TOGO:
@@ -423,9 +423,7 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
             }
         }
 
-        int v93 = getBACT_landingOnWait();
-
-        if ( v93 == 0 )
+        if ( !getBACT_landingOnWait() )
         {
             _thraction = 0.0;
             _rotation *= mat3x3::RotateY(_maxrot * v110);
@@ -938,22 +936,13 @@ void NC_STACK_ypaufo::Renew()
 }
 
 
-void NC_STACK_ypaufo::setBACT_inputting(int inpt)
+void NC_STACK_ypaufo::setBACT_inputting(bool inpt)
 {
     NC_STACK_ypabact::setBACT_inputting(inpt);
 
     if ( !inpt )
-    {
-        _rotation.m00 = 1.0;
-        _rotation.m01 = 0.0;
-        _rotation.m02 = 0.0;
-        _rotation.m10 = 0.0;
-        _rotation.m11 = 1.0;
-        _rotation.m12 = 0.0;
-        _rotation.m20 = 0.0;
-        _rotation.m21 = 0.0;
-        _rotation.m22 = 1.0;
-    }
+        _rotation = mat3x3::Ident();
+
 }
 
 void NC_STACK_ypaufo::setUFO_togo(int tog)

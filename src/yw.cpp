@@ -42,7 +42,7 @@ GuiList stru_5C91D0;
 uint32_t bact_id = 0x10000;
 
 // method 169
-int dword_5A7A80;
+uint32_t dword_5A7A80;
 
 NC_STACK_ypaworld::NC_STACK_ypaworld()
 : _unitsList(this, NC_STACK_ypabact::GetKidRefNode, World::BLIST_UNITS)

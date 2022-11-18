@@ -2225,7 +2225,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         break;
 
         case UserData::NETSCREEN_CHOOSE_MAP: //level
-            if ( i < usr->mapDescriptions.size() )
+            if ( i < (int)usr->mapDescriptions.size() )
             {
                 TMapRegionInfo &lvl = yw->_globalMapRegions.MapRegions[ usr->mapDescriptions[i].id ];
 
@@ -2298,7 +2298,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
         case 2:
         case 4:
-            if ( i < usr->msgBuffers.size() )
+            if ( i < (int)usr->msgBuffers.size() )
             {
                 str1 = usr->msgBuffers[ i ];
                 brk = false;

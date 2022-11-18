@@ -236,7 +236,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             int v32;
             int v30;
 
-            if ( (size_t)v24 == usr->inpListActiveElement )
+            if ( v24 == usr->inpListActiveElement )
             {
                 v30 = 98;
                 v31 = 100;
@@ -306,7 +306,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             FontUA::select_tileset(&v4, 0);
             FontUA::store_s8(&v4, '{'); // Left wnd border
 
-            if ( (size_t)v24 == usr->inpListActiveElement )
+            if ( v24 == usr->inpListActiveElement )
             {
                 FontUA::set_txtColor(&v4, usr->p_YW->_iniColors[62].r, usr->p_YW->_iniColors[62].g, usr->p_YW->_iniColors[62].b);
             }
@@ -1927,7 +1927,7 @@ void  UserData::UpdateSelected3DDevFromList()
 
     const std::vector<GFX::TGFXDeviceInfo> &devices = GFX::Engine.GetDevices();
     
-    if (d3d_listvw.selectedEntry < devices.size())
+    if ((size_t)d3d_listvw.selectedEntry < devices.size())
     {
         const GFX::TGFXDeviceInfo &dev = devices.at(d3d_listvw.selectedEntry);
         if ( !StriCmp(dev.name, "software") )
@@ -4629,7 +4629,7 @@ void UserData::GameShellUiHandleInput()
         v410.butID = 1217;
         network_button->button_func66(&v410);
 
-        for (int i = 0; i < World::CVMaxNetPlayers; i++)
+        for (size_t i = 0; i < World::CVMaxNetPlayers; i++)
         {
             int v370;
             TDPPlayerData pData;
