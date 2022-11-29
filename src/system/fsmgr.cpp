@@ -824,53 +824,26 @@ DirIter::operator bool() const
 
 FileHandle::FileHandle(const std::string &diskPath, const std::string &mode)
 {
-    hndl = fopen(diskPath.c_str(), mode.c_str());
+    hndl = __FPtr( fopen(diskPath.c_str(), mode.c_str()), &fclose );
     
     if (mode.find("w") != std::string::npos)
         _writeMode = true;
-}
-
-FileHandle::FileHandle(FileHandle &&b)
-{
-    hndl = b.hndl;
-    b.hndl = NULL;
-    
-    _writeMode = b._writeMode;
-    _ReadERR = b._ReadERR;
 }
 
 FileHandle::FileHandle(FileHandle *b, bool del)
 {
     if (b)
     {
-        hndl = b->hndl;
-        b->hndl = NULL;
-
-        _writeMode = b->_writeMode;
-        _ReadERR = b->_ReadERR;
-
+        *this = std::move(*b);
+        
         if (del)
             delete b;
     }
 }
 
-FileHandle& FileHandle::operator=(FileHandle &&b)
-{
-    if (hndl)
-        fclose(hndl);
-    
-    hndl = b.hndl;
-    b.hndl = NULL;
-    
-    _writeMode = b._writeMode;
-    _ReadERR = b._ReadERR;
-    return *this;
-}
 
 FileHandle::~FileHandle()
 {
-    if (hndl)
-        fclose(hndl);
 }
 
 bool FileHandle::OK() const
@@ -886,7 +859,7 @@ bool FileHandle::eof() const
     if (!hndl)
         return true;
 
-    return feof(hndl) != 0;
+    return feof(hndl.get()) != 0;
 }
 
 
@@ -896,7 +869,7 @@ size_t FileHandle::read(void *buf, size_t num)
     if (!hndl)
         return 0;
 
-    size_t sz = fread(buf, 1, num, hndl);
+    size_t sz = fread(buf, 1, num, hndl.get());
 
     if (sz != num)
         _ReadERR = true;
@@ -909,7 +882,7 @@ size_t FileHandle::write(const void *buf, size_t num)
     if (!hndl)
         return 0;
 
-    size_t sz = fwrite(buf, 1, num, hndl);
+    size_t sz = fwrite(buf, 1, num, hndl.get());
     if (sz != num)
         _WriteERR = true;
 
@@ -921,7 +894,7 @@ size_t FileHandle::tell() const
     if (!hndl)
         return 0;
 
-    return ftell(hndl);
+    return ftell(hndl.get());
 }
 
 int FileHandle::seek(long int offset, int origin)
@@ -929,16 +902,12 @@ int FileHandle::seek(long int offset, int origin)
     if (!hndl)
         return -100;
 
-    return fseek(hndl, offset, origin);
+    return fseek(hndl.get(), offset, origin);
 }
 
 void FileHandle::close()
 {
-    if (hndl)
-    {
-        fclose(hndl);
-        hndl = NULL;
-    }
+    hndl.reset();
 }
 
 char *FileHandle::gets(char *str, int num)
@@ -946,7 +915,7 @@ char *FileHandle::gets(char *str, int num)
     if (!hndl)
         return NULL;
 
-    return fgets(str, num, hndl);
+    return fgets(str, num, hndl.get());
 }
 
 int FileHandle::puts(const std::string &str)
@@ -954,7 +923,7 @@ int FileHandle::puts(const std::string &str)
     if (!hndl)
         return -100;
 
-    return fputs(str.c_str(), hndl);
+    return fputs(str.c_str(), hndl.get());
 }
 
 int FileHandle::printf(const std::string &format, ...)
@@ -965,7 +934,7 @@ int FileHandle::printf(const std::string &format, ...)
     va_list args;
     va_start (args, format);
 
-    int num = vfprintf(hndl, format.c_str(), args);
+    int num = vfprintf(hndl.get(), format.c_str(), args);
 
     va_end (args);
 
@@ -977,7 +946,7 @@ int FileHandle::vprintf(const std::string &format, va_list args)
     if (!hndl)
         return -100;
 
-    int num = vfprintf(hndl, format.c_str(), args);
+    int num = vfprintf(hndl.get(), format.c_str(), args);
     return num;
 }
 
@@ -991,7 +960,7 @@ bool FileHandle::ReadLine(std::string *out)
 	char buf[256];
 	bool ok = false;
 
-	while(fgets(buf, 256, hndl))
+	while(fgets(buf, 256, hndl.get()))
 	{
 		ok = true;
 		(*out) += buf;
