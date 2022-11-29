@@ -268,10 +268,10 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                     posKeyName = "-";
 
                 if ( usr->InputConfig[ v24 ].SetFlags & UserData::TInputConf::IF_FIRST )
-                    posKeyName = yw->GetLocaleString(308, "?");
+                    posKeyName = Locale::Text::Dialogs(Locale::DLG_I_UNK);
 
                 if ( usr->InputConfig[ v24 ].SetFlags & UserData::TInputConf::IF_SECOND )
-                    negKeyName = yw->GetLocaleString(308, "?");
+                    negKeyName = Locale::Text::Dialogs(Locale::DLG_I_UNK);
 
                 v19 = fmt::sprintf("%s/%s", negKeyName, posKeyName);
             }
@@ -283,7 +283,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
                     v19 = "-";
 
                 if ( usr->InputConfig[ v24 ].SetFlags & UserData::TInputConf::IF_FIRST )
-                    v19 = yw->GetLocaleString(308, "?");
+                    v19 = Locale::Text::Dialogs(Locale::DLG_I_UNK);
             }
 
             a1a[0].txt = usr->InputConfigTitle[v24];
@@ -336,124 +336,124 @@ void NC_STACK_ypaworld::LoadKeyNames()
     for (std::string &a: NC_STACK_input::KeyTitle)
         a.clear();
 
-    NC_STACK_input::KeyTitle[Input::KC_NONE]       = "*";
-    NC_STACK_input::KeyTitle[Input::KC_ESCAPE]     = GetLocaleString(1001, "ESC");
-    NC_STACK_input::KeyTitle[Input::KC_SPACE]      = GetLocaleString(1002, "SPACE");
-    NC_STACK_input::KeyTitle[Input::KC_UP]         = GetLocaleString(1003, "UP");
-    NC_STACK_input::KeyTitle[Input::KC_DOWN]       = GetLocaleString(1004, "DOWN");
-    NC_STACK_input::KeyTitle[Input::KC_LEFT]       = GetLocaleString(1005, "LEFT");
-    NC_STACK_input::KeyTitle[Input::KC_RIGHT]      = GetLocaleString(1006, "RIGHT");
-    NC_STACK_input::KeyTitle[Input::KC_F1]         = GetLocaleString(1007, "F1");
-    NC_STACK_input::KeyTitle[Input::KC_F2]         = GetLocaleString(1008, "F2");
-    NC_STACK_input::KeyTitle[Input::KC_F3]         = GetLocaleString(1009, "F3");
-    NC_STACK_input::KeyTitle[Input::KC_F4]         = GetLocaleString(1010, "F4");
-    NC_STACK_input::KeyTitle[Input::KC_F5]         = GetLocaleString(1011, "F5");
-    NC_STACK_input::KeyTitle[Input::KC_F6]         = GetLocaleString(1012, "F6");
-    NC_STACK_input::KeyTitle[Input::KC_F7]         = GetLocaleString(1013, "F7");
-    NC_STACK_input::KeyTitle[Input::KC_F8]         = GetLocaleString(1014, "F8");
-    NC_STACK_input::KeyTitle[Input::KC_F9]         = GetLocaleString(1015, "F9");
-    NC_STACK_input::KeyTitle[Input::KC_F10]        = GetLocaleString(1016, "F10");
-    NC_STACK_input::KeyTitle[Input::KC_F11]        = GetLocaleString(1017, "F11");
-    NC_STACK_input::KeyTitle[Input::KC_F12]        = GetLocaleString(1018, "F12");
-    NC_STACK_input::KeyTitle[Input::KC_BACKSPACE]  = GetLocaleString(1019, "BACK");
-    NC_STACK_input::KeyTitle[Input::KC_TAB]        = GetLocaleString(1020, "TAB");
-    NC_STACK_input::KeyTitle[Input::KC_CLEAR]      = GetLocaleString(1021, "CLEAR");
-    NC_STACK_input::KeyTitle[Input::KC_RETURN]     = GetLocaleString(1022, "RETURN");
-    NC_STACK_input::KeyTitle[Input::KC_CTRL]       = GetLocaleString(1023, "CTRL");
-    NC_STACK_input::KeyTitle[Input::KC_SHIFT]      = GetLocaleString(1024, "SHIFT");
-    NC_STACK_input::KeyTitle[Input::KC_ALT]        = GetLocaleString(1025, "ALT");
-    NC_STACK_input::KeyTitle[Input::KC_PAUSE]      = GetLocaleString(1026, "PAUSE");
-    NC_STACK_input::KeyTitle[Input::KC_PGUP]       = GetLocaleString(1027, "PGUP");
-    NC_STACK_input::KeyTitle[Input::KC_PGDOWN]     = GetLocaleString(1028, "PGDOWN");
-    NC_STACK_input::KeyTitle[Input::KC_END]        = GetLocaleString(1029, "END");
-    NC_STACK_input::KeyTitle[Input::KC_HOME]       = GetLocaleString(1030, "HOME");
-    NC_STACK_input::KeyTitle[Input::KC_SELECT]     = GetLocaleString(1031, "SELECT");
-    NC_STACK_input::KeyTitle[Input::KC_EXECUTE]    = GetLocaleString(1032, "EXEC");
-    NC_STACK_input::KeyTitle[Input::KC_SNAPSHOT]   = GetLocaleString(1033, "PRINT");
-    NC_STACK_input::KeyTitle[Input::KC_INSERT]     = GetLocaleString(1034, "INS");
-    NC_STACK_input::KeyTitle[Input::KC_DELETE]     = GetLocaleString(1035, "DEL");
-    NC_STACK_input::KeyTitle[Input::KC_HELP]       = GetLocaleString(1036, "HELP");
-    NC_STACK_input::KeyTitle[Input::KC_1]          = GetLocaleString(1037, "1");
-    NC_STACK_input::KeyTitle[Input::KC_2]          = GetLocaleString(1038, "2");
-    NC_STACK_input::KeyTitle[Input::KC_3]          = GetLocaleString(1039, "3");
-    NC_STACK_input::KeyTitle[Input::KC_4]          = GetLocaleString(1040, "4");
-    NC_STACK_input::KeyTitle[Input::KC_5]          = GetLocaleString(1041, "5");
-    NC_STACK_input::KeyTitle[Input::KC_6]          = GetLocaleString(1042, "6");
-    NC_STACK_input::KeyTitle[Input::KC_7]          = GetLocaleString(1043, "7");
-    NC_STACK_input::KeyTitle[Input::KC_8]          = GetLocaleString(1044, "8");
-    NC_STACK_input::KeyTitle[Input::KC_9]          = GetLocaleString(1045, "9");
-    NC_STACK_input::KeyTitle[Input::KC_0]          = GetLocaleString(1046, "0");
-    NC_STACK_input::KeyTitle[Input::KC_A]          = GetLocaleString(1047, "A");
-    NC_STACK_input::KeyTitle[Input::KC_B]          = GetLocaleString(1048, "B");
-    NC_STACK_input::KeyTitle[Input::KC_C]          = GetLocaleString(1049, "C");
-    NC_STACK_input::KeyTitle[Input::KC_D]          = GetLocaleString(1050, "D");
-    NC_STACK_input::KeyTitle[Input::KC_E]          = GetLocaleString(1051, "E");
-    NC_STACK_input::KeyTitle[Input::KC_F]          = GetLocaleString(1052, "F");
-    NC_STACK_input::KeyTitle[Input::KC_G]          = GetLocaleString(1053, "G");
-    NC_STACK_input::KeyTitle[Input::KC_H]          = GetLocaleString(1054, "H");
-    NC_STACK_input::KeyTitle[Input::KC_I]          = GetLocaleString(1055, "I");
-    NC_STACK_input::KeyTitle[Input::KC_J]          = GetLocaleString(1056, "J");
-    NC_STACK_input::KeyTitle[Input::KC_K]          = GetLocaleString(1057, "K");
-    NC_STACK_input::KeyTitle[Input::KC_L]          = GetLocaleString(1058, "L");
-    NC_STACK_input::KeyTitle[Input::KC_M]          = GetLocaleString(1059, "M");
-    NC_STACK_input::KeyTitle[Input::KC_N]          = GetLocaleString(1060, "N");
-    NC_STACK_input::KeyTitle[Input::KC_O]          = GetLocaleString(1061, "O");
-    NC_STACK_input::KeyTitle[Input::KC_P]          = GetLocaleString(1062, "P");
-    NC_STACK_input::KeyTitle[Input::KC_Q]          = GetLocaleString(1063, "Q");
-    NC_STACK_input::KeyTitle[Input::KC_R]          = GetLocaleString(1064, "R");
-    NC_STACK_input::KeyTitle[Input::KC_S]          = GetLocaleString(1065, "S");
-    NC_STACK_input::KeyTitle[Input::KC_T]          = GetLocaleString(1066, "T");
-    NC_STACK_input::KeyTitle[Input::KC_U]          = GetLocaleString(1067, "U");
-    NC_STACK_input::KeyTitle[Input::KC_V]          = GetLocaleString(1068, "V");
-    NC_STACK_input::KeyTitle[Input::KC_W]          = GetLocaleString(1069, "W");
-    NC_STACK_input::KeyTitle[Input::KC_X]          = GetLocaleString(1070, "X");
-    NC_STACK_input::KeyTitle[Input::KC_Y]          = GetLocaleString(1071, "Y");
-    NC_STACK_input::KeyTitle[Input::KC_Z]          = GetLocaleString(1072, "Z");
-    NC_STACK_input::KeyTitle[Input::KC_NUM0]       = GetLocaleString(1073, "NUM 0");
-    NC_STACK_input::KeyTitle[Input::KC_NUM1]       = GetLocaleString(1074, "NUM 1");
-    NC_STACK_input::KeyTitle[Input::KC_NUM2]       = GetLocaleString(1075, "NUM 2");
-    NC_STACK_input::KeyTitle[Input::KC_NUM3]       = GetLocaleString(1076, "NUM 3");
-    NC_STACK_input::KeyTitle[Input::KC_NUM4]       = GetLocaleString(1077, "NUM 4");
-    NC_STACK_input::KeyTitle[Input::KC_NUM5]       = GetLocaleString(1078, "NUM 5");
-    NC_STACK_input::KeyTitle[Input::KC_NUM6]       = GetLocaleString(1079, "NUM 6");
-    NC_STACK_input::KeyTitle[Input::KC_NUM7]       = GetLocaleString(1080, "NUM 7");
-    NC_STACK_input::KeyTitle[Input::KC_NUM8]       = GetLocaleString(1081, "NUM 8");
-    NC_STACK_input::KeyTitle[Input::KC_NUM9]       = GetLocaleString(1082, "NUM 9");
-    NC_STACK_input::KeyTitle[Input::KC_NUMMUL]     = GetLocaleString(1083, "MUL");
-    NC_STACK_input::KeyTitle[Input::KC_NUMPLUS]    = GetLocaleString(1084, "ADD");
-    NC_STACK_input::KeyTitle[Input::KC_NUMDOT]     = GetLocaleString(1085, "DOT");
-    NC_STACK_input::KeyTitle[Input::KC_NUMMINUS]   = GetLocaleString(1086, "SUB");
-    NC_STACK_input::KeyTitle[Input::KC_NUMENTER]   = GetLocaleString(1087, "ENTER");
-    NC_STACK_input::KeyTitle[Input::KC_NUMDIV]     = GetLocaleString(1088, "DIV");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA1]     = GetLocaleString(1089, "EXTRA_1");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA2]     = GetLocaleString(1090, "EXTRA_2");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA3]     = GetLocaleString(1091, "EXTRA_3");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA4]     = GetLocaleString(1092, "EXTRA_4");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA5]     = GetLocaleString(1093, "EXTRA_5");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA6]     = GetLocaleString(1094, "EXTRA_6");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA7]     = GetLocaleString(1095, "EXTRA_7");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA8]     = GetLocaleString(1096, "EXTRA_8");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA9]     = GetLocaleString(1097, "EXTRA_9");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA10]    = GetLocaleString(1098, "EXTRA_10");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA11]    = GetLocaleString(1099, "EXTRA_11");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA12]    = GetLocaleString(1100, "EXTRA_12");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA13]    = GetLocaleString(1101, "EXTRA_13");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA14]    = GetLocaleString(1102, "EXTRA_14");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA15]    = GetLocaleString(1103, "EXTRA_15");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA16]    = GetLocaleString(1104, "EXTRA_16");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA17]    = GetLocaleString(1105, "EXTRA_17");
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA18]    = GetLocaleString(1106, "EXTRA_18");
+    NC_STACK_input::KeyTitle[Input::KC_NONE]       = "*"; // Locale::Text::GetKeyNameString(Locale::KEYNAME_NOP);
+    NC_STACK_input::KeyTitle[Input::KC_ESCAPE]     = Locale::Text::KeyName(Locale::KEYNAME_ESC);
+    NC_STACK_input::KeyTitle[Input::KC_SPACE]      = Locale::Text::KeyName(Locale::KEYNAME_SPACE);
+    NC_STACK_input::KeyTitle[Input::KC_UP]         = Locale::Text::KeyName(Locale::KEYNAME_UP);
+    NC_STACK_input::KeyTitle[Input::KC_DOWN]       = Locale::Text::KeyName(Locale::KEYNAME_DOWN);
+    NC_STACK_input::KeyTitle[Input::KC_LEFT]       = Locale::Text::KeyName(Locale::KEYNAME_LEFT);
+    NC_STACK_input::KeyTitle[Input::KC_RIGHT]      = Locale::Text::KeyName(Locale::KEYNAME_RIGHT);
+    NC_STACK_input::KeyTitle[Input::KC_F1]         = Locale::Text::KeyName(Locale::KEYNAME_F1);
+    NC_STACK_input::KeyTitle[Input::KC_F2]         = Locale::Text::KeyName(Locale::KEYNAME_F2);
+    NC_STACK_input::KeyTitle[Input::KC_F3]         = Locale::Text::KeyName(Locale::KEYNAME_F3);
+    NC_STACK_input::KeyTitle[Input::KC_F4]         = Locale::Text::KeyName(Locale::KEYNAME_F4);
+    NC_STACK_input::KeyTitle[Input::KC_F5]         = Locale::Text::KeyName(Locale::KEYNAME_F5);
+    NC_STACK_input::KeyTitle[Input::KC_F6]         = Locale::Text::KeyName(Locale::KEYNAME_F6);
+    NC_STACK_input::KeyTitle[Input::KC_F7]         = Locale::Text::KeyName(Locale::KEYNAME_F7);
+    NC_STACK_input::KeyTitle[Input::KC_F8]         = Locale::Text::KeyName(Locale::KEYNAME_F8);
+    NC_STACK_input::KeyTitle[Input::KC_F9]         = Locale::Text::KeyName(Locale::KEYNAME_F9);
+    NC_STACK_input::KeyTitle[Input::KC_F10]        = Locale::Text::KeyName(Locale::KEYNAME_F10);
+    NC_STACK_input::KeyTitle[Input::KC_F11]        = Locale::Text::KeyName(Locale::KEYNAME_F11);
+    NC_STACK_input::KeyTitle[Input::KC_F12]        = Locale::Text::KeyName(Locale::KEYNAME_F12);
+    NC_STACK_input::KeyTitle[Input::KC_BACKSPACE]  = Locale::Text::KeyName(Locale::KEYNAME_BACK);
+    NC_STACK_input::KeyTitle[Input::KC_TAB]        = Locale::Text::KeyName(Locale::KEYNAME_TAB);
+    NC_STACK_input::KeyTitle[Input::KC_CLEAR]      = Locale::Text::KeyName(Locale::KEYNAME_CLEAR);
+    NC_STACK_input::KeyTitle[Input::KC_RETURN]     = Locale::Text::KeyName(Locale::KEYNAME_RETURN);
+    NC_STACK_input::KeyTitle[Input::KC_CTRL]       = Locale::Text::KeyName(Locale::KEYNAME_CTRL);
+    NC_STACK_input::KeyTitle[Input::KC_SHIFT]      = Locale::Text::KeyName(Locale::KEYNAME_SHIFT);
+    NC_STACK_input::KeyTitle[Input::KC_ALT]        = Locale::Text::KeyName(Locale::KEYNAME_ALT);
+    NC_STACK_input::KeyTitle[Input::KC_PAUSE]      = Locale::Text::KeyName(Locale::KEYNAME_PAUSE);
+    NC_STACK_input::KeyTitle[Input::KC_PGUP]       = Locale::Text::KeyName(Locale::KEYNAME_PGUP);
+    NC_STACK_input::KeyTitle[Input::KC_PGDOWN]     = Locale::Text::KeyName(Locale::KEYNAME_PGDOWN);
+    NC_STACK_input::KeyTitle[Input::KC_END]        = Locale::Text::KeyName(Locale::KEYNAME_END);
+    NC_STACK_input::KeyTitle[Input::KC_HOME]       = Locale::Text::KeyName(Locale::KEYNAME_HOME);
+    NC_STACK_input::KeyTitle[Input::KC_SELECT]     = Locale::Text::KeyName(Locale::KEYNAME_SELECT);
+    NC_STACK_input::KeyTitle[Input::KC_EXECUTE]    = Locale::Text::KeyName(Locale::KEYNAME_EXEC);
+    NC_STACK_input::KeyTitle[Input::KC_SNAPSHOT]   = Locale::Text::KeyName(Locale::KEYNAME_PRINT);
+    NC_STACK_input::KeyTitle[Input::KC_INSERT]     = Locale::Text::KeyName(Locale::KEYNAME_INS);
+    NC_STACK_input::KeyTitle[Input::KC_DELETE]     = Locale::Text::KeyName(Locale::KEYNAME_DEL);
+    NC_STACK_input::KeyTitle[Input::KC_HELP]       = Locale::Text::KeyName(Locale::KEYNAME_HELP);
+    NC_STACK_input::KeyTitle[Input::KC_1]          = Locale::Text::KeyName(Locale::KEYNAME_1);
+    NC_STACK_input::KeyTitle[Input::KC_2]          = Locale::Text::KeyName(Locale::KEYNAME_2);
+    NC_STACK_input::KeyTitle[Input::KC_3]          = Locale::Text::KeyName(Locale::KEYNAME_3);
+    NC_STACK_input::KeyTitle[Input::KC_4]          = Locale::Text::KeyName(Locale::KEYNAME_4);
+    NC_STACK_input::KeyTitle[Input::KC_5]          = Locale::Text::KeyName(Locale::KEYNAME_5);
+    NC_STACK_input::KeyTitle[Input::KC_6]          = Locale::Text::KeyName(Locale::KEYNAME_6);
+    NC_STACK_input::KeyTitle[Input::KC_7]          = Locale::Text::KeyName(Locale::KEYNAME_7);
+    NC_STACK_input::KeyTitle[Input::KC_8]          = Locale::Text::KeyName(Locale::KEYNAME_8);
+    NC_STACK_input::KeyTitle[Input::KC_9]          = Locale::Text::KeyName(Locale::KEYNAME_9);
+    NC_STACK_input::KeyTitle[Input::KC_0]          = Locale::Text::KeyName(Locale::KEYNAME_0);
+    NC_STACK_input::KeyTitle[Input::KC_A]          = Locale::Text::KeyName(Locale::KEYNAME_A);
+    NC_STACK_input::KeyTitle[Input::KC_B]          = Locale::Text::KeyName(Locale::KEYNAME_B);
+    NC_STACK_input::KeyTitle[Input::KC_C]          = Locale::Text::KeyName(Locale::KEYNAME_C);
+    NC_STACK_input::KeyTitle[Input::KC_D]          = Locale::Text::KeyName(Locale::KEYNAME_D);
+    NC_STACK_input::KeyTitle[Input::KC_E]          = Locale::Text::KeyName(Locale::KEYNAME_E);
+    NC_STACK_input::KeyTitle[Input::KC_F]          = Locale::Text::KeyName(Locale::KEYNAME_F);
+    NC_STACK_input::KeyTitle[Input::KC_G]          = Locale::Text::KeyName(Locale::KEYNAME_G);
+    NC_STACK_input::KeyTitle[Input::KC_H]          = Locale::Text::KeyName(Locale::KEYNAME_H);
+    NC_STACK_input::KeyTitle[Input::KC_I]          = Locale::Text::KeyName(Locale::KEYNAME_I);
+    NC_STACK_input::KeyTitle[Input::KC_J]          = Locale::Text::KeyName(Locale::KEYNAME_J);
+    NC_STACK_input::KeyTitle[Input::KC_K]          = Locale::Text::KeyName(Locale::KEYNAME_K);
+    NC_STACK_input::KeyTitle[Input::KC_L]          = Locale::Text::KeyName(Locale::KEYNAME_L);
+    NC_STACK_input::KeyTitle[Input::KC_M]          = Locale::Text::KeyName(Locale::KEYNAME_M);
+    NC_STACK_input::KeyTitle[Input::KC_N]          = Locale::Text::KeyName(Locale::KEYNAME_N);
+    NC_STACK_input::KeyTitle[Input::KC_O]          = Locale::Text::KeyName(Locale::KEYNAME_O);
+    NC_STACK_input::KeyTitle[Input::KC_P]          = Locale::Text::KeyName(Locale::KEYNAME_P);
+    NC_STACK_input::KeyTitle[Input::KC_Q]          = Locale::Text::KeyName(Locale::KEYNAME_Q);
+    NC_STACK_input::KeyTitle[Input::KC_R]          = Locale::Text::KeyName(Locale::KEYNAME_R);
+    NC_STACK_input::KeyTitle[Input::KC_S]          = Locale::Text::KeyName(Locale::KEYNAME_S);
+    NC_STACK_input::KeyTitle[Input::KC_T]          = Locale::Text::KeyName(Locale::KEYNAME_T);
+    NC_STACK_input::KeyTitle[Input::KC_U]          = Locale::Text::KeyName(Locale::KEYNAME_U);
+    NC_STACK_input::KeyTitle[Input::KC_V]          = Locale::Text::KeyName(Locale::KEYNAME_V);
+    NC_STACK_input::KeyTitle[Input::KC_W]          = Locale::Text::KeyName(Locale::KEYNAME_W);
+    NC_STACK_input::KeyTitle[Input::KC_X]          = Locale::Text::KeyName(Locale::KEYNAME_X);
+    NC_STACK_input::KeyTitle[Input::KC_Y]          = Locale::Text::KeyName(Locale::KEYNAME_Y);
+    NC_STACK_input::KeyTitle[Input::KC_Z]          = Locale::Text::KeyName(Locale::KEYNAME_Z);
+    NC_STACK_input::KeyTitle[Input::KC_NUM0]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_0);
+    NC_STACK_input::KeyTitle[Input::KC_NUM1]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_1);
+    NC_STACK_input::KeyTitle[Input::KC_NUM2]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_2);
+    NC_STACK_input::KeyTitle[Input::KC_NUM3]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_3);
+    NC_STACK_input::KeyTitle[Input::KC_NUM4]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_4);
+    NC_STACK_input::KeyTitle[Input::KC_NUM5]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_5);
+    NC_STACK_input::KeyTitle[Input::KC_NUM6]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_6);
+    NC_STACK_input::KeyTitle[Input::KC_NUM7]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_7);
+    NC_STACK_input::KeyTitle[Input::KC_NUM8]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_8);
+    NC_STACK_input::KeyTitle[Input::KC_NUM9]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_9);
+    NC_STACK_input::KeyTitle[Input::KC_NUMMUL]     = Locale::Text::KeyName(Locale::KEYNAME_MUL);
+    NC_STACK_input::KeyTitle[Input::KC_NUMPLUS]    = Locale::Text::KeyName(Locale::KEYNAME_ADD);
+    NC_STACK_input::KeyTitle[Input::KC_NUMDOT]     = Locale::Text::KeyName(Locale::KEYNAME_DOT);
+    NC_STACK_input::KeyTitle[Input::KC_NUMMINUS]   = Locale::Text::KeyName(Locale::KEYNAME_SUB);
+    NC_STACK_input::KeyTitle[Input::KC_NUMENTER]   = Locale::Text::KeyName(Locale::KEYNAME_ENTER);
+    NC_STACK_input::KeyTitle[Input::KC_NUMDIV]     = Locale::Text::KeyName(Locale::KEYNAME_DIV);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA1]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_1);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA2]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_2);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA3]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_3);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA4]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_4);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA5]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_5);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA6]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_6);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA7]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_7);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA8]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_8);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA9]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_9);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA10]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_10);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA11]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_11);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA12]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_12);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA13]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_13);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA14]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_14);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA15]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_15);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA16]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_16);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA17]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_17);
+    NC_STACK_input::KeyTitle[Input::KC_EXTRA18]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_18);
     
-    NC_STACK_input::KeyTitle[Input::KC_MMB]        = GetLocaleString(1121, "MIDDLE MOUSE");
+    NC_STACK_input::KeyTitle[Input::KC_MMB]        = Locale::Text::KeyName(Locale::KEYNAME_MIDDLE_MOUSE);
 
-    NC_STACK_input::KeyTitle[Input::KC_JOYB0]      = GetLocaleString(1123, "JOYB0");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB1]      = GetLocaleString(1124, "JOYB1");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB2]      = GetLocaleString(1125, "JOYB2");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB3]      = GetLocaleString(1126, "JOYB3");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB4]      = GetLocaleString(1127, "JOYB4");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB5]      = GetLocaleString(1128, "JOYB5");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB6]      = GetLocaleString(1129, "JOYB6");
-    NC_STACK_input::KeyTitle[Input::KC_JOYB7]      = GetLocaleString(1130, "JOYB7");
+    NC_STACK_input::KeyTitle[Input::KC_JOYB0]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB0);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB1]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB1);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB2]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB2);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB3]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB3);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB4]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB4);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB5]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB5);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB6]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB6);
+    NC_STACK_input::KeyTitle[Input::KC_JOYB7]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB7);
 }
 
 
@@ -644,7 +644,7 @@ void ypaworld_func156__sub1(UserData *usr)
     for (size_t i = 0; i < usr->p_YW->_globalMapRegions.MapRegions.size(); i++)
     {
         if (usr->p_YW->_globalMapRegions.MapRegions[i].Status == TMapRegionInfo::STATUS_NETWORK)
-            usr->mapDescriptions.push_back( UserData::TMapDescription(i, usr->p_YW->GetLocaleString(i + 1800, usr->p_YW->_globalMapRegions.MapRegions[i].MapName)) );
+            usr->mapDescriptions.push_back( UserData::TMapDescription(i, usr->p_YW->GetLevelName(i)) );
     }
 
     std::stable_sort(usr->mapDescriptions.begin(), usr->mapDescriptions.end(), UserData::TMapDescription::compare);
@@ -1187,47 +1187,47 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1001:
-        p_YW->SetShowingTooltip(World::TIP_MENU_PROFILESCREEN);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_PROFILESCREEN);
         break;
 
     case 1003:
-        p_YW->SetShowingTooltip(World::TIP_MENU_INPUTSCREEN);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_INPUTSCREEN);
         break;
 
     case 1004:
-        p_YW->SetShowingTooltip(World::TIP_MENU_VIDEOSCREEN);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_VIDEOSCREEN);
         break;
 
     case 1005:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SOUNDSCREEN);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SOUNDSCREEN);
         break;
 
     case 1007:
-        p_YW->SetShowingTooltip(World::TIP_MENU_QUIT);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_QUIT);
         break;
 
     case 1008:
-        p_YW->SetShowingTooltip(World::TIP_MENU_LANGSCREEN);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_LANGSCREEN);
         break;
 
     case 1011:
-        p_YW->SetShowingTooltip(World::TIP_MENU_BRIEFRESET);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_BRIEFRESET);
         break;
 
     case 1013:
-        p_YW->SetShowingTooltip(World::TIP_MENU_BRIEFFAST);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_BRIEFFAST);
         break;
 
     case 1014:
-        p_YW->SetShowingTooltip(World::TIP_MENU_PLAYLEVEL);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_PLAYLEVEL);
         break;
 
     case 1015:
-        p_YW->SetShowingTooltip(World::TIP_MENU_LOADLAST);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_LOADLAST);
         break;
 
     case 1016:
-        p_YW->SetShowingTooltip(World::TIP_MENU_NETSCREEN);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_NETSCREEN);
         break;
 
     case 1017:
@@ -1235,84 +1235,84 @@ void UserData::sub_4DE248(int id)
     case 1107:
     case 1167:
     case 1218:
-        p_YW->SetShowingTooltip(World::TIP_MENU_HELP);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_HELP);
         break;
 
     case 1018:
-        p_YW->SetShowingTooltip(World::TIP_MENU_LVLSELECTMAP);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_LVLSELECTMAP);
         break;
 
     case 1019:
         if ( p_YW->_levelInfo.State == TLevelInfo::STATE_MENU )
-            p_YW->SetShowingTooltip(World::TIP_MENU_TOMAIN);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_TOMAIN);
         else if ( p_YW->_levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
-            p_YW->SetShowingTooltip(World::TIP_MENU_EXITDEBRIEF);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_EXITDEBRIEF);
         else
-            p_YW->SetShowingTooltip(World::TIP_MENU_BACKTOLVLSEL);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_BACKTOLVLSEL);
         break;
 
     case 1020:
-        p_YW->SetShowingTooltip(World::TIP_MENU_GOTOLOADSAVE);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_GOTOLOADSAVE);
         break;
 
     case 1050:
-        p_YW->SetShowingTooltip(World::TIP_INPUT_USEJOY);
+        p_YW->SetShowingTooltip(Locale::TIP_INPUT_USEJOY);
         break;
 
     case 1051:
-        p_YW->SetShowingTooltip(World::TIP_INPUT_APPLY);
+        p_YW->SetShowingTooltip(Locale::TIP_INPUT_APPLY);
         break;
 
     case 1053:
-        p_YW->SetShowingTooltip(World::TIP_INPUT_RESET);
+        p_YW->SetShowingTooltip(Locale::TIP_INPUT_RESET);
         break;
 
     case 1054:
-        p_YW->SetShowingTooltip(World::TIP_INPUT_CANCEL);
+        p_YW->SetShowingTooltip(Locale::TIP_INPUT_CANCEL);
         break;
 
     case 1055:
-        p_YW->SetShowingTooltip(World::TIP_INPUT_FFJOY);
+        p_YW->SetShowingTooltip(Locale::TIP_INPUT_FFJOY);
         break;
 
     case 1056:
-        p_YW->SetShowingTooltip(World::TIP_INPUT_REMOVEKEY);
+        p_YW->SetShowingTooltip(Locale::TIP_INPUT_REMOVEKEY);
         break;
 
     case 1061:
-        p_YW->SetShowingTooltip(World::TIP_MENU_ALTJOY);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_ALTJOY);
         break;
 
     case 1101:
-        p_YW->SetShowingTooltip(World::TIP_MENU_LOADUSER);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_LOADUSER);
         break;
 
     case 1102:
-        p_YW->SetShowingTooltip(World::TIP_PROFILE_DEL);
+        p_YW->SetShowingTooltip(Locale::TIP_PROFILE_DEL);
         break;
 
     case 1103:
-        p_YW->SetShowingTooltip(World::TIP_PFOFILE_NEW);
+        p_YW->SetShowingTooltip(Locale::TIP_PFOFILE_NEW);
         break;
 
     case 1104:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SAVEUSER);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SAVEUSER);
         break;
 
     case 1105:
         switch ( diskScreenMode )
         {
         case 1:
-            p_YW->SetShowingTooltip(World::TIP_PFOFILE_SAVETHIS);
+            p_YW->SetShowingTooltip(Locale::TIP_PFOFILE_SAVETHIS);
             break;
         case 2:
-            p_YW->SetShowingTooltip(World::TIP_PFOFILE_LOADTHIS);
+            p_YW->SetShowingTooltip(Locale::TIP_PFOFILE_LOADTHIS);
             break;
         case 3:
-            p_YW->SetShowingTooltip(World::TIP_PFOFILE_NEWTHIS);
+            p_YW->SetShowingTooltip(Locale::TIP_PFOFILE_NEWTHIS);
             break;
         case 4:
-            p_YW->SetShowingTooltip(World::TIP_PFOFILE_DELTHIS);
+            p_YW->SetShowingTooltip(Locale::TIP_PFOFILE_DELTHIS);
             break;
         default:
             break;
@@ -1323,101 +1323,101 @@ void UserData::sub_4DE248(int id)
         switch ( diskScreenMode )
         {
         case 0:
-            p_YW->SetShowingTooltip(World::TIP_PFOFILE_CLOSE);
+            p_YW->SetShowingTooltip(Locale::TIP_PFOFILE_CLOSE);
             break;
         case 1:
-            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELSAVE);
+            p_YW->SetShowingTooltip(Locale::TIP_PROFILE_CANCELSAVE);
             break;
         case 2:
-            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELLOAD);
+            p_YW->SetShowingTooltip(Locale::TIP_PROFILE_CANCELLOAD);
             break;
         case 3:
-            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELNEW);
+            p_YW->SetShowingTooltip(Locale::TIP_PROFILE_CANCELNEW);
             break;
         case 4:
-            p_YW->SetShowingTooltip(World::TIP_PROFILE_CANCELDEL);
+            p_YW->SetShowingTooltip(Locale::TIP_PROFILE_CANCELDEL);
             break;
         default:
             break;
         }
         break;
     case 1150:
-        p_YW->SetShowingTooltip(World::TIP_MENU_16BITTEX);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_16BITTEX);
         break;
 
     case 1151:
-        p_YW->SetShowingTooltip(World::TIP_CONF_CHANNELS);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_CHANNELS);
         break;
 
     case 1152:
-        p_YW->SetShowingTooltip(World::TIP_CONF_FXVOLUME);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_FXVOLUME);
         break;
 
     case 1154:
-        p_YW->SetShowingTooltip(World::TIP_CONF_MUSICVOLUME);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_MUSICVOLUME);
         break;
 
     case 1156:
-        p_YW->SetShowingTooltip(World::TIP_CONF_RESOLUTION);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_RESOLUTION);
         break;
 
     case 1157:
-        p_YW->SetShowingTooltip(World::TIP_CONF_FARDEPTH);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_FARDEPTH);
         break;
 
     case 1159:
-        p_YW->SetShowingTooltip(World::TIP_CONF_EXPLODES);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_EXPLODES);
         break;
 
     case 1160:
-        p_YW->SetShowingTooltip(World::TIP_CONF_SKY);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_SKY);
         break;
 
     case 1161:
-        p_YW->SetShowingTooltip(World::TIP_CONF_APPLY);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_APPLY);
         break;
 
     case 1162:
-        p_YW->SetShowingTooltip(World::TIP_CONF_CLOSE);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_CLOSE);
         break;
 
     case 1163:
-        p_YW->SetShowingTooltip(World::TIP_CONF_ENEMYSIGNS);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_ENEMYSIGNS);
         break;
 
     case 1164:
-        p_YW->SetShowingTooltip(World::TIP_CONF_MUSIC);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_MUSIC);
         break;
 
     case 1165:
-        p_YW->SetShowingTooltip(World::TIP_CONF_HWSWMOUSE);
+        p_YW->SetShowingTooltip(Locale::TIP_CONF_HWSWMOUSE);
         break;
 
     case 1166:
-        p_YW->SetShowingTooltip(World::TIP_MENU_WINDOWED); // windowed
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_WINDOWED); // windowed
         break;
 
     case 1172:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SEL3DDEV);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SEL3DDEV);
         break;
 
     case 1201:
         switch ( netSelMode )
         {
         case NETSCREEN_MODE_SELECT:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETSELPROV);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETSELPROV);
             break;
         case NETSCREEN_SESSION_SELECT:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETSELSESS);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETSELSESS);
             break;
         case NETSCREEN_ENTER_NAME:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETPLNAME);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETPLNAME);
             break;
         case NETSCREEN_CHOOSE_MAP:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETSELLVL);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETSELLVL);
             break;
         case NETSCREEN_INSESSION:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETSTART);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETSTART);
             break;
         default:
             break;
@@ -1427,30 +1427,30 @@ void UserData::sub_4DE248(int id)
     case 1202:
         if ( netSelMode == NETSCREEN_SESSION_SELECT )
         {
-            p_YW->SetShowingTooltip(World::TIP_MENU_SELNEWLEVEL);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_SELNEWLEVEL);
         }
         else if ( netSelMode == NETSCREEN_INSESSION )
         {
-            p_YW->SetShowingTooltip(World::TIP_MENU_SENDTOALL);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_SENDTOALL);
         }
         break;
 
     case 1203:
-        p_YW->SetShowingTooltip(World::TIP_MENU_NETCLOSE);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_NETCLOSE);
         break;
 
     case 1205:
         switch ( netSelMode )
         {
         case NETSCREEN_SESSION_SELECT:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETBACKPLAYER);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETBACKPLAYER);
             break;
         case NETSCREEN_ENTER_NAME:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETBACKPROV);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETBACKPROV);
             break;
         case NETSCREEN_CHOOSE_MAP:
         case NETSCREEN_INSESSION:
-            p_YW->SetShowingTooltip(World::TIP_MENU_NETBACKSESS);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NETBACKSESS);
             break;
         default:
             break;
@@ -1458,42 +1458,42 @@ void UserData::sub_4DE248(int id)
         break;
 
     case 1206:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SELRESIST);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SELRESIST);
         break;
 
     case 1207:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SELGHOR);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SELGHOR);
         break;
 
     case 1208:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SELMYKO);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SELMYKO);
         break;
 
     case 1209:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SELTAER);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SELTAER);
         break;
 
     case 1219:
         if ( rdyStart )
-            p_YW->SetShowingTooltip(World::TIP_MENU_NOTREADY);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_NOTREADY);
         else
-            p_YW->SetShowingTooltip(World::TIP_MENU_READY);
+            p_YW->SetShowingTooltip(Locale::TIP_MENU_READY);
         break;
 
     case 1225:
-        p_YW->SetShowingTooltip(World::TIP_MENU_SENDMSG);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_SENDMSG);
         break;
 
     case 1250:
-        p_YW->SetShowingTooltip(World::TIP_MENU_LANGCHOOSE);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_LANGCHOOSE);
         break;
 
     case 1251:
-        p_YW->SetShowingTooltip(World::TIP_MENU_LANGEXIT);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_LANGEXIT);
         break;
 
     case 1252:
-        p_YW->SetShowingTooltip(World::TIP_MENU_HELP);
+        p_YW->SetShowingTooltip(Locale::TIP_MENU_HELP);
         break;
     }
 }
@@ -1796,7 +1796,7 @@ void UserData::InputConfCopyToBackup()
 
 int NC_STACK_ypaworld::InputConfigLoadDefault()
 {
-    std::string file = fmt::sprintf("data:settings/%s/input.def", _localeName);
+    std::string file = fmt::sprintf("data:settings/%s/input.def", Locale::Text::GetLocaleName());
 
     ScriptParser::HandlersList hndls
     {
@@ -1930,7 +1930,7 @@ void  UserData::UpdateSelected3DDevFromList()
     {
         const GFX::TGFXDeviceInfo &dev = devices.at(d3d_listvw.selectedEntry);
         if ( !StriCmp(dev.name, "software") )
-            name = p_YW->GetLocaleString(2472, "2472 = Software");
+            name = Locale::Text::Advanced(Locale::ADV_SOFTWARE);
         else
             name = dev.name;
 
@@ -2209,7 +2209,7 @@ void UserData::GameShellUiHandleInput()
     v393.xpos = word_5A50C0 + dword_5A50B6_h;
     sub_bar_button->button_func76(&v393);
 
-    sub_bar_button->button_func71(1019,  p_YW->GetLocaleString(644, "GO BACK"));
+    sub_bar_button->button_func71(1019,  Locale::Text::GlobMap(Locale::GLOBMAP_GOBACK));
 
     if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
     {
@@ -2226,7 +2226,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            sub_bar_button->button_func71(1019, p_YW->GetLocaleString(2438, "2438 == BACK"));
+            sub_bar_button->button_func71(1019, Locale::Text::Advanced(Locale::ADV_BACK));
         }
 
         if ( p_YW->_levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
@@ -2238,7 +2238,7 @@ void UserData::GameShellUiHandleInput()
             v393.xpos = 0;
             sub_bar_button->button_func76(&v393);
 
-            sub_bar_button->button_func71(1019, p_YW->GetLocaleString(2420, "CONTINUE"));
+            sub_bar_button->button_func71(1019, Locale::Text::Advanced(Locale::ADV_CONTINUE));
         }
 
         v410.butID = 1019;
@@ -2458,7 +2458,7 @@ void UserData::GameShellUiHandleInput()
     
 
     if ( EnvMode == ENVMODE_TITLE && Input->HotKeyID == 43 )
-        p_YW->_helpURL = p_YW->GetLocaleString(750, "help\\start.html");
+        p_YW->_helpURL = Locale::Text::Help(Locale::HELP_MAIN);
 
     r = titel_button->button_func69(Input);
 
@@ -2505,7 +2505,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1025 )
         {
-            p_YW->_helpURL = p_YW->GetLocaleString(750, "help\\start.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_MAIN);
         }
     }
 
@@ -2584,13 +2584,13 @@ void UserData::GameShellUiHandleInput()
         case 1021:
             if ( ypaworld_func158__sub0__sub7() )
             {
-                sub_46D9E0(1, p_YW->GetLocaleString(2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?")
-                            , p_YW->GetLocaleString(2439, "2439"), 0);
+                sub_46D9E0(1, Locale::Text::Advanced(Locale::ADV_WANTTOLOAD)
+                            , Locale::Text::Advanced(Locale::ADV_DISCARDPROGRESS), 0);
             }
             else
             {
-                sub_46D9E0(1, p_YW->GetLocaleString(2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?")
-                            , p_YW->GetLocaleString(2440, "2440"), 0);
+                sub_46D9E0(1, Locale::Text::Advanced(Locale::ADV_RLYLOAD)
+                            , Locale::Text::Advanced(Locale::ADV_2440), 0);
             }
             break;
 
@@ -2615,7 +2615,7 @@ void UserData::GameShellUiHandleInput()
     if ( EnvMode == ENVMODE_INPUT )
     {
         if ( !keyCatchMode && Input->HotKeyID == 43 )
-            p_YW->_helpURL = p_YW->GetLocaleString(759, "help\\19.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_INPUTCONF);
 
         if ( Input->KbdLastHit != Input::KC_NONE )
         {
@@ -2771,7 +2771,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_YW->_helpURL = p_YW->GetLocaleString(759, "help\\19.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_INPUTCONF);
             keyCatchMode = false;
         }
     }
@@ -2799,8 +2799,8 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( _settingsChangeOptions & 1 && _gfxMode != p_YW->_gfxMode && _gfxMode )
                 {
-                    sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
-                                , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
+                    sub_46D9E0(5, Locale::Text::Dialogs(Locale::DLG_S_RESCHANGE)
+                                , Locale::Text::Dialogs(Locale::DLG_S_RESWARN), 0);
                 }
                 else
                 {
@@ -2831,7 +2831,7 @@ void UserData::GameShellUiHandleInput()
             EnvMode = ENVMODE_TITLE;
         }
         if ( Input->HotKeyID == 43 )
-            p_YW->_helpURL = p_YW->GetLocaleString(760, "help\\110.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_SETTINGS);
     }
 
 
@@ -2914,8 +2914,8 @@ void UserData::GameShellUiHandleInput()
         {
             if ( (_settingsChangeOptions & 1) &&  _gfxMode != p_YW->_gfxMode && _gfxMode )
             {
-                sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
-                            , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
+                sub_46D9E0(5, Locale::Text::Dialogs(Locale::DLG_S_RESCHANGE)
+                            , Locale::Text::Dialogs(Locale::DLG_S_RESWARN), 0);
             }
             else
             {
@@ -2978,7 +2978,7 @@ void UserData::GameShellUiHandleInput()
             p_YW->GuiWinClose( &d3d_listvw );
         }
         else if ( r.code == 1250 )
-            p_YW->_helpURL = p_YW->GetLocaleString(760, "help\\110.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_SETTINGS);
     }
 
     if ( EnvMode == ENVMODE_SETTINGS && video_listvw.IsOpen() )
@@ -3067,8 +3067,8 @@ void UserData::GameShellUiHandleInput()
                     case 1:
                         if ( diskListActiveElement )
                         {
-                            sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
-                                        , p_YW->GetLocaleString(2441, "2441"), 0);
+                            sub_46D9E0(3, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                        , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
                         }
                         else if (userNameDir.size() > 0)
                         {
@@ -3083,8 +3083,8 @@ void UserData::GameShellUiHandleInput()
                     case 3:
                         if ( diskListActiveElement )
                         {
-                            sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
-                                        , p_YW->GetLocaleString(2441, "2441"), 0);
+                            sub_46D9E0(6, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                        , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
                         }
                         else if (userNameDir.size() > 0)
                         {
@@ -3138,7 +3138,7 @@ void UserData::GameShellUiHandleInput()
                     sub_46A7F8();
 
                 if ( Input->HotKeyID == 43 )
-                    p_YW->_helpURL = p_YW->GetLocaleString(758, "help\\18.html");
+                    p_YW->_helpURL = Locale::Text::Help(Locale::HELP_SAVEGAME);
 
             }
 
@@ -3178,7 +3178,7 @@ void UserData::GameShellUiHandleInput()
 
             if ( !diskListActiveElement )
             {
-                userNameDir = p_YW->GetLocaleString(366, "NEW GAME");
+                userNameDir = Locale::Text::Dialogs(Locale::DLG_P_UNNAMED);
             }
             
             userNameDirCursor = userNameDir.size();
@@ -3190,7 +3190,7 @@ void UserData::GameShellUiHandleInput()
             diskScreenMode = 4;
             if ( !diskListActiveElement )
             {
-                userNameDir = p_YW->GetLocaleString(366, "NEW GAME");
+                userNameDir = Locale::Text::Dialogs(Locale::DLG_P_UNNAMED);
             }
             
             userNameDirCursor = userNameDir.size();
@@ -3201,7 +3201,7 @@ void UserData::GameShellUiHandleInput()
         {
             diskScreenMode = 3;
 
-            std::string tmp = p_YW->GetLocaleString(366, "NEW GAME");
+            std::string tmp = Locale::Text::Dialogs(Locale::DLG_P_UNNAMED);
 
             int maxN = 0;
 
@@ -3227,7 +3227,7 @@ void UserData::GameShellUiHandleInput()
             diskScreenMode = 1;
             if ( !diskListActiveElement )
             {
-                userNameDir = p_YW->GetLocaleString(366, "NEW GAME");
+                userNameDir = Locale::Text::Dialogs(Locale::DLG_P_UNNAMED);
             }
 
             userNameDirCursor = userNameDir.size();
@@ -3241,8 +3241,8 @@ void UserData::GameShellUiHandleInput()
             case 1:
                 if ( diskListActiveElement )
                 {
-                    sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
-                                , p_YW->GetLocaleString(2441, "2441"), 0);
+                    sub_46D9E0(3, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
                 }
                 else
                 {
@@ -3255,8 +3255,8 @@ void UserData::GameShellUiHandleInput()
             case 3:
                 if ( diskListActiveElement )
                 {
-                    sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
-                                , p_YW->GetLocaleString(2441, "2441"), 0);
+                    sub_46D9E0(6, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
                 }
                 else
                 {
@@ -3281,7 +3281,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if (r.code == 1250)
         {
-            p_YW->_helpURL = p_YW->GetLocaleString(758, "help\\18.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_SAVEGAME);
             diskScreenMode = 0;
         }
     }
@@ -3413,7 +3413,7 @@ void UserData::GameShellUiHandleInput()
         }
 
         if ( Input->HotKeyID == 43 )
-            p_YW->_helpURL = p_YW->GetLocaleString(761, "help\\111.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_LOCALE);
     }
 
 
@@ -3430,7 +3430,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1250 )
         {
-            p_YW->_helpURL = p_YW->GetLocaleString(761, "help\\111.html");
+            p_YW->_helpURL = Locale::Text::Help(Locale::HELP_LOCALE);
         }
         else if ( r.code == 1300 )
         {
@@ -3658,7 +3658,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->_helpURL = p_YW->GetLocaleString(753, "help\\13.html");
+                p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSELPROV);
             }
             break;
 
@@ -3676,7 +3676,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->_helpURL = p_YW->GetLocaleString(755, "help\\15.html");
+                p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSELSESS);
             }
             break;
 
@@ -3716,7 +3716,7 @@ void UserData::GameShellUiHandleInput()
                         }
 
                         _connString = connStr;
-                        ShowMenuMsgBox(17, p_YW->GetLocaleString(421, "Connect to"), connStr, false);
+                        ShowMenuMsgBox(17, Locale::Text::Netdlg(Locale::NETDLG_CONNECT), connStr, false);
                     }
                         break;
 
@@ -3749,7 +3749,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->_helpURL = p_YW->GetLocaleString(754, "help\\14.html");
+                p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETNAME);
             }
             break;
 
@@ -3760,7 +3760,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->_helpURL = p_YW->GetLocaleString(756, "help\\16.html");
+                p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSELLVL);
             }
             break;
 
@@ -3774,8 +3774,8 @@ void UserData::GameShellUiHandleInput()
 
                     if ( p_YW->_netDriver->GetPlayerCount() <= 1 )
                     {
-                        sub_46D9E0(2, p_YW->GetLocaleString(2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?")
-                                    , p_YW->GetLocaleString(2442, "2442"), 0);
+                        sub_46D9E0(2, Locale::Text::Advanced(Locale::ADV_WANTSTART)
+                                    , Locale::Text::Advanced(Locale::ADV_NETALONE), 0);
                     }
                     else
                     {
@@ -3914,7 +3914,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1250 )
             {
-                p_YW->_helpURL = p_YW->GetLocaleString(757, "help\\17.html");
+                p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSTRTSCR);
             }
             break;
         default:
@@ -4103,19 +4103,19 @@ void UserData::GameShellUiHandleInput()
                 switch ( netSelMode )
                 {
                 case NETSCREEN_MODE_SELECT:
-                    p_YW->_helpURL = p_YW->GetLocaleString(753, "help\\13.html");
+                    p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSELPROV);
                     break;
                 case NETSCREEN_SESSION_SELECT:
-                    p_YW->_helpURL = p_YW->GetLocaleString(755, "help\\15.html");
+                    p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSELSESS);
                     break;
                 case NETSCREEN_ENTER_NAME:
-                    p_YW->_helpURL = p_YW->GetLocaleString(754, "help\\14.html");
+                    p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETNAME);
                     break;
                 case NETSCREEN_CHOOSE_MAP:
-                    p_YW->_helpURL = p_YW->GetLocaleString(756, "help\\16.html");
+                    p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSELLVL);
                     break;
                 case NETSCREEN_INSESSION:
-                    p_YW->_helpURL = p_YW->GetLocaleString(757, "help\\17.html");
+                    p_YW->_helpURL = Locale::Text::Help(Locale::HELP_NETSTRTSCR);
                     break;
                 default:
                     break;
@@ -4174,7 +4174,7 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1227;
     network_button->button_func67(&v410);
 
-    network_button->button_func71(1201, p_YW->GetLocaleString(2, "OK"));
+    network_button->button_func71(1201, Locale::Text::Common(Locale::CMN_OK));
 
     v410.butID = 1220;
     network_button->button_func67(&v410);
@@ -4235,13 +4235,13 @@ void UserData::GameShellUiHandleInput()
 
         if ( netSelMode != NETSCREEN_MODE_SELECT )
         {
-            v280 = p_YW->GetLocaleString(2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
+            v280 = Locale::Text::Advanced(Locale::ADV_REFRESHSESS);
         }
         else
         {
             if ( !p_YW->_netTcpAddress.empty() )
             {
-                v280 = fmt::sprintf("%s  %s",  p_YW->GetLocaleString(2437, "YOUR TCP/IP ADDRESS") , p_YW->_netTcpAddress);
+                v280 = fmt::sprintf("%s  %s",  Locale::Text::Advanced(Locale::ADV_YOURIP) , p_YW->_netTcpAddress);
             }
             else
                 v280 = " ";
@@ -4309,35 +4309,35 @@ void UserData::GameShellUiHandleInput()
 
         network_button->button_func67(&v410);
 
-        network_button->button_func71(1204, p_YW->GetLocaleString(410, "SELECT PROVIDER"));
+        network_button->button_func71(1204, Locale::Text::Netdlg(Locale::NETDLG_SELPROV));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(425, "2"));
+        network_button->button_func71(1222, Locale::Text::Netdlg(Locale::NETDLG_TXT2));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(426, "3"));
+        network_button->button_func71(1223, Locale::Text::Netdlg(Locale::NETDLG_TXT3));
         break;
 
     case NETSCREEN_SESSION_SELECT:
     {
         if ( p_YW->_netDriver->GetProvType() != 4 || !modemAskSession )
         {
-            network_button->button_func71(1202, p_YW->GetLocaleString(402, "NEW"));
+            network_button->button_func71(1202, Locale::Text::Netdlg(Locale::NETDLG_NEW));
 
             v410.butID = 1202;
             network_button->button_func66(&v410);
         }
 
-        network_button->button_func71(1204, p_YW->GetLocaleString(411, "SELECT SESSION"));
+        network_button->button_func71(1204, Locale::Text::Netdlg(Locale::NETDLG_SELSESS));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(428, "5"));
+        network_button->button_func71(1222, Locale::Text::Netdlg(Locale::NETDLG_TXT5));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(429, "6"));
+        network_button->button_func71(1223, Locale::Text::Netdlg(Locale::NETDLG_TXT6));
 
         windp_getNameMsg msg;
         msg.id = 0;
 
         if ( p_YW->_netDriver->GetSessionName(&msg) )
         {
-            network_button->button_func71(1201, p_YW->GetLocaleString(406, "JOIN"));
+            network_button->button_func71(1201, Locale::Text::Netdlg(Locale::NETDLG_JOIN));
         }
         else if ( p_YW->_netDriver->GetProvType() != 4 || modemAskSession )
         {
@@ -4346,17 +4346,17 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            network_button->button_func71(1201, p_YW->GetLocaleString(421, "SEARCH"));
+            network_button->button_func71(1201, Locale::Text::Netdlg(Locale::NETDLG_CONNECT));
         }
     }
     break;
 
     case NETSCREEN_ENTER_NAME:
-        network_button->button_func71(1204, p_YW->GetLocaleString(413, "ENTER PLAYER"));
+        network_button->button_func71(1204, Locale::Text::Netdlg(Locale::NETDLG_ENTERPL));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(434, "11"));
+        network_button->button_func71(1222, Locale::Text::Netdlg(Locale::NETDLG_TXT11));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(435, "12"));
+        network_button->button_func71(1223, Locale::Text::Netdlg(Locale::NETDLG_TXT12));
 
 //        if ( str17_NOT_FALSE )
 //        {
@@ -4374,18 +4374,18 @@ void UserData::GameShellUiHandleInput()
             network_button->button_func67(&v410);
         }
 
-        network_button->button_func71(1204, p_YW->GetLocaleString(412, "SELECT LEVEL"));
+        network_button->button_func71(1204, Locale::Text::Netdlg(Locale::NETDLG_SELLVL));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(431, "8"));
+        network_button->button_func71(1222, Locale::Text::Netdlg(Locale::NETDLG_TXT8));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(432, "9"));
+        network_button->button_func71(1223, Locale::Text::Netdlg(Locale::NETDLG_TXT9));
         break;
 
     case NETSCREEN_INSESSION:
         v410.butID = 1225;
         network_button->button_func66(&v410);
 
-        network_button->button_func71(1225, p_YW->GetLocaleString(405, "SEND"));
+        network_button->button_func71(1225, Locale::Text::Netdlg(Locale::NETDLG_SEND));
 
         v410.butID = 1226;
         network_button->button_func66(&v410);
@@ -4569,13 +4569,13 @@ void UserData::GameShellUiHandleInput()
 
         if ( isHost )
         {
-            network_button->button_func71(1204, p_YW->GetLocaleString(414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
+            network_button->button_func71(1204, Locale::Text::Netdlg(Locale::NETDLG_STARTOR));
 
-            network_button->button_func71(1222, p_YW->GetLocaleString(437, "14"));
+            network_button->button_func71(1222, Locale::Text::Netdlg(Locale::NETDLG_TXT14));
 
-            network_button->button_func71(1223, p_YW->GetLocaleString(438, "15"));
+            network_button->button_func71(1223, Locale::Text::Netdlg(Locale::NETDLG_TXT15));
 
-            network_button->button_func71(1201, p_YW->GetLocaleString(407, "START"));
+            network_button->button_func71(1201, Locale::Text::Netdlg(Locale::NETDLG_START));
 
             if ( !netGameCanStart )
             {
@@ -4586,11 +4586,11 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            network_button->button_func71(1204, p_YW->GetLocaleString(415, "WAIT FOR START OR SEND MESSAGES"));
+            network_button->button_func71(1204, Locale::Text::Netdlg(Locale::NETDLG_WAITOR));
 
-            network_button->button_func71(1222, p_YW->GetLocaleString(440, "17"));
+            network_button->button_func71(1222, Locale::Text::Netdlg(Locale::NETDLG_TXT17));
 
-            network_button->button_func71(1223, p_YW->GetLocaleString(441, "18"));
+            network_button->button_func71(1223, Locale::Text::Netdlg(Locale::NETDLG_TXT18));
 
             if ( isWelcmd )
             {

@@ -22,6 +22,10 @@
         <in>uawindow.cpp</in>
         <in>widget.cpp</in>
       </df>
+      <df name="locale">
+        <in>default.cpp</in>
+        <in>locale.cpp</in>
+      </df>
       <df name="netlib">
         <in>client.cpp</in>
         <in>client_threads.cpp</in>
@@ -48,13 +52,11 @@
       <df name="world">
         <in>analyzer.cpp</in>
         <in>defstr.cpp</in>
-        <in>defstr.h</in>
         <in>luaevents.cpp</in>
         <in>nparticle.cpp</in>
         <in>parsers.cpp</in>
         <in>protos.cpp</in>
         <in>saveparsers.cpp</in>
-        <in>stringids.h</in>
         <in>tools.cpp</in>
       </df>
       <in>3ds.cpp</in>
@@ -279,6 +281,13 @@
           </incDir>
         </ccTool>
       </folder>
+      <folder path="0/locale">
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
       <folder path="0/netlib">
         <ccTool>
           <incDir>
@@ -404,6 +413,14 @@
           <incDir>
             <pElem>.</pElem>
           </incDir>
+        </ccTool>
+      </item>
+      <item path="locale/default.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="locale/locale.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
         </ccTool>
       </item>
       <item path="log.cpp" ex="false" tool="1" flavor2="8">
@@ -598,9 +615,9 @@
         <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="world/defstr.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="world/defstr.h" ex="false" tool="3" flavor2="0">
+      <item path="world/defstr.cpp" ex="false" tool="1" flavor2="11">
+        <ccTool flags="1">
+        </ccTool>
       </item>
       <item path="world/luaevents.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
@@ -621,8 +638,6 @@
       <item path="world/saveparsers.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
         </ccTool>
-      </item>
-      <item path="world/stringids.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="world/tools.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">

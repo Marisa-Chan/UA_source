@@ -17,6 +17,7 @@
 #include "gui/uamsgbox.h"
 #include "env.h"
 #include "system/inivals.h"
+#include "locale/locale.h"
 
 
 const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
@@ -49,7 +50,6 @@ NC_STACK_ypaworld::NC_STACK_ypaworld()
 , _deadCacheList(this, NC_STACK_ypabact::GetKidRefNode, World::BLIST_CACHE)
 , _history(4096)
 {
-    _localeStrings.resize(World::CVLocaleStringsNumber);
 }
 
 namespace World
@@ -85,17 +85,6 @@ bool ParseAssignFile(const std::string &file)
 
 }
 
-
-
-
-
-void NC_STACK_ypaworld::SetLangDefault()
-{
-    for( std::string &s : _localeStrings )
-        s.clear();
-
-    _localeName = "default";
-}
 
 bool NC_STACK_ypaworld::LoadProtosScript(const std::string &filename)
 {
@@ -224,7 +213,7 @@ size_t NC_STACK_ypaworld::Init(IDVList &stak)
 
     yw_setInitScriptLoc(this);
 
-    SetLangDefault();
+    Locale::Text::SetLangDefault();
     ypaworld_func166("language"); // Load lang strings
 
 //		if ( !make_CD_CHECK(1, 1, v10, v9) )
@@ -731,7 +720,7 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     }
 
     yw_arg159 v14;
-    v14.txt = yw->GetLocaleString(221, "TECHNOLOGY UPGRADE!\n");
+    v14.txt = Locale::Text::Feedback(Locale::FEEDBACK_TECHUP);
     v14.unit = 0;
     v14.Priority = 48;
 
@@ -778,7 +767,7 @@ void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
     if ( a4 )
         yw->_buildProtos[a4].EnableMask = 0;
 
-    std::string v13 = yw->GetLocaleString(229, "TECH-UPGRADE LOST!  ") + gem.MsgDefault;
+    std::string v13 = Locale::Text::Feedback(Locale::FEEDBACK_TECHDOWN) + gem.MsgDefault;
 
     yw_arg159 arg159;
     arg159.unit = 0;
@@ -843,7 +832,7 @@ void NC_STACK_ypaworld::yw_ActivateWunderstein(cellArea *cell, int gemid)
     yw_arg159 arg159;
     arg159.unit = NULL;
     arg159.Priority = 48;
-    arg159.txt = GetLocaleString(221, "TECHNOLOGY UPGRADE!\n");
+    arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_TECHUP);
 
     if ( gem.Type )
         arg159.MsgID = World::Log::GetUpgradeLogID(gem.Type);
@@ -2619,7 +2608,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             _GameShell->win3d_guid = dev.guid ;
 
             if ( !StriCmp(dev.name, "software") )
-                _GameShell->win3d_name = GetLocaleString(2472, "2472 = Software");
+                _GameShell->win3d_name = Locale::Text::Advanced(Locale::ADV_SOFTWARE);
             else
                 _GameShell->win3d_name = dev.name;
 
@@ -2640,51 +2629,51 @@ bool NC_STACK_ypaworld::OpenGameShell()
 
     LoadKeyNames();
 
-    _GameShell->InputConfigTitle[World::INPUT_BIND_PAUSE]       = GetLocaleString(544, "PAUSE");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_QUIT]        = GetLocaleString(536, "QUIT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = GetLocaleString(500, "DRIVE DIR");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = GetLocaleString(501, "DRIVE SPEED");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = GetLocaleString(511, "GUN HEIGHT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = GetLocaleString(502, "FLY HEIGHT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = GetLocaleString(503, "FLY SPEED");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = GetLocaleString(504, "FLY DIR");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_BRAKE]       = GetLocaleString(505, "STOP");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_FIRE]        = GetLocaleString(506, "FIRE");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = GetLocaleString(507, "FIRE VIEW");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_GUN]         = GetLocaleString(508, "FIRE GUN");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = GetLocaleString(561, "MAKE CURRENT VEHICLE COMMANDER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_HUD]         = GetLocaleString(541, "HEADUP DISPLAY");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = GetLocaleString(520, "AUTOPILOT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_ORDER]       = GetLocaleString(513, "ORDER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_NEW]         = GetLocaleString(515, "NEW");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_ADD]         = GetLocaleString(516, "ADD");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = GetLocaleString(522, "FINDER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = GetLocaleString(553, "AGGR: COME BACK");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = GetLocaleString(554, "AGGR: FIGHT TARGET");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = GetLocaleString(555, "AGGR: FIGHT ENEMIES TOO");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = GetLocaleString(556, "AGGR: CONQUER ALL ENEMY AREA TOO");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = GetLocaleString(557, "AGGR: GO AMOK");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_MAP]         = GetLocaleString(521, "MAP");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = GetLocaleString(558, "SELECT WAYPOINT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = GetLocaleString(523, "LANDSCAPE");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_OWNER]       = GetLocaleString(524, "OWNER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = GetLocaleString(525, "HEIGHT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = GetLocaleString(531, "MAP MINI");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = GetLocaleString(527, "LOCK VIEWER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = GetLocaleString(529, "ZOOM IN");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = GetLocaleString(530, "ZOOM OUT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = GetLocaleString(538, "LOGWIN");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_CONTROL]     = GetLocaleString(517, "CONTROL");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = GetLocaleString(560, "GOTO LAST OCCUPIED VEHICLE");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_ATTACK]      = GetLocaleString(514, "FIGHT");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = GetLocaleString(533, "TO ROBO");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = GetLocaleString(535, "TO COMMANDER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = GetLocaleString(534, "NEXT MAN");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = GetLocaleString(532, "NEXT COM");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = GetLocaleString(543, "JUMP TO LASTMSG-SENDER");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = GetLocaleString(552, "MESSAGE TO ALL PLAYERS");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_HELP]        = GetLocaleString(559, "HELP");
-    _GameShell->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = GetLocaleString(562, "SITUATION ANALYZER");
+    _GameShell->InputConfigTitle[World::INPUT_BIND_PAUSE]       = Locale::Text::Inputs(Locale::INPUTS_PAUSE);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_QUIT]        = Locale::Text::Inputs(Locale::INPUTS_QUIT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_DRIVE_DIR]   = Locale::Text::Inputs(Locale::INPUTS_DRIVEDIR);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_DRIVE_SPEED] = Locale::Text::Inputs(Locale::INPUTS_DRIVESPD);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_GUN_HEIGHT]  = Locale::Text::Inputs(Locale::INPUTS_GUNHGHT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_FLY_HEIGHT]  = Locale::Text::Inputs(Locale::INPUTS_FLYHGHT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_FLY_SPEED]   = Locale::Text::Inputs(Locale::INPUTS_FLYSPD);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_FLY_DIR]     = Locale::Text::Inputs(Locale::INPUTS_FLYDIR);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_BRAKE]       = Locale::Text::Inputs(Locale::INPUTS_STOP);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_FIRE]        = Locale::Text::Inputs(Locale::INPUTS_FIRE);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_CAMFIRE]     = Locale::Text::Inputs(Locale::INPUTS_FIREVW);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_GUN]         = Locale::Text::Inputs(Locale::INPUTS_FIREGUN);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_SET_COMM]    = Locale::Text::Inputs(Locale::INPUTS_MAKECOMM);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_HUD]         = Locale::Text::Inputs(Locale::INPUTS_HEADUPDISP);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_AUTOPILOT]   = Locale::Text::Inputs(Locale::INPUTS_AUTOPILOT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_ORDER]       = Locale::Text::Inputs(Locale::INPUTS_ORDER);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_NEW]         = Locale::Text::Inputs(Locale::INPUTS_NEW);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_ADD]         = Locale::Text::Inputs(Locale::INPUTS_ADD);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_SQ_MANAGE]   = Locale::Text::Inputs(Locale::INPUTS_FINDER);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_1]      = Locale::Text::Inputs(Locale::INPUTS_AGGR1);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_2]      = Locale::Text::Inputs(Locale::INPUTS_AGGR2);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_3]      = Locale::Text::Inputs(Locale::INPUTS_AGGR3);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_4]      = Locale::Text::Inputs(Locale::INPUTS_AGGR4);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_AGGR_5]      = Locale::Text::Inputs(Locale::INPUTS_AGGR5);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_MAP]         = Locale::Text::Inputs(Locale::INPUTS_MAP);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_WAPOINT]     = Locale::Text::Inputs(Locale::INPUTS_SELWAYPT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_LANDLAYER]   = Locale::Text::Inputs(Locale::INPUTS_LANDSCAPE);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_OWNER]       = Locale::Text::Inputs(Locale::INPUTS_OWNER);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_HEIGHT]      = Locale::Text::Inputs(Locale::INPUTS_HEIGHT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_MINIMAP]     = Locale::Text::Inputs(Locale::INPUTS_MAPMINI);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_LOCKVIEW]    = Locale::Text::Inputs(Locale::INPUTS_LOCKVW);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_ZOOMIN]      = Locale::Text::Inputs(Locale::INPUTS_ZOOMIN);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_ZOOMOUT]     = Locale::Text::Inputs(Locale::INPUTS_ZOOMOUT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_LOG_WND]     = Locale::Text::Inputs(Locale::INPUTS_LOGWIN);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_CONTROL]     = Locale::Text::Inputs(Locale::INPUTS_CONTROL);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_LAST_SEAT]   = Locale::Text::Inputs(Locale::INPUTS_TOLASTOCCUP);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_ATTACK]      = Locale::Text::Inputs(Locale::INPUTS_FIGHT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_TO_HOST]     = Locale::Text::Inputs(Locale::INPUTS_TOROBO);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_TO_COMM]     = Locale::Text::Inputs(Locale::INPUTS_TOCOMM);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_NEXT_UNIT]   = Locale::Text::Inputs(Locale::INPUTS_NEXTUNIT);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_NEXT_COMM]   = Locale::Text::Inputs(Locale::INPUTS_NEXTCOM);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_LAST_MSG]    = Locale::Text::Inputs(Locale::INPUTS_JUMPLASTMSNG);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_TO_ALL]      = Locale::Text::Inputs(Locale::INPUTS_MSGTOALL);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_HELP]        = Locale::Text::Inputs(Locale::INPUTS_HELP);
+    _GameShell->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = Locale::Text::Inputs(Locale::INPUTS_ANALYZER);
 
     int v259_4;
 
@@ -2763,7 +2752,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.xpos = _screenSize.x * 0.3328125;
     btn_64arg.ypos = _screenSize.y * 0.2291666666666666;
     btn_64arg.width = _screenSize.x / 3;
-    btn_64arg.caption = GetLocaleString(80, "GAME");
+    btn_64arg.caption = Locale::Text::Title(Locale::TITLE_GAME);
     btn_64arg.caption2.clear();
     btn_64arg.downCode = 1251;
     btn_64arg.pressedCode = 0;
@@ -2777,7 +2766,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     if ( _GameShell->titel_button->button_func64(&btn_64arg) )
     {
         btn_64arg.ypos = _screenSize.y * 0.3083333333333334;
-        btn_64arg.caption = GetLocaleString(81, "NETWORK");
+        btn_64arg.caption = Locale::Text::Title(Locale::TITLE_NETWORK);
         btn_64arg.caption2.clear();
         btn_64arg.upCode = 1022;
         btn_64arg.pressedCode = 0;
@@ -2789,7 +2778,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             btn_64arg.xpos = _screenSize.x * 0.3328125;
             btn_64arg.ypos = _screenSize.y * 0.4333333333333334;
             btn_64arg.width = _screenSize.x / 3;
-            btn_64arg.caption = GetLocaleString(83, "INPUT");
+            btn_64arg.caption = Locale::Text::Title(Locale::TITLE_INPUT);
             btn_64arg.caption2.clear();
             btn_64arg.pressedCode = 0;
             btn_64arg.downCode = 1251;
@@ -2799,7 +2788,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             if ( _GameShell->titel_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.ypos = _screenSize.y * 0.5125;
-                btn_64arg.caption = GetLocaleString(84, "SETTINGS");
+                btn_64arg.caption = Locale::Text::Title(Locale::TITLE_SETTINGS);
                 btn_64arg.caption2.clear();
                 btn_64arg.upCode = 1005;
                 btn_64arg.pressedCode = 0;
@@ -2809,7 +2798,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                 if ( _GameShell->titel_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.ypos = _screenSize.y * 0.5916666666666667;
-                    btn_64arg.caption = GetLocaleString(85, "PLAYER");
+                    btn_64arg.caption = Locale::Text::Title(Locale::TITLE_PROFILE);
                     btn_64arg.caption2.clear();
                     btn_64arg.pressedCode = 0;
                     btn_64arg.downCode = 1251;
@@ -2821,7 +2810,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                         btn_64arg.xpos = _screenSize.x * 0.890625;
                         btn_64arg.ypos = _screenSize.y * 0.9583333333333334;
                         btn_64arg.width = _screenSize.x * 0.1;
-                        btn_64arg.caption = GetLocaleString(86, "LOCALE");
+                        btn_64arg.caption = Locale::Text::Title(Locale::TITLE_LOCALE);
                         btn_64arg.caption2.clear();
                         btn_64arg.upCode = 1011;
                         btn_64arg.pressedCode = 0;
@@ -2833,7 +2822,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                             btn_64arg.xpos = _screenSize.x * 0.3328125;
                             btn_64arg.ypos = _screenSize.y * 0.7166666666666667;
                             btn_64arg.width = _screenSize.x / 3;
-                            btn_64arg.caption = GetLocaleString(87, "HELP");
+                            btn_64arg.caption = Locale::Text::Title(Locale::TITLE_HELP);
                             btn_64arg.caption2.clear();
                             btn_64arg.pressedCode = 0;
                             btn_64arg.downCode = 1251;
@@ -2843,7 +2832,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                             if ( _GameShell->titel_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.ypos = _screenSize.y * 0.7958333333333333;
-                                btn_64arg.caption = GetLocaleString(88, "QUIT");
+                                btn_64arg.caption = Locale::Text::Title(Locale::TITLE_QUIT);
                                 btn_64arg.caption2.clear();
                                 btn_64arg.upCode = 1013;
                                 btn_64arg.pressedCode = 0;
@@ -2900,7 +2889,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.tileset_up = 18;
     btn_64arg.xpos = dword_5A50B6_h + word_5A50C0;
     btn_64arg.width = dword_5A50B6_h;
-    btn_64arg.caption = GetLocaleString(640, "REWIND");
+    btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_GOBACK);
     btn_64arg.caption2.clear();
     btn_64arg.downCode = 1251;
     btn_64arg.pressedCode = 0;
@@ -2911,7 +2900,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = 2 * (word_5A50C0 + dword_5A50B6_h);
-        btn_64arg.caption = GetLocaleString(641, "STEP FORWARD");
+        btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_STEPFWD);
         btn_64arg.caption2.clear();
         btn_64arg.downCode = 0;
         btn_64arg.upCode = 1020;
@@ -2921,7 +2910,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
         if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
         {
             btn_64arg.xpos = 0;
-            btn_64arg.caption = GetLocaleString(643, "START GAME");
+            btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_START);
             btn_64arg.caption2.clear();
             btn_64arg.upCode = 1019;
             btn_64arg.pressedCode = 0;
@@ -2931,7 +2920,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
             {
                 btn_64arg.xpos = (_screenSize.x - 3 * dword_5A50B6_h - 2 * word_5A50C0);
-                btn_64arg.caption = GetLocaleString(2422, "GOTO LOADSAVE");
+                btn_64arg.caption = Locale::Text::Advanced(Locale::ADV_GOTOLDSV);
                 btn_64arg.caption2.clear();
                 btn_64arg.pressedCode = 0;
                 btn_64arg.downCode = 1251;
@@ -2941,7 +2930,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                 if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
                 {
                     btn_64arg.xpos = (_screenSize.x - 2 * dword_5A50B6_h - word_5A50C0);
-                    btn_64arg.caption = GetLocaleString(642, "LOAD GAME");
+                    btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_LOAD);
                     btn_64arg.caption2.clear();
                     btn_64arg.upCode = 1021;
                     btn_64arg.pressedCode = 0;
@@ -2951,7 +2940,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                     if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
                     {
                         btn_64arg.xpos = _screenSize.x - dword_5A50B6_h;
-                        btn_64arg.caption = GetLocaleString(644, "GO BACK");
+                        btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_GOBACK);
                         btn_64arg.caption2.clear();
                         btn_64arg.pressedCode = 0;
                         btn_64arg.downCode = 1251;
@@ -3010,7 +2999,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.xpos = _screenSize.x * 0.25;
     btn_64arg.ypos = _screenSize.y * 0.53125;
     btn_64arg.width = _screenSize.x * 0.125;
-    btn_64arg.caption = GetLocaleString(2, "OK");
+    btn_64arg.caption = Locale::Text::Common(Locale::CMN_OK);
     btn_64arg.caption2.clear();
     btn_64arg.pressedCode = 0;
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
@@ -3024,7 +3013,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     if ( _GameShell->confirm_button->button_func64(&btn_64arg) )
     {
         btn_64arg.xpos = _screenSize.x * 0.625;
-        btn_64arg.caption = GetLocaleString(3, "CANCEL");
+        btn_64arg.caption = Locale::Text::Common(Locale::CMN_CANCEL);
         btn_64arg.upCode = 1351;
         btn_64arg.caption2.clear();
         btn_64arg.button_id = 1301;
@@ -3118,7 +3107,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
-    btn_64arg.caption = GetLocaleString(309, "INPUT SETTINGS");
+    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_TITLE);
     btn_64arg.downCode = 0;
     btn_64arg.caption2.clear();
     btn_64arg.upCode = 0;
@@ -3133,7 +3122,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + _fontH;
-        btn_64arg.caption = GetLocaleString(310, "2");
+        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_TXT2);
         btn_64arg.caption2.clear();
         btn_64arg.pressedCode = 0;
         btn_64arg.button_id = 1058;
@@ -3145,7 +3134,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
-            btn_64arg.caption = GetLocaleString(311, "3");
+            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_TXT3);
             btn_64arg.caption2.clear();
             btn_64arg.pressedCode = 0;
             btn_64arg.button_id = 1059;
@@ -3154,7 +3143,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C2 + _fontH);
-                btn_64arg.caption = GetLocaleString(312, "4");
+                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_TXT4);
                 btn_64arg.caption2.clear();
                 btn_64arg.pressedCode = 0;
                 btn_64arg.button_id = 1060;
@@ -3184,7 +3173,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                         btn_64arg.xpos = (v259_4 + word_5A50C0 + v278_4 / 6);
                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                         btn_64arg.width = (v278_4 / 2 - word_5A50C0);
-                        btn_64arg.caption = GetLocaleString(305, "JOYSTICK");
+                        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_JOYSTICK);
                         btn_64arg.button_id = 2;
                         btn_64arg.caption2.clear();
                         btn_64arg.downCode = 0;
@@ -3219,7 +3208,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                 btn_64arg.xpos = (v259_4 + (v278_4 / 2) + 2 * word_5A50C0);
                                 btn_64arg.width = ((v278_4 / 2) - word_5A50C0);
-                                btn_64arg.caption = GetLocaleString(2433, "ALTERNATE JOYSTICK MODEL");
+                                btn_64arg.caption = Locale::Text::Advanced(Locale::ADV_ALTJOYMODEL);
                                 btn_64arg.caption2.clear();
                                 btn_64arg.downCode = 0;
                                 btn_64arg.upCode = 0;
@@ -3255,7 +3244,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                         btn_64arg.xpos = (v259_4 + (v278_4 / 3) + word_5A50C0);
                                         btn_64arg.width = v278_4 / 2;
-                                        btn_64arg.caption = GetLocaleString(306, "DISABLE FORCE FEEDBACK");
+                                        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_FF);
                                         btn_64arg.button_id = 2;
                                         btn_64arg.caption2.clear();
                                         btn_64arg.downCode = 0;
@@ -3272,7 +3261,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                             btn_64arg.xpos = v278_4 / 6;
                                             btn_64arg.ypos = 5 * word_5A50C2 + 13 * _fontH;
                                             btn_64arg.width = (v278_4 / 3 - word_5A50C0);
-                                            btn_64arg.caption = GetLocaleString(307, "SWITCH OFF");
+                                            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_I_DELETE);
                                             btn_64arg.downCode = 1251;
                                             btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                             btn_64arg.caption2.clear();
@@ -3286,7 +3275,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                             if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
                                             {
                                                 btn_64arg.xpos = word_5A50C0 + v278_4 / 2;
-                                                btn_64arg.caption = GetLocaleString(13, "RESET");
+                                                btn_64arg.caption = Locale::Text::Common(Locale::CMN_RESETDEF);
                                                 btn_64arg.caption2.clear();
                                                 btn_64arg.pressedCode = 0;
                                                 btn_64arg.upCode = 1053;
@@ -3298,7 +3287,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                     btn_64arg.ypos = v269;
                                                     btn_64arg.width = v270;
                                                     btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                                    btn_64arg.caption = GetLocaleString(2, "OK");
+                                                    btn_64arg.caption = Locale::Text::Common(Locale::CMN_OK);
                                                     btn_64arg.caption2.clear();
                                                     btn_64arg.pressedCode = 0;
                                                     btn_64arg.button_id = 1051;
@@ -3310,7 +3299,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                         btn_64arg.xpos = v274;
                                                         btn_64arg.ypos = v258;
                                                         btn_64arg.width = v262;
-                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                        btn_64arg.caption = Locale::Text::Common(Locale::CMN_HELP);
                                                         btn_64arg.upCode = 1250;
                                                         btn_64arg.caption2.clear();
                                                         btn_64arg.button_id = 1052;
@@ -3321,7 +3310,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                             btn_64arg.xpos = v264;
                                                             btn_64arg.ypos = v276;
                                                             btn_64arg.width = v298;
-                                                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                                                            btn_64arg.caption = Locale::Text::Common(Locale::CMN_CANCEL);
                                                             btn_64arg.upCode = 1054;
                                                             btn_64arg.button_id = 1054;
                                                             btn_64arg.caption2.clear();
@@ -3429,7 +3418,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.xpos = 0;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
-    btn_64arg.caption = GetLocaleString(327, "GAME SETTINGS");
+    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_TITLE);
     btn_64arg.caption2.clear();
     btn_64arg.downCode = 0;
     btn_64arg.upCode = 0;
@@ -3445,7 +3434,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + _fontH;
         btn_64arg.width = v278_4;
-        btn_64arg.caption = GetLocaleString(328, "2");
+        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_TXT2);
         btn_64arg.caption2.clear();
         btn_64arg.button_id = 1169;
         btn_64arg.txt_r = _iniColors[60].r;
@@ -3457,7 +3446,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
             btn_64arg.width = v278_4;
-            btn_64arg.caption = GetLocaleString(329, "3");
+            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_TXT3);
             btn_64arg.button_id = 1170;
             btn_64arg.caption2.clear();
 
@@ -3466,7 +3455,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                 btn_64arg.xpos = 0;
                 btn_64arg.width = v278_4;
                 btn_64arg.ypos = 3 * (_fontH + word_5A50C2);
-                btn_64arg.caption = GetLocaleString(330, "4");
+                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_TXT4);
                 btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1171;
 
@@ -3479,7 +3468,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                     btn_64arg.ypos = 5 * (_fontH + word_5A50C2);
                     btn_64arg.width = v98;
-                    btn_64arg.caption = GetLocaleString(340, "RESOLUTION SHELL");
+                    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_RES);
                     btn_64arg.caption2.clear();
                     btn_64arg.downCode = 0;
                     btn_64arg.upCode = 0;
@@ -3518,7 +3507,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                             btn_64arg.xpos = 0;
                             btn_64arg.ypos = 2 * (3 * (word_5A50C2 + _fontH));
                             btn_64arg.width = v294 * 0.4;
-                            btn_64arg.caption = GetLocaleString(352, "SELECT 3D DEVICE");
+                            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_SEL3D);
                             btn_64arg.caption2.clear();
                             btn_64arg.downCode = 0;
                             btn_64arg.upCode = 0;
@@ -3577,7 +3566,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                         btn_64arg.width = v120;
-                                        btn_64arg.caption = GetLocaleString(344, "FAR VIEW");
+                                        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_FARVIEW);
                                         btn_64arg.caption2.clear();
                                         btn_64arg.downCode = 0;
                                         btn_64arg.upCode = 0;
@@ -3612,7 +3601,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                 btn_64arg.width = v120;
                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                btn_64arg.caption = GetLocaleString(345, "HEAVEN");
+                                                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_SKY);
                                                 btn_64arg.caption2.clear();
                                                 btn_64arg.downCode = 0;
                                                 btn_64arg.upCode = 0;
@@ -3645,7 +3634,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                         btn_64arg.width = v120;
                                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                        btn_64arg.caption = GetLocaleString(350, "SW MOUSEPOINTER");
+                                                        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_SWMOUSE);
                                                         btn_64arg.caption2.clear();
                                                         btn_64arg.downCode = 0;
                                                         btn_64arg.upCode = 0;
@@ -3677,7 +3666,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                 btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                 btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
                                                                 btn_64arg.width = v120;
-                                                                btn_64arg.caption = GetLocaleString(2445, "Windowed Mode");
+                                                                btn_64arg.caption = Locale::Text::Advanced(Locale::ADV_WINDOWEDMODE);
                                                                 btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                                                 btn_64arg.caption2.clear();
                                                                 btn_64arg.downCode = 0;
@@ -3691,7 +3680,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                     btn_64arg.xpos = v259_4 + word_5A50C0;
                                                                     btn_64arg.ypos = 9 * (word_5A50C2 + _fontH);
                                                                     btn_64arg.width = v120;
-                                                                    btn_64arg.caption = GetLocaleString(2431, "USE 16BIT TEXTURE");
+                                                                    btn_64arg.caption = Locale::Text::Advanced(Locale::ADV_USE16BIT);
                                                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
                                                                     btn_64arg.caption2.clear();
                                                                     btn_64arg.downCode = 0;
@@ -3723,7 +3712,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                             btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
                                                                             btn_64arg.width = v120;
-                                                                            btn_64arg.caption = GetLocaleString(326, "ENABLE CD AUDIO");
+                                                                            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_ENCDAUD);
                                                                             btn_64arg.caption2.clear();
                                                                             btn_64arg.downCode = 0;
                                                                             btn_64arg.upCode = 0;
@@ -3772,7 +3761,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                         btn_64arg.xpos = v259_4 + word_5A50C0;
                                                                                         btn_64arg.width = v120 - v259_4;
-                                                                                        btn_64arg.caption = GetLocaleString(325, "ENEMY INDICATOR");
+                                                                                        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_ENMYINDIC);
                                                                                         btn_64arg.caption2.clear();
                                                                                         btn_64arg.downCode = 0;
                                                                                         btn_64arg.upCode = 0;
@@ -3788,7 +3777,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                             btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                             btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
                                                                                             btn_64arg.width = v120;
-                                                                                            btn_64arg.caption = GetLocaleString(323, "INVERT LEFT-RIGHT DIVISION ");
+                                                                                            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_INVERT);
                                                                                             btn_64arg.caption2.clear();
                                                                                             btn_64arg.downCode = 0;
                                                                                             btn_64arg.upCode = 0;
@@ -3821,7 +3810,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                     btn_64arg.xpos = 0;
                                                                                                     btn_64arg.ypos = 11 * (_fontH + word_5A50C2);
                                                                                                     btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                    btn_64arg.caption = GetLocaleString(343, "DESTRUCTION FX");
+                                                                                                    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_DESTRFX);
                                                                                                     btn_64arg.caption2.clear();
                                                                                                     btn_64arg.downCode = 0;
                                                                                                     btn_64arg.upCode = 0;
@@ -3874,7 +3863,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                                 btn_64arg.xpos = 0;
                                                                                                                 btn_64arg.ypos = 12 * (word_5A50C2 + _fontH);
                                                                                                                 btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                btn_64arg.caption = GetLocaleString(321, "FX VOLUME");
+                                                                                                                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_FXVOL);
                                                                                                                 btn_64arg.caption2.clear();
                                                                                                                 btn_64arg.downCode = 0;
                                                                                                                 btn_64arg.upCode = 0;
@@ -3926,7 +3915,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                                             btn_64arg.xpos = 0;
                                                                                                                             btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
                                                                                                                             btn_64arg.ypos = 13 * (word_5A50C2 + _fontH);
-                                                                                                                            btn_64arg.caption = GetLocaleString(324, "CD VOLUME");
+                                                                                                                            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_S_CDVOL);
                                                                                                                             btn_64arg.caption2.clear();
                                                                                                                             btn_64arg.downCode = 0;
                                                                                                                             btn_64arg.upCode = 0;
@@ -3980,7 +3969,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                                                         btn_64arg.ypos = v269;
                                                                                                                                         btn_64arg.width = v270;
                                                                                                                                         btn_64arg.tileset_down = 19;
-                                                                                                                                        btn_64arg.caption = GetLocaleString(2, "OK");
+                                                                                                                                        btn_64arg.caption = Locale::Text::Common(Locale::CMN_OK);
                                                                                                                                         btn_64arg.upCode = 1124;
                                                                                                                                         btn_64arg.caption2.clear();
                                                                                                                                         btn_64arg.downCode = 0;
@@ -3996,7 +3985,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                                                             btn_64arg.xpos = v274;
                                                                                                                                             btn_64arg.ypos = v258;
                                                                                                                                             btn_64arg.width = v262;
-                                                                                                                                            btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                                                                                                            btn_64arg.caption = Locale::Text::Common(Locale::CMN_HELP);
                                                                                                                                             btn_64arg.upCode = 1250;
                                                                                                                                             btn_64arg.caption2.clear();
                                                                                                                                             btn_64arg.downCode = 0;
@@ -4008,7 +3997,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                                                                 btn_64arg.xpos = v264;
                                                                                                                                                 btn_64arg.ypos = v276;
                                                                                                                                                 btn_64arg.width = v298;
-                                                                                                                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                                                                                                                                                btn_64arg.caption = Locale::Text::Common(Locale::CMN_CANCEL);
                                                                                                                                                 btn_64arg.upCode = 1125;
                                                                                                                                                 btn_64arg.caption2.clear();
                                                                                                                                                 btn_64arg.downCode = 0;
@@ -4126,7 +4115,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.xpos = 0;
     btn_64arg.ypos = 0;
     btn_64arg.width = v278_4;
-    btn_64arg.caption = GetLocaleString(367, "LOAD, CREATE OR DELETE PLAYER");
+    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_TITLE);
     btn_64arg.caption2.clear();
     btn_64arg.button_id = 1108;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
@@ -4138,7 +4127,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C0 + _fontH;
-        btn_64arg.caption = GetLocaleString(368, "2");
+        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_TXT2);
         btn_64arg.button_id = 1109;
         btn_64arg.caption2.clear();
         btn_64arg.txt_r = _iniColors[60].r;
@@ -4149,7 +4138,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (_fontH + word_5A50C0);
-            btn_64arg.caption = GetLocaleString(369, "3");
+            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_TXT3);
             btn_64arg.caption2.clear();
             btn_64arg.button_id = 1110;
 
@@ -4157,7 +4146,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C0 + _fontH);
-                btn_64arg.caption = GetLocaleString(370, "4");
+                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_TXT4);
                 btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1111;
 
@@ -4187,7 +4176,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                         btn_64arg.xpos = word_5A50C0 + (v278_4 - 3 * word_5A50C0) * 0.25;
                         btn_64arg.ypos = 7 * word_5A50C0 + 15 * _fontH;
                         btn_64arg.width = (v278_4 - 3 * word_5A50C0) * 0.25;
-                        btn_64arg.caption = GetLocaleString(360, "LOAD");
+                        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_LOAD);
                         btn_64arg.downCode = 1251;
                         btn_64arg.upCode = 1160;
                         btn_64arg.caption2.clear();
@@ -4201,7 +4190,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                         if ( _GameShell->disk_button->button_func64(&btn_64arg) )
                         {
                             btn_64arg.xpos = (3 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.75;
-                            btn_64arg.caption = GetLocaleString(362, "DELETE");
+                            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_DELETE);;
                             btn_64arg.caption2.clear();
                             btn_64arg.upCode = 1161;
                             btn_64arg.button_id = 1102;
@@ -4209,7 +4198,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                             if ( _GameShell->disk_button->button_func64(&btn_64arg) )
                             {
                                 btn_64arg.xpos = 0;
-                                btn_64arg.caption = GetLocaleString(363, "NEW GAME");
+                                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_NEW);
                                 btn_64arg.button_id = 1103;
                                 btn_64arg.caption2.clear();
                                 btn_64arg.upCode = 1162;
@@ -4217,7 +4206,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                 if ( _GameShell->disk_button->button_func64(&btn_64arg) )
                                 {
                                     btn_64arg.xpos = (2 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.5;
-                                    btn_64arg.caption = GetLocaleString(361, "SAVE");
+                                    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_P_SAVE);
                                     btn_64arg.button_id = 1104;
                                     btn_64arg.caption2.clear();
                                     btn_64arg.upCode = 1163;
@@ -4227,7 +4216,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                         btn_64arg.xpos = v267;
                                         btn_64arg.ypos = v269;
                                         btn_64arg.width = v270;
-                                        btn_64arg.caption = GetLocaleString(2, "OK");
+                                        btn_64arg.caption = Locale::Text::Common(Locale::CMN_OK);
                                         btn_64arg.caption2.clear();
                                         btn_64arg.downCode = 1251;
                                         btn_64arg.button_id = 1105;
@@ -4239,7 +4228,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                             btn_64arg.ypos = v258;
                                             btn_64arg.width = v262;
                                             btn_64arg.xpos = v274;
-                                            btn_64arg.caption = GetLocaleString(20, "HELP");
+                                            btn_64arg.caption = Locale::Text::Common(Locale::CMN_HELP);
                                             btn_64arg.button_id = 1107;
                                             btn_64arg.caption2.clear();
                                             btn_64arg.upCode = 1250;
@@ -4249,7 +4238,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                 btn_64arg.ypos = v276;
                                                 btn_64arg.width = v298;
                                                 btn_64arg.xpos = v264;
-                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                                                btn_64arg.caption = Locale::Text::Common(Locale::CMN_CANCEL);
                                                 btn_64arg.button_id = 1106;
                                                 btn_64arg.caption2.clear();
                                                 btn_64arg.upCode = 1165;
@@ -4328,7 +4317,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     btn_64arg.width = v278_4;
     btn_64arg.field_3A = 30;
     btn_64arg.ypos = 0;
-    btn_64arg.caption = GetLocaleString(395, "SELECT NEW LANGUAGE");
+    btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_L_TITLE);
     btn_64arg.caption2.clear();
     btn_64arg.downCode = 0;
     btn_64arg.upCode = 0;
@@ -4343,7 +4332,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
     {
         btn_64arg.xpos = 0;
         btn_64arg.ypos = word_5A50C2 + _fontH;
-        btn_64arg.caption = GetLocaleString(396, "2");
+        btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_L_TXT2);
         btn_64arg.caption2.clear();
         btn_64arg.button_id = 1254;
         btn_64arg.txt_r = _iniColors[60].r;
@@ -4354,7 +4343,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
         {
             btn_64arg.xpos = 0;
             btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
-            btn_64arg.caption = GetLocaleString(397, "3");
+            btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_L_TXT3);
             btn_64arg.caption2.clear();
             btn_64arg.button_id = 1255;
 
@@ -4362,7 +4351,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             {
                 btn_64arg.xpos = 0;
                 btn_64arg.ypos = 3 * (word_5A50C2 + _fontH);
-                btn_64arg.caption = GetLocaleString(398, "4");
+                btn_64arg.caption = Locale::Text::Dialogs(Locale::DLG_L_TXT4);
                 btn_64arg.caption2.clear();
                 btn_64arg.button_id = 1256;
 
@@ -4375,7 +4364,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                     btn_64arg.xpos = v267;
                     btn_64arg.ypos = v269;
                     btn_64arg.width = v270;
-                    btn_64arg.caption = GetLocaleString(2, "OK");
+                    btn_64arg.caption = Locale::Text::Common(Locale::CMN_OK);
                     btn_64arg.caption2.clear();
                     btn_64arg.downCode = 0;
                     btn_64arg.pressedCode = 0;
@@ -4391,7 +4380,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                         btn_64arg.xpos = v274;
                         btn_64arg.ypos = v258;
                         btn_64arg.width = v262;
-                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                        btn_64arg.caption = Locale::Text::Common(Locale::CMN_HELP);
                         btn_64arg.button_id = 1252;
                         btn_64arg.caption2.clear();
                         btn_64arg.downCode = 0;
@@ -4403,7 +4392,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                             btn_64arg.xpos = v264;
                             btn_64arg.ypos = v276;
                             btn_64arg.width = v298;
-                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                            btn_64arg.caption = Locale::Text::Common(Locale::CMN_CANCEL);
                             btn_64arg.caption2.clear();
                             btn_64arg.downCode = 0;
                             btn_64arg.pressedCode = 0;
@@ -4625,7 +4614,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
         btn_64arg.field_3A = 30;
         btn_64arg.width = dword_5A50B6 * 0.2 - word_5A50C0;
         btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-        btn_64arg.caption = GetLocaleString(405, "SEND");
+        btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_SEND);
         btn_64arg.caption2.clear();
         btn_64arg.upCode = 1210;
         btn_64arg.pressedCode = 0;
@@ -4648,7 +4637,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
             btn_64arg.ypos = (15 * (word_5A50C2 + _fontH));
             btn_64arg.xpos = 0;
             btn_64arg.width = dword_5A50B6 * 0.4 - 2 * word_5A50C0;
-            btn_64arg.caption = GetLocaleString(424, "SELECT YOUR RACE");
+            btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_SELRACE);
             btn_64arg.caption2.clear();
             btn_64arg.downCode = 0;
             btn_64arg.flags = NC_STACK_button::FLAG_TEXT | NC_STACK_button::FLAG_RALIGN;
@@ -4703,7 +4692,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                 btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
                                 btn_64arg.xpos += v284 + 2 * word_5A50C0;
                                 btn_64arg.width = dword_5A50B2_h - btn_64arg.xpos;
-                                btn_64arg.caption = GetLocaleString(401, "BACK");
+                                btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_BACK);
                                 btn_64arg.caption2.clear();
                                 btn_64arg.pressedCode = 0;
                                 btn_64arg.button_id = 1205;
@@ -4723,7 +4712,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                     btn_64arg.field_3A = 16;
                                     btn_64arg.width = dword_5A50B2_h;
                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                    btn_64arg.caption = GetLocaleString(410, "SELECT PROVIDER");
+                                    btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_SELPROV);
                                     btn_64arg.caption2.clear();
                                     btn_64arg.downCode = 0;
                                     btn_64arg.upCode = 0;
@@ -4735,7 +4724,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                     {
                                         btn_64arg.xpos = 0;
                                         btn_64arg.ypos = word_5A50C0 + _fontH;
-                                        btn_64arg.caption = GetLocaleString(425, "2");
+                                        btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_TXT2);
                                         btn_64arg.caption2.clear();
                                         btn_64arg.button_id = 1222;
                                         btn_64arg.txt_r = _iniColors[60].r;
@@ -4746,7 +4735,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                         {
                                             btn_64arg.xpos = 0;
                                             btn_64arg.ypos = 2 * (_fontH + word_5A50C0);
-                                            btn_64arg.caption = GetLocaleString(426, "3");
+                                            btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_TXT3);
                                             btn_64arg.caption2.clear();
                                             btn_64arg.button_id = 1223;
 
@@ -4759,7 +4748,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                 btn_64arg.xpos = dword_5A50B6 * 0.3;
                                                 btn_64arg.ypos = (word_5A50C0 + _fontH) * 15.2;
                                                 btn_64arg.width = dword_5A50B6 * 0.4;
-                                                btn_64arg.caption = GetLocaleString(402, "NEW");
+                                                btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_NEW);
                                                 btn_64arg.button_id = 1202;
                                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                                 btn_64arg.downCode = 1251;
@@ -4775,7 +4764,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                     btn_64arg.xpos = v267;
                                                     btn_64arg.ypos = v269 + _fontH;
                                                     btn_64arg.width = v270;
-                                                    btn_64arg.caption = GetLocaleString(400, "NEXT");
+                                                    btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_NEXT);
                                                     btn_64arg.caption2.clear();
                                                     btn_64arg.pressedCode = 0;
                                                     btn_64arg.button_id = 1201;
@@ -4786,7 +4775,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                         btn_64arg.xpos = v274;
                                                         btn_64arg.ypos = v258 + _fontH;
                                                         btn_64arg.width = v262;
-                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                        btn_64arg.caption = Locale::Text::Common(Locale::CMN_HELP);
                                                         btn_64arg.caption2.clear();
                                                         btn_64arg.upCode = 1250;
                                                         btn_64arg.pressedCode = 0;
@@ -4797,7 +4786,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                             btn_64arg.xpos = v264;
                                                             btn_64arg.ypos = v276 + _fontH;
                                                             btn_64arg.width = v298;
-                                                            btn_64arg.caption = GetLocaleString(403, "CANCEL");
+                                                            btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_CANCEL);
                                                             btn_64arg.caption2.clear();
                                                             btn_64arg.upCode = 1202;
                                                             btn_64arg.pressedCode = 0;
@@ -4905,7 +4894,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                     btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                     btn_64arg.xpos += word_5A50C0 + v259_4;
                                                                                                     btn_64arg.width = v270 - v259_4 - word_5A50C0;
-                                                                                                    btn_64arg.caption = GetLocaleString(409, "READY");
+                                                                                                    btn_64arg.caption = Locale::Text::Netdlg(Locale::NETDLG_READY);
                                                                                                     btn_64arg.caption2.clear();
                                                                                                     btn_64arg.downCode = 0;
                                                                                                     btn_64arg.upCode = 0;
@@ -4922,7 +4911,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                         btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
                                                                                                         btn_64arg.ypos = 3 * (_fontH + word_5A50C0);
                                                                                                         btn_64arg.width = dword_5A50B6 * 0.3;
-                                                                                                        btn_64arg.caption = GetLocaleString(600, "YOU PLAY");
+                                                                                                        btn_64arg.caption = Locale::Text::Get(Locale::LBL_YOUPLAY, Locale::DefaultStrings::YouPlay);
                                                                                                         btn_64arg.caption2.clear();
                                                                                                         btn_64arg.downCode = 0;
                                                                                                         btn_64arg.upCode = 0;
@@ -4951,7 +4940,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
                                                                                                                 btn_64arg.xpos = 0;
                                                                                                                 btn_64arg.ypos = (14 * (word_5A50C2 + _fontH));
                                                                                                                 btn_64arg.width = dword_5A50B2_h;
-                                                                                                                btn_64arg.caption = GetLocaleString(2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
+                                                                                                                btn_64arg.caption = Locale::Text::Advanced(Locale::ADV_REFRESHSESS);
                                                                                                                 btn_64arg.caption2.clear();
                                                                                                                 btn_64arg.downCode = 0;
                                                                                                                 btn_64arg.upCode = 0;
@@ -5788,93 +5777,24 @@ void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
     }
 }
 
-bool NC_STACK_ypaworld::LngFileLoad(const std::string &filename)
-{
-    FSMgr::FileHandle *fil = uaOpenFileAlloc(filename, "r");
-    if ( !fil )
-        return false;
-
-    bool multiline = false;
-    int32_t strid = -1;
-    std::string buf;
-    
-    while (fil->ReadLine(&buf))
-    {
-        size_t lend = buf.find_first_of("\n\r");
-        if (lend != std::string::npos)
-            buf.erase(lend);
-        
-        if (multiline && strid != -1)
-        {
-            multiline = false;
-
-            if ( buf.back() == '\\' ) // next line too
-                multiline = true;
-            
-            std::replace(buf.begin(), buf.end(), '\\', '\n');
-            _localeStrings.at(strid) += buf;
-        }
-        else
-        {
-            strid = -1;
-            multiline = false;
-            
-            size_t pos1 = buf.find_first_not_of(" \t");
-            if (pos1 != std::string::npos)
-            {
-                size_t pos2 = buf.find_first_of("= \t", pos1);
-                if (pos2 != std::string::npos)
-                {
-                    strid = std::stol(buf.substr(pos1, pos2 - pos1), NULL, 0);
-                    
-                    if (strid < 0 || strid >= (int32_t)_localeStrings.size() )
-                        strid = -1;
-                }
-                
-                if (strid != -1)
-                {
-                    pos1 = buf.find_first_of("=", pos2);
-                    if (pos1 != std::string::npos && pos1 + 1 < buf.size())
-                    {
-                        pos1 += 1; // Next after '='
-                        pos2 = buf.find_first_not_of(" \t", pos1);
-                        if (pos2 != std::string::npos)
-                            pos1 = pos2;
-                        
-                        if ( buf.back() == '\\' ) // Multiline
-                            multiline = true;
-                        
-                        std::string &s = _localeStrings.at(strid);
-                        s = buf.substr(pos1);
-                        std::replace(s.begin(), s.end(), '\\', '\n');
-                    }
-                }
-            }
-        }
-    }
-
-    delete fil;
-    return true;
-}
-
 size_t NC_STACK_ypaworld::ypaworld_func166(const std::string &langname)
 {
-    SetLangDefault();
+    Locale::Text::SetLangDefault();
     
-    _localeName = langname;
+    Locale::Text::SetLocaleName(langname);
 
-    if ( !LngFileLoad( fmt::sprintf("locale:%s.lng", _localeName) ) )
+    if ( !Locale::Text::LngFileLoad( fmt::sprintf("locale:%s.lng", langname) ) )
     {
-        SetLangDefault();
+        Locale::Text::SetLangDefault();
         return 0;
     }
     
     std::string fontStr;
 
     if ( _screenSize.x >= 512 )
-        fontStr = GetLocaleString(15, "MS Sans Serif,12,400,0");
+        fontStr = Locale::Text::Font();
     else
-        fontStr = GetLocaleString(16, "Arial,8,400,0");
+        fontStr = Locale::Text::SmallFont();
 
     GFX::Engine.LoadFontByDescr(fontStr);
     Gui::UA::LoadFont(fontStr);
@@ -6571,13 +6491,13 @@ size_t NC_STACK_ypaworld::SetGameShellVideoMode(bool windowed)
 
     if ( _screenSize.x >= 512 )
     {
-        GFX::Engine.LoadFontByDescr( GetLocaleString(15, "MS Sans Serif,12,400,0") );
-        Gui::UA::LoadFont( GetLocaleString(15, "MS Sans Serif,12,400,0") );
+        GFX::Engine.LoadFontByDescr( Locale::Text::Font() );
+        Gui::UA::LoadFont( Locale::Text::Font() );
     }
     else
     {
-        GFX::Engine.LoadFontByDescr( GetLocaleString(16, "Arial,8,400,0") );
-        Gui::UA::LoadFont( GetLocaleString(16, "Arial,8,400,0") );
+        GFX::Engine.LoadFontByDescr( Locale::Text::SmallFont() );
+        Gui::UA::LoadFont( Locale::Text::SmallFont() );
     }
 
     return 1;
@@ -7156,13 +7076,7 @@ SDL_Color NC_STACK_ypaworld::GetColor(int colorID)
     return _iniColors.at(colorID);
 }
 
-std::string NC_STACK_ypaworld::GetLocaleString(int32_t id, const std::string &def) const
-{
-    const std::string &tmp = _localeStrings.at(id);
-    if ( tmp.empty() || !StriCmp(tmp, "<>") )
-        return def;
-    return tmp;
-}
+
 
 cellArea *NC_STACK_ypaworld::GetSector(int32_t x, int32_t y)
 {

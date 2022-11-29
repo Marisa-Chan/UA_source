@@ -217,13 +217,13 @@ int NC_STACK_ypaworld::LevelCommonLoader(TLevelDescription *mapp, int levelID, i
 
         if ( _screenSize.x >= 512 )
         {
-            GFX::Engine.LoadFontByDescr( GetLocaleString(15, "MS Sans Serif,12,400,0") );
-            Gui::UA::LoadFont( GetLocaleString(15, "MS Sans Serif,12,400,0") );
+            GFX::Engine.LoadFontByDescr( Locale::Text::Font() );
+            Gui::UA::LoadFont( Locale::Text::Font() );
         }
         else
         {
-            GFX::Engine.LoadFontByDescr( GetLocaleString(16, "Arial,8,400,0") );
-            Gui::UA::LoadFont( GetLocaleString(16, "Arial,8,400,0") );
+            GFX::Engine.LoadFontByDescr( Locale::Text::SmallFont() );
+            Gui::UA::LoadFont( Locale::Text::SmallFont() );
         }
     }
 
@@ -253,7 +253,7 @@ int NC_STACK_ypaworld::LevelCommonLoader(TLevelDescription *mapp, int levelID, i
 
     if ( diskScreenImage )
     {
-        drawSplashScreenWithTOD(this, diskScreenImage, GetLocaleString(tod + 2490, " "));
+        drawSplashScreenWithTOD(this, diskScreenImage, Locale::Text::ToD(tod, " "));
         diskScreenImage->Delete();
     }
 
@@ -2610,12 +2610,12 @@ void NC_STACK_ypaworld::sub_4D12D8(int id, int a3)
 
     if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
-        arg159.txt = GetLocaleString(250, "Superbomb activated.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_BOMBACT);
         arg159.MsgID = 70;
     }
     else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
-        arg159.txt = GetLocaleString(254, "Superwave activated.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_WAVEACT);
         arg159.MsgID = 74;
     }
     else
@@ -2651,12 +2651,12 @@ void NC_STACK_ypaworld::sub_4D1594(int id)
 
     if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
-        arg159.txt = GetLocaleString(252, "Superbomb frozen.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_BOMBFROZ);
         arg159.MsgID = 72;
     }
     else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
-        arg159.txt = GetLocaleString(256, "Superwave frozen.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_WAVEFROZ);
         arg159.MsgID = 76;
     }
     else
@@ -2694,12 +2694,12 @@ void NC_STACK_ypaworld::sub_4D1444(int id)
 
     if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
-        arg159.txt = GetLocaleString(251, "Superbomb triggered.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_BOMBTRIG);
         arg159.MsgID = 71;
     }
     else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
-        arg159.txt = GetLocaleString(255, "Superwave triggered.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_WAVETRIG);
         arg159.MsgID = 75;
     }
     else
@@ -2841,7 +2841,7 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
 
         if ( arg->TimeStamp / 500 & 1 )
         {
-            const std::string &v6 = yw->GetLocaleString(14, "*** GAME PAUSED, HIT KEY TO CONTINUE ***");
+            const std::string v6 = Locale::Text::Common(Locale::CMN_PAUSED);
 
             char v10[256];
             char *pcur = v10;
@@ -2932,7 +2932,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                 yw_arg159 arg159;
                 arg159.unit = 0;
                 arg159.Priority = 65;
-                arg159.txt = yw->GetLocaleString(224, "TRANSPORTER GATE CLOSED!");
+                arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_GATECLOSE);
                 arg159.MsgID = 24;
 
                 yw->ypaworld_func159(&arg159);
@@ -2964,7 +2964,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                     yw_arg159 arg159_1;
                     arg159_1.unit = 0;
                     arg159_1.Priority = 49;
-                    arg159_1.txt = yw->GetLocaleString(223, "TRANSPORTER GATE OPENED!");
+                    arg159_1.txt = Locale::Text::Feedback(Locale::FEEDBACK_GATEOPEN);
                     arg159_1.MsgID = 23;
 
                     yw->ypaworld_func159(&arg159_1);
@@ -2978,7 +2978,7 @@ void ypaworld_func64__sub9(NC_STACK_ypaworld *yw)
                     yw_arg159 arg159_2;
                     arg159_2.unit = 0;
                     arg159_2.Priority = 10;
-                    arg159_2.txt = yw->GetLocaleString(258, "WARNING: BEAM GATE FULL!");
+                    arg159_2.txt = Locale::Text::Feedback(Locale::FEEDBACK_GATEFULL);
                     arg159_2.MsgID = 46;
 
                     yw->ypaworld_func159(&arg159_2);
@@ -3047,12 +3047,12 @@ void NC_STACK_ypaworld::sub_4D16C4(int id)
 
     if ( sitem.Type == TMapSuperItem::TYPE_BOMB )
     {
-        arg159.txt = GetLocaleString(253, "Superbomb deactivated.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_BOMBDEACT);
         arg159.MsgID = 73;
     }
     else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
     {
-        arg159.txt = GetLocaleString(257, "Superwave deactivated.");
+        arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_WAVEDEACT);
         arg159.MsgID = 77;
     }
     else
@@ -3347,7 +3347,7 @@ void ypaworld_func64__sub3(NC_STACK_ypaworld *yw)
                     yw_arg159 arg159;
                     arg159.unit = yw->_userUnit;
                     arg159.Priority = 24;
-                    arg159.txt = yw->GetLocaleString(222, "ENEMY SECTOR ENTERED");
+                    arg159.txt = Locale::Text::Feedback(Locale::FEEDBACK_ESECTENTER);
                     arg159.MsgID = 22;
 
                     yw->ypaworld_func159(&arg159);

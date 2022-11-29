@@ -39,6 +39,7 @@
 #include "gui/uamsgbox.h"
 
 #include "world/luaevents.h"
+#include "locale/locale.h"
 
 
 
@@ -369,8 +370,6 @@ inline uint32_t GetUpgradeLogID(uint8_t upg)
 
 
 #include "world/history.h"
-#include "world/stringids.h"
-#include "world/defstr.h"
 
 
 
@@ -2167,9 +2166,6 @@ public:
     
     void sub_4C40AC();
     NC_STACK_ypabact *GetLastMsgSender();
-    std::string GetLocaleString(int32_t id, const std::string &def) const;
-    bool LngFileLoad(const std::string &filename);
-
     
     void ypaworld_func64__sub7(TInputState *inpt);
     void ypaworld_func64__sub7__sub4(TInputState *inpt);
@@ -2224,14 +2220,9 @@ public:
         }
     }
     
-    std::string GetTooltipString(uint32_t id) const
-    {
-        return GetLocaleString(World::LBL_TIPS + id, World::DefaultStrings::Tooltips[ id ]);
-    }
-    
     std::string GetTooltipString() const
     {
-        return GetTooltipString(_toolTipId);
+        return Locale::Text::Tooltip(_toolTipId);
     }
     
     void ypaworld_func64__sub1(TInputState *inpt);
@@ -2269,8 +2260,6 @@ public:
     bool LoadHightMap(const std::string &mapName);
     bool LoadOwnerMap(const std::string &mapName);
     bool LoadTypeMap(const std::string &mapName);
-    
-    void SetLangDefault();
     
     void PlayIntroMovie();    
     
@@ -2315,6 +2304,50 @@ public:
     
     void ClearOverrideModels();
     void LoadOverrideModels();
+    
+    std::string GetVehicleName(uint32_t id) const
+    {
+        return Locale::Text::VehicleName(id, _vhclProtos[ id ].name);
+    }
+    
+    std::string GetVehicleName(const World::TVhclProto &proto) const
+    {
+        if (proto.Index != -1)
+            return Locale::Text::VehicleName(proto.Index, proto.name);
+        
+        return proto.name;
+    }
+    
+    std::string GetBuildingName(uint32_t id, bool net = false) const
+    {
+        if (net)
+            return Locale::Text::NetBuildingName(id, _buildProtos[ id ].Name);
+        else
+            return Locale::Text::BuildingName(id, _buildProtos[ id ].Name);
+    }
+    
+    std::string GetBuildingName(const World::TBuildingProto &proto, bool net = false) const
+    {
+        if (proto.Index != -1)
+        {
+            if (net)
+                return Locale::Text::NetBuildingName(proto.Index, proto.Name);
+            else
+                return Locale::Text::BuildingName(proto.Index, proto.Name);
+        }
+        
+        return proto.Name;
+    }
+    
+    std::string GetLevelName(uint32_t id) const
+    {
+        return Locale::Text::LevelName(id, _globalMapRegions.MapRegions[ id ].MapName);
+    }
+    
+    std::string GetLevelName(const TLevelInfo &lvl) const
+    {
+        return Locale::Text::LevelName(lvl.LevelID, lvl.MapName);
+    }
 
 public:
     //Data
@@ -2536,9 +2569,6 @@ public:
     bool _prepareDebrief = false; // prepare debrief and do it? or exit without
     bool _gameWasNetGame = false;
     uint8_t _userOwnerIdWasInNetGame = 0;
-    
-    std::string _localeName; // locale name
-    std::vector<std::string> _localeStrings;
     
     Common::PlaneBytes _lvlTypeMap;
     Common::PlaneBytes _lvlOwnMap;

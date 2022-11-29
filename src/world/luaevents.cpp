@@ -494,7 +494,7 @@ int LuaEvents::Lua_WrldExitTutorialWindow(lua_State *l)
     if ( sub_4C885C() != 3 )
     {
         dword_5C8B78 = 8;
-        wrld->sb_0x4c87fc( wrld->GetLocaleString(2470, "2470 == EXIT TUTORIAL MISSION ?") , &exit_menu);
+        wrld->sb_0x4c87fc( Locale::Text::Advanced(Locale::ADV_EXITRAINING) , &exit_menu);
     }
     
     return 0;

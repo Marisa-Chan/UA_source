@@ -5781,51 +5781,51 @@ int NC_STACK_yparobo::placeMessage(robo_arg134 *arg)
     switch ( arg->field_4 )
     {
     case 2:
-        v8.txt = _world->GetLocaleString(202, "SECTOR CONQUERED");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_SECTCONQ);
         break;
 
     case 6:
-        v8.txt =  _world->GetLocaleString(206, "FOUND ENEMY STATION");
+        v8.txt =  Locale::Text::Feedback(Locale::FEEDBACK_FOUNDEHS);
         break;
 
     case 11:
-        v8.txt = _world->GetLocaleString(211, "STATION IS DEAD ");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_HSDESTR);
         break;
 
     case 12:
-        v8.txt = _world->GetLocaleString(212, "YOUR STATION IS DEAD!");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_OWNHSDESTR);
         break;
 
     case 13:
-        v8.txt = _world->GetLocaleString(213, "ENEMY NEAR STATION!");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_ENMYNEARHS);
         break;
 
     case 18:
-        v8.txt = _world->GetLocaleString(218, "REQUEST SUPPORT");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_REQSUP);
         break;
 
     case 31:
-        v8.txt = _world->GetLocaleString(231, "FLAK DESTROYED");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_FLAKDESTR);
         break;
 
     case 32:
-        v8.txt = _world->GetLocaleString(232, "RADAR STATION DESTROYED");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_RADARDESTR);
         break;
 
     case 33:
-        v8.txt = _world->GetLocaleString(233, "ATTACK POWERSTATION");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_ATKPS);
         break;
 
     case 34:
-        v8.txt = _world->GetLocaleString(234, "ATTACK FLAK");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_ATKFLAK);
         break;
 
     case 35:
-        v8.txt = _world->GetLocaleString(235, "ATTACK RADAR STATION");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_ATKRADAR);
         break;
 
     case 40:
-        v8.txt = _world->GetLocaleString(240, "HOST ENERGY CRITICAL");
+        v8.txt = Locale::Text::Feedback(Locale::FEEDBACK_HSENERGY);
         break;
 
     default:

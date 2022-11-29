@@ -2,6 +2,7 @@
 #include "../yw.h"
 #include "../yparobo.h"
 #include "../yw_internal.h"
+#include "locale/locale.h"
 
 extern bzd bzda;
 
@@ -15,72 +16,72 @@ std::string GameAnalyzer::Analyze(NC_STACK_ypaworld *world)
         if (IsHSLowHP(world)) 
         {
             if (IsHasBackupPS(world)) 
-                return world->GetLocaleString(702, "ADVICE #3: DEFEND HOSTSTATION");
+                return Locale::Text::Advice(Locale::ADVICE_DEFENDHS);
             else 
-                return world->GetLocaleString(700, "ADVICE #1: ESCAPE TO ANOTHER POWER STATION");
+                return Locale::Text::Advice(Locale::ADVICE_ESCAPETOPS);
         } 
         else 
         {
-            return world->GetLocaleString(701, "ADVICE #2: YOUR SCREWED");
+            return Locale::Text::Advice(Locale::ADVICE_SCREWED);
         }
     } 
     else if (IsAnySquadInFight(world))
     {
-        return world->GetLocaleString(703, "ADVICE #4: SEND REINFORMCEMENT OR HELP BY HAND");
+        return Locale::Text::Advice(Locale::ADVICE_SENDFORCES);
     }
     else if (IsOwnPowerStation(world) && IsOnHighPowerStation(world) && IsPowerEffLow(world))
     {
-        return world->GetLocaleString(704, "ADVICE #5: CONQUER SECTORS TO BUMP UP EFFICIENCY");
+        return Locale::Text::Advice(Locale::ADVICE_CONQPOWEREFF);
     } 
     else if (IsOwnPowerStation(world) && !IsOnHighPowerStation(world))
     {
-        return world->GetLocaleString(705, "ADVICE #6: BEAM TO YOUR STRONGEST POWER STATION");
+        return Locale::Text::Advice(Locale::ADVICE_BEAMTOSTRONG);
     } 
     else if (IsSpottedEnemyPS(world))
     {
-        return world->GetLocaleString(706, "ADVICE #7: CONQUER ENEMY POWER STATION");
+        return Locale::Text::Advice(Locale::ADVICE_CONQPS);
     }
     else if (!IsOwnPowerStation(world) && IsCanBuildPowerStation(world)) 
     {
-        return world->GetLocaleString(707, "ADVICE #8: BUILD A POWER STATION");
+        return Locale::Text::Advice(Locale::ADVICE_BUILDPS);
     } 
     else if (IsSpottedTek(world))
     {
-        return world->GetLocaleString(708, "ADVICE #9: CONQUER TECH UPGRADE");
+        return Locale::Text::Advice(Locale::ADVICE_CONQTECH);
     }
     else if (IsSpottedBeamGate(world))
     {
-        return world->GetLocaleString(709, "ADVICE #10: CONQUER BEAM GATE");
+        return Locale::Text::Advice(Locale::ADVICE_CONQGATE);
     }
     else if (IsSpottedKeySector(world))
     {
-        return world->GetLocaleString(710, "ADVICE #11: CONQUER KEY SECTORS TO OPEN BEAM GATE");
+        return Locale::Text::Advice(Locale::ADVICE_CONQKEYGATE);
     }
     else if (IsSpottedEnemyHS(world)) 
     {
         if (IsSpottedEnemyHSwithPS(world)) 
         {
-            return world->GetLocaleString(711, "ADVICE #12: COLLECT FORCES FOR POWER STATION ATTACK");
+            return Locale::Text::Advice(Locale::ADVICE_COLLECTTOPS);
         } 
         else 
         {
-            return world->GetLocaleString(712, "ADVICE #13: COLLECT FORCES FOR ROBO ATTACK");
+            return Locale::Text::Advice(Locale::ADVICE_COLLECTTOHS);
         }
     } 
     else if (IsFewSeeSectors(world))
     {
-        return world->GetLocaleString(713, "ADVICE #14: EXPLORE LAND");
+        return Locale::Text::Advice(Locale::ADVICE_EXPLORE);
     }
     else if (IsFewOwnSectors(world))
     {
-        return world->GetLocaleString(714, "ADVICE #15: CONQUER AND STABILIZE LAND");
+        return Locale::Text::Advice(Locale::ADVICE_CONQLAND);
     }
     else if (IsReadyToBeam(world))
     {
-        return world->GetLocaleString(715, "ADVICE #16: PLACE FORCES ONTO BEAM GATE AND LEAVE LEVEL");
+        return Locale::Text::Advice(Locale::ADVICE_FORCESTOBEAM);
     }
     
-    return world->GetLocaleString(716, "ADVICE #17: NO PROBLEM IDENTIFIED");
+    return Locale::Text::Advice(Locale::ADVICE_NOPROBLEM);
 }
 
 bool GameAnalyzer::IsHSAttacked(NC_STACK_ypaworld *world)

@@ -8,6 +8,7 @@
 #include "button.h"
 #include "yw_net.h"
 #include "system/inivals.h"
+#include "locale/locale.h"
 
 
 const Nucleus::ClassDescr NC_STACK_windp::description("windp.class", &newinstance);
@@ -1083,7 +1084,7 @@ void UserData::yw_JoinNetGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
+                netLevelName = p_YW->GetLevelName(netLevelID);
 
                 for(TDPPlayerData &p : p_YW->_netDriver->GetPlayersData())
                 {
@@ -1126,7 +1127,7 @@ void UserData::yw_JoinNetGame()
                     GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
-                fmt::printf("%s: %s\n", p_YW->GetLocaleString(2400, "YPA ERROR MESSAGE"), p_YW->GetLocaleString(2401, "SESSION NOT LONGER AVAILABLE"));
+                fmt::printf("%s: %s\n", Locale::Text::Advanced(Locale::ADV_ERRHEAD), Locale::Text::Advanced(Locale::ADV_ERRNOSESS));
 
                 if ( p_YW->_netDriver->GetProvType() == 4 )
                 {
@@ -1183,7 +1184,7 @@ void UserData::JoinLobbyLessGame()
                 }
             }
             network_listvw.firstShownEntries = 0;
-            netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
+            netLevelName = p_YW->GetLevelName(netLevelID);
 
             for(TDPPlayerData &p : p_YW->_netDriver->GetPlayersData())
             {
@@ -1241,7 +1242,7 @@ void UserData::JoinLobbyLessGame()
                     }
                 }
                 network_listvw.firstShownEntries = 0;
-                netLevelName = p_YW->GetLocaleString(1800 + netLevelID, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
+                netLevelName = p_YW->GetLevelName(netLevelID);
 
                 for(TDPPlayerData &p : p_YW->_netDriver->GetPlayersData())
                 {
@@ -1284,7 +1285,7 @@ void UserData::JoinLobbyLessGame()
                     GFX::Engine.windd_func320(NULL);
 
                 //sb_0x46bb54__sub0(p_ypaworld, get_lang_string(p_ypaworld->string_pointers_p2, 2400, "YPA ERROR MESSAGE"), get_lang_string(p_ypaworld->string_pointers_p2, 2401, "SESSION NOT LONGER AVAILABLE"));
-                fmt::printf("%s: %s\n", p_YW->GetLocaleString(2400, "YPA ERROR MESSAGE"), p_YW->GetLocaleString(2401, "SESSION NOT LONGER AVAILABLE"));
+                fmt::printf("%s: %s\n", Locale::Text::Advanced(Locale::ADV_ERRHEAD), Locale::Text::Advanced(Locale::ADV_ERRNOSESS));
 
                 if ( p_YW->_netDriver->GetProvType() == 4 )
                 {
@@ -1475,7 +1476,7 @@ void UserData::yw_NetPrintStartInfo()
         else
             log_netlog("\nThe local player is %s and is CLIENT\n", netPlayerName.c_str());
 
-        std::string tmp = p_YW->GetLocaleString(netLevelID + 1800, p_YW->_globalMapRegions.MapRegions[ netLevelID ].MapName);
+        std::string tmp = p_YW->GetLevelName(netLevelID);
         log_netlog("They play level %d, this is %s\n", netLevelID, tmp.c_str());
         log_netlog("the session started at timeindex %d\n", p_YW->_timeStamp / 1000);
         log_netlog("\n\n--------------------------------------------------------\n");

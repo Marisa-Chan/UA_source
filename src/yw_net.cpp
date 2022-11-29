@@ -151,14 +151,14 @@ void yw_CheckCRCs(NC_STACK_ypaworld *yw)
                     usr->netCRC != 0 )
             {
                 err = true;
-                strs[errmsg] = fmt::sprintf("%s %s", pl.Name, yw->GetLocaleString(2404, "HAS OTHER FILES THAN YOU") );
+                strs[errmsg] = fmt::sprintf("%s %s", pl.Name, Locale::Text::Advanced(Locale::ADV_HASHMISS) );
                 errmsg++;
             }
         }
 
         if ( err )
         {
-            const std::string lngstr = yw->GetLocaleString(2403, "COMPUTER");
+            const std::string lngstr = Locale::Text::Advanced(Locale::ADV_COMPUTER);
 
             for (int i = 0; i < errmsg; i++)
             {
@@ -2288,7 +2288,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( cl.PurposeType != cellArea::PT_TECHUPGRADE )
         {
-            std::string bff = yw->GetLocaleString(229, "TECH-UPGRADE LOST! ");
+            std::string bff = Locale::Text::Feedback(Locale::FEEDBACK_TECHDOWN);
             bff += gemProt.MsgDefault;
 
             yw_arg159 arg159;
@@ -2583,7 +2583,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         yw->_GameShell->netLevelID = lobbyMsg->lvlID;
-        yw->_GameShell->netLevelName = yw->GetLocaleString(1800 + yw->_GameShell->netLevelID, yw->_globalMapRegions.MapRegions[yw->_GameShell->netLevelID].MapName);
+        yw->_GameShell->netLevelName = yw->GetLevelName(lobbyMsg->lvlID);
 
         int32_t index = yw->_netDriver->GetPlayerIndex( lobbyMsg->hostName );
         if ( index != -1 )
@@ -2686,7 +2686,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             break;
 
         yw->_GameShell->netLevelID = stlvlMsg->lvlID;
-        yw->_GameShell->netLevelName = yw->GetLocaleString(1800 + yw->_GameShell->netLevelID, yw->_globalMapRegions.MapRegions[yw->_GameShell->netLevelID].MapName);
+        yw->_GameShell->netLevelName = yw->GetLevelName(stlvlMsg->lvlID);
 
         for (UserData::TNetPlayerLobbyData &pl : yw->_GameShell->lobbyPlayers)
             pl.DataChecksum = 0;
@@ -4067,7 +4067,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     FontUA::set_xpos(&cur, 0);
     FontUA::set_ypos(&cur, 0);
     FontUA::copy_position(&cur);
-    FontUA::add_txt(&cur, 2 * yw->_screenSize.x / 3 - 1, 1,  yw->GetLocaleString(651, "WAITING FOR PLAYERS: ") );
+    FontUA::add_txt(&cur, 2 * yw->_screenSize.x / 3 - 1, 1,  Locale::Text::Get(Locale::LBL_WAITINGFOR, Locale::DefaultStrings::WaitingForPlayers) );
     FontUA::next_line(&cur);
 
     yw->_netStartTimer -= inpt.Period;
@@ -4262,27 +4262,27 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         case 1:
             if ( usr->isHost )
             {
-                t[0] = yw->GetLocaleString(2405, "HOST: LATENCY PROBLEMS.");
-                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2423, "PLEASE WAIT"), usr->netProblemCountDown);
+                t[0] = Locale::Text::Advanced(Locale::ADV_HOSTLATENCY);
+                t[1] = fmt::sprintf("%s %d", Locale::Text::Advanced(Locale::ADV_WAIT1), usr->netProblemCountDown);
                 numelm = 2;
             }
             else
             {
-                t[0] = yw->GetLocaleString(2406, "CLIENT: LATENCY PROBLEMS.");
-                t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2424, "PLEASE WAIT"), usr->netProblemCountDown);
+                t[0] = Locale::Text::Advanced(Locale::ADV_CLILATENCY);
+                t[1] = fmt::sprintf("%s %d", Locale::Text::Advanced(Locale::ADV_WAIT2), usr->netProblemCountDown);
                 numelm = 2;
             }
             break;
 
         case 3:
-            t[0] = yw->GetLocaleString(2425, "YOU ARE KICKED OFF BECAUSE NETTROUBLE");
-            t[1] = fmt::sprintf("%s %d", yw->GetLocaleString(2426, "LEVEL FINISHES AUTOMATICALLY"), usr->netProblemCountDown / 1000);
+            t[0] = Locale::Text::Advanced(Locale::ADV_KICKEDPROBLEM);
+            t[1] = fmt::sprintf("%s %d", Locale::Text::Advanced(Locale::ADV_LVLAUTOFINISH), usr->netProblemCountDown / 1000);
             numelm = 2;
             break;
 
         case 4:
-            t[0] = yw->GetLocaleString(2427, "FOLLOWING PLAYERES WERE REMOVED");
-            t[1] = fmt::sprintf(yw->GetLocaleString(2428, "BECAUSE THEY HAD NETWORK PROBLEMS"));
+            t[0] = Locale::Text::Advanced(Locale::ADV_PLREMOVED);
+            t[1] = fmt::sprintf(Locale::Text::Advanced(Locale::ADV_COZNETPROBLEM));
             numelm = 2;
 
             for(UserData::TNetPlayerData &pl : usr->netPlayers)
@@ -4296,8 +4296,8 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
             break;
 
         case 5:
-            t[0] = yw->GetLocaleString(2429, "NO CONNECTION TO FOLLOWING PLAYERS");
-            t[1] = fmt::sprintf(yw->GetLocaleString(2430, "FINISH IF PROBLEM CANNOT NE SOLVED"));
+            t[0] = Locale::Text::Advanced(Locale::ADV_NOCONNTOPL);
+            t[1] = fmt::sprintf(Locale::Text::Advanced(Locale::ADV_FINISHIFNOT));
             numelm = 2;
 
             for(UserData::TNetPlayerData &pl : usr->netPlayers)
@@ -4329,11 +4329,11 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
 
             if ( usr->netAllOk == 1 )
             {
-                t[0] = yw->GetLocaleString(2409, "NETWORK IS NOW OK");
+                t[0] = Locale::Text::Advanced(Locale::ADV_NETISOK);
             }
             else if ( usr->netAllOk == 2 )
             {
-                t[0] = yw->GetLocaleString(2408, "THERE WAS NO CHANCE TO SOLVE THIS PROBLEM");
+                t[0] = Locale::Text::Advanced(Locale::ADV_UNRESPROBLM);
             }
             else if ( usr->netAllOk == 3 )
             {
@@ -4359,7 +4359,7 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
         cur = GuiBase::FormateTitle(yw, yw->_screenSize.x / 4 - yw->_screenSize.x / 2,
                                     12 - yw->_screenSize.y / 2,
                                     yw->_screenSize.x / 2,
-                                    yw->GetLocaleString(2407, "NETZWERKSTATUS"),
+                                    Locale::Text::Advanced(Locale::ADV_NETSTATUS),
                                     cur, 0, 0);
 
         FontUA::next_line(&cur);

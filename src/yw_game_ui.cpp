@@ -15,7 +15,6 @@
 #include "ypagun.h"
 #include "windp.h"
 #include "world/analyzer.h"
-#include "world/stringids.h"
 
 
 extern uint32_t bact_id;
@@ -139,7 +138,7 @@ void NC_STACK_ypaworld::sub_449DE8(const std::string &a2)
 {
     if ( !_isNetGame )
     {
-        sb_0x4c87fc( GetLocaleString(2486, "REALLY LAUNCH ONLINE HELP ?") , &exit_menu);
+        sb_0x4c87fc( Locale::Text::Advanced(Locale::ADV_RLYHELP) , &exit_menu);
 
         dword_5C8B78 = 13;
 
@@ -165,7 +164,7 @@ void create_squad_man(NC_STACK_ypaworld *yw)
     int v11 = 4 * fnt0[65].w + v8 + fnt28[97].w + f0c32_w + 8;
 
     GuiList::tInit args;
-    args.title = yw->GetLocaleString(51, "FINDER");
+    args.title = Locale::Text::WinName(Locale::WINNAME_FINDER);
     args.resizeable = true;
     args.numEntries = 0;
     args.shownEntries = 12;
@@ -1750,7 +1749,7 @@ void sub_4C0C00(NC_STACK_ypaworld *yw)
     else
         v7 = 'q'; //default fon (
 
-    char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, yw->GetLocaleString(50, "MAP"), robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
+    char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, Locale::Text::WinName(Locale::WINNAME_MAP), robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
 
     FontUA::next_line(&pcur);
     FontUA::reset_tileset(&pcur, 13);
@@ -2651,7 +2650,7 @@ void create_info_log(NC_STACK_ypaworld *yw)
     info_log = yw_infolog();
 
     GuiList::tInit args;
-    args.title = yw->GetLocaleString(52, "MESSAGE LOG");
+    args.title = Locale::Text::WinName(Locale::WINNAME_LOG);
     args.resizeable = true;
     args.numEntries = 1;
     args.shownEntries = 6;
@@ -2673,12 +2672,12 @@ void create_info_log(NC_STACK_ypaworld *yw)
         if ( yw->_timeStamp )
         {
             std::string tmp = fmt::sprintf("<%02d:%02d:%02d>", (yw->_timeStamp >> 10) / 60 / 60 % 24, (yw->_timeStamp >> 10) / 60 % 60, (yw->_timeStamp >> 10) % 60);
-            std::string tmp2 = yw->GetLocaleString(12, "GAME CONTINUED AT TIME INDEX %s.");
+            std::string tmp2 = Locale::Text::Common(Locale::CMN_MISNCONT);
             sprintf(info_log.msgs[0].txt, tmp2.c_str(), tmp.c_str());
         }
         else
         {
-            std::string tmp = yw->GetLocaleString(6, "WELCOME TO YOUR PERSONAL AMOK!");
+            std::string tmp = Locale::Text::Common(Locale::CMN_WELCOME);
             strcpy(info_log.msgs[0].txt, tmp.c_str());
         }
 
@@ -2702,7 +2701,7 @@ void create_exit_menu(NC_STACK_ypaworld *yw)
     int tmp = yw->_guiTiles[0]->GetWidth("WWWWWWW");
 
     GuiList::tInit args;
-    args.title = yw->GetLocaleString(53, "GAME PAUSED");
+    args.title = Locale::Text::WinName(Locale::WINNAME_EXIT);
     args.resizeable = false;
     args.numEntries = 5;
     args.shownEntries = 5;
@@ -3157,36 +3156,34 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
         {
             int v5 = bzda.field_4DC[ v3 ].d;
 
-            World::TVhclProto *v6 = &yw->_vhclProtos[v5];
+            const World::TVhclProto &proto = yw->_vhclProtos[v5];
 
-            int v17 = dround(yw->sub_4498F4() * 2 * v6->energy / 100.0);
+            int v17 = dround(yw->sub_4498F4() * 2 * proto.energy / 100.0);
 
-            const std::string v8 = yw->GetLocaleString(v5 + 1200, v6->name);
+            const std::string v8 = yw->GetVehicleName(proto);
 
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
-            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v6->type_icon, v8, v17);
+            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, proto.type_icon, v8, v17);
         }
         else if ( bzda.field_4DC[ v3 ].i == 2 )
         {
             int v9 = bzda.field_4DC[ v3 ].d;
-            World::TBuildingProto *v10 = &yw->_buildProtos[v9];
+            const World::TBuildingProto &v10 = yw->_buildProtos[v9];
 
-            int v18 = dround(yw->sub_4498F4() * v10->Energy / 100.0);
-            int v12;
-
+            int v18 = dround(yw->sub_4498F4() * v10.Energy / 100.0);
+            
+            std::string v13;
             if ( yw->_isNetGame )
-                v12 = v9 + 1700;
+                v13 = yw->GetBuildingName(v10, true);
             else
-                v12 = v9 + 1500;
-
-            const std::string v13 = yw->GetLocaleString(v12, v10->Name);
-
+                v13 = yw->GetBuildingName(v10, false);
+                
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
-            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v10->TypeIcon, v13, v18);
+            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v10.TypeIcon, v13, v18);
         }
     }
 
@@ -3596,27 +3593,27 @@ char *ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, char *cur)
 
             FontUA::set_txtColor(&pcur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2474, "2474 == VS ROBO:"), v5, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSROBO), v5, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2475, "2475 == VS TANK:"), a6, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSTANK), a6, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2476, "2476 == VS PLANE:"), v26, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSPLANE), v26, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2477, "2477 == VS HELI:"), v25, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSHELI), v25, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2479, "2479 == CAPTURE:"), v28, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_CAPTURE), v28, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  yw->GetLocaleString(2478, "2478 == RECON:"), v29, v6);
+            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_RECON), v29, v6);
         }
     }
     return pcur;
@@ -4005,7 +4002,7 @@ int ypaworld_func64__sub7__sub2__sub3(NC_STACK_ypaworld *yw, TInputState *inpt)
         break;
 
     case 43:
-        yw->sub_449DE8(yw->GetLocaleString(767, "help\\l17.html")); //MAKE ME
+        yw->sub_449DE8(Locale::Text::Help(Locale::HELP_GAMEPLAY));
         break;
 
     case 46:
@@ -4420,7 +4417,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         if ( bzda.field_1D0 & 0x16 )
                         {
                             bzda.field_1D0 = bzda.field_1CC & 1;
-                            yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
+                            yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_NEWSQUAD, 2);
                         }
                         else
                         {
@@ -4440,14 +4437,14 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         }
                     }
                     else
-                        yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
+                        yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_NEWSQUAD, 2);
 
                 }
                 else if ( bzda.field_1D0 & 0x16 )
                 {
                     bzda.field_1D0 = bzda.field_1CC & 1;
 
-                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
+                    yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_NEWSQUAD, 2);
                 }
                 else
                 {
@@ -4467,7 +4464,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         bzda.field_1D0 = 2;
 
                     a2a = 0;
-                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEWSQUAD, 2);
+                    yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_NEWSQUAD, 2);
                 }
                 break;
 
@@ -4480,7 +4477,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         bzda.field_1D0 = 8;
                 }
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_TAKECONTROL, 4);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_TAKECONTROL, 4);
                 break;
 
             case 2: //MAP
@@ -4510,9 +4507,9 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 }
 
                 if ( winpt->selected_btnID == 2 )
-                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_MAPWND, 8);
+                    yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_MAPWND, 8);
                 else if ( winpt->selected_btnID == 3 )
-                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_FINDERWND, 9);
+                    yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_FINDERWND, 9);
 
                 break;
 
@@ -4528,7 +4525,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         bzda.field_1D0 = 1;
                 }
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_GOTOHS, 21);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_GOTOHS, 21);
                 break;
 
             case 5:
@@ -4538,7 +4535,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     bact1 = yw->_userUnit->_parent;
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_GOTOCMDR, 23);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_GOTOCMDR, 23);
                 break;
 
             case 6: // Cycle through units in squad
@@ -4550,14 +4547,14 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                     if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                         bact1 = ypaworld_func64__sub7__sub2__sub5(yw);
 
-                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_GOINTOGUNS, 22);
+                    yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_GOINTOGUNS, 22);
                 }
                 else
                 {
                     if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                         bact1 = ypaworld_func64__sub7__sub2__sub4(yw);
 
-                    yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEXTUNIT, 22);
+                    yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_NEXTUNIT, 22);
                 }
                 break;
 
@@ -4568,7 +4565,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     bact1 = yw->GetNextSquad();
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_NEXTCMDR, 20);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_NEXTCMDR, 20);
                 break;
 
             case 8:
@@ -4578,7 +4575,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                     yw->SituationAnalyzer();
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_ANALYZER, 46);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_ANALYZER, 46);
                 break;
 
             case 9:
@@ -4587,10 +4584,10 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
 
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                 {
-                    yw->sub_449DE8(yw->GetLocaleString(767, "help\\l17.html")); //MAKE ME
+                    yw->sub_449DE8(Locale::Text::Help(Locale::HELP_GAMEPLAY));
                 }
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_ONLINEHELP, 43);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_ONLINEHELP, 43);
                 break;
 
             case 10:
@@ -4605,7 +4602,7 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
                         ypaworld_func64__sub7__sub2__sub9(yw);
                 }
 
-                yw->SetShowingTooltipWithHotkey(World::TIP_GUI_PAUSECANCEL, 24);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_GUI_PAUSECANCEL, 24);
                 break;
 
             default:
@@ -5045,19 +5042,19 @@ void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, TInputState *inpt)
         switch ( winpt->selected_btnID )
         {
         case 0:
-            yw->SetShowingTooltip(World::TIP_ENERGY_RELOAD);
+            yw->SetShowingTooltip(Locale::TIP_ENERGY_RELOAD);
             break;
 
         case 1:
-            yw->SetShowingTooltip(World::TIP_ENERGY_MAIN);
+            yw->SetShowingTooltip(Locale::TIP_ENERGY_MAIN);
             break;
 
         case 2:
-            yw->SetShowingTooltip(World::TIP_ENERGY_CREATION);
+            yw->SetShowingTooltip(Locale::TIP_ENERGY_CREATION);
             break;
 
         case 3:
-            yw->SetShowingTooltip(World::TIP_ENERGY_TELEPORT);
+            yw->SetShowingTooltip(Locale::TIP_ENERGY_TELEPORT);
             break;
 
         default:
@@ -5649,14 +5646,14 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub3__sub4(NC_STACK_ypabact *bact
     if ( bact->_status == BACT_STATUS_NORMAL )
     {
         if ( bact->_status_flg & BACT_STFLAG_ESCAPE )
-            SetShowingTooltip(World::TIP_FINDER_ESCAPE);
+            SetShowingTooltip(Locale::TIP_FINDER_ESCAPE);
         else if ( bact->_secndTtype )
-            SetShowingTooltip(World::TIP_FINDER_FIGHTING);
+            SetShowingTooltip(Locale::TIP_FINDER_FIGHTING);
         else if ( bact->_primTtype )
-            SetShowingTooltip(World::TIP_FINDER_MOVE);
+            SetShowingTooltip(Locale::TIP_FINDER_MOVE);
     }
     else if (bact->_status == BACT_STATUS_IDLE)
-        SetShowingTooltip(World::TIP_FINDER_WAITORDER);
+        SetShowingTooltip(Locale::TIP_FINDER_WAITORDER);
 }
 
 NC_STACK_ypabact * NC_STACK_ypaworld::sub_4C7B0C(int sqid, int a3)
@@ -5799,9 +5796,9 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(TInputState *inpt)
             {
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                 {
-                    sub_449DE8(GetLocaleString(765, "help\\l15.html")); //MAKE ME
+                    sub_449DE8(Locale::Text::Help(Locale::HELP_FINDERWND));
                 }
-                SetShowingTooltip(World::TIP_ONLINEHELP);
+                SetShowingTooltip(Locale::TIP_ONLINEHELP);
             }
             if ( winpt->selected_btnID == 6 && this->_activeCmdrRemapIndex != -1 && !(bzda.field_1D0 & 0x20) )
             {
@@ -5821,23 +5818,23 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(TInputState *inpt)
                 switch ( v9 )
                 {
                 case 0:
-                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_0, 38);
+                    SetShowingTooltipWithHotkey(Locale::TIP_GUI_AGGR_0, 38);
                     break;
 
                 case 1:
-                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_1, 39);
+                    SetShowingTooltipWithHotkey(Locale::TIP_GUI_AGGR_1, 39);
                     break;
 
                 case 2:
-                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_2, 40);
+                    SetShowingTooltipWithHotkey(Locale::TIP_GUI_AGGR_2, 40);
                     break;
 
                 case 3:
-                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_3, 41);
+                    SetShowingTooltipWithHotkey(Locale::TIP_GUI_AGGR_3, 41);
                     break;
 
                 case 4:
-                    SetShowingTooltipWithHotkey(World::TIP_GUI_AGGR_4, 42);
+                    SetShowingTooltipWithHotkey(Locale::TIP_GUI_AGGR_4, 42);
                     break;
 
                 default:
@@ -5845,7 +5842,7 @@ void NC_STACK_ypaworld::SquadManager_InputHandle(TInputState *inpt)
                 }
 
                 if ( winpt->move.BtnPos.x >= squadron_manager.field_2D8 )
-                    SetShowingTooltip(World::TIP_COUNTINSQUAD);
+                    SetShowingTooltip(Locale::TIP_COUNTINSQUAD);
             }
 
             if ( winpt->flag & (TClickBoxInf::FLAG_RM_DOWN | TClickBoxInf::FLAG_LM_DOWN) )
@@ -6354,10 +6351,10 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, TInputState *inpt)
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                 {
                     robo_map.flags &= ~GuiBase::FLAG_HELP_DOWN;
-                    yw->sub_449DE8(yw->GetLocaleString(764, "help\\l14.html")); //MAKE ME
+                    yw->sub_449DE8(Locale::Text::Help(Locale::HELP_MAPWND)); //MAKE ME
                 }
 
-                yw->SetShowingTooltip(World::TIP_ONLINEHELP);
+                yw->SetShowingTooltip(Locale::TIP_ONLINEHELP);
                 break;
 
             case 7:
@@ -6385,31 +6382,31 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, TInputState *inpt)
             switch ( winpt->selected_btnID )
             {
             case 3:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_DETAIL, 10);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_DETAIL, 10);
                 break;
 
             case 4:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_OWNERS, 11);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_OWNERS, 11);
                 break;
 
             case 5:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_EINFO, 12);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_EINFO, 12);
                 break;
 
             case 6:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_LOCKVIEWER, 14);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_LOCKVIEWER, 14);
                 break;
 
             case 7:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_ZOOMIN, 16);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_ZOOMIN, 16);
                 break;
 
             case 8:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_ZOOMOUT, 17);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_ZOOMOUT, 17);
                 break;
 
             case 9:
-                yw->SetShowingTooltipWithHotkey(World::TIP_MAP_SIZE, 18);
+                yw->SetShowingTooltipWithHotkey(Locale::TIP_MAP_SIZE, 18);
                 break;
 
             default:
@@ -6604,11 +6601,11 @@ void ypaworld_func64__sub7__sub6__sub3(NC_STACK_ypaworld *yw, int a2, int a4)
 
     FontUA::set_txtColor(&pcur, yw->_iniColors[68].r, yw->_iniColors[68].g, yw->_iniColors[68].b);
 
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, yw->GetLocaleString(7, "CANCEL MISSION"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, yw->GetLocaleString(5, "SAVE"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x400, a2 & 0x400, yw->GetLocaleString(4, "LOAD"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x800, a2 & 0x800, yw->GetLocaleString(8, "RESTART"));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x1000, a2 & 0x1000, yw->GetLocaleString(9, "RESUME"));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, Locale::Text::Common(Locale::CMN_EXITMISN));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, Locale::Text::Common(Locale::CMN_SAVE));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x400, a2 & 0x400, Locale::Text::Common(Locale::CMN_LOAD));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x800, a2 & 0x800, Locale::Text::Common(Locale::CMN_RESTART));
+    pcur = sub_4DA8DC(yw, pcur, a4 & 0x1000, a2 & 0x1000, Locale::Text::Common(Locale::CMN_CONTINUE));
 
     pcur = exit_menu.ItemsPostLayout(yw, pcur, 0, "xyz");
 
@@ -6627,7 +6624,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                 yw_arg159 v18;
                 v18.unit = 0;
                 v18.Priority = 10;
-                v18.txt = GetLocaleString(259, "GAME SAVED OK.");
+                v18.txt = Locale::Text::Feedback(Locale::FEEDBACK_GAMESAVED);
                 v18.MsgID = 0;
 
                 ypaworld_func159(&v18);
@@ -6737,9 +6734,9 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
             {
             case 7:
                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
-                    sub_449DE8(GetLocaleString(766, "help\\l16.html"));
+                    sub_449DE8(Locale::Text::Help(Locale::HELP_GAMEMENU));
 
-                SetShowingTooltip(World::TIP_ONLINEHELP);
+                SetShowingTooltip(Locale::TIP_ONLINEHELP);
                 break;
 
             case 8:
@@ -6753,7 +6750,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                     if ( sub_4C885C() != 3 )
                         GuiWinClose( &exit_menu );
 
-                    sb_0x4c87fc( GetLocaleString(2480, "REALLY EXIT MISSION ?") , &exit_menu);
+                    sb_0x4c87fc( Locale::Text::Advanced(Locale::ADV_RLYEXIT) , &exit_menu);
                 }
                 break;
 
@@ -6770,7 +6767,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                         if ( sub_4C885C() != 3 )
                             GuiWinClose( &exit_menu );
 
-                        sb_0x4c87fc( GetLocaleString(2481, "REALLY SAVE GAME ?") , &exit_menu);
+                        sb_0x4c87fc( Locale::Text::Advanced(Locale::ADV_RLYSAVE) , &exit_menu);
                     }
                 }
                 break;
@@ -6788,7 +6785,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                         if ( sub_4C885C() != 3 )
                             GuiWinClose( &exit_menu );
 
-                        sb_0x4c87fc( GetLocaleString(2482, "REALLY LOAD GAME ?") , &exit_menu);
+                        sb_0x4c87fc( Locale::Text::Advanced(Locale::ADV_RLYLOAD) , &exit_menu);
                     }
                 }
                 break;
@@ -6806,7 +6803,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                         if ( sub_4C885C() != 3 )
                             GuiWinClose( &exit_menu );
 
-                        sb_0x4c87fc(GetLocaleString(2483, "REALLY RESTART MISSION ?") , &exit_menu);
+                        sb_0x4c87fc(Locale::Text::Advanced(Locale::ADV_RLYRESTART) , &exit_menu);
                     }
                 }
                 break;
@@ -6877,7 +6874,7 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
 
     FontUA::store_u8(&pcur, 98);
 
-    pcur = sub_451714(yw->_guiTiles[v8], pcur, yw->GetLocaleString(2, "OK"), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
+    pcur = sub_451714(yw->_guiTiles[v8], pcur, Locale::Text::Common(Locale::CMN_OK), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
 
     FontUA::unset_flag(&pcur, 0x10);
 
@@ -6903,7 +6900,7 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
 
     FontUA::store_u8(&pcur, 98);
 
-    pcur = sub_451714(yw->_guiTiles[v8], pcur, yw->GetLocaleString(3, "CANCEL"), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
+    pcur = sub_451714(yw->_guiTiles[v8], pcur, Locale::Text::Common(Locale::CMN_CANCEL), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
 
     FontUA::unset_flag(&pcur, 0x10);
 
@@ -7629,9 +7626,10 @@ void NC_STACK_ypaworld::VoiceMessagePlayFile(const std::string &flname, NC_STACK
     std::string oldRsrc = Common::Env.SetPrefix("rsrc", "data:");
 
     std::string filename = "sounds/speech/";
+    std::string locName = Locale::Text::GetLocaleName();
 
-    if ( !_localeName.empty() )
-        filename += _localeName + "/";
+    if ( !locName.empty() )
+        filename += locName + "/";
     else
         filename += "language/";
 
@@ -8050,12 +8048,12 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
             
             if ( yw->_netEvent.EventType == 1 )
             {
-                str = yw->GetLocaleString(2468, "2468 == *** VICTORY IS YOURS ***");
+                str = Locale::Text::Advanced(Locale::ADV_VICTORY);
                 timeDelay = 40000;
             }
             else if ( yw->_netEvent.EventType > 1 && yw->_netEvent.EventType <= 4 )
             {
-                str = fmt::sprintf( yw->GetLocaleString(2469, "2469 == *** %s HAS BEEN DEFEATED ***") , yw->_netEvent.PlayerName);
+                str = fmt::sprintf( Locale::Text::Advanced(Locale::ADV_DEFEATED) , yw->_netEvent.PlayerName);
 
                 timeDelay = 20000;
             }
@@ -8433,7 +8431,7 @@ char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_
         a6a = vhcl->energy;
     }
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, yw->GetLocaleString(35, "HP"), fmt::sprintf("%d", (a6a + 99) / 100));
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, Locale::Text::HUD(Locale::HUDSTR_EGY), fmt::sprintf("%d", (a6a + 99) / 100));
 }
 
 
@@ -8446,7 +8444,7 @@ char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
     else
         v10 = vhcl->shield;
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, yw->GetLocaleString(36, "AMR"), fmt::sprintf("%d%%", v10), 2);
+    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, Locale::Text::HUD(Locale::HUDSTR_AMR), fmt::sprintf("%d%%", v10), 2);
 }
 
 
@@ -8585,11 +8583,11 @@ char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         std::string txt2;
 
         if ( v12 == 100 )
-            txt2 = yw->GetLocaleString(34, "OK");
+            txt2 = Locale::Text::HUD(Locale::HUDSTR_OK);
         else
             txt2 = fmt::sprintf("%d%%", v12);
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, yw->GetLocaleString(33, "RLD"), txt2);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, Locale::Text::HUD(Locale::HUDSTR_RLD), txt2);
     }
     return pcur;
 }
@@ -8607,7 +8605,7 @@ char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         else
             txt2 = fmt::sprintf("%d x%d", weap->energy / 100, vhcl->num_weapons);
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, yw->GetLocaleString(32, "DMG"), txt2, 1 | 2);
+        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, Locale::Text::HUD(Locale::HUDSTR_DMG), txt2, 1 | 2);
     }
 
     return pcur;
@@ -8678,7 +8676,7 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
         {
             float v15 = wis->field_92 * 12.0 + ypos;
 
-            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, yw->GetLocaleString(vhclid + 1200, vhcl->name), xpos, v15);
+            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, yw->GetVehicleName(*vhcl), xpos, v15);
         }
     }
 
@@ -8697,7 +8695,7 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
     return pcur;
 }
 
-char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float a4, float a5, int a6, int a7)
+char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float a4, float a5, int bldId, int a7)
 {
     char *pcur = cur;
     //yw->GetColor(25);
@@ -8707,13 +8705,13 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, 
     {
         if ( yw->_timeStamp / 200 & 1 )
         {
-            int v11;
+            std::string bldName;
             if ( yw->_isNetGame )
-                v11 = a6 + 1700;
+                bldName = yw->GetBuildingName(bldId, true);
             else
-                v11 = a6 + 1500;
+                bldName = yw->GetBuildingName(bldId, false);
 
-            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, yw->GetLocaleString(v11, yw->_buildProtos[a6].Name), a4, a5);
+            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, bldName, a4, a5);
         }
     }
     return pcur;
@@ -9061,9 +9059,9 @@ void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
         if ( !(yw->_userRobo->_status_flg & BACT_STFLAG_CLEAN) )
         {
             if ( yw->_userRobo->_status == BACT_STATUS_DEAD )
-                msg = yw->GetLocaleString(11, "* * *  H O S T  S T A T I O N  D E S T R O Y E D  * * *");
+                msg = Locale::Text::Common(Locale::CMN_HSDESTR);
             else
-                msg = yw->GetLocaleString(10, "* * *  D R O N E  D E S T R O Y E D  * * *");
+                msg = Locale::Text::Common(Locale::CMN_UNITDESTR);
         }
 
         if ( !msg.empty() && yw->_timeStamp / 500 & 1 )
@@ -9848,37 +9846,37 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
             switch ( v25[i].a )
             {
             case 1:
-                a4a[0].txt = yw->GetLocaleString(2411, "RESISTANCE");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_RESIST);
                 clrid = 1;
                 break;
 
             case 2:
-                a4a[0].txt = yw->GetLocaleString(2412, "SULGOGARS");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_SULG);
                 clrid = 2;
                 break;
 
             case 3:
-                a4a[0].txt = yw->GetLocaleString(2413, "MYKONIANS");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_MYKO);
                 clrid = 3;
                 break;
 
             case 4:
-                a4a[0].txt = yw->GetLocaleString(2414, "TAERKASTEN");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_TAER);
                 clrid = 4;
                 break;
 
             case 5:
-                a4a[0].txt = yw->GetLocaleString(2415, "BLACK SECT");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_BLKSCT);
                 clrid = 5;
                 break;
 
             case 6:
-                a4a[0].txt = yw->GetLocaleString(2416, "GHORKOV");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_GHOR);
                 clrid = 6;
                 break;
 
             default:
-                a4a[0].txt = yw->GetLocaleString(2417, "NEUTRAL");
+                a4a[0].txt = Locale::Text::Advanced(Locale::ADV_NEUTRAL);
                 clrid = 7;
                 break;
             }
@@ -9924,7 +9922,7 @@ char * sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
 
         FontUA::ColumnItem a4[2];
 
-        a4[0].txt = yw->GetLocaleString(2473, "2473 == Units:");
+        a4[0].txt = Locale::Text::Advanced(Locale::ADV_UNITS);
         a4[0].width = a3 * 0.5;
         a4[0].spaceChar = 32;
         a4[0].fontID = 15;
@@ -9970,9 +9968,9 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
             std::string typeStr = "SUPER ITEM";
 
             if (sitem.Type == TMapSuperItem::TYPE_BOMB)
-                typeStr = yw->GetLocaleString(18, "18 == STOUDSON BOMB");
+                typeStr = Locale::Text::Common(Locale::CMN_BOMBNAME);
             else if ( sitem.Type == TMapSuperItem::TYPE_WAVE )
-                typeStr = yw->GetLocaleString(19, "19 == STOUDSON WAVE");
+                typeStr = Locale::Text::Common(Locale::CMN_WAVENAME);
 
             int v23 = 0;
 
@@ -9989,7 +9987,7 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
             }
             else if ( sitem.State == TMapSuperItem::STATE_TRIGGED )
             {
-                timeStr = fmt::sprintf("%s: %s", typeStr,  yw->GetLocaleString(2471, "2471 == TRIGGERED") );
+                timeStr = fmt::sprintf("%s: %s", typeStr,  Locale::Text::Advanced(Locale::ADV_TRIGGERED) );
 
                 v23 = 1;
             }
@@ -10872,13 +10870,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                         {
                             doAction = World::DOACTION_8;
                             mousePointer = 2;
-                            tooltip = World::TIP_DO_SELECT;
+                            tooltip = Locale::TIP_DO_SELECT;
                         }
                         else if ( _activeCmdrRemapIndex != -1 )
                         {
                             doAction = World::DOACTION_2;
                             mousePointer = 3;
-                            tooltip = World::TIP_DO_ATKVHCL;
+                            tooltip = Locale::TIP_DO_ATKVHCL;
                         }
                     }
                 }
@@ -10888,12 +10886,12 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 4;
-                        tooltip = World::TIP_DO_MOVE;
+                        tooltip = Locale::TIP_DO_MOVE;
                     }
                     else
                     {
                         doAction = World::DOACTION_2;
-                        tooltip = World::TIP_DO_ATKSECTOR;
+                        tooltip = Locale::TIP_DO_ATKSECTOR;
                         mousePointer = 3;
                     }
                 }
@@ -10906,7 +10904,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_8;
                         mousePointer = 2;
-                        tooltip = World::TIP_DO_SELECT;
+                        tooltip = Locale::TIP_DO_SELECT;
                     }
                     else
                     {
@@ -10915,19 +10913,19 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                         case 0:
                             doAction = World::DOACTION_ADD_UNIT1;
                             mousePointer = 6;
-                            tooltip = World::TIP_DO_NEWSQUAD;
+                            tooltip = Locale::TIP_DO_NEWSQUAD;
                             break;
 
                         case 1:
-                            tooltip = World::TIP_ERR_NOROOM;
+                            tooltip = Locale::TIP_ERR_NOROOM;
                             break;
 
                         case 2:
-                            tooltip = World::TIP_ERR_NOENERGY;
+                            tooltip = Locale::TIP_ERR_NOENERGY;
                             break;
 
                         case 3:
-                            tooltip = World::TIP_UNITLIMIT;
+                            tooltip = Locale::TIP_UNITLIMIT;
                             break;
 
                         default:
@@ -10945,13 +10943,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                             {
                                 doAction = World::DOACTION_8;
                                 mousePointer = 2;
-                                tooltip = World::TIP_DO_SELECT;
+                                tooltip = Locale::TIP_DO_SELECT;
                             }
                             else
                             {
                                 doAction = World::DOACTION_2;
                                 mousePointer = 3;
-                                tooltip = World::TIP_DO_ATKVHCL;
+                                tooltip = Locale::TIP_DO_ATKVHCL;
                             }
                         }
                     }
@@ -10959,13 +10957,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 4;
-                        tooltip = World::TIP_DO_MOVE;
+                        tooltip = Locale::TIP_DO_MOVE;
                     }
                     else
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 3;
-                        tooltip = World::TIP_DO_ATKSECTOR;
+                        tooltip = Locale::TIP_DO_ATKSECTOR;
                     }
                 }
             }
@@ -10977,7 +10975,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_8;
                         mousePointer = 2;
-                        tooltip = World::TIP_DO_SELECT;
+                        tooltip = Locale::TIP_DO_SELECT;
                     }
                     else if ( _activeCmdrRemapIndex != -1 )
                     {
@@ -10986,19 +10984,19 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                         case 0:
                             doAction = World::DOACTION_ADD_UNIT2;
                             mousePointer = 7;
-                            tooltip = World::TIP_DO_ADDSQUAD;
+                            tooltip = Locale::TIP_DO_ADDSQUAD;
                             break;
 
                         case 1:
-                            tooltip = World::TIP_ERR_NOROOM;
+                            tooltip = Locale::TIP_ERR_NOROOM;
                             break;
 
                         case 2:
-                            tooltip = World::TIP_ERR_NOENERGY;
+                            tooltip = Locale::TIP_ERR_NOENERGY;
                             break;
 
                         case 3:
-                            tooltip = World::TIP_UNITLIMIT;
+                            tooltip = Locale::TIP_UNITLIMIT;
                             break;
 
                         default:
@@ -11017,13 +11015,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                             {
                                 doAction = World::DOACTION_8;
                                 mousePointer = 2;
-                                tooltip = World::TIP_DO_SELECT;
+                                tooltip = Locale::TIP_DO_SELECT;
                             }
                             else
                             {
                                 doAction = World::DOACTION_2;
                                 mousePointer = 3;
-                                tooltip = World::TIP_DO_ATKVHCL;
+                                tooltip = Locale::TIP_DO_ATKVHCL;
                             }
                         }
                     }
@@ -11031,13 +11029,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 4;
-                        tooltip = World::TIP_DO_MOVE;
+                        tooltip = Locale::TIP_DO_MOVE;
                     }
                     else
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 3;
-                        tooltip = World::TIP_DO_ATKSECTOR;
+                        tooltip = Locale::TIP_DO_ATKSECTOR;
                     }
                 }
             }
@@ -11054,7 +11052,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_5;
                         mousePointer = 8;
-                        tooltip = World::TIP_DO_CONTROL;
+                        tooltip = Locale::TIP_DO_CONTROL;
                     }
                 }
             }
@@ -11066,13 +11064,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_8;
                         mousePointer = 2;
-                        tooltip = World::TIP_DO_SELECT;
+                        tooltip = Locale::TIP_DO_SELECT;
                     }
                     else
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 3;
-                        tooltip = World::TIP_DO_ATKVHCL;
+                        tooltip = Locale::TIP_DO_ATKVHCL;
                     }
                 }
                 else
@@ -11082,27 +11080,27 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     case 0:
                         doAction = World::DOACTION_6;
                         mousePointer = 10;
-                        tooltip = World::TIP_DO_BUILD;
+                        tooltip = Locale::TIP_DO_BUILD;
                         break;
 
                     case 6:
-                        tooltip = World::TIP_ERR_NOENERGY;
+                        tooltip = Locale::TIP_ERR_NOENERGY;
                         break;
 
                     case 2:
-                        tooltip = World::TIP_ERR_NOTOWNED;
+                        tooltip = Locale::TIP_ERR_NOTOWNED;
                         break;
 
                     case 3:
-                        tooltip = World::TIP_ERR_BUILD_TOOCLOSE;
+                        tooltip = Locale::TIP_ERR_BUILD_TOOCLOSE;
                         break;
 
                     case 4:
-                        tooltip = World::TIP_ERR_BUILD_TOOFAR;
+                        tooltip = Locale::TIP_ERR_BUILD_TOOFAR;
                         break;
 
                     case 5:
-                        tooltip = World::TIP_ERR_BUILD_INPROC;
+                        tooltip = Locale::TIP_ERR_BUILD_INPROC;
                         break;
 
                     default:
@@ -11118,13 +11116,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     {
                         doAction = World::DOACTION_8;
                         mousePointer = 2;
-                        tooltip = World::TIP_DO_SELECT;
+                        tooltip = Locale::TIP_DO_SELECT;
                     }
                     else
                     {
                         doAction = World::DOACTION_2;
                         mousePointer = 3;
-                        tooltip = World::TIP_DO_ATKVHCL;
+                        tooltip = Locale::TIP_DO_ATKVHCL;
                     }
                 }
                 else
@@ -11134,23 +11132,23 @@ void NC_STACK_ypaworld::ypaworld_func64__sub21(TInputState *arg)
                     case 0:
                         doAction = World::DOACTION_10;
                         mousePointer = 9;
-                        tooltip = World::TIP_DO_TELEPORT;
+                        tooltip = Locale::TIP_DO_TELEPORT;
                         break;
 
                     case 5:
-                        tooltip = World::TIP_ERR_UNITSINSECTOR;
+                        tooltip = Locale::TIP_ERR_UNITSINSECTOR;
                         break;
 
                     case 1:
-                        tooltip = World::TIP_ERR_NOENERGY;
+                        tooltip = Locale::TIP_ERR_NOENERGY;
                         break;
 
                     case 2:
-                        tooltip = World::TIP_ERR_SECTORJAGGY;
+                        tooltip = Locale::TIP_ERR_SECTORJAGGY;
                         break;
 
                     case 3:
-                        tooltip = World::TIP_ERR_LOCUNKNOWN;
+                        tooltip = Locale::TIP_ERR_LOCUNKNOWN;
                         break;
 
                     default:
@@ -11337,7 +11335,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(TInputState *inpt)
         if ( winp->flag & TClickBoxInf::FLAG_MM_HOLD )
             inpt->Buttons.Set(3);
 
-        SetShowingTooltip(World::TIP_MOUSECAPTURED);
+        SetShowingTooltip(Locale::TIP_MOUSECAPTURED);
     }
 
     if ( !v38 )
