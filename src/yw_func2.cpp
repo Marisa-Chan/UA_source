@@ -19,16 +19,14 @@
 #include "loaders.h"
 #include "obj3d.h"
 
-extern int word_5A50C2;
-extern int word_5A50AC;
-extern int word_5A50B0;
+extern int vertMenuSpace;
 extern int dword_5A50B2;
 extern int dword_5A50B2_h;
 extern int word_5A50AE;
 extern int word_5A50BC;
 extern int word_5A50BA;
 extern int word_5A50BE;
-extern int word_5A50C0;
+extern int buttonsSpace;
 
 extern int dword_5A50B6;
 extern int dword_5A50B6_h;
@@ -506,12 +504,10 @@ void NC_STACK_ypaworld::listSaveDir(const std::string &saveDir)
                     ScriptParser::HandlersList hndls{
                         new World::Parsers::UserParser(this)
                     };
-
                     std::string buf = fmt::sprintf("%s/%s/user.txt\n", saveDir, dirNode->getName());
 
                     if ( !ScriptParser::ParseFile(buf, hndls,0) )
                         ypa_log_out("Warning, cannot parse %s for time scanning\n", buf.c_str());
-
                     profile.fraction = 1;
                     profile.totalElapsedTime = _playersStats[1].ElapsedTime;
                 }
@@ -890,10 +886,10 @@ void UserData::sub_46D960()
 {
     NC_STACK_button::button_66arg v4;
     v4.butID = 1300;
-    confirm_button->button_func67(&v4);
+    confirm_button->disable(&v4);
 
     v4.butID = 1301;
-    confirm_button->button_func67(&v4);
+    confirm_button->disable(&v4);
 
     confirm_button->Hide();
 
@@ -1097,7 +1093,7 @@ void UserData::sb_0x46aa8c()
             if ( yw->_gfxMode == nod )
             {
                 _gfxModeIndex = v24;
-                video_button->button_func71(1156, nod.name);
+                video_button->setCaption(1156, nod.name);
 
                 break;
             }
@@ -1179,7 +1175,7 @@ int UserData::ypaworld_func158__sub0__sub7()
 
 
 
-void UserData::sub_4DE248(int id)
+void UserData::ShowToolTip(int id)
 {
     switch (id)
     {
@@ -1688,7 +1684,7 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
 
     NC_STACK_button::button_66arg v12;
     v12.butID = 1300;
-    confirm_button->button_func66(&v12);
+    confirm_button->show(&v12);
 
 
     NC_STACK_button::button_arg76 v10;
@@ -1700,31 +1696,31 @@ void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &t
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
-        confirm_button->button_func76(&v10);
+        confirm_button->setXYWidth(&v10);
     }
     else
     {
         v12.butID = 1301;
-        confirm_button->button_func66(&v12);
+        confirm_button->show(&v12);
 
         v10.butID = 1300;
         v10.xpos = p_YW->_screenSize.x * 0.25;
         v10.ypos = -1;
         v10.width = -1;
         //v11 = -1;
-        confirm_button->button_func76(&v10);
+        confirm_button->setXYWidth(&v10);
 
         v10.butID = 1301;
         v10.xpos = p_YW->_screenSize.x * 0.625;
-        confirm_button->button_func76(&v10);
+        confirm_button->setXYWidth(&v10);
     }
 
-    confirm_button->button_func71(1302, txt1);
+    confirm_button->setCaption(1302, txt1);
 
     if ( !txt2.empty() )
-        confirm_button->button_func71(1303, txt2);
+        confirm_button->setCaption(1303, txt2);
     else
-        confirm_button->button_func71(1303, " ");
+        confirm_button->setCaption(1303, " ");
 
     confirm_button->Show();
 }
@@ -1830,7 +1826,7 @@ void UserData::sub_46C5F0()
         _gfxModeIndex = video_listvw.selectedEntry;
 
         _gfxMode = GFX::GFXEngine::Instance.GetAvailableModes().at(_gfxModeIndex);
-        video_button->button_func71(1156, _gfxMode.name);
+        video_button->setCaption(1156, _gfxMode.name);
     }
 }
 
@@ -1849,9 +1845,9 @@ void UserData::sub_46A3C0()
     _gfxModeIndex = gfxId;
     _gfxMode = p_YW->_gfxMode;
 
-    video_button->button_func71(1156, _gfxMode.name);
+    video_button->setCaption(1156, _gfxMode.name);
 
-    video_button->button_func71(1172, win3d_name);
+    video_button->setCaption(1172, win3d_name);
 
     conf3DGuid = win3d_guid;
     conf3DName = win3d_name;
@@ -1940,7 +1936,7 @@ void  UserData::UpdateSelected3DDevFromList()
     conf3DName = name;
     conf3DGuid = guid;
 
-    video_button->button_func71(1172, name);
+    video_button->setCaption(1172, name);
 }
 
 void UserData::sub_46C914()
@@ -1953,12 +1949,12 @@ void UserData::sub_46C914()
             it++;
 
         EnvMode = ENVMODE_SINGLEPLAY;
-
+printf("%s, %d\n",__FILE__, __LINE__);
         p_YW->LoadSettings(fmt::sprintf("%s/user.txt", it->name),
                            it->name,
                            World::SDF_ALL,
                            true);
-
+printf("%s, %d\n",__FILE__, __LINE__);
         UserName = it->name;
         userNameDir = it->name;
 
@@ -2164,34 +2160,34 @@ void UserData::GameShellUiHandleInput()
 
     v410.field_4 = 0;
     v410.butID = 1015;
-    sub_bar_button->button_func67(&v410);
+    sub_bar_button->disable(&v410);
     v410.butID = 1011;
-    sub_bar_button->button_func67(&v410);
+    sub_bar_button->disable(&v410);
     v410.butID = 1019;
-    sub_bar_button->button_func67(&v410);
+    sub_bar_button->disable(&v410);
     v410.butID = 1014;
-    sub_bar_button->button_func67(&v410);
+    sub_bar_button->disable(&v410);
     v410.butID = 1013;
-    sub_bar_button->button_func67(&v410);
+    sub_bar_button->disable(&v410);
     v410.butID = 1020;
-    sub_bar_button->button_func67(&v410);
+    sub_bar_button->disable(&v410);
 
     v410.butID = 1003;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1004;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1001;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1008;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1007;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1018;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1017;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
     v410.butID = 1016;
-    titel_button->button_func67(&v410);
+    titel_button->disable(&v410);
 
     NC_STACK_button::button_arg76 v393;
     v393.ypos = -1;
@@ -2199,50 +2195,50 @@ void UserData::GameShellUiHandleInput()
     //v394 = -1;
     v393.butID = 1014;
     v393.xpos = 0;
-    sub_bar_button->button_func76(&v393);
+    sub_bar_button->setXYWidth(&v393);
 
     v393.butID = 1019;
     v393.xpos = p_YW->_screenSize.x - dword_5A50B6_h;
-    sub_bar_button->button_func76(&v393);
+    sub_bar_button->setXYWidth(&v393);
 
     v393.butID = 1011;
-    v393.xpos = word_5A50C0 + dword_5A50B6_h;
-    sub_bar_button->button_func76(&v393);
+    v393.xpos = buttonsSpace + dword_5A50B6_h;
+    sub_bar_button->setXYWidth(&v393);
 
-    sub_bar_button->button_func71(1019,  p_YW->GetLocaleString(644, "GO BACK"));
+    sub_bar_button->setCaption(1019,  p_YW->GetLocaleString(644, "GO BACK"));
 
     if ( p_YW->_levelInfo.State != TLevelInfo::STATE_MENU )
     {
         if ( p_YW->_levelInfo.State != TLevelInfo::STATE_DEBRIEFING && !GameIsOver )
         {
             v410.butID = 1014;
-            sub_bar_button->button_func66(&v410);
+            sub_bar_button->show(&v410);
 
             v393.butID = 1014;
             v393.xpos = p_YW->_screenSize.x - dword_5A50B6_h;
-            sub_bar_button->button_func76(&v393);
+            sub_bar_button->setXYWidth(&v393);
 
             v393.butID = 1019;
             v393.xpos = 0;
-            sub_bar_button->button_func76(&v393);
+            sub_bar_button->setXYWidth(&v393);
 
-            sub_bar_button->button_func71(1019, p_YW->GetLocaleString(2438, "2438 == BACK"));
+            sub_bar_button->setCaption(1019, p_YW->GetLocaleString(2438, "2438 == BACK"));
         }
 
         if ( p_YW->_levelInfo.State == TLevelInfo::STATE_DEBRIEFING )
         {
             v410.butID = 1011;
-            sub_bar_button->button_func66(&v410);
+            sub_bar_button->show(&v410);
 
             v393.butID = 1011;
             v393.xpos = 0;
-            sub_bar_button->button_func76(&v393);
+            sub_bar_button->setXYWidth(&v393);
 
-            sub_bar_button->button_func71(1019, p_YW->GetLocaleString(2420, "CONTINUE"));
+            sub_bar_button->setCaption(1019, p_YW->GetLocaleString(2420, "CONTINUE"));
         }
 
         v410.butID = 1019;
-        sub_bar_button->button_func66(&v410);
+        sub_bar_button->show(&v410);
 
         button_input_button->Hide();
         video_button->Hide();
@@ -2259,31 +2255,31 @@ void UserData::GameShellUiHandleInput()
     else if ( EnvMode == ENVMODE_TITLE )
     {
         v410.butID = 1003;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
 
         v410.butID = 1004;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
 
         v410.butID = 1001;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
 
         v410.butID = 1008;
         if ( lang_dlls.size() > 1 )
-            titel_button->button_func66(&v410);
+            titel_button->show(&v410);
         else
-            titel_button->button_func67(&v410);
+            titel_button->disable(&v410);
 
         v410.butID = 1007;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
 
         v410.butID = 1017;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
 
         v410.butID = 1018;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
 
         v410.butID = 1016;
-        titel_button->button_func66(&v410);
+        titel_button->show(&v410);
     }
     else if ( EnvMode == ENVMODE_SINGLEPLAY || EnvMode == ENVMODE_TUTORIAL )
     {
@@ -2298,14 +2294,14 @@ void UserData::GameShellUiHandleInput()
         if ( sgmSaveExist == 1 )
         {
             v410.butID = 1015;
-            sub_bar_button->button_func66(&v410);
+            sub_bar_button->show(&v410);
         }
 
         v410.butID = 1019;
-        sub_bar_button->button_func66(&v410);
+        sub_bar_button->show(&v410);
 
         v410.butID = 1020;
-        sub_bar_button->button_func66(&v410);
+        sub_bar_button->show(&v410);
     }
 
     if ( confirmMode )
@@ -2316,7 +2312,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if ( r.code == 1350 ) // OK
         {
@@ -2373,6 +2369,7 @@ void UserData::GameShellUiHandleInput()
         }
         if ( Input->KbdLastHit == Input::KC_RETURN )
         {
+            printf("Line = %d\n", __LINE__);
             switch ( confirmMode )
             {
             case 1:
@@ -2465,7 +2462,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if ( r.code == 1001 )
         {
@@ -2541,7 +2538,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
         switch ( r.code )
         {
         case 1013:
@@ -2655,6 +2652,8 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
+                                printf("Line = %d\n", __LINE__);
+
                     InputConfig[inpListActiveElement].SetFlags = (TInputConf::IF_FIRST | TInputConf::IF_SECOND);
                     keyCatchMode = true;
                     if ( InputConfig[inpListActiveElement].Type == World::INPUT_BIND_TYPE_SLIDER )
@@ -2672,13 +2671,13 @@ void UserData::GameShellUiHandleInput()
     {
         v410.field_4 = 0;
         v410.butID = 1056;
-        button_input_button->button_func67(&v410);
+        button_input_button->disable(&v410);
     }
     else
     {
         v410.field_4 = 0;
         v410.butID = 1056;
-        button_input_button->button_func66(&v410);
+        button_input_button->show(&v410);
     }
 
     r = button_input_button->button_func69(Input);
@@ -2686,7 +2685,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if (r.code == 1050)
         {
@@ -2795,6 +2794,8 @@ void UserData::GameShellUiHandleInput()
     {
         if ( Input->KbdLastHit == Input::KC_RETURN )
         {
+                        printf("Line = %d\n", __LINE__);
+
             if ( video_listvw.IsClosed() && d3d_listvw.IsClosed() )
             {
                 if ( _settingsChangeOptions & 1 && _gfxMode != p_YW->_gfxMode && _gfxMode )
@@ -2840,7 +2841,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if ( r.code == 1100 )
         {
@@ -3029,19 +3030,19 @@ void UserData::GameShellUiHandleInput()
 
     NC_STACK_button::Slider *v67 = video_button->button_func74(1159);
     
-    video_button->button_func71(1158, fmt::sprintf("%d", v67->value));
+    video_button->setCaption(1158, fmt::sprintf("%d", v67->value));
     confFxNumber = v67->value;
 
     v67 = video_button->button_func74(1152);
 
-    video_button->button_func71(1153, fmt::sprintf("%d", v67->value));
+    video_button->setCaption(1153, fmt::sprintf("%d", v67->value));
     confSoundVolume = v67->value;
 
     SFXEngine::SFXe.setMasterVolume(confSoundVolume);
 
     v67 = video_button->button_func74(1154);
 
-    video_button->button_func71(1155, fmt::sprintf("%d", v67->value));
+    video_button->setCaption(1155, fmt::sprintf("%d", v67->value));
     confMusicVolume = v67->value;
 
     SFXEngine::SFXe.SetMusicVolume(confMusicVolume);
@@ -3062,6 +3063,8 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
+                                printf("Line = %d\n", __LINE__);
+
                     switch ( diskScreenMode )
                     {
                     case 1:
@@ -3166,7 +3169,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if ( r.code == 103 )
         {
@@ -3183,7 +3186,7 @@ void UserData::GameShellUiHandleInput()
             
             userNameDirCursor = userNameDir.size();
                         
-            disk_button->button_func71(1100, userNameDir + 'h');
+            disk_button->setCaption(1100, userNameDir + 'h');
         }
         else if ( r.code == 1161 )
         {
@@ -3195,7 +3198,7 @@ void UserData::GameShellUiHandleInput()
             
             userNameDirCursor = userNameDir.size();
 
-            disk_button->button_func71(1100, userNameDir + 'h');
+            disk_button->setCaption(1100, userNameDir + 'h');
         }
         else if ( r.code == 1162 )
         {
@@ -3220,7 +3223,7 @@ void UserData::GameShellUiHandleInput()
             
             userNameDirCursor = userNameDir.size();
 
-            disk_button->button_func71(1100, userNameDir + 'h');
+            disk_button->setCaption(1100, userNameDir + 'h');
         }
         else if ( r.code == 1163 )
         {
@@ -3232,7 +3235,7 @@ void UserData::GameShellUiHandleInput()
 
             userNameDirCursor = userNameDir.size();
 
-            disk_button->button_func71(1100, userNameDir + 'h');
+            disk_button->setCaption(1100, userNameDir + 'h');
         }
         else if ( r.code == 1164)
         {
@@ -3326,23 +3329,23 @@ void UserData::GameShellUiHandleInput()
     if ( diskScreenMode )
     {
         v410.butID = 1105;
-        disk_button->button_func66(&v410);
+        disk_button->show(&v410);
 
         v410.field_4 = 0;
         v410.butID = 1104;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         v410.butID = 1101;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         v410.butID = 1102;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         v410.butID = 1103;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         v410.butID = 1100;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         if ( diskScreenMode == 4 )
         {
@@ -3350,54 +3353,54 @@ void UserData::GameShellUiHandleInput()
             v410.butID = 1105;
 
             if ( !diskListActiveElement || !StriCmp(userNameDir, UserName) )
-                disk_button->button_func67(&v410);
+                disk_button->disable(&v410);
             else
-                disk_button->button_func66(&v410);
+                disk_button->show(&v410);
         }
 
         if ( diskScreenMode == 2 && !diskListActiveElement )
         {
             v410.field_4 = 0;
             v410.butID = 1105;
-            disk_button->button_func67(&v410);
+            disk_button->disable(&v410);
         }
 
         if ( diskScreenMode == 1 || diskScreenMode == 3 )
         {
             v410.butID = 1100;
-            disk_button->button_func66(&v410);
+            disk_button->show(&v410);
         }
 
         std::string tmp = userNameDir;
         tmp.insert(userNameDirCursor, 1, '_');
         
-        disk_button->button_func71(1100, tmp);
+        disk_button->setCaption(1100, tmp);
     }
     else
     {
         v410.field_4 = 0;
         v410.butID = 1105;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         v410.butID = 1104;
-        disk_button->button_func66(&v410);
+        disk_button->show(&v410);
 
         v410.butID = 1101;
-        disk_button->button_func66(&v410);
+        disk_button->show(&v410);
 
         v410.butID = 1103;
-        disk_button->button_func66(&v410);
+        disk_button->show(&v410);
 
         v410.butID = 1100;
-        disk_button->button_func67(&v410);
+        disk_button->disable(&v410);
 
         v410.butID = 1102;
         if ( !StriCmp(userNameDir, UserName) )
-            disk_button->button_func67(&v410);
+            disk_button->disable(&v410);
         else
-            disk_button->button_func66(&v410);
+            disk_button->show(&v410);
 
-        disk_button->button_func71(1100, userNameDir);
+        disk_button->setCaption(1100, userNameDir);
     }
 
     if ( EnvMode == ENVMODE_SELLOCALE )
@@ -3405,6 +3408,8 @@ void UserData::GameShellUiHandleInput()
 
         if ( Input->KbdLastHit == Input::KC_RETURN )
         {
+                        printf("Line = %d\n", __LINE__);
+
             sub_46B0E0();
         }
         else if ( Input->KbdLastHit == Input::KC_ESCAPE )
@@ -3422,7 +3427,7 @@ void UserData::GameShellUiHandleInput()
     if (r)
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if ( r.code == 103 )
         {
@@ -3472,6 +3477,8 @@ void UserData::GameShellUiHandleInput()
     {
         if ( Input->KbdLastHit == Input::KC_RETURN || Input->KbdLastHit == Input::KC_ESCAPE )
         {
+                        printf("Line = %d\n", __LINE__);
+
             EnvMode = ENVMODE_TITLE;
 
             about_button->Hide();
@@ -3556,17 +3563,17 @@ void UserData::GameShellUiHandleInput()
     case NETSCREEN_MODE_SELECT:
         nInputMode = 0;
         network_listvw.maxShownEntries = 12;
-        netListY = 3 * (p_YW->_fontH + word_5A50C2);
+        netListY = 3 * (p_YW->_fontH + vertMenuSpace);
         break;
     case NETSCREEN_SESSION_SELECT:
         nInputMode = 0;
         network_listvw.maxShownEntries = 12;
-        netListY = 3 * (p_YW->_fontH + word_5A50C2);
+        netListY = 3 * (p_YW->_fontH + vertMenuSpace);
         break;
     case NETSCREEN_CHOOSE_MAP:
         nInputMode = 0;
         network_listvw.maxShownEntries = 12;
-        netListY = 3 * (p_YW->_fontH + word_5A50C2);
+        netListY = 3 * (p_YW->_fontH + vertMenuSpace);
         break;
     case NETSCREEN_ENTER_NAME:
         network_listvw.maxShownEntries = 12;
@@ -3575,7 +3582,7 @@ void UserData::GameShellUiHandleInput()
     case NETSCREEN_INSESSION:
         nInputMode = 1;
         network_listvw.maxShownEntries = 6;
-        netListY = p_YW->_fontH * 9.5 + 2 * word_5A50C2;
+        netListY = p_YW->_fontH * 9.5 + 2 * vertMenuSpace;
         break;
     default:
         break;
@@ -3590,7 +3597,7 @@ void UserData::GameShellUiHandleInput()
     if ( r )
     {
         if ( r.btn )
-            sub_4DE248(r.btn);
+            ShowToolTip(r.btn);
 
         if ( r.code == 1204 || r.code == 1205 || r.code == 1206 || r.code == 1207 )
         {
@@ -3683,14 +3690,16 @@ void UserData::GameShellUiHandleInput()
         case NETSCREEN_ENTER_NAME:
             if ( r.code == 1200 )
             {
+                printf("Code 1200\n");
                 if ( !netName.empty() )
                 {
+                    printf("Net name not empty\n");
                     netPlayerName = netName;
                     netName = "";
                 }
-                
+                printf("Set wanted name\n");
                 p_YW->_netDriver->SetWantedName(netPlayerName);
-
+                printf("Net Driver mode, %d\n", p_YW->_netDriver->GetMode());
                 switch ( p_YW->_netDriver->GetMode() )
                 {
                     case 1:
@@ -3716,6 +3725,7 @@ void UserData::GameShellUiHandleInput()
                         }
 
                         _connString = connStr;
+                        printf("netSelMode = %d\n", netSelMode);
                         ShowMenuMsgBox(17, p_YW->GetLocaleString(421, "Connect to"), connStr, false);
                     }
                         break;
@@ -3726,6 +3736,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1201 )
             {
+                printf("Code 1201?\n");
 //                if ( str17_NOT_FALSE )
 //                {
 //                    windd_dlgBox v339;
@@ -4025,6 +4036,8 @@ void UserData::GameShellUiHandleInput()
 
             if ( Input->KbdLastHit == Input::KC_RETURN )
             {
+                            printf("Line = %d, netselmode = %d\n", __LINE__, netSelMode);
+
                 switch ( netSelMode )
                 {
                 case NETSCREEN_MODE_SELECT:
@@ -4054,6 +4067,9 @@ void UserData::GameShellUiHandleInput()
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
                         netName.clear();
+
+                        //NET NAME ENTERED HERE!!!
+                        
                         p_YW->GuiWinOpen( &network_listvw );
                     }
                     break;
@@ -4154,80 +4170,80 @@ void UserData::GameShellUiHandleInput()
     }
 
     v410.butID = 1201;
-    network_button->button_func66(&v410);
+    network_button->show(&v410);
 
     v410.butID = 1205;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1202;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1203;
-    network_button->button_func66(&v410);
+    network_button->show(&v410);
 
     v410.butID = 1225;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1226;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1227;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
-    network_button->button_func71(1201, p_YW->GetLocaleString(2, "OK"));
+    network_button->setCaption(1201, p_YW->GetLocaleString(2, "OK"));
 
     v410.butID = 1220;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1206;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1207;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1208;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1209;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1219;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1221;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.field_4 = 0;
     v410.butID = 1210;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1211;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1212;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1213;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1214;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1215;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1216;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     v410.butID = 1217;
-    network_button->button_func67(&v410);
+    network_button->disable(&v410);
 
     if ( (netSelMode != NETSCREEN_SESSION_SELECT || p_YW->_netDriver->GetProvType() != 3)
             && (netSelMode != NETSCREEN_SESSION_SELECT || modemAskSession != 1 || p_YW->_netDriver->GetProvType() != 4)
             && netSelMode != NETSCREEN_MODE_SELECT )
     {
         v410.butID = 1228;
-        network_button->button_func67(&v410);
+        network_button->disable(&v410);
     }
     else
     {
@@ -4247,21 +4263,21 @@ void UserData::GameShellUiHandleInput()
                 v280 = " ";
         }
 
-        network_button->button_func71(1228, v280);
+        network_button->setCaption(1228, v280);
 
         v410.butID = 1228;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
     }
 
     if ( !nInputMode && netSelMode != NETSCREEN_ENTER_NAME )
     {
         v410.butID = 1200;
-        network_button->button_func67(&v410);
+        network_button->disable(&v410);
     }
     else
     {
         v410.butID = 1200;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v393.xpos = -1;
         v393.butID = 1200;
@@ -4269,21 +4285,21 @@ void UserData::GameShellUiHandleInput()
         if ( netSelMode == NETSCREEN_ENTER_NAME )
         {
             v393.width = dword_5A50B6;
-            v393.ypos = 3 * (word_5A50C2 + p_YW->_fontH);
+            v393.ypos = 3 * (vertMenuSpace + p_YW->_fontH);
         }
         else
         {
             v393.width = dword_5A50B6 * 0.8;
-            v393.ypos = 14 * (word_5A50C2 + p_YW->_fontH);
+            v393.ypos = 14 * (vertMenuSpace + p_YW->_fontH);
         }
 
-        network_button->button_func76(&v393);
+        network_button->setXYWidth(&v393);
 
         std::string tmp = netName;
         if (tmp.size() >= (size_t)netNameCurPos)
             tmp.insert(netNameCurPos, 1, '_');
         
-        network_button->button_func71(1200, tmp);
+        network_button->setCaption(1200, tmp);
     }
 
     v393.xpos = -1;
@@ -4292,14 +4308,14 @@ void UserData::GameShellUiHandleInput()
 
     if ( netSelMode == 2 )
     {
-        v393.ypos = 4 * (word_5A50C2 + p_YW->_fontH);
+        v393.ypos = 4 * (vertMenuSpace + p_YW->_fontH);
     }
     else
     {
-        v393.ypos = (word_5A50C2 + p_YW->_fontH) * 15.2;
+        v393.ypos = (vertMenuSpace + p_YW->_fontH) * 15.2;
     }
 
-    network_button->button_func76(&v393);
+    network_button->setXYWidth(&v393);
 
     switch ( netSelMode )
     {
@@ -4307,63 +4323,63 @@ void UserData::GameShellUiHandleInput()
         v410.field_4 = 0;
         v410.butID = 1205;
 
-        network_button->button_func67(&v410);
+        network_button->disable(&v410);
 
-        network_button->button_func71(1204, p_YW->GetLocaleString(410, "SELECT PROVIDER"));
+        network_button->setCaption(1204, p_YW->GetLocaleString(410, "SELECT PROVIDER"));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(425, "2"));
+        network_button->setCaption(1222, p_YW->GetLocaleString(425, "2"));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(426, "3"));
+        network_button->setCaption(1223, p_YW->GetLocaleString(426, "3"));
         break;
 
     case NETSCREEN_SESSION_SELECT:
     {
         if ( p_YW->_netDriver->GetProvType() != 4 || !modemAskSession )
         {
-            network_button->button_func71(1202, p_YW->GetLocaleString(402, "NEW"));
+            network_button->setCaption(1202, p_YW->GetLocaleString(402, "NEW"));
 
             v410.butID = 1202;
-            network_button->button_func66(&v410);
+            network_button->show(&v410);
         }
 
-        network_button->button_func71(1204, p_YW->GetLocaleString(411, "SELECT SESSION"));
+        network_button->setCaption(1204, p_YW->GetLocaleString(411, "SELECT SESSION"));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(428, "5"));
+        network_button->setCaption(1222, p_YW->GetLocaleString(428, "5"));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(429, "6"));
+        network_button->setCaption(1223, p_YW->GetLocaleString(429, "6"));
 
         windp_getNameMsg msg;
         msg.id = 0;
 
         if ( p_YW->_netDriver->GetSessionName(&msg) )
         {
-            network_button->button_func71(1201, p_YW->GetLocaleString(406, "JOIN"));
+            network_button->setCaption(1201, p_YW->GetLocaleString(406, "JOIN"));
         }
         else if ( p_YW->_netDriver->GetProvType() != 4 || modemAskSession )
         {
             v410.butID = 1201;
-            network_button->button_func67(&v410);
+            network_button->disable(&v410);
         }
         else
         {
-            network_button->button_func71(1201, p_YW->GetLocaleString(421, "SEARCH"));
+            network_button->setCaption(1201, p_YW->GetLocaleString(421, "SEARCH"));
         }
     }
     break;
 
     case NETSCREEN_ENTER_NAME:
-        network_button->button_func71(1204, p_YW->GetLocaleString(413, "ENTER PLAYER"));
+        network_button->setCaption(1204, p_YW->GetLocaleString(413, "ENTER PLAYER"));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(434, "11"));
+        network_button->setCaption(1222, p_YW->GetLocaleString(434, "11"));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(435, "12"));
+        network_button->setCaption(1223, p_YW->GetLocaleString(435, "12"));
 
 //        if ( str17_NOT_FALSE )
 //        {
 //            v410.butID = 1202;
-//            network_button->button_func66(&v410);
+//            network_button->show(&v410);
 //
-//            network_button->button_func71(1202, get_lang_string(423, "CHANGE"));
+//            network_button->setCaption(1202, get_lang_string(423, "CHANGE"));
 //        }
         break;
 
@@ -4371,37 +4387,37 @@ void UserData::GameShellUiHandleInput()
         if ( remoteMode )
         {
             v410.butID = 1205;
-            network_button->button_func67(&v410);
+            network_button->disable(&v410);
         }
 
-        network_button->button_func71(1204, p_YW->GetLocaleString(412, "SELECT LEVEL"));
+        network_button->setCaption(1204, p_YW->GetLocaleString(412, "SELECT LEVEL"));
 
-        network_button->button_func71(1222, p_YW->GetLocaleString(431, "8"));
+        network_button->setCaption(1222, p_YW->GetLocaleString(431, "8"));
 
-        network_button->button_func71(1223, p_YW->GetLocaleString(432, "9"));
+        network_button->setCaption(1223, p_YW->GetLocaleString(432, "9"));
         break;
 
     case NETSCREEN_INSESSION:
         v410.butID = 1225;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
-        network_button->button_func71(1225, p_YW->GetLocaleString(405, "SEND"));
+        network_button->setCaption(1225, p_YW->GetLocaleString(405, "SEND"));
 
         v410.butID = 1226;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1227;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         if ( netLevelID )
-            network_button->button_func71(1226, netLevelName);
+            network_button->setCaption(1226, netLevelName);
         else
-            network_button->button_func71(1226, " ");
+            network_button->setCaption(1226, " ");
 
         if ( isHost )
         {  // Change map 
             v410.butID = 1205;
-            //network_button->button_func66(&v410);
+            //network_button->show(&v410);
         }
 
         if ( rdyStart )
@@ -4409,12 +4425,12 @@ void UserData::GameShellUiHandleInput()
             if ( !isHost )
             {
                 v410.butID = 1205;
-                network_button->button_func67(&v410);
+                network_button->disable(&v410);
             }
         }
 
         v410.butID = 1220;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         if ( netLevelID > 0 && netLevelID < 256 )
         {
@@ -4422,33 +4438,33 @@ void UserData::GameShellUiHandleInput()
             if ( !isHost && rdyStart )
             {
                 v410.butID = 1220;
-                network_button->button_func67(&v410);
+                network_button->disable(&v410);
             }
             else
             {
                 v410.butID = 1206;
                 if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 2 )
-                    network_button->button_func66(&v410);
+                    network_button->show(&v410);
                 else
-                    network_button->button_func67(&v410);
+                    network_button->disable(&v410);
 
                 v410.butID = 1207;
                 if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 0x40 )
-                    network_button->button_func66(&v410);
+                    network_button->show(&v410);
                 else
-                    network_button->button_func67(&v410);
+                    network_button->disable(&v410);
 
                 v410.butID = 1208;
                 if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 8 )
-                    network_button->button_func66(&v410);
+                    network_button->show(&v410);
                 else
-                    network_button->button_func67(&v410);
+                    network_button->disable(&v410);
 
                 v410.butID = 1209;
                 if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 0x10 )
-                    network_button->button_func66(&v410);
+                    network_button->show(&v410);
                 else
-                    network_button->button_func67(&v410);
+                    network_button->disable(&v410);
             }
 
             v408.butID = 0;
@@ -4569,64 +4585,64 @@ void UserData::GameShellUiHandleInput()
 
         if ( isHost )
         {
-            network_button->button_func71(1204, p_YW->GetLocaleString(414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
+            network_button->setCaption(1204, p_YW->GetLocaleString(414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
 
-            network_button->button_func71(1222, p_YW->GetLocaleString(437, "14"));
+            network_button->setCaption(1222, p_YW->GetLocaleString(437, "14"));
 
-            network_button->button_func71(1223, p_YW->GetLocaleString(438, "15"));
+            network_button->setCaption(1223, p_YW->GetLocaleString(438, "15"));
 
-            network_button->button_func71(1201, p_YW->GetLocaleString(407, "START"));
+            network_button->setCaption(1201, p_YW->GetLocaleString(407, "START"));
 
             if ( !netGameCanStart )
             {
                 v410.field_4 = 0;
                 v410.butID = 1201;
-                network_button->button_func67(&v410);
+                network_button->disable(&v410);
             }
         }
         else
         {
-            network_button->button_func71(1204, p_YW->GetLocaleString(415, "WAIT FOR START OR SEND MESSAGES"));
+            network_button->setCaption(1204, p_YW->GetLocaleString(415, "WAIT FOR START OR SEND MESSAGES"));
 
-            network_button->button_func71(1222, p_YW->GetLocaleString(440, "17"));
+            network_button->setCaption(1222, p_YW->GetLocaleString(440, "17"));
 
-            network_button->button_func71(1223, p_YW->GetLocaleString(441, "18"));
+            network_button->setCaption(1223, p_YW->GetLocaleString(441, "18"));
 
             if ( isWelcmd )
             {
                 v410.butID = 1219;
-                network_button->button_func66(&v410);
+                network_button->show(&v410);
 
                 v410.butID = 1221;
-                network_button->button_func66(&v410);
+                network_button->show(&v410);
             }
 
             v410.butID = 1201;
-            network_button->button_func67(&v410);
+            network_button->disable(&v410);
         }
         v410.butID = 1210;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1211;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1212;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1213;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1214;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1215;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1216;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         v410.butID = 1217;
-        network_button->button_func66(&v410);
+        network_button->show(&v410);
 
         for (size_t i = 0; i < World::CVMaxNetPlayers; i++)
         {
@@ -4671,7 +4687,7 @@ void UserData::GameShellUiHandleInput()
                 break;
             }
 
-            network_button->button_func71(btID, name);
+            network_button->setCaption(btID, name);
 
             std::string v339("     "); // 5 spaces
             
@@ -4712,7 +4728,7 @@ void UserData::GameShellUiHandleInput()
                     v339[2] = 'h';
             }
 
-            network_button->button_func71(v370, v339);
+            network_button->setCaption(v370, v339);
         }
         break;
 

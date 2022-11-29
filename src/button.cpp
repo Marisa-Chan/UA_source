@@ -180,7 +180,7 @@ void NC_STACK_button::sub_436F58(NC_STACK_button *btn, button_str2 *sbt)
     sbt->caption.assign(captionbuf, cpt);
 }
 
-size_t NC_STACK_button::button_func64(button_64_arg *arg)
+size_t NC_STACK_button::Add(button_64_arg *arg)
 {
     /*if ( idd >= 48 )
         return 0;*/
@@ -270,7 +270,7 @@ size_t NC_STACK_button::button_func64(button_64_arg *arg)
 
 size_t NC_STACK_button::button_func65(int butID)
 {
-    int id = button_func72(butID);
+    int id = findButtonNumById(butID);
 
     if ( id >= 0 && id < idd )
     {
@@ -288,9 +288,9 @@ size_t NC_STACK_button::button_func65(int butID)
     return 0;
 }
 
-size_t NC_STACK_button::button_func66(button_66arg *arg)
+size_t NC_STACK_button::show(button_66arg *arg)
 {
-    int id = button_func72(arg->butID);
+    int id = findButtonNumById(arg->butID);
 
     if ( id >= 0 && id < idd )
     {
@@ -308,9 +308,9 @@ size_t NC_STACK_button::button_func66(button_66arg *arg)
     return 0;
 }
 
-size_t NC_STACK_button::button_func67(button_66arg *arg)
+size_t NC_STACK_button::disable(button_66arg *arg)
 {
-    int id = button_func72(arg->butID);
+    int id = findButtonNumById(arg->butID);
 
     if ( id >= 0 && id < idd )
     {
@@ -788,9 +788,9 @@ size_t NC_STACK_button::button_func70(void *)
     return 1;
 }
 
-bool NC_STACK_button::button_func71(int butID, const std::string &field_4, const std::string &field_8)
+bool NC_STACK_button::setCaption(int butID, const std::string &field_4, const std::string &field_8)
 {
-    int v5 = button_func72(butID);
+    int v5 = findButtonNumById(butID);
 
     if ( v5 >= 0 && v5 < idd &&  !field_4.empty() )
     {
@@ -809,9 +809,9 @@ bool NC_STACK_button::button_func71(int butID, const std::string &field_4, const
     return false;
 }
 
-bool NC_STACK_button::button_func71(int butID, const std::string &field_4)
+bool NC_STACK_button::setCaption(int butID, const std::string &field_4)
 {
-    int v5 = button_func72(butID);
+    int v5 = findButtonNumById(butID);
 
     if ( v5 >= 0 && v5 < idd &&  !field_4.empty() )
     {
@@ -826,7 +826,7 @@ bool NC_STACK_button::button_func71(int butID, const std::string &field_4)
     return false;
 }
 
-int NC_STACK_button::button_func72(int butid)
+int NC_STACK_button::findButtonNumById(int butid)
 {
     for (unsigned int i = 0; i < field_d8.size(); i++)
     {
@@ -838,7 +838,7 @@ int NC_STACK_button::button_func72(int butid)
 
 void NC_STACK_button::button_func73(button_66arg *arg)
 {
-    int id = button_func72(arg->butID);
+    int id = findButtonNumById(arg->butID);
 
     if ( id < 0 || id >= idd )
         return;
@@ -859,7 +859,7 @@ void NC_STACK_button::button_func73(button_66arg *arg)
 
 NC_STACK_button::Slider * NC_STACK_button::button_func74(int butid)
 {
-    int id = button_func72(butid);
+    int id = findButtonNumById(butid);
 
     if ( id != -1 && field_d8[id].button_type == TYPE_SLIDER)
         return field_d8[id].field_41C;
@@ -869,7 +869,7 @@ NC_STACK_button::Slider * NC_STACK_button::button_func74(int butid)
 
 size_t NC_STACK_button::button_func75(int butid)
 {
-    int id = button_func72(butid);
+    int id = findButtonNumById(butid);
 
     if ( id != -1 && field_d8[id].button_type == TYPE_SLIDER)
         sub_436F58(this, &field_d8[id]);
@@ -877,9 +877,9 @@ size_t NC_STACK_button::button_func75(int butid)
     return 1;
 }
 
-size_t NC_STACK_button::button_func76(button_arg76 *arg)
+size_t NC_STACK_button::setXYWidth(button_arg76 *arg)
 {
-    int id = button_func72(arg->butID);
+    int id = findButtonNumById(arg->butID);
 
     if ( id >= 0 && id < idd )
     {

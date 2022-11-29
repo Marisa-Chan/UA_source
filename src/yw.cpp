@@ -23,19 +23,27 @@ const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newi
 
 extern yw_infolog info_log;
 
-int word_5A50C2;
-int word_5A50AC;
-int word_5A50B0;
+int vertMenuSpace;
 int dword_5A50B2;
 int dword_5A50B2_h;
 int word_5A50AE;
 int word_5A50BC;
 int word_5A50BA;
 int word_5A50BE;
-int word_5A50C0;
+int buttonsSpace;
+int checkBoxWidth;
 
 int dword_5A50B6;
 int dword_5A50B6_h;
+
+int menuWidth;
+int menuHeight;
+int posLeftPaddingX;
+int scaledFontHeight;
+int bottomButtonsY;
+int button1LineWidth;
+int bottomSecondBtnPosX;
+int bottomThirdBtnPosX;
 
 GuiList stru_5C91D0;
 
@@ -2563,8 +2571,2349 @@ bool NC_STACK_ypaworld::GameShellInitBkg()
     return true;
 }
 
+//Controls creation methods
+bool NC_STACK_ypaworld::CreateTitleControls(){
+    _GameShell->titel_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)_screenSize.x},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)_screenSize.y} } );
+    if ( !_GameShell->titel_button )
+    {
+        ypa_log_out("Unable to create Titel-Button-Object\n");
+        return false;
+    }
+
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+
+    btn_64arg.tileset_down = 19;
+    btn_64arg.tileset_up = 18;
+    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+    btn_64arg.field_3A = 30;
+    btn_64arg.xpos = _screenSize.x * 0.3328125;
+    btn_64arg.ypos = _screenSize.y * 0.2291666666666666;
+    btn_64arg.width = _screenSize.x / 3;
+    btn_64arg.caption = GetLocaleString(80, "GAME");
+    btn_64arg.caption2.clear();
+    btn_64arg.downCode = 1251;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.button_id = 1018;
+    btn_64arg.upCode = 1024;
+    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
+
+    if ( _GameShell->titel_button->Add(&btn_64arg) )
+    {
+        btn_64arg.ypos = _screenSize.y * 0.3083333333333334;
+        btn_64arg.caption = GetLocaleString(81, "NETWORK");
+        btn_64arg.caption2.clear();
+        btn_64arg.upCode = 1022;
+        btn_64arg.pressedCode = 0;
+        btn_64arg.downCode = 1251;
+        btn_64arg.button_id = 1016;
+
+        if ( _GameShell->titel_button->Add(&btn_64arg) )
+        {
+            btn_64arg.xpos = _screenSize.x * 0.3328125;
+            btn_64arg.ypos = _screenSize.y * 0.4333333333333334;
+            btn_64arg.width = _screenSize.x / 3;
+            btn_64arg.caption = GetLocaleString(83, "INPUT");
+            btn_64arg.caption2.clear();
+            btn_64arg.pressedCode = 0;
+            btn_64arg.downCode = 1251;
+            btn_64arg.button_id = 1003;
+            btn_64arg.upCode = 1007;
+
+            if ( _GameShell->titel_button->Add(&btn_64arg) )
+            {
+                btn_64arg.ypos = _screenSize.y * 0.5125;
+                btn_64arg.caption = GetLocaleString(84, "SETTINGS");
+                btn_64arg.caption2.clear();
+                btn_64arg.upCode = 1005;
+                btn_64arg.pressedCode = 0;
+                btn_64arg.downCode = 1251;
+                btn_64arg.button_id = 1004;
+
+                if ( _GameShell->titel_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.ypos = _screenSize.y * 0.5916666666666667;
+                    btn_64arg.caption = GetLocaleString(85, "PLAYER");
+                    btn_64arg.caption2.clear();
+                    btn_64arg.pressedCode = 0;
+                    btn_64arg.downCode = 1251;
+                    btn_64arg.upCode = 1001;
+                    btn_64arg.button_id = 1001;
+
+                    if ( _GameShell->titel_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.xpos = _screenSize.x * 0.890625;
+                        btn_64arg.ypos = _screenSize.y * 0.9583333333333334;
+                        btn_64arg.width = _screenSize.x * 0.1;
+                        btn_64arg.caption = GetLocaleString(86, "LOCALE");
+                        btn_64arg.caption2.clear();
+                        btn_64arg.upCode = 1011;
+                        btn_64arg.pressedCode = 0;
+                        btn_64arg.downCode = 1251;
+                        btn_64arg.button_id = 1008;
+
+                        if ( _GameShell->titel_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.xpos = _screenSize.x * 0.3328125;
+                            btn_64arg.ypos = _screenSize.y * 0.7166666666666667;
+                            btn_64arg.width = _screenSize.x / 3;
+                            btn_64arg.caption = GetLocaleString(87, "HELP");
+                            btn_64arg.caption2.clear();
+                            btn_64arg.pressedCode = 0;
+                            btn_64arg.downCode = 1251;
+                            btn_64arg.button_id = 1017;
+                            btn_64arg.upCode = 1025;
+
+                            if ( _GameShell->titel_button->Add(&btn_64arg) )
+                            {
+                                btn_64arg.ypos = _screenSize.y * 0.7958333333333333;
+                                btn_64arg.caption = GetLocaleString(88, "QUIT");
+                                btn_64arg.caption2.clear();
+                                btn_64arg.upCode = 1013;
+                                btn_64arg.pressedCode = 0;
+                                btn_64arg.downCode = 1251;
+                                btn_64arg.button_id = 1007;
+
+                                if ( _GameShell->titel_button->Add(&btn_64arg) )
+                                    v70 = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add button to Titel\n");
+        return false;
+    }
+
+    NC_STACK_button::button_66arg v228;
+
+    if ( _GameShell->lang_dlls.size() <= 1 )
+    {
+        v228.field_4 = 0;
+        v228.butID = 1008;
+        _GameShell->titel_button->disable(&v228);
+    }
+
+    _GameShell->titel_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateSubBarControls(){
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+    dword_5A50B6_h = _screenSize.x / 4 - 20;
+
+    _GameShell->sub_bar_button = Nucleus::CInit<NC_STACK_button>({ 
+        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)(_screenSize.y - _fontH)},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)_screenSize.x},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)_fontH}});
+
+    if ( !_GameShell->sub_bar_button )
+    {
+        ypa_log_out("Unable to create Button-Object\n");
+        return false;
+    }
+
+    v70 = 0;
+
+    btn_64arg.tileset_down = 19;
+    btn_64arg.field_3A = 30;
+    btn_64arg.ypos = 0;
+    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+    btn_64arg.tileset_up = 18;
+    btn_64arg.xpos = dword_5A50B6_h + buttonsSpace;
+    btn_64arg.width = dword_5A50B6_h;
+    btn_64arg.caption = GetLocaleString(640, "REWIND");
+    btn_64arg.caption2.clear();
+    btn_64arg.downCode = 1251;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+    btn_64arg.button_id = 1011;
+    btn_64arg.upCode = 1016;
+
+    if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
+    {
+        btn_64arg.xpos = 2 * (buttonsSpace + dword_5A50B6_h);
+        btn_64arg.caption = GetLocaleString(641, "STEP FORWARD");
+        btn_64arg.caption2.clear();
+        btn_64arg.downCode = 0;
+        btn_64arg.upCode = 1020;
+        btn_64arg.pressedCode = 1018;
+        btn_64arg.button_id = 1013;
+
+        if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
+        {
+            btn_64arg.xpos = 0;
+            btn_64arg.caption = GetLocaleString(643, "START GAME");
+            btn_64arg.caption2.clear();
+            btn_64arg.upCode = 1019;
+            btn_64arg.pressedCode = 0;
+            btn_64arg.downCode = 1251;
+            btn_64arg.button_id = 1014;
+
+            if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
+            {
+                btn_64arg.xpos = (_screenSize.x - 3 * dword_5A50B6_h - 2 * buttonsSpace);
+                btn_64arg.caption = GetLocaleString(2422, "GOTO LOADSAVE");
+                btn_64arg.caption2.clear();
+                btn_64arg.pressedCode = 0;
+                btn_64arg.downCode = 1251;
+                btn_64arg.button_id = 1020;
+                btn_64arg.upCode = 1026;
+
+                if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.xpos = (_screenSize.x - 2 * dword_5A50B6_h - buttonsSpace);
+                    btn_64arg.caption = GetLocaleString(642, "LOAD GAME");
+                    btn_64arg.caption2.clear();
+                    btn_64arg.upCode = 1021;
+                    btn_64arg.pressedCode = 0;
+                    btn_64arg.downCode = 1251;
+                    btn_64arg.button_id = 1015;
+
+                    if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.xpos = _screenSize.x - dword_5A50B6_h;
+                        btn_64arg.caption = GetLocaleString(644, "GO BACK");
+                        btn_64arg.caption2.clear();
+                        btn_64arg.pressedCode = 0;
+                        btn_64arg.downCode = 1251;
+                        btn_64arg.button_id = 1019;
+                        btn_64arg.upCode = 1013;
+
+                        if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
+                        {
+                            v70 = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add button to sub-bar\n");
+        return false;
+    }
+    NC_STACK_button::button_66arg v228;
+    if ( _GameShell->sgmSaveExist != 1 )
+    {
+        v228.butID = 1015;
+        v228.field_4 = 0;
+        _GameShell->sub_bar_button->disable(&v228);
+    }
+
+    v228.field_4 = 0;
+    v228.butID = 1014;
+    _GameShell->sub_bar_button->disable(&v228);
+
+    v228.butID = 1013;
+    _GameShell->sub_bar_button->disable(&v228);
+
+    v228.butID = 1011;
+    _GameShell->sub_bar_button->disable(&v228);
+
+    _GameShell->sub_bar_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateConfirmControls(){
+
+    _GameShell->confirm_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)_screenSize.x},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)_screenSize.y}} );
+    if ( !_GameShell->confirm_button )
+    {
+        ypa_log_out("Unable to create Confirm-Button-Object\n");
+        return false;
+    }
+
+    NC_STACK_button::button_64_arg btn_64arg;
+    btn_64arg.tileset_up = 18;
+    btn_64arg.tileset_down = 19;
+    btn_64arg.field_3A = 30;
+    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+    btn_64arg.xpos = _screenSize.x * 0.25;
+    btn_64arg.ypos = _screenSize.y * 0.53125;
+    btn_64arg.width = _screenSize.x * 0.125;
+    btn_64arg.caption = GetLocaleString(2, "OK");
+    btn_64arg.caption2.clear();
+    btn_64arg.pressedCode = 0;
+    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+    btn_64arg.upCode = 1350;
+    btn_64arg.downCode = 1251;
+    btn_64arg.button_id = 1300;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
+
+    if ( _GameShell->confirm_button->Add(&btn_64arg) )
+    {
+        btn_64arg.xpos = _screenSize.x * 0.625;
+        btn_64arg.caption = GetLocaleString(3, "CANCEL");
+        btn_64arg.upCode = 1351;
+        btn_64arg.caption2.clear();
+        btn_64arg.button_id = 1301;
+        btn_64arg.downCode = 1251;
+        btn_64arg.pressedCode = 0;
+
+        if ( _GameShell->confirm_button->Add(&btn_64arg) )
+        {
+            btn_64arg.tileset_down = 16;
+            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+            btn_64arg.tileset_up = 16;
+            btn_64arg.field_3A = 16;
+            btn_64arg.xpos = _screenSize.x * 0.25;
+            btn_64arg.ypos = _screenSize.y * 0.4375;
+            btn_64arg.caption = " ";
+            btn_64arg.caption2.clear();
+            btn_64arg.downCode = 0;
+            btn_64arg.upCode = 0;
+            btn_64arg.pressedCode = 0;
+            btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+            btn_64arg.button_id = 1302;
+            btn_64arg.width = _screenSize.x * 0.5;
+            btn_64arg.txt_r = _iniColors[60].r;
+            btn_64arg.txt_g = _iniColors[60].g;
+            btn_64arg.txt_b = _iniColors[60].b;
+
+            if ( _GameShell->confirm_button->Add(&btn_64arg) )
+            {
+                btn_64arg.button_id = 1303;
+                btn_64arg.ypos = _screenSize.y * 0.46875;
+                btn_64arg.caption = " ";
+                btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                btn_64arg.caption2.clear();
+
+                _GameShell->confirm_button->Add(&btn_64arg);
+            }
+        }
+    }
+    NC_STACK_button::button_66arg v228;
+    v228.field_4 = 0;
+    v228.butID = 1300;
+    _GameShell->confirm_button->disable(&v228);
+
+    v228.butID = 1301;
+    _GameShell->confirm_button->disable(&v228);
+
+    _GameShell->confirm_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateInputControls(){
+    GuiList::tInit args;
+    args.resizeable = false;
+    args.numEntries = 45;
+    args.shownEntries = 8;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 8;
+    args.withIcon = false;
+    args.entryHeight = _fontH;
+    args.entryWidth = dword_5A50B2_h;
+    args.enabled = true;
+    args.vborder = _fontBorderH;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+    if ( !_GameShell->input_listview.Init(this, args) )
+    {
+        ypa_log_out("Unable to create Input-ListView\n");
+        return false;
+    }
+
+    _GameShell->input_listview.x = posLeftPaddingX;
+    _GameShell->input_listview.y = scaledFontHeight + (vertMenuSpace + _fontH) * 4;
+
+    _GameShell->button_input_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)posLeftPaddingX},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)scaledFontHeight},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - posLeftPaddingX)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - scaledFontHeight)}});
+    if ( !_GameShell->button_input_button )
+    {
+        ypa_log_out("Unable to create Input-Button\n");
+        return false;
+    }
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+
+    v70 = 0;
+    btn_64arg.tileset_down = 16;
+    btn_64arg.tileset_up = 16;
+    btn_64arg.field_3A = 16;
+    btn_64arg.xpos = 0;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+    btn_64arg.ypos = 0;
+    btn_64arg.width = menuWidth;
+    btn_64arg.caption = GetLocaleString(309, "INPUT SETTINGS");
+    btn_64arg.downCode = 0;
+    btn_64arg.caption2.clear();
+    btn_64arg.upCode = 0;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.button_id = 1057;
+    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
+
+    if ( _GameShell->button_input_button->Add(&btn_64arg) )
+    {
+        btn_64arg.xpos = 0;
+        btn_64arg.ypos = vertMenuSpace + _fontH;
+        btn_64arg.caption = GetLocaleString(310, "2");
+        btn_64arg.caption2.clear();
+        btn_64arg.pressedCode = 0;
+        btn_64arg.button_id = 1058;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
+
+        if ( _GameShell->button_input_button->Add(&btn_64arg) )
+        {
+            btn_64arg.xpos = 0;
+            btn_64arg.ypos = 2 * (_fontH + vertMenuSpace);
+            btn_64arg.caption = GetLocaleString(311, "3");
+            btn_64arg.caption2.clear();
+            btn_64arg.pressedCode = 0;
+            btn_64arg.button_id = 1059;
+
+            if ( _GameShell->button_input_button->Add(&btn_64arg) )
+            {
+                btn_64arg.xpos = 0;
+                btn_64arg.ypos = 3 * (vertMenuSpace + _fontH);
+                btn_64arg.caption = GetLocaleString(312, "4");
+                btn_64arg.caption2.clear();
+                btn_64arg.pressedCode = 0;
+                btn_64arg.button_id = 1060;
+
+                if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.tileset_down = 19;
+                    btn_64arg.field_3A = 30;
+                    btn_64arg.tileset_up = 18;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                    btn_64arg.xpos = menuWidth / 6;
+                    btn_64arg.caption = "g";
+                    btn_64arg.caption2 = "g";
+                    btn_64arg.upCode = 1051;
+                    btn_64arg.pressedCode = 0;
+                    btn_64arg.flags = 0;
+                    btn_64arg.ypos = 6 * vertMenuSpace + 14 * _fontH;
+                    btn_64arg.width = checkBoxWidth;
+                    btn_64arg.downCode = 1050;
+                    btn_64arg.button_id = 1050;
+
+                    if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.tileset_down = 16;
+                        btn_64arg.tileset_up = 16;
+                        btn_64arg.field_3A = 16;
+                        btn_64arg.xpos = (checkBoxWidth + buttonsSpace + menuWidth / 6);
+                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                        btn_64arg.width = (menuWidth / 2 - buttonsSpace);
+                        btn_64arg.caption = GetLocaleString(305, "JOYSTICK");
+                        btn_64arg.button_id = 2;
+                        btn_64arg.caption2.clear();
+                        btn_64arg.downCode = 0;
+                        btn_64arg.upCode = 0;
+                        btn_64arg.pressedCode = 0;
+                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                        btn_64arg.txt_r = _iniColors[60].r;
+                        btn_64arg.txt_g = _iniColors[60].g;
+                        btn_64arg.txt_b = _iniColors[60].b;
+
+                        if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.tileset_down = 19;
+                            btn_64arg.field_3A = 30;
+                            btn_64arg.tileset_up = 18;
+                            btn_64arg.caption = "g";
+                            btn_64arg.caption2 = "g";
+                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                            btn_64arg.xpos = buttonsSpace + (menuWidth / 2);
+                            btn_64arg.width = checkBoxWidth;
+                            btn_64arg.downCode = 1058;
+                            btn_64arg.pressedCode = 0;
+                            btn_64arg.button_id = 1061;
+                            btn_64arg.upCode = 1059;
+                            btn_64arg.flags = 0;
+
+                            if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                            {
+                                btn_64arg.tileset_down = 16;
+                                btn_64arg.tileset_up = 16;
+                                btn_64arg.field_3A = 16;
+                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                btn_64arg.xpos = (checkBoxWidth + (menuWidth / 2) + 2 * buttonsSpace);
+                                btn_64arg.width = ((menuWidth / 2) - buttonsSpace);
+                                btn_64arg.caption = GetLocaleString(2433, "ALTERNATE JOYSTICK MODEL");
+                                btn_64arg.caption2.clear();
+                                btn_64arg.downCode = 0;
+                                btn_64arg.upCode = 0;
+                                btn_64arg.pressedCode = 0;
+                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                btn_64arg.button_id = 2;
+                                btn_64arg.txt_r = _iniColors[60].r;
+                                btn_64arg.txt_g = _iniColors[60].g;
+                                btn_64arg.txt_b = _iniColors[60].b;
+
+                                if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                {
+                                    btn_64arg.tileset_down = 19;
+                                    btn_64arg.field_3A = 30;
+                                    btn_64arg.tileset_up = 18;
+                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                    btn_64arg.xpos = menuWidth / 3;
+                                    btn_64arg.caption = "g";
+                                    btn_64arg.caption2 = "g";
+                                    btn_64arg.upCode = 1055;
+                                    btn_64arg.button_id = 1055;
+                                    btn_64arg.ypos = 7 * vertMenuSpace + (15 * _fontH);
+                                    btn_64arg.pressedCode = 0;
+                                    btn_64arg.width = checkBoxWidth;
+                                    btn_64arg.flags = 0;
+                                    btn_64arg.downCode = 1056;
+
+                                    if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                    {
+                                        btn_64arg.tileset_down = 16;
+                                        btn_64arg.tileset_up = 16;
+                                        btn_64arg.field_3A = 16;
+                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                        btn_64arg.xpos = (checkBoxWidth + (menuWidth / 3) + buttonsSpace);
+                                        btn_64arg.width = menuWidth / 2;
+                                        btn_64arg.caption = GetLocaleString(306, "DISABLE FORCE FEEDBACK");
+                                        btn_64arg.button_id = 2;
+                                        btn_64arg.caption2.clear();
+                                        btn_64arg.downCode = 0;
+                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                        btn_64arg.upCode = 0;
+                                        btn_64arg.pressedCode = 0;
+
+                                        if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                        {
+                                            btn_64arg.tileset_down = 19;
+                                            btn_64arg.tileset_up = 18;
+                                            btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                                            btn_64arg.field_3A = 30;
+                                            btn_64arg.xpos = menuWidth / 6;
+                                            btn_64arg.ypos = 5 * vertMenuSpace + 13 * _fontH;
+                                            btn_64arg.width = (menuWidth / 3 - buttonsSpace);
+                                            btn_64arg.caption = GetLocaleString(307, "SWITCH OFF");
+                                            btn_64arg.downCode = 1251;
+                                            btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                                            btn_64arg.caption2.clear();
+                                            btn_64arg.pressedCode = 0;
+                                            btn_64arg.upCode = 1057;
+                                            btn_64arg.button_id = 1056;
+                                            btn_64arg.txt_r = _iniColors[68].r;
+                                            btn_64arg.txt_g = _iniColors[68].g;
+                                            btn_64arg.txt_b = _iniColors[68].b;
+
+                                            if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                            {
+                                                btn_64arg.xpos = buttonsSpace + menuWidth / 2;
+                                                btn_64arg.caption = GetLocaleString(13, "RESET");
+                                                btn_64arg.caption2.clear();
+                                                btn_64arg.pressedCode = 0;
+                                                btn_64arg.upCode = 1053;
+                                                btn_64arg.button_id = 1053;
+
+                                                if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                                {
+                                                    btn_64arg.xpos = 0;
+                                                    btn_64arg.ypos = bottomButtonsY;
+                                                    btn_64arg.width = button1LineWidth;
+                                                    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                                                    btn_64arg.caption = GetLocaleString(2, "OK");
+                                                    btn_64arg.caption2.clear();
+                                                    btn_64arg.pressedCode = 0;
+                                                    btn_64arg.button_id = 1051;
+                                                    btn_64arg.upCode = 1052;
+                                                    btn_64arg.downCode = 1251;
+
+                                                    if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                                    {
+                                                        btn_64arg.xpos = bottomThirdBtnPosX;
+                                                        btn_64arg.ypos = bottomButtonsY;
+                                                        btn_64arg.width = button1LineWidth;
+                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                        btn_64arg.upCode = 1250;
+                                                        btn_64arg.caption2.clear();
+                                                        btn_64arg.button_id = 1052;
+                                                        btn_64arg.pressedCode = 0;
+
+                                                        if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                                        {
+                                                            btn_64arg.xpos = bottomSecondBtnPosX;
+                                                            btn_64arg.ypos = bottomButtonsY;
+                                                            btn_64arg.width = button1LineWidth;
+                                                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                                                            btn_64arg.upCode = 1054;
+                                                            btn_64arg.button_id = 1054;
+                                                            btn_64arg.caption2.clear();
+                                                            btn_64arg.pressedCode = 0;
+
+                                                            if ( _GameShell->button_input_button->Add(&btn_64arg) )
+                                                            {
+                                                                v70 = 1;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add input-button\n");
+        return false;
+    }
+
+    _GameShell->button_input_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateVideoControls(){
+
+    int v261 = 0;
+    int v3 = 0;
+
+    const std::vector<GFX::TGFXDeviceInfo> &devices = GFX::Engine.GetDevices();
+    
+    for ( const GFX::TGFXDeviceInfo &dev : devices )
+    {
+        if ( dev.isCurrent )
+        {
+            _GameShell->win3d_guid = dev.guid ;
+
+            if ( !StriCmp(dev.name, "software") )
+                _GameShell->win3d_name = GetLocaleString(2472, "2472 = Software");
+            else
+                _GameShell->win3d_name = dev.name;
+
+            v3 = v261;
+            break;
+        }
+        v261++;
+    }
+
+    int v294 = menuWidth - 3 * buttonsSpace - _fontVBScrollW;
+    int v94 = (menuWidth - 3 * buttonsSpace - _fontVBScrollW) * 0.6;
+
+    GuiList::tInit args;
+    args = GuiList::tInit();
+    args.resizeable = false;
+    args.numEntries = GFX::GFXEngine::Instance.GetAvailableModes().size();
+    args.shownEntries = 4;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 4;
+    args.withIcon = false;
+    args.entryHeight = _fontH;
+    args.entryWidth = v94;
+    args.enabled = true;
+    args.vborder = _fontBorderH;
+    args.instantInput = true;
+    args.keyboardInput = true;
+
+    if ( !_GameShell->video_listvw.Init(this, args) )
+    {
+        ypa_log_out("Unable to create Game-Video-Menu\n");
+        return false;
+    }
+
+    args = GuiList::tInit();
+    args.resizeable = false;
+    args.numEntries = devices.size();
+    args.shownEntries = 4;
+    args.firstShownEntry = 0;
+    args.selectedEntry = v3;
+    args.maxShownEntries = 4;
+    args.withIcon = false;
+    args.entryHeight = _fontH;
+    args.entryWidth = v94;
+    args.enabled = true;
+    args.vborder = _fontBorderH;
+    args.instantInput = true;
+    args.keyboardInput = true;
+
+    if ( !_GameShell->d3d_listvw.Init(this, args) )
+    {
+        ypa_log_out("Unable to create D3D-Menu\n");
+        return false;
+    }
+
+    _GameShell->video_button = Nucleus::CInit<NC_STACK_button>({
+        {NC_STACK_button::BTN_ATT_X, (int32_t)posLeftPaddingX},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)scaledFontHeight},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - posLeftPaddingX)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - scaledFontHeight)}});
+
+    if ( !_GameShell->video_button )
+    {
+        ypa_log_out("Unable to create Video-Button\n");
+        return false;
+    }
+
+    int v98 = v294 * 0.4;
+    int v99 = posLeftPaddingX + buttonsSpace + v98;
+
+    _GameShell->video_listvw.x = v99;
+    _GameShell->video_listvw.y = 6 * vertMenuSpace + 6 * _fontH + scaledFontHeight;
+
+    _GameShell->d3d_listvw.x = v99;
+    _GameShell->d3d_listvw.y = 7 * vertMenuSpace + 7 * _fontH + scaledFontHeight;
+
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+
+    v70 = 0;
+
+    btn_64arg.tileset_down = 16;
+    btn_64arg.tileset_up = 16;
+    btn_64arg.field_3A = 16;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+    btn_64arg.xpos = 0;
+    btn_64arg.ypos = 0;
+    btn_64arg.width = menuWidth;
+    btn_64arg.caption = GetLocaleString(327, "GAME SETTINGS");
+    btn_64arg.caption2.clear();
+    btn_64arg.downCode = 0;
+    btn_64arg.upCode = 0;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+    btn_64arg.button_id = 1168;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
+
+    if ( _GameShell->video_button->Add(&btn_64arg) )
+    {
+        btn_64arg.xpos = 0;
+        btn_64arg.ypos = vertMenuSpace + _fontH;
+        btn_64arg.width = menuWidth;
+        btn_64arg.caption = GetLocaleString(328, "2");
+        btn_64arg.caption2.clear();
+        btn_64arg.button_id = 1169;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
+
+        if ( _GameShell->video_button->Add(&btn_64arg) )
+        {
+            btn_64arg.xpos = 0;
+            btn_64arg.ypos = 2 * (_fontH + vertMenuSpace);
+            btn_64arg.width = menuWidth;
+            btn_64arg.caption = GetLocaleString(329, "3");
+            btn_64arg.button_id = 1170;
+            btn_64arg.caption2.clear();
+
+            if ( _GameShell->video_button->Add(&btn_64arg) )
+            {
+                btn_64arg.xpos = 0;
+                btn_64arg.width = menuWidth;
+                btn_64arg.ypos = 3 * (_fontH + vertMenuSpace);
+                btn_64arg.caption = GetLocaleString(330, "4");
+                btn_64arg.caption2.clear();
+                btn_64arg.button_id = 1171;
+
+                if ( _GameShell->video_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.tileset_down = 16;
+                    btn_64arg.tileset_up = 16;
+                    btn_64arg.field_3A = 16;
+                    btn_64arg.xpos = 0;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                    btn_64arg.ypos = 5 * (_fontH + vertMenuSpace);
+                    btn_64arg.width = v98;
+                    btn_64arg.caption = GetLocaleString(340, "RESOLUTION SHELL");
+                    btn_64arg.caption2.clear();
+                    btn_64arg.downCode = 0;
+                    btn_64arg.upCode = 0;
+                    btn_64arg.pressedCode = 0;
+                    btn_64arg.button_id = 2;
+                    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
+                    btn_64arg.txt_r = _iniColors[60].r;
+                    btn_64arg.txt_g = _iniColors[60].g;
+                    btn_64arg.txt_b = _iniColors[60].b;
+
+                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.tileset_down = 19;
+                        btn_64arg.field_3A = 30;
+                        btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                        btn_64arg.caption = _gfxMode.name;
+                        btn_64arg.caption2.clear();
+                        btn_64arg.pressedCode = 0;
+                        btn_64arg.tileset_up = 18;
+                        btn_64arg.downCode = 1100;
+                        btn_64arg.button_id = 1156;
+                        btn_64arg.xpos = buttonsSpace + v294 * 0.4;
+                        btn_64arg.upCode = 1101;
+                        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                        btn_64arg.width = v294 * 0.6;
+                        btn_64arg.txt_r = _iniColors[68].r;
+                        btn_64arg.txt_g = _iniColors[68].g;
+                        btn_64arg.txt_b = _iniColors[68].b;
+
+                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.tileset_down = 16;
+                            btn_64arg.tileset_up = 16;
+                            btn_64arg.field_3A = 16;
+                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                            btn_64arg.xpos = 0;
+                            btn_64arg.ypos = 2 * (3 * (vertMenuSpace + _fontH));
+                            btn_64arg.width = v294 * 0.4;
+                            btn_64arg.caption = GetLocaleString(352, "SELECT 3D DEVICE");
+                            btn_64arg.caption2.clear();
+                            btn_64arg.downCode = 0;
+                            btn_64arg.upCode = 0;
+                            btn_64arg.pressedCode = 0;
+                            btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
+                            btn_64arg.button_id = 2;
+                            btn_64arg.txt_r = _iniColors[60].r;
+                            btn_64arg.txt_g = _iniColors[60].g;
+                            btn_64arg.txt_b = _iniColors[60].b;
+
+                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                            {
+                                btn_64arg.width = v294 * 0.6;
+                                btn_64arg.tileset_down = 19;
+                                btn_64arg.field_3A = 30;
+                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                btn_64arg.downCode = 1134;
+                                btn_64arg.upCode = 1135;
+                                btn_64arg.tileset_up = 18;
+                                btn_64arg.caption2.clear();
+                                btn_64arg.pressedCode = 0;
+                                btn_64arg.xpos = buttonsSpace + v294 * 0.4;
+                                btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                                btn_64arg.caption = _GameShell->win3d_name;
+                                btn_64arg.button_id = 1172;
+                                btn_64arg.txt_r = _iniColors[68].r;
+                                btn_64arg.txt_g = _iniColors[68].g;
+                                btn_64arg.txt_b = _iniColors[68].b;
+
+                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                {
+                                    int v117 = dword_5A50B2 - 6 * buttonsSpace - 2 * checkBoxWidth;
+
+                                    btn_64arg.tileset_down = 19;
+                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                    btn_64arg.tileset_up = 18;
+                                    btn_64arg.field_3A = 30;
+                                    btn_64arg.xpos = 0;
+                                    btn_64arg.caption = "g";
+                                    btn_64arg.caption2 = "g";
+                                    btn_64arg.downCode = 1102;
+                                    btn_64arg.width = checkBoxWidth;
+                                    btn_64arg.upCode = 1103;
+                                    btn_64arg.ypos = 7 * (vertMenuSpace + _fontH);
+                                    btn_64arg.pressedCode = 0;
+                                    btn_64arg.flags = 0;
+                                    btn_64arg.button_id = 1157;
+
+                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                    {
+                                        int v120 = v117 / 2;
+
+                                        btn_64arg.tileset_down = 16;
+                                        btn_64arg.tileset_up = 16;
+                                        btn_64arg.field_3A = 16;
+                                        btn_64arg.xpos = checkBoxWidth + buttonsSpace;
+                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                        btn_64arg.width = v120;
+                                        btn_64arg.caption = GetLocaleString(344, "FAR VIEW");
+                                        btn_64arg.caption2.clear();
+                                        btn_64arg.downCode = 0;
+                                        btn_64arg.upCode = 0;
+                                        btn_64arg.pressedCode = 0;
+                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                        btn_64arg.button_id = 2;
+                                        btn_64arg.txt_r = _iniColors[60].r;
+                                        btn_64arg.txt_g = _iniColors[60].g;
+                                        btn_64arg.txt_b = _iniColors[60].b;
+
+                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                        {
+                                            btn_64arg.tileset_down = 19;
+                                            btn_64arg.tileset_up = 18;
+                                            btn_64arg.width = checkBoxWidth;
+                                            btn_64arg.caption = "g";
+                                            btn_64arg.caption2 = "g";
+                                            btn_64arg.field_3A = 30;
+                                            btn_64arg.upCode = 1107;
+                                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                            btn_64arg.downCode = 1106;
+                                            btn_64arg.xpos = 3 * buttonsSpace + checkBoxWidth + v120;
+                                            btn_64arg.pressedCode = 0;
+                                            btn_64arg.flags = 0;
+                                            btn_64arg.button_id = 1160;
+
+                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                            {
+                                                btn_64arg.tileset_down = 16;
+                                                btn_64arg.tileset_up = 16;
+                                                btn_64arg.field_3A = 16;
+                                                btn_64arg.width = v120;
+                                                btn_64arg.xpos = 4 * buttonsSpace + v120 + 2 * checkBoxWidth;
+                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                btn_64arg.caption = GetLocaleString(345, "HEAVEN");
+                                                btn_64arg.caption2.clear();
+                                                btn_64arg.downCode = 0;
+                                                btn_64arg.upCode = 0;
+                                                btn_64arg.pressedCode = 0;
+                                                btn_64arg.button_id = 2;
+                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                {
+                                                    btn_64arg.tileset_down = 19;
+                                                    btn_64arg.tileset_up = 18;
+                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                    btn_64arg.xpos = 0;
+                                                    btn_64arg.field_3A = 30;
+                                                    btn_64arg.width = checkBoxWidth;
+                                                    btn_64arg.caption = "g";
+                                                    btn_64arg.caption2 = "g";
+                                                    btn_64arg.pressedCode = 0;
+                                                    btn_64arg.ypos = 8 * (_fontH + vertMenuSpace);
+                                                    btn_64arg.downCode = 1132;
+                                                    btn_64arg.upCode = 1133;
+                                                    btn_64arg.button_id = 1165;
+                                                    btn_64arg.flags = 0;
+
+                                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                    {
+                                                        btn_64arg.tileset_down = 16;
+                                                        btn_64arg.tileset_up = 16;
+                                                        btn_64arg.field_3A = 16;
+                                                        btn_64arg.width = v120;
+                                                        btn_64arg.xpos = checkBoxWidth + buttonsSpace;
+                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                        btn_64arg.caption = GetLocaleString(350, "SW MOUSEPOINTER");
+                                                        btn_64arg.caption2.clear();
+                                                        btn_64arg.downCode = 0;
+                                                        btn_64arg.upCode = 0;
+                                                        btn_64arg.pressedCode = 0;
+                                                        btn_64arg.button_id = 2;
+                                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                        {
+                                                            btn_64arg.width = checkBoxWidth;
+                                                            btn_64arg.tileset_down = 19;
+                                                            btn_64arg.tileset_up = 18;
+                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                            btn_64arg.field_3A = 30;
+                                                            btn_64arg.downCode = 1130;
+                                                            btn_64arg.pressedCode = 0;
+                                                            btn_64arg.flags = 0;
+                                                            btn_64arg.caption = "g";
+                                                            btn_64arg.caption2 = "g";
+                                                            btn_64arg.upCode = 1131;
+                                                            btn_64arg.button_id = 1166;
+                                                            btn_64arg.xpos = 3 * buttonsSpace + checkBoxWidth + v120;
+
+                                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                            {
+                                                                btn_64arg.tileset_down = 16;
+                                                                btn_64arg.tileset_up = 16;
+                                                                btn_64arg.field_3A = 16;
+                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                btn_64arg.xpos = 4 * buttonsSpace + v120 + 2 * checkBoxWidth;
+                                                                btn_64arg.width = v120;
+                                                                btn_64arg.caption = GetLocaleString(2445, "Windowed Mode");
+                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                btn_64arg.caption2.clear();
+                                                                btn_64arg.downCode = 0;
+                                                                btn_64arg.upCode = 0;
+                                                                btn_64arg.pressedCode = 0;
+                                                                btn_64arg.button_id = 2;
+
+                                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                {
+                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                    btn_64arg.xpos = checkBoxWidth + buttonsSpace;
+                                                                    btn_64arg.ypos = 9 * (vertMenuSpace + _fontH);
+                                                                    btn_64arg.width = v120;
+                                                                    btn_64arg.caption = GetLocaleString(2431, "USE 16BIT TEXTURE");
+                                                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                    btn_64arg.caption2.clear();
+                                                                    btn_64arg.downCode = 0;
+                                                                    btn_64arg.upCode = 0;
+                                                                    btn_64arg.pressedCode = 0;
+                                                                    btn_64arg.button_id = 0;
+
+                                                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                    {
+                                                                        btn_64arg.width = checkBoxWidth;
+                                                                        btn_64arg.tileset_down = 19;
+                                                                        btn_64arg.tileset_up = 18;
+                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                                        btn_64arg.pressedCode = 0;
+                                                                        btn_64arg.flags = 0;
+                                                                        btn_64arg.field_3A = 30;
+                                                                        btn_64arg.xpos = 0;
+                                                                        btn_64arg.button_id = 1150;
+                                                                        btn_64arg.caption = "g";
+                                                                        btn_64arg.caption2 = "g";
+                                                                        btn_64arg.downCode = 1113;
+                                                                        btn_64arg.upCode = 1114;
+
+                                                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                        {
+                                                                            btn_64arg.tileset_down = 16;
+                                                                            btn_64arg.tileset_up = 16;
+                                                                            btn_64arg.field_3A = 16;
+                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                            btn_64arg.xpos = v120 + 2 * checkBoxWidth + 4 * buttonsSpace;
+                                                                            btn_64arg.width = v120;
+                                                                            btn_64arg.caption = GetLocaleString(326, "ENABLE CD AUDIO");
+                                                                            btn_64arg.caption2.clear();
+                                                                            btn_64arg.downCode = 0;
+                                                                            btn_64arg.upCode = 0;
+                                                                            btn_64arg.pressedCode = 0;
+                                                                            btn_64arg.button_id = 0;
+                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                            {
+                                                                                btn_64arg.width = checkBoxWidth;
+                                                                                btn_64arg.tileset_down = 19;
+                                                                                btn_64arg.tileset_up = 18;
+                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                                                btn_64arg.field_3A = 30;
+                                                                                btn_64arg.downCode = 1128;
+                                                                                btn_64arg.pressedCode = 0;
+                                                                                btn_64arg.flags = 0;
+                                                                                btn_64arg.caption = "g";
+                                                                                btn_64arg.caption2 = "g";
+                                                                                btn_64arg.upCode = 1129;
+                                                                                btn_64arg.button_id = 1164;
+                                                                                btn_64arg.xpos = 3 * buttonsSpace + checkBoxWidth + v120;
+
+                                                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                {
+                                                                                    btn_64arg.tileset_down = 19;
+                                                                                    btn_64arg.field_3A = 30;
+                                                                                    btn_64arg.tileset_up = 18;
+                                                                                    btn_64arg.xpos = 0;
+                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                                                    btn_64arg.width = checkBoxWidth;
+                                                                                    btn_64arg.caption = "g";
+                                                                                    btn_64arg.caption2 = "g";
+                                                                                    btn_64arg.ypos = 10 * (vertMenuSpace + _fontH);
+                                                                                    btn_64arg.downCode = 1126;
+                                                                                    btn_64arg.pressedCode = 0;
+                                                                                    btn_64arg.button_id = 1163;
+                                                                                    btn_64arg.upCode = 1127;
+                                                                                    btn_64arg.flags = 0;
+
+                                                                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                    {
+                                                                                        btn_64arg.tileset_down = 16;
+                                                                                        btn_64arg.tileset_up = 16;
+                                                                                        btn_64arg.field_3A = 16;
+                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                        btn_64arg.xpos = checkBoxWidth + buttonsSpace;
+                                                                                        btn_64arg.width = v120 - checkBoxWidth;
+                                                                                        btn_64arg.caption = GetLocaleString(325, "ENEMY INDICATOR");
+                                                                                        btn_64arg.caption2.clear();
+                                                                                        btn_64arg.downCode = 0;
+                                                                                        btn_64arg.upCode = 0;
+                                                                                        btn_64arg.pressedCode = 0;
+                                                                                        btn_64arg.button_id = 0;
+                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                        {
+                                                                                            btn_64arg.tileset_down = 16;
+                                                                                            btn_64arg.tileset_up = 16;
+                                                                                            btn_64arg.field_3A = 16;
+                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                            btn_64arg.xpos = v120 + 2 * checkBoxWidth + 4 * buttonsSpace;
+                                                                                            btn_64arg.width = v120;
+                                                                                            btn_64arg.caption = GetLocaleString(323, "INVERT LEFT-RIGHT DIVISION ");
+                                                                                            btn_64arg.caption2.clear();
+                                                                                            btn_64arg.downCode = 0;
+                                                                                            btn_64arg.upCode = 0;
+                                                                                            btn_64arg.pressedCode = 0;
+                                                                                            btn_64arg.button_id = 0;
+                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                            {
+                                                                                                btn_64arg.width = checkBoxWidth;
+                                                                                                btn_64arg.tileset_down = 19;
+                                                                                                btn_64arg.tileset_up = 18;
+                                                                                                btn_64arg.pressedCode = 0;
+                                                                                                btn_64arg.flags = 0;
+                                                                                                btn_64arg.caption = "g";
+                                                                                                btn_64arg.caption2 = "g";
+                                                                                                btn_64arg.field_3A = 30;
+                                                                                                btn_64arg.button_id = 1151;
+                                                                                                btn_64arg.xpos = 3 * buttonsSpace + checkBoxWidth + v120;
+                                                                                                btn_64arg.downCode = 1112;
+                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                                                                btn_64arg.upCode = 1111;
+
+                                                                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                {
+                                                                                                    btn_64arg.tileset_down = 16;
+                                                                                                    btn_64arg.tileset_up = 16;
+                                                                                                    btn_64arg.field_3A = 16;
+                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                    btn_64arg.xpos = 0;
+                                                                                                    btn_64arg.ypos = 11 * (_fontH + vertMenuSpace);
+                                                                                                    btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.3;
+                                                                                                    btn_64arg.caption = GetLocaleString(343, "DESTRUCTION FX");
+                                                                                                    btn_64arg.caption2.clear();
+                                                                                                    btn_64arg.downCode = 0;
+                                                                                                    btn_64arg.upCode = 0;
+                                                                                                    btn_64arg.pressedCode = 0;
+                                                                                                    btn_64arg.button_id = 2;
+                                                                                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                                                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                    {
+                                                                                                        NC_STACK_button::Slider v225;
+
+                                                                                                        v225.value = 8;
+                                                                                                        v225.max = 16;
+                                                                                                        v225.min = 0;
+
+                                                                                                        btn_64arg.caption2.clear();
+                                                                                                        btn_64arg.tileset_down = 18;
+                                                                                                        btn_64arg.tileset_up = 18;
+                                                                                                        btn_64arg.field_3A = 30;
+                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
+                                                                                                        btn_64arg.pressedCode = 1110;
+                                                                                                        btn_64arg.button_id = 1159;
+                                                                                                        btn_64arg.xpos = buttonsSpace + (dword_5A50B2 - 5 * buttonsSpace) * 0.3;
+                                                                                                        btn_64arg.caption = " ";
+                                                                                                        btn_64arg.downCode = 1108;
+                                                                                                        btn_64arg.flags = 0;
+                                                                                                        btn_64arg.field_34 = &v225;
+                                                                                                        btn_64arg.upCode = 1109;
+                                                                                                        btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.55;
+
+                                                                                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                        {
+                                                                                                            btn_64arg.tileset_down = 16;
+                                                                                                            btn_64arg.tileset_up = 16;
+                                                                                                            btn_64arg.field_3A = 16;
+                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                            btn_64arg.caption2.clear();
+                                                                                                            btn_64arg.xpos = buttonsSpace + (dword_5A50B2 - 5 * buttonsSpace) * 0.85;
+                                                                                                            btn_64arg.downCode = 0;
+                                                                                                            btn_64arg.upCode = 0;
+                                                                                                            btn_64arg.pressedCode = 0;
+                                                                                                            btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.15;
+                                                                                                            btn_64arg.button_id = 1158;
+                                                                                                            btn_64arg.caption = " 4";
+                                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+
+                                                                                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                            {
+                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                                btn_64arg.xpos = 0;
+                                                                                                                btn_64arg.ypos = 12 * (vertMenuSpace + _fontH);
+                                                                                                                btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.3;
+                                                                                                                btn_64arg.caption = GetLocaleString(321, "FX VOLUME");
+                                                                                                                btn_64arg.caption2.clear();
+                                                                                                                btn_64arg.downCode = 0;
+                                                                                                                btn_64arg.upCode = 0;
+                                                                                                                btn_64arg.pressedCode = 0;
+                                                                                                                btn_64arg.button_id = 2;
+                                                                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                                                                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                {
+                                                                                                                    btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.55;
+
+                                                                                                                    v225.min = 1;
+                                                                                                                    v225.max = 127;
+                                                                                                                    v225.value = 100;
+
+                                                                                                                    btn_64arg.field_3A = 30;
+                                                                                                                    btn_64arg.tileset_down = 18;
+                                                                                                                    btn_64arg.tileset_up = 18;
+                                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
+                                                                                                                    btn_64arg.caption2.clear();
+                                                                                                                    btn_64arg.button_id = 1152;
+                                                                                                                    btn_64arg.xpos = buttonsSpace + (dword_5A50B2 - 5 * buttonsSpace) * 0.3;
+                                                                                                                    btn_64arg.caption = " ";
+                                                                                                                    btn_64arg.downCode = 1115;
+                                                                                                                    btn_64arg.upCode = 1117;
+                                                                                                                    btn_64arg.field_34 = &v225;
+                                                                                                                    btn_64arg.pressedCode = 1116;
+                                                                                                                    btn_64arg.flags = 0;
+
+                                                                                                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                    {
+                                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                                        btn_64arg.tileset_down = 16;
+                                                                                                                        btn_64arg.tileset_up = 16;
+                                                                                                                        btn_64arg.field_3A = 16;
+                                                                                                                        btn_64arg.caption = "4";
+                                                                                                                        btn_64arg.button_id = 1153;
+                                                                                                                        btn_64arg.caption2.clear();
+                                                                                                                        btn_64arg.xpos = (2 * buttonsSpace) + (dword_5A50B2 - 5 * buttonsSpace) * 0.85;
+                                                                                                                        btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.15;
+                                                                                                                        btn_64arg.downCode = 0;
+                                                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                                                                                                                        btn_64arg.upCode = 0;
+                                                                                                                        btn_64arg.pressedCode = 0;
+
+                                                                                                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                        {
+                                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                                            btn_64arg.xpos = 0;
+                                                                                                                            btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.3;
+                                                                                                                            btn_64arg.ypos = 13 * (vertMenuSpace + _fontH);
+                                                                                                                            btn_64arg.caption = GetLocaleString(324, "CD VOLUME");
+                                                                                                                            btn_64arg.caption2.clear();
+                                                                                                                            btn_64arg.downCode = 0;
+                                                                                                                            btn_64arg.upCode = 0;
+                                                                                                                            btn_64arg.pressedCode = 0;
+                                                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                                                                            btn_64arg.button_id = 2;
+
+                                                                                                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                            {
+                                                                                                                                btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.55;
+                                                                                                                                v225.min = 1;
+                                                                                                                                v225.max = 127;
+                                                                                                                                v225.value = 100;
+
+                                                                                                                                btn_64arg.tileset_down = 18;
+                                                                                                                                btn_64arg.tileset_up = 18;
+                                                                                                                                btn_64arg.upCode = 1120;
+                                                                                                                                btn_64arg.field_3A = 30;
+                                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
+                                                                                                                                btn_64arg.caption2.clear();
+                                                                                                                                btn_64arg.downCode = 1118;
+                                                                                                                                btn_64arg.xpos = buttonsSpace + (dword_5A50B2 - 5 * buttonsSpace) * 0.3;
+                                                                                                                                btn_64arg.caption = " ";
+                                                                                                                                btn_64arg.pressedCode = 1119;
+                                                                                                                                btn_64arg.field_34 = &v225;
+                                                                                                                                btn_64arg.flags = 0;
+                                                                                                                                btn_64arg.button_id = 1154;
+
+                                                                                                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                                {
+                                                                                                                                    btn_64arg.tileset_down = 16;
+                                                                                                                                    btn_64arg.tileset_up = 16;
+                                                                                                                                    btn_64arg.field_3A = 16;
+                                                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                                                    btn_64arg.caption = "4";
+                                                                                                                                    btn_64arg.caption2.clear();
+                                                                                                                                    btn_64arg.downCode = 0;
+                                                                                                                                    btn_64arg.upCode = 0;
+                                                                                                                                    btn_64arg.pressedCode = 0;
+                                                                                                                                    btn_64arg.xpos = (2 * buttonsSpace) + (dword_5A50B2 - 5 * buttonsSpace) * 0.85;
+                                                                                                                                    btn_64arg.width = (dword_5A50B2 - 5 * buttonsSpace) * 0.15;
+                                                                                                                                    btn_64arg.button_id = 1155;
+                                                                                                                                    btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+
+                                                                                                                                    if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                                    {
+                                                                                                                                        btn_64arg.tileset_up = 18;
+                                                                                                                                        btn_64arg.field_3A = 30;
+                                                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                                                                                                                                        btn_64arg.xpos = 0;
+                                                                                                                                        btn_64arg.ypos = bottomButtonsY;
+                                                                                                                                        btn_64arg.width = button1LineWidth;
+                                                                                                                                        btn_64arg.tileset_down = 19;
+                                                                                                                                        btn_64arg.caption = GetLocaleString(2, "OK");
+                                                                                                                                        btn_64arg.upCode = 1124;
+                                                                                                                                        btn_64arg.caption2.clear();
+                                                                                                                                        btn_64arg.downCode = 0;
+                                                                                                                                        btn_64arg.pressedCode = 0;
+                                                                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                                                                                                                                        btn_64arg.button_id = 1161;
+                                                                                                                                        btn_64arg.txt_r = _iniColors[68].r;
+                                                                                                                                        btn_64arg.txt_g = _iniColors[68].g;
+                                                                                                                                        btn_64arg.txt_b = _iniColors[68].b;
+
+                                                                                                                                        if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                                        {
+                                                                                                                                            btn_64arg.xpos = bottomThirdBtnPosX;
+                                                                                                                                            btn_64arg.ypos = bottomButtonsY;
+                                                                                                                                            btn_64arg.width = button1LineWidth;
+                                                                                                                                            btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                                                                                                            btn_64arg.upCode = 1250;
+                                                                                                                                            btn_64arg.caption2.clear();
+                                                                                                                                            btn_64arg.downCode = 0;
+                                                                                                                                            btn_64arg.pressedCode = 0;
+                                                                                                                                            btn_64arg.button_id = 1167;
+
+                                                                                                                                            if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                                            {
+                                                                                                                                                btn_64arg.xpos = bottomSecondBtnPosX;
+                                                                                                                                                btn_64arg.ypos = bottomButtonsY;
+                                                                                                                                                btn_64arg.width = button1LineWidth;
+                                                                                                                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                                                                                                                                                btn_64arg.upCode = 1125;
+                                                                                                                                                btn_64arg.caption2.clear();
+                                                                                                                                                btn_64arg.downCode = 0;
+                                                                                                                                                btn_64arg.pressedCode = 0;
+                                                                                                                                                btn_64arg.button_id = 1162;
+
+                                                                                                                                                if ( _GameShell->video_button->Add(&btn_64arg) )
+                                                                                                                                                {
+                                                                                                                                                    v70 = 1;
+                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add video-button\n");
+        return false;
+    }
+
+    NC_STACK_button::button_66arg v229;
+    v229.butID = 1151;
+    v229.field_4 = ((_GameShell->soundFlags & World::SF_INVERTLR) == 0) + 1;
+
+    _GameShell->video_button->button_func73(&v229);
+
+
+    _GameShell->video_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateDiskControls(){
+    GuiList::tInit args;
+    args = GuiList::tInit();
+    args.resizeable = false;
+    args.numEntries = _GameShell->profiles.size();
+    args.shownEntries = 10;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 10;
+    args.withIcon = false;
+    args.entryHeight = _fontH;
+    args.entryWidth = menuWidth;
+    args.enabled = true;
+    args.vborder = _fontBorderH;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+    if ( !_GameShell->disk_listvw.Init(this, args) )
+    {
+        ypa_log_out("Unable to create disk-listview\n");
+        return false;
+    }
+
+    _GameShell->disk_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)posLeftPaddingX},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)scaledFontHeight},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - posLeftPaddingX)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - scaledFontHeight)}} );
+
+    if ( !_GameShell->disk_button )
+    {
+        ypa_log_out("Unable to create disk-buttonobject\n");
+        return false;
+    }
+
+    _GameShell->disk_listvw.x = posLeftPaddingX;
+    _GameShell->disk_listvw.y = 4 * (vertMenuSpace + _fontH) + scaledFontHeight;
+
+    _GameShell->userNameDir = _GameShell->UserName;
+
+    _GameShell->userNameDirCursor = _GameShell->userNameDir.size();
+
+    std::string v223 = _GameShell->userNameDir;
+
+    if ( _GameShell->diskScreenMode )
+        v223 += "h";
+
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+
+    v70 = 0;
+
+    btn_64arg.tileset_down = 16;
+    btn_64arg.tileset_up = 16;
+    btn_64arg.field_3A = 16;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+
+    btn_64arg.xpos = 0;
+    btn_64arg.ypos = 0;
+    btn_64arg.width = menuWidth;
+    btn_64arg.caption = GetLocaleString(367, "LOAD, CREATE OR DELETE PLAYER");
+    btn_64arg.caption2.clear();
+    btn_64arg.button_id = 1108;
+    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
+
+    if ( _GameShell->disk_button->Add(&btn_64arg) )
+    {
+        btn_64arg.xpos = 0;
+        btn_64arg.ypos = buttonsSpace + _fontH;
+        btn_64arg.caption = GetLocaleString(368, "2");
+        btn_64arg.button_id = 1109;
+        btn_64arg.caption2.clear();
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
+
+        if ( _GameShell->disk_button->Add(&btn_64arg))
+        {
+            btn_64arg.xpos = 0;
+            btn_64arg.ypos = 2 * (_fontH + buttonsSpace);
+            btn_64arg.caption = GetLocaleString(369, "3");
+            btn_64arg.caption2.clear();
+            btn_64arg.button_id = 1110;
+
+            if ( _GameShell->disk_button->Add(&btn_64arg) )
+            {
+                btn_64arg.xpos = 0;
+                btn_64arg.ypos = 3 * (buttonsSpace + _fontH);
+                btn_64arg.caption = GetLocaleString(370, "4");
+                btn_64arg.caption2.clear();
+                btn_64arg.button_id = 1111;
+
+                if ( _GameShell->disk_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.tileset_down = 17;
+                    btn_64arg.tileset_up = 17;
+                    btn_64arg.field_3A = 17;
+                    btn_64arg.xpos = 0;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                    btn_64arg.width = menuWidth;
+                    btn_64arg.caption2.clear();
+                    btn_64arg.downCode = 0;
+                    btn_64arg.upCode = 0;
+                    btn_64arg.pressedCode = 0;
+                    btn_64arg.caption = v223.c_str();
+                    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                    btn_64arg.button_id = 1100;
+                    btn_64arg.ypos = 6 * buttonsSpace + 14 * _fontH;
+
+                    if ( _GameShell->disk_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.tileset_down = 19;
+                        btn_64arg.tileset_up = 18;
+                        btn_64arg.field_3A = 30;
+                        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                        btn_64arg.xpos = buttonsSpace + (menuWidth - 3 * buttonsSpace) * 0.25;
+                        btn_64arg.ypos = 7 * buttonsSpace + 15 * _fontH;
+                        btn_64arg.width = (menuWidth - 3 * buttonsSpace) * 0.25;
+                        btn_64arg.caption = GetLocaleString(360, "LOAD");
+                        btn_64arg.downCode = 1251;
+                        btn_64arg.upCode = 1160;
+                        btn_64arg.caption2.clear();
+                        btn_64arg.pressedCode = 0;
+                        btn_64arg.button_id = 1101;
+                        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                        btn_64arg.txt_r = _iniColors[68].r;
+                        btn_64arg.txt_g = _iniColors[68].g;
+                        btn_64arg.txt_b = _iniColors[68].b;
+
+                        if ( _GameShell->disk_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.xpos = (3 * buttonsSpace) + (menuWidth - 3 * buttonsSpace) * 0.75;
+                            btn_64arg.caption = GetLocaleString(362, "DELETE");
+                            btn_64arg.caption2.clear();
+                            btn_64arg.upCode = 1161;
+                            btn_64arg.button_id = 1102;
+
+                            if ( _GameShell->disk_button->Add(&btn_64arg) )
+                            {
+                                btn_64arg.xpos = 0;
+                                btn_64arg.caption = GetLocaleString(363, "NEW GAME");
+                                btn_64arg.button_id = 1103;
+                                btn_64arg.caption2.clear();
+                                btn_64arg.upCode = 1162;
+
+                                if ( _GameShell->disk_button->Add(&btn_64arg) )
+                                {
+                                    btn_64arg.xpos = (2 * buttonsSpace) + (menuWidth - 3 * buttonsSpace) * 0.5;
+                                    btn_64arg.caption = GetLocaleString(361, "SAVE");
+                                    btn_64arg.button_id = 1104;
+                                    btn_64arg.caption2.clear();
+                                    btn_64arg.upCode = 1163;
+
+                                    if ( _GameShell->disk_button->Add(&btn_64arg) )
+                                    {
+                                        btn_64arg.xpos = 0;
+                                        btn_64arg.ypos = bottomButtonsY;
+                                        btn_64arg.width = button1LineWidth;
+                                        btn_64arg.caption = GetLocaleString(2, "OK");
+                                        btn_64arg.caption2.clear();
+                                        btn_64arg.downCode = 1251;
+                                        btn_64arg.button_id = 1105;
+                                        btn_64arg.pressedCode = 0;
+                                        btn_64arg.upCode = 1164;
+
+                                        if ( _GameShell->disk_button->Add(&btn_64arg) )
+                                        {
+                                            btn_64arg.ypos = bottomButtonsY;
+                                            btn_64arg.width = button1LineWidth;
+                                            btn_64arg.xpos = bottomThirdBtnPosX;
+                                            btn_64arg.caption = GetLocaleString(20, "HELP");
+                                            btn_64arg.button_id = 1107;
+                                            btn_64arg.caption2.clear();
+                                            btn_64arg.upCode = 1250;
+
+                                            if ( _GameShell->disk_button->Add(&btn_64arg) )
+                                            {
+                                                btn_64arg.ypos = bottomButtonsY;
+                                                btn_64arg.width = button1LineWidth;
+                                                btn_64arg.xpos = bottomSecondBtnPosX;
+                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                                                btn_64arg.button_id = 1106;
+                                                btn_64arg.caption2.clear();
+                                                btn_64arg.upCode = 1165;
+
+                                                if ( _GameShell->disk_button->Add(&btn_64arg) )
+                                                {
+                                                    v70 = 1;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add button to disk-buttonobject\n");
+        return false;
+    }
+
+
+    _GameShell->disk_button->Hide();
+    NC_STACK_button::button_66arg v228;
+    v228.field_4 = 0;
+    v228.butID = 1105;
+    _GameShell->disk_button->disable(&v228);
+    return true;
+}
+bool NC_STACK_ypaworld::CreateLocaleControls(){
+    GuiList::tInit args;
+    args = GuiList::tInit();
+    args.resizeable = false;
+    args.numEntries = 10;
+    args.shownEntries = 10;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 10;
+    args.withIcon = false;
+    args.entryHeight = _fontH;
+    args.entryWidth = menuWidth - _fontVBScrollW;
+    args.enabled = true;
+    args.vborder = _fontBorderH;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+
+    if ( !_GameShell->local_listvw.Init(this, args) )
+    {
+        ypa_log_out("Unable to create local-listview\n");
+        return false;
+    }
+
+    _GameShell->locale_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)posLeftPaddingX},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)scaledFontHeight},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - posLeftPaddingX)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - scaledFontHeight)}} );
+
+    if ( !_GameShell->locale_button )
+    {
+        ypa_log_out("Unable to create locale-buttonobject\n");
+        return false;
+    }
+
+    _GameShell->local_listvw.x = posLeftPaddingX;
+    _GameShell->local_listvw.y = 4 * (vertMenuSpace + _fontH) + scaledFontHeight;
+
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+
+    v70 = 0;
+    btn_64arg.tileset_down = 16;
+    btn_64arg.tileset_up = 16;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+    btn_64arg.xpos = 0;
+    btn_64arg.width = menuWidth;
+    btn_64arg.field_3A = 30;
+    btn_64arg.ypos = 0;
+    btn_64arg.caption = GetLocaleString(395, "SELECT NEW LANGUAGE");
+    btn_64arg.caption2.clear();
+    btn_64arg.downCode = 0;
+    btn_64arg.upCode = 0;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+    btn_64arg.button_id = 1253;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
+
+    if ( _GameShell->locale_button->Add(&btn_64arg) )
+    {
+        btn_64arg.xpos = 0;
+        btn_64arg.ypos = vertMenuSpace + _fontH;
+        btn_64arg.caption = GetLocaleString(396, "2");
+        btn_64arg.caption2.clear();
+        btn_64arg.button_id = 1254;
+        btn_64arg.txt_r = _iniColors[60].r;
+        btn_64arg.txt_g = _iniColors[60].g;
+        btn_64arg.txt_b = _iniColors[60].b;
+
+        if ( _GameShell->locale_button->Add(&btn_64arg) )
+        {
+            btn_64arg.xpos = 0;
+            btn_64arg.ypos = 2 * (_fontH + vertMenuSpace);
+            btn_64arg.caption = GetLocaleString(397, "3");
+            btn_64arg.caption2.clear();
+            btn_64arg.button_id = 1255;
+
+            if ( _GameShell->locale_button->Add(&btn_64arg) )
+            {
+                btn_64arg.xpos = 0;
+                btn_64arg.ypos = 3 * (vertMenuSpace + _fontH);
+                btn_64arg.caption = GetLocaleString(398, "4");
+                btn_64arg.caption2.clear();
+                btn_64arg.button_id = 1256;
+
+                if ( _GameShell->locale_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.tileset_down = 19;
+                    btn_64arg.tileset_up = 18;
+                    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                    btn_64arg.field_3A = 30;
+                    btn_64arg.xpos = 0;
+                    btn_64arg.ypos = bottomButtonsY;
+                    btn_64arg.width = button1LineWidth;
+                    btn_64arg.caption = GetLocaleString(2, "OK");
+                    btn_64arg.caption2.clear();
+                    btn_64arg.downCode = 0;
+                    btn_64arg.pressedCode = 0;
+                    btn_64arg.upCode = 1300;
+                    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                    btn_64arg.button_id = 1250;
+                    btn_64arg.txt_r = _iniColors[68].r;
+                    btn_64arg.txt_g = _iniColors[68].g;
+                    btn_64arg.txt_b = _iniColors[68].b;
+
+                    if ( _GameShell->locale_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.xpos = bottomThirdBtnPosX;
+                        btn_64arg.ypos = bottomButtonsY;
+                        btn_64arg.width = button1LineWidth;
+                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                        btn_64arg.button_id = 1252;
+                        btn_64arg.caption2.clear();
+                        btn_64arg.downCode = 0;
+                        btn_64arg.upCode = 1250;
+                        btn_64arg.pressedCode = 0;
+
+                        if ( _GameShell->locale_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.xpos = bottomSecondBtnPosX;
+                            btn_64arg.ypos = bottomButtonsY;
+                            btn_64arg.width = button1LineWidth;
+                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
+                            btn_64arg.caption2.clear();
+                            btn_64arg.downCode = 0;
+                            btn_64arg.pressedCode = 0;
+                            btn_64arg.upCode = 1301;
+                            btn_64arg.button_id = 1251;
+
+                            if ( _GameShell->locale_button->Add(&btn_64arg) )
+                                v70 = 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add locale-button\n");
+        return false;
+    }
+
+    _GameShell->locale_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateAboutControls(){
+    _GameShell->about_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)scaledFontHeight},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - 0)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - scaledFontHeight)}} );
+
+    if ( !_GameShell->about_button )
+    {
+        ypa_log_out("Unable to create sound-buttonobject\n");
+        return false;
+    }
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+    v70 = 0;
+    btn_64arg.tileset_down = 16;
+    btn_64arg.tileset_up = 16;
+    btn_64arg.field_3A = 16;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+    btn_64arg.xpos = 0;
+    btn_64arg.width = (_screenSize.x - 4 * buttonsSpace);
+    btn_64arg.caption2.clear();
+    btn_64arg.downCode = 0;
+    btn_64arg.upCode = 0;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.button_id = 2;
+    btn_64arg.ypos = vertMenuSpace + _fontH;
+    btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+    btn_64arg.caption = "Fuer den Kauf dieses erzgebirgischen Qualitaetsspielzeuges bedanken sich";
+
+    if ( _GameShell->about_button->Add(&btn_64arg) )
+    {
+        btn_64arg.ypos = 2 * (_fontH + vertMenuSpace);
+        btn_64arg.caption = "Bernd Beyreuther,";
+
+        if ( _GameShell->about_button->Add(&btn_64arg) )
+        {
+            btn_64arg.ypos = 3 * (vertMenuSpace + _fontH);
+            btn_64arg.caption = "Andre 'Floh' Weissflog, Andreas Flemming,";
+
+            if ( _GameShell->about_button->Add(&btn_64arg) )
+            {
+                btn_64arg.ypos = 4 * (_fontH + vertMenuSpace);
+                btn_64arg.caption = "Stefan 'Metzel Hetzel' Karau, Sylvius Lack,";
+
+                if ( _GameShell->about_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.ypos = 5 * (vertMenuSpace + _fontH);
+                    btn_64arg.caption = "Dietmar 'Didi' Koebelin, Nico Nitsch, Steffen Priebus, ";
+
+                    if ( _GameShell->about_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.ypos = 6 * (_fontH + vertMenuSpace);
+                        btn_64arg.caption = "Stefan Warias, Henrik Volkening und";
+
+                        if ( _GameShell->about_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.ypos = 7 * (vertMenuSpace + _fontH);
+                            btn_64arg.caption = "Uta Kapp";
+
+                            if ( _GameShell->about_button->Add(&btn_64arg) )
+                            {
+                                btn_64arg.ypos = 8 * (_fontH + vertMenuSpace);
+                                btn_64arg.caption = " ";
+
+                                if ( _GameShell->about_button->Add(&btn_64arg) )
+                                {
+                                    btn_64arg.ypos = 9 * (_fontH + vertMenuSpace);
+                                    btn_64arg.caption = "Unser Dank gilt:";
+
+                                    if ( _GameShell->about_button->Add(&btn_64arg) )
+                                    {
+                                        btn_64arg.ypos = 10 * (_fontH + vertMenuSpace);
+                                        btn_64arg.caption = "dem gesamten Microsoft Team, besonders";
+
+                                        if ( _GameShell->about_button->Add(&btn_64arg) )
+                                        {
+                                            btn_64arg.ypos = 11 * (vertMenuSpace + _fontH);
+                                            btn_64arg.caption = "Michael Lyons, Jonathan Sposato und Earnest Yuen";
+
+                                            if ( _GameShell->about_button->Add(&btn_64arg) )
+                                            {
+                                                btn_64arg.ypos = 12 * (_fontH + vertMenuSpace);
+                                                btn_64arg.caption = "weiterhin";
+
+                                                if ( _GameShell->about_button->Add(&btn_64arg) )
+                                                {
+                                                    btn_64arg.ypos = 13 * (_fontH + vertMenuSpace);
+                                                    btn_64arg.caption = "Robert Birker, Andre 'Goetz' Blechschmidt, Jan Blechschmidt, Stephan Bludau,";
+
+                                                    if ( _GameShell->about_button->Add(&btn_64arg) )
+                                                    {
+                                                        btn_64arg.ypos = 14 * (_fontH + vertMenuSpace);
+                                                        btn_64arg.caption = "Andre Kunth, Markus Lorenz, Dirk Mansbart";
+
+                                                        if ( _GameShell->about_button->Add(&btn_64arg) )
+                                                        {
+                                                            btn_64arg.ypos = 15 * (vertMenuSpace + _fontH);
+                                                            btn_64arg.caption = "und natuerlich";
+
+                                                            if ( _GameShell->about_button->Add(&btn_64arg) )
+                                                            {
+                                                                btn_64arg.ypos = 16 * (_fontH + vertMenuSpace);
+                                                                btn_64arg.caption = "        GoldEd - dPaint - SAS/C";
+
+                                                                if ( _GameShell->about_button->Add(&btn_64arg) )
+                                                                {
+                                                                    v70 = 1;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add about-button\n");
+        return false;
+    }
+
+    _GameShell->about_button->Hide();
+    return true;
+}
+bool NC_STACK_ypaworld::CreateNetworkControls(){
+    GuiList::tInit args;
+    args = GuiList::tInit();
+    args.resizeable = false;
+    args.numEntries = 12;
+    args.shownEntries = 12;
+    args.firstShownEntry = 0;
+    args.selectedEntry = 0;
+    args.maxShownEntries = 12;
+    args.withIcon = false;
+    args.entryHeight = _fontH;
+    args.entryWidth = dword_5A50B2_h;
+    args.enabled = true;
+    args.vborder = _fontBorderH;
+    args.instantInput = false;
+    args.keyboardInput = true;
+
+    if ( !_GameShell->network_listvw.Init(this, args) )
+    {
+        ypa_log_out("Unable to create network-listview\n");
+        return false;
+    }
+
+    int nypos = scaledFontHeight - _fontH;
+
+    _GameShell->network_button = Nucleus::CInit<NC_STACK_button>( {
+        {NC_STACK_button::BTN_ATT_X, (int32_t)posLeftPaddingX},
+        {NC_STACK_button::BTN_ATT_Y, (int32_t)nypos},
+        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - posLeftPaddingX)},
+        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - nypos)}});
+    if ( !_GameShell->network_button )
+    {
+        ypa_log_out("Unable to create network-buttonobject\n");
+        return false;
+    }
+
+    _GameShell->netListY = 3 * (vertMenuSpace + _fontH) + nypos;
+
+    _GameShell->network_listvw.x = posLeftPaddingX;
+    _GameShell->network_listvw.y = _GameShell->netListY;
+
+    int v70 = 0;
+    NC_STACK_button::button_64_arg btn_64arg;
+
+    btn_64arg.tileset_down = 17;
+    btn_64arg.tileset_up = 17;
+    btn_64arg.field_3A = 17;
+    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+    btn_64arg.xpos = 0;
+    btn_64arg.caption = "???";
+    btn_64arg.caption2.clear();
+    btn_64arg.downCode = 0;
+    btn_64arg.upCode = 0;
+    btn_64arg.pressedCode = 0;
+    btn_64arg.ypos = 14 * (vertMenuSpace + _fontH);
+    btn_64arg.button_id = 1200;
+    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+    btn_64arg.width = dword_5A50B6 * 0.8;
+    btn_64arg.txt_r = _iniColors[60].r;
+    btn_64arg.txt_g = _iniColors[60].g;
+    btn_64arg.txt_b = _iniColors[60].b;
+
+    v70 = 0;
+
+    if ( _GameShell->network_button->Add(&btn_64arg) )
+    {
+        btn_64arg.tileset_down = 19;
+        btn_64arg.tileset_up = 18;
+        btn_64arg.xpos = buttonsSpace + dword_5A50B6 * 0.8;
+        btn_64arg.field_3A = 30;
+        btn_64arg.width = dword_5A50B6 * 0.2 - buttonsSpace;
+        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+        btn_64arg.caption = GetLocaleString(405, "SEND");
+        btn_64arg.caption2.clear();
+        btn_64arg.upCode = 1210;
+        btn_64arg.pressedCode = 0;
+        btn_64arg.button_id = 1225;
+        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+        btn_64arg.txt_r = _iniColors[68].r;
+        btn_64arg.txt_g = _iniColors[68].g;
+        btn_64arg.txt_b = _iniColors[68].b;
+
+        if ( _GameShell->network_button->Add(&btn_64arg) )
+        {
+            int v284 = ((dword_5A50B6 - 3 * buttonsSpace) * 0.25 - 3 * buttonsSpace) * 0.25;
+
+            TileMap *v198 = GFX::Engine.GetTileset(8);
+
+            btn_64arg.tileset_down = 16;
+            btn_64arg.tileset_up = 16;
+            btn_64arg.field_3A = 16;
+            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+            btn_64arg.ypos = (15 * (vertMenuSpace + _fontH));
+            btn_64arg.xpos = 0;
+            btn_64arg.width = dword_5A50B6 * 0.4 - 2 * buttonsSpace;
+            btn_64arg.caption = GetLocaleString(424, "SELECT YOUR RACE");
+            btn_64arg.caption2.clear();
+            btn_64arg.downCode = 0;
+            btn_64arg.flags = NC_STACK_button::FLAG_TEXT | NC_STACK_button::FLAG_RALIGN;
+            btn_64arg.button_id = 1220;
+            btn_64arg.txt_r = _iniColors[60].r;
+            btn_64arg.txt_g = _iniColors[60].g;
+            btn_64arg.txt_b = _iniColors[60].b;
+
+            if ( _GameShell->network_button->Add(&btn_64arg) )
+            {
+                btn_64arg.tileset_down = 8;
+                btn_64arg.tileset_up = 8;
+                btn_64arg.field_3A = 30;
+                btn_64arg.button_type = 4;
+                btn_64arg.xpos += btn_64arg.width + 2 * buttonsSpace;
+                btn_64arg.width = v198->map[65].w;
+                btn_64arg.caption = "A";
+                btn_64arg.caption2 = "B";
+                btn_64arg.button_id = 1206;
+                btn_64arg.downCode = 1204;
+                btn_64arg.flags = 0;
+
+                if ( _GameShell->network_button->Add(&btn_64arg) )
+                {
+                    btn_64arg.caption = "C";
+                    btn_64arg.caption2 = "D";
+                    btn_64arg.downCode = 1205;
+                    btn_64arg.button_id = 1207;
+                    btn_64arg.xpos += v284 + buttonsSpace;
+
+                    if ( _GameShell->network_button->Add(&btn_64arg) )
+                    {
+                        btn_64arg.caption = "E";
+                        btn_64arg.caption2 = "F";
+                        btn_64arg.downCode = 1206;
+                        btn_64arg.button_id = 1208;
+                        btn_64arg.xpos += v284 + buttonsSpace;
+
+                        if ( _GameShell->network_button->Add(&btn_64arg) )
+                        {
+                            btn_64arg.caption = "G";
+                            btn_64arg.caption2 = "H";
+                            btn_64arg.downCode = 1207;
+                            btn_64arg.button_id = 1209;
+                            btn_64arg.xpos += v284 + buttonsSpace;
+
+                            if ( _GameShell->network_button->Add(&btn_64arg) )
+                            {
+                                btn_64arg.tileset_down = 19;
+                                btn_64arg.tileset_up = 18;
+                                btn_64arg.field_3A = 30;
+                                btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                                btn_64arg.xpos += v284 + 2 * buttonsSpace;
+                                btn_64arg.width = dword_5A50B2_h - btn_64arg.xpos;
+                                btn_64arg.caption = GetLocaleString(401, "BACK");
+                                btn_64arg.caption2.clear();
+                                btn_64arg.pressedCode = 0;
+                                btn_64arg.button_id = 1205;
+                                btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                                btn_64arg.upCode = 1203;
+                                btn_64arg.downCode = 1251;
+                                btn_64arg.txt_r = _iniColors[68].r;
+                                btn_64arg.txt_g = _iniColors[68].g;
+                                btn_64arg.txt_b = _iniColors[68].b;
+
+                                if ( _GameShell->network_button->Add(&btn_64arg) )
+                                {
+                                    btn_64arg.tileset_down = 16;
+                                    btn_64arg.xpos = 0;
+                                    btn_64arg.ypos = 0;
+                                    btn_64arg.tileset_up = 16;
+                                    btn_64arg.field_3A = 16;
+                                    btn_64arg.width = dword_5A50B2_h;
+                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                    btn_64arg.caption = GetLocaleString(410, "SELECT PROVIDER");
+                                    btn_64arg.caption2.clear();
+                                    btn_64arg.downCode = 0;
+                                    btn_64arg.upCode = 0;
+                                    btn_64arg.button_id = 1204;
+                                    btn_64arg.pressedCode = 0;
+                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+
+                                    if ( _GameShell->network_button->Add(&btn_64arg) )
+                                    {
+                                        btn_64arg.xpos = 0;
+                                        btn_64arg.ypos = buttonsSpace + _fontH;
+                                        btn_64arg.caption = GetLocaleString(425, "2");
+                                        btn_64arg.caption2.clear();
+                                        btn_64arg.button_id = 1222;
+                                        btn_64arg.txt_r = _iniColors[60].r;
+                                        btn_64arg.txt_g = _iniColors[60].g;
+                                        btn_64arg.txt_b = _iniColors[60].b;
+
+                                        if ( _GameShell->network_button->Add(&btn_64arg) )
+                                        {
+                                            btn_64arg.xpos = 0;
+                                            btn_64arg.ypos = 2 * (_fontH + buttonsSpace);
+                                            btn_64arg.caption = GetLocaleString(426, "3");
+                                            btn_64arg.caption2.clear();
+                                            btn_64arg.button_id = 1223;
+
+                                            if ( _GameShell->network_button->Add(&btn_64arg) )
+                                            {
+                                                btn_64arg.tileset_down = 19;
+                                                btn_64arg.tileset_up = 18;
+                                                btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
+                                                btn_64arg.field_3A = 30;
+                                                btn_64arg.xpos = dword_5A50B6 * 0.3;
+                                                btn_64arg.ypos = (buttonsSpace + _fontH) * 15.2;
+                                                btn_64arg.width = dword_5A50B6 * 0.4;
+                                                btn_64arg.caption = GetLocaleString(402, "NEW");
+                                                btn_64arg.button_id = 1202;
+                                                btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
+                                                btn_64arg.downCode = 1251;
+                                                btn_64arg.upCode = 1201;
+                                                btn_64arg.caption2.clear();
+                                                btn_64arg.pressedCode = 0;
+                                                btn_64arg.txt_r = _iniColors[68].r;
+                                                btn_64arg.txt_g = _iniColors[68].g;
+                                                btn_64arg.txt_b = _iniColors[68].b;
+
+                                                if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                {
+                                                    btn_64arg.xpos = 0;
+                                                    btn_64arg.ypos = bottomButtonsY + _fontH;
+                                                    btn_64arg.width = button1LineWidth;
+                                                    btn_64arg.caption = GetLocaleString(400, "NEXT");
+                                                    btn_64arg.caption2.clear();
+                                                    btn_64arg.pressedCode = 0;
+                                                    btn_64arg.button_id = 1201;
+                                                    btn_64arg.upCode = 1200;
+
+                                                    if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                    {
+                                                        btn_64arg.xpos = bottomThirdBtnPosX;
+                                                        btn_64arg.ypos = bottomButtonsY + _fontH;
+                                                        btn_64arg.width = button1LineWidth;
+                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
+                                                        btn_64arg.caption2.clear();
+                                                        btn_64arg.upCode = 1250;
+                                                        btn_64arg.pressedCode = 0;
+                                                        btn_64arg.button_id = 1218;
+
+                                                        if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                        {
+                                                            btn_64arg.xpos = bottomSecondBtnPosX;
+                                                            btn_64arg.ypos = bottomButtonsY + _fontH;
+                                                            btn_64arg.width = button1LineWidth;
+                                                            btn_64arg.caption = GetLocaleString(403, "CANCEL");
+                                                            btn_64arg.caption2.clear();
+                                                            btn_64arg.upCode = 1202;
+                                                            btn_64arg.pressedCode = 0;
+                                                            btn_64arg.button_id = 1203;
+
+                                                            if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                            {
+                                                                int v204;
+
+                                                                if ( _screenSize.x < 512 )
+                                                                    v204 = 6 * checkBoxWidth;
+                                                                else
+                                                                    v204 = 4 * checkBoxWidth;
+
+                                                                btn_64arg.tileset_down = 16;
+                                                                btn_64arg.tileset_up = 16;
+                                                                btn_64arg.field_3A = 16;
+                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                btn_64arg.xpos = v204 + checkBoxWidth;
+                                                                btn_64arg.ypos = 4 * (_fontH + buttonsSpace);
+                                                                btn_64arg.caption = " ";
+                                                                btn_64arg.width = dword_5A50B2_h - v204 - checkBoxWidth;
+                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                btn_64arg.caption2.clear();
+                                                                btn_64arg.downCode = 0;
+                                                                btn_64arg.upCode = 0;
+                                                                btn_64arg.pressedCode = 0;
+                                                                btn_64arg.button_id = 1210;
+                                                                btn_64arg.txt_r = _iniColors[60].r;
+                                                                btn_64arg.txt_g = _iniColors[60].g;
+                                                                btn_64arg.txt_b = _iniColors[60].b;
+
+                                                                if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                {
+                                                                    btn_64arg.ypos = 5 * (buttonsSpace + _fontH);
+                                                                    btn_64arg.button_id = 1211;
+
+                                                                    if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                    {
+                                                                        btn_64arg.ypos = 6 * (buttonsSpace + _fontH);
+                                                                        btn_64arg.button_id = 1212;
+
+                                                                        if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                        {
+                                                                            btn_64arg.ypos = 7 * (buttonsSpace + _fontH);
+                                                                            btn_64arg.button_id = 1213;
+
+                                                                            if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                            {
+                                                                                btn_64arg.tileset_down = 8;
+                                                                                btn_64arg.tileset_up = 8;
+                                                                                btn_64arg.field_3A = 8;
+                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                btn_64arg.xpos = 0;
+                                                                                btn_64arg.width = v204;
+                                                                                btn_64arg.caption2.clear();
+                                                                                btn_64arg.downCode = 0;
+                                                                                btn_64arg.upCode = 0;
+                                                                                btn_64arg.ypos = 4 * (_fontH + buttonsSpace);
+                                                                                btn_64arg.pressedCode = 0;
+                                                                                btn_64arg.caption = " ";
+                                                                                btn_64arg.flags = 0;
+                                                                                btn_64arg.button_id = 1214;
+                                                                                btn_64arg.txt_r = _iniColors[60].r;
+                                                                                btn_64arg.txt_g = _iniColors[60].g;
+                                                                                btn_64arg.txt_b = _iniColors[60].b;
+
+                                                                                if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                {
+                                                                                    btn_64arg.ypos = 5 * (_fontH + buttonsSpace);
+                                                                                    btn_64arg.button_id = 1215;
+
+                                                                                    if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                    {
+                                                                                        btn_64arg.ypos = 6 * (buttonsSpace + _fontH);
+                                                                                        btn_64arg.button_id = 1216;
+
+                                                                                        if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                        {
+                                                                                            btn_64arg.ypos = 7 * (buttonsSpace + _fontH);
+                                                                                            btn_64arg.button_id = 1217;
+
+                                                                                            if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                            {
+                                                                                                btn_64arg.tileset_down = 19;
+                                                                                                btn_64arg.tileset_up = 18;
+                                                                                                btn_64arg.xpos = 0;
+                                                                                                btn_64arg.field_3A = 30;
+                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
+                                                                                                btn_64arg.width = checkBoxWidth;
+                                                                                                btn_64arg.caption = "g";
+                                                                                                btn_64arg.caption2 = "g";
+                                                                                                btn_64arg.pressedCode = 0;
+                                                                                                btn_64arg.button_id = 1219;
+                                                                                                btn_64arg.ypos = bottomButtonsY + _fontH;
+                                                                                                btn_64arg.downCode = 1208;
+                                                                                                btn_64arg.flags = 0;
+                                                                                                btn_64arg.upCode = 1209;
+
+                                                                                                if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                                {
+                                                                                                    btn_64arg.tileset_down = 16;
+                                                                                                    btn_64arg.tileset_up = 16;
+                                                                                                    btn_64arg.field_3A = 16;
+                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                    btn_64arg.xpos += buttonsSpace + checkBoxWidth;
+                                                                                                    btn_64arg.width = button1LineWidth - checkBoxWidth - buttonsSpace;
+                                                                                                    btn_64arg.caption = GetLocaleString(409, "READY");
+                                                                                                    btn_64arg.caption2.clear();
+                                                                                                    btn_64arg.downCode = 0;
+                                                                                                    btn_64arg.upCode = 0;
+                                                                                                    btn_64arg.pressedCode = 0;
+                                                                                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                                                    btn_64arg.button_id = 1221;
+
+                                                                                                    if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                                    {
+                                                                                                        btn_64arg.xpos = 0;
+                                                                                                        btn_64arg.tileset_down = 16;
+                                                                                                        btn_64arg.tileset_up = 16;
+                                                                                                        btn_64arg.field_3A = 16;
+                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                        btn_64arg.ypos = 3 * (_fontH + buttonsSpace);
+                                                                                                        btn_64arg.width = dword_5A50B6 * 0.3;
+                                                                                                        btn_64arg.caption = GetLocaleString(600, "YOU PLAY");
+                                                                                                        btn_64arg.caption2.clear();
+                                                                                                        btn_64arg.downCode = 0;
+                                                                                                        btn_64arg.upCode = 0;
+                                                                                                        btn_64arg.pressedCode = 0;
+                                                                                                        btn_64arg.button_id = 1227;
+                                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                                                        btn_64arg.txt_r = _iniColors[68].r;
+                                                                                                        btn_64arg.txt_g = _iniColors[68].g;
+                                                                                                        btn_64arg.txt_b = _iniColors[68].b;
+
+                                                                                                        if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                                        {
+                                                                                                            btn_64arg.xpos = dword_5A50B6 * 0.3;
+                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                            btn_64arg.width = dword_5A50B6 * 0.7;
+                                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                                                            btn_64arg.button_id = 1226;
+                                                                                                            btn_64arg.caption = "...";
+
+                                                                                                            if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                                            {
+                                                                                                                btn_64arg.tileset_down = 16;
+                                                                                                                btn_64arg.tileset_up = 16;
+                                                                                                                btn_64arg.field_3A = 16;
+                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
+                                                                                                                btn_64arg.xpos = 0;
+                                                                                                                btn_64arg.ypos = (14 * (vertMenuSpace + _fontH));
+                                                                                                                btn_64arg.width = dword_5A50B2_h;
+                                                                                                                btn_64arg.caption = GetLocaleString(2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
+                                                                                                                btn_64arg.caption2.clear();
+                                                                                                                btn_64arg.downCode = 0;
+                                                                                                                btn_64arg.upCode = 0;
+                                                                                                                btn_64arg.pressedCode = 0;
+                                                                                                                btn_64arg.button_id = 1228;
+                                                                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
+                                                                                                                btn_64arg.txt_r = _iniColors[60].r;
+                                                                                                                btn_64arg.txt_g = _iniColors[60].g;
+                                                                                                                btn_64arg.txt_b = _iniColors[60].b;
+
+                                                                                                                if ( _GameShell->network_button->Add(&btn_64arg) )
+                                                                                                                    v70 = 1;
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ( !v70 )
+    {
+        ypa_log_out("Unable to add network-button\n");
+        return false;
+    }
+    NC_STACK_button::button_66arg v228;
+    v228.butID = 1210;
+    v228.field_4 = 0;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1211;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1212;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1213;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1214;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1215;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1216;
+    _GameShell->network_button->disable(&v228);
+
+    v228.butID = 1217;
+    _GameShell->network_button->disable(&v228);
+
+    _GameShell->network_button->Hide();
+    return true;
+}
 bool NC_STACK_ypaworld::OpenGameShell()
 {
+    printf("OpenGameShell\n");
     SetGameShellVideoMode( _GameShell->IsWindowedFlag() );
 
     if ( !yw_LoadSet(46) )
@@ -2607,27 +4956,7 @@ bool NC_STACK_ypaworld::OpenGameShell()
 
     GFX::Engine.SetCursor(v233.pointer_id, 0);
 
-    int v261 = 0;
-    int v3 = 0;
-
-    const std::vector<GFX::TGFXDeviceInfo> &devices = GFX::Engine.GetDevices();
     
-    for ( const GFX::TGFXDeviceInfo &dev : devices )
-    {
-        if ( dev.isCurrent )
-        {
-            _GameShell->win3d_guid = dev.guid ;
-
-            if ( !StriCmp(dev.name, "software") )
-                _GameShell->win3d_name = GetLocaleString(2472, "2472 = Software");
-            else
-                _GameShell->win3d_name = dev.name;
-
-            v3 = v261;
-            break;
-        }
-        v261++;
-    }
 
     if ( _GameShell->GFXFlags & World::GFX_FLAG_SOFTMOUSE )
     {
@@ -2686,14 +5015,13 @@ bool NC_STACK_ypaworld::OpenGameShell()
     _GameShell->InputConfigTitle[World::INPUT_BIND_HELP]        = GetLocaleString(559, "HELP");
     _GameShell->InputConfigTitle[World::INPUT_BIND_ANALYZER]    = GetLocaleString(562, "SITUATION ANALYZER");
 
-    int v259_4;
+ 
 
     if ( _screenSize.x < 512 )
     {
-        word_5A50C0 = 2;
-        word_5A50C2 = 2;
-        v259_4 = 8;
-        word_5A50AC = 250;
+        buttonsSpace = 2;
+        vertMenuSpace = 2;
+        checkBoxWidth = 8;
         dword_5A50B2 = 210;
         word_5A50AE = 200;
         word_5A50BC = 220;
@@ -2702,10 +5030,9 @@ bool NC_STACK_ypaworld::OpenGameShell()
     }
     else
     {
-        word_5A50C0 = 3;
-        word_5A50C2 = 3;
-        v259_4 = 16;
-        word_5A50AC = 450;
+        buttonsSpace = 3;
+        vertMenuSpace = 3;
+        checkBoxWidth = 16;
         dword_5A50B2 = 380;
         word_5A50AE = 280;
         word_5A50BC = 390;
@@ -2713,2316 +5040,55 @@ bool NC_STACK_ypaworld::OpenGameShell()
         word_5A50BE = 480;
     }
 
-    int v278_4 = _screenSize.x * 0.7;
-    int v285 = _screenSize.y * 0.8;
+    menuWidth = _screenSize.x * 0.7;
+    menuHeight = _screenSize.y * 0.8;
 
-    int v278 = (_screenSize.x - v278_4) / 2;
+    posLeftPaddingX = (_screenSize.x - menuWidth) / 2;
 
-    int v273 = _fontH;
+    scaledFontHeight = _fontH;
     if ( _screenSize.x >= 512 )
-        v273 += (_screenSize.y - 384) / 2;
+        scaledFontHeight += (_screenSize.y - 384) / 2;
 
-    int v267 = 0;
-    int v269;
+    
 
     if ( _screenSize.x < 512 )
-        v269 = v285 - _fontH;
+        bottomButtonsY = menuHeight - _fontH;
     else
-        v269 = v285 - _fontH - (_screenSize.y - 384) / 2;
+        bottomButtonsY = menuHeight - _fontH - (_screenSize.y - 384) / 2;
 
-    int v270 = ( v278_4 - 2 * word_5A50C0 )/ 3;
+    button1LineWidth = ( menuWidth - 2 * buttonsSpace )/ 3;
 
-    int v258 = v269;
 
-    int v262 = v270;
 
-    int v264 = word_5A50C0 + v270;
-    int v274 = 2 * word_5A50C0 + 2 * v270;
+    bottomSecondBtnPosX = buttonsSpace + button1LineWidth;
+    bottomThirdBtnPosX = 2 * buttonsSpace + 2 * button1LineWidth;
 
-    int v276 = v269;
-    int v298 = (v278_4 - 2 * word_5A50C0) / 3;
+    printf("Creating CreateTitleControls\n");
+    if (!this->CreateTitleControls()) return false;
+    printf("Creating CreateSubBarControls\n");
+    if (!this->CreateSubBarControls()) return false;
+    printf("Creating CreateConfirmControls\n");
+    if (!this->CreateConfirmControls()) return false;    
 
-    _GameShell->titel_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)_screenSize.x},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)_screenSize.y} } );
-    if ( !_GameShell->titel_button )
-    {
-        ypa_log_out("Unable to create Titel-Button-Object\n");
-        return false;
-    }
 
-    int v70 = 0;
-    NC_STACK_button::button_64_arg btn_64arg;
+    dword_5A50B2_h = menuWidth - _fontVBScrollW;
 
-    btn_64arg.tileset_down = 19;
-    btn_64arg.tileset_up = 18;
-    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-    btn_64arg.field_3A = 30;
-    btn_64arg.xpos = _screenSize.x * 0.3328125;
-    btn_64arg.ypos = _screenSize.y * 0.2291666666666666;
-    btn_64arg.width = _screenSize.x / 3;
-    btn_64arg.caption = GetLocaleString(80, "GAME");
-    btn_64arg.caption2.clear();
-    btn_64arg.downCode = 1251;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.button_id = 1018;
-    btn_64arg.upCode = 1024;
-    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = _iniColors[68].r;
-    btn_64arg.txt_g = _iniColors[68].g;
-    btn_64arg.txt_b = _iniColors[68].b;
-
-    if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.ypos = _screenSize.y * 0.3083333333333334;
-        btn_64arg.caption = GetLocaleString(81, "NETWORK");
-        btn_64arg.caption2.clear();
-        btn_64arg.upCode = 1022;
-        btn_64arg.pressedCode = 0;
-        btn_64arg.downCode = 1251;
-        btn_64arg.button_id = 1016;
-
-        if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.xpos = _screenSize.x * 0.3328125;
-            btn_64arg.ypos = _screenSize.y * 0.4333333333333334;
-            btn_64arg.width = _screenSize.x / 3;
-            btn_64arg.caption = GetLocaleString(83, "INPUT");
-            btn_64arg.caption2.clear();
-            btn_64arg.pressedCode = 0;
-            btn_64arg.downCode = 1251;
-            btn_64arg.button_id = 1003;
-            btn_64arg.upCode = 1007;
-
-            if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.ypos = _screenSize.y * 0.5125;
-                btn_64arg.caption = GetLocaleString(84, "SETTINGS");
-                btn_64arg.caption2.clear();
-                btn_64arg.upCode = 1005;
-                btn_64arg.pressedCode = 0;
-                btn_64arg.downCode = 1251;
-                btn_64arg.button_id = 1004;
-
-                if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.ypos = _screenSize.y * 0.5916666666666667;
-                    btn_64arg.caption = GetLocaleString(85, "PLAYER");
-                    btn_64arg.caption2.clear();
-                    btn_64arg.pressedCode = 0;
-                    btn_64arg.downCode = 1251;
-                    btn_64arg.upCode = 1001;
-                    btn_64arg.button_id = 1001;
-
-                    if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.xpos = _screenSize.x * 0.890625;
-                        btn_64arg.ypos = _screenSize.y * 0.9583333333333334;
-                        btn_64arg.width = _screenSize.x * 0.1;
-                        btn_64arg.caption = GetLocaleString(86, "LOCALE");
-                        btn_64arg.caption2.clear();
-                        btn_64arg.upCode = 1011;
-                        btn_64arg.pressedCode = 0;
-                        btn_64arg.downCode = 1251;
-                        btn_64arg.button_id = 1008;
-
-                        if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.xpos = _screenSize.x * 0.3328125;
-                            btn_64arg.ypos = _screenSize.y * 0.7166666666666667;
-                            btn_64arg.width = _screenSize.x / 3;
-                            btn_64arg.caption = GetLocaleString(87, "HELP");
-                            btn_64arg.caption2.clear();
-                            btn_64arg.pressedCode = 0;
-                            btn_64arg.downCode = 1251;
-                            btn_64arg.button_id = 1017;
-                            btn_64arg.upCode = 1025;
-
-                            if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-                            {
-                                btn_64arg.ypos = _screenSize.y * 0.7958333333333333;
-                                btn_64arg.caption = GetLocaleString(88, "QUIT");
-                                btn_64arg.caption2.clear();
-                                btn_64arg.upCode = 1013;
-                                btn_64arg.pressedCode = 0;
-                                btn_64arg.downCode = 1251;
-                                btn_64arg.button_id = 1007;
-
-                                if ( _GameShell->titel_button->button_func64(&btn_64arg) )
-                                    v70 = 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add button to Titel\n");
-        return false;
-    }
-
-    NC_STACK_button::button_66arg v228;
-
-    if ( _GameShell->lang_dlls.size() <= 1 )
-    {
-        v228.field_4 = 0;
-        v228.butID = 1008;
-        _GameShell->titel_button->button_func67(&v228);
-    }
-
-    _GameShell->titel_button->Hide();
-
-    dword_5A50B6_h = _screenSize.x / 4 - 20;
-
-    _GameShell->sub_bar_button = Nucleus::CInit<NC_STACK_button>({ 
-        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)(_screenSize.y - _fontH)},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)_screenSize.x},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)_fontH}});
-
-    if ( !_GameShell->sub_bar_button )
-    {
-        ypa_log_out("Unable to create Button-Object\n");
-        return false;
-    }
-
-    v70 = 0;
-
-    btn_64arg.tileset_down = 19;
-    btn_64arg.field_3A = 30;
-    btn_64arg.ypos = 0;
-    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-    btn_64arg.tileset_up = 18;
-    btn_64arg.xpos = dword_5A50B6_h + word_5A50C0;
-    btn_64arg.width = dword_5A50B6_h;
-    btn_64arg.caption = GetLocaleString(640, "REWIND");
-    btn_64arg.caption2.clear();
-    btn_64arg.downCode = 1251;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-    btn_64arg.button_id = 1011;
-    btn_64arg.upCode = 1016;
-
-    if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.xpos = 2 * (word_5A50C0 + dword_5A50B6_h);
-        btn_64arg.caption = GetLocaleString(641, "STEP FORWARD");
-        btn_64arg.caption2.clear();
-        btn_64arg.downCode = 0;
-        btn_64arg.upCode = 1020;
-        btn_64arg.pressedCode = 1018;
-        btn_64arg.button_id = 1013;
-
-        if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.xpos = 0;
-            btn_64arg.caption = GetLocaleString(643, "START GAME");
-            btn_64arg.caption2.clear();
-            btn_64arg.upCode = 1019;
-            btn_64arg.pressedCode = 0;
-            btn_64arg.downCode = 1251;
-            btn_64arg.button_id = 1014;
-
-            if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.xpos = (_screenSize.x - 3 * dword_5A50B6_h - 2 * word_5A50C0);
-                btn_64arg.caption = GetLocaleString(2422, "GOTO LOADSAVE");
-                btn_64arg.caption2.clear();
-                btn_64arg.pressedCode = 0;
-                btn_64arg.downCode = 1251;
-                btn_64arg.button_id = 1020;
-                btn_64arg.upCode = 1026;
-
-                if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.xpos = (_screenSize.x - 2 * dword_5A50B6_h - word_5A50C0);
-                    btn_64arg.caption = GetLocaleString(642, "LOAD GAME");
-                    btn_64arg.caption2.clear();
-                    btn_64arg.upCode = 1021;
-                    btn_64arg.pressedCode = 0;
-                    btn_64arg.downCode = 1251;
-                    btn_64arg.button_id = 1015;
-
-                    if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.xpos = _screenSize.x - dword_5A50B6_h;
-                        btn_64arg.caption = GetLocaleString(644, "GO BACK");
-                        btn_64arg.caption2.clear();
-                        btn_64arg.pressedCode = 0;
-                        btn_64arg.downCode = 1251;
-                        btn_64arg.button_id = 1019;
-                        btn_64arg.upCode = 1013;
-
-                        if ( _GameShell->sub_bar_button->button_func64(&btn_64arg) )
-                        {
-                            v70 = 1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add button to sub-bar\n");
-        return false;
-    }
-
-    if ( _GameShell->sgmSaveExist != 1 )
-    {
-        v228.butID = 1015;
-        v228.field_4 = 0;
-        _GameShell->sub_bar_button->button_func67(&v228);
-    }
-
-    v228.field_4 = 0;
-    v228.butID = 1014;
-    _GameShell->sub_bar_button->button_func67(&v228);
-
-    v228.butID = 1013;
-    _GameShell->sub_bar_button->button_func67(&v228);
-
-    v228.butID = 1011;
-    _GameShell->sub_bar_button->button_func67(&v228);
-
-    _GameShell->sub_bar_button->Hide();
-
-    _GameShell->confirm_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)0},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)_screenSize.x},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)_screenSize.y}} );
-    if ( !_GameShell->confirm_button )
-    {
-        ypa_log_out("Unable to create Confirm-Button-Object\n");
-        return false;
-    }
-
-    btn_64arg.tileset_up = 18;
-    btn_64arg.tileset_down = 19;
-    btn_64arg.field_3A = 30;
-    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-    btn_64arg.xpos = _screenSize.x * 0.25;
-    btn_64arg.ypos = _screenSize.y * 0.53125;
-    btn_64arg.width = _screenSize.x * 0.125;
-    btn_64arg.caption = GetLocaleString(2, "OK");
-    btn_64arg.caption2.clear();
-    btn_64arg.pressedCode = 0;
-    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-    btn_64arg.upCode = 1350;
-    btn_64arg.downCode = 1251;
-    btn_64arg.button_id = 1300;
-    btn_64arg.txt_r = _iniColors[68].r;
-    btn_64arg.txt_g = _iniColors[68].g;
-    btn_64arg.txt_b = _iniColors[68].b;
-
-    if ( _GameShell->confirm_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.xpos = _screenSize.x * 0.625;
-        btn_64arg.caption = GetLocaleString(3, "CANCEL");
-        btn_64arg.upCode = 1351;
-        btn_64arg.caption2.clear();
-        btn_64arg.button_id = 1301;
-        btn_64arg.downCode = 1251;
-        btn_64arg.pressedCode = 0;
-
-        if ( _GameShell->confirm_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.tileset_down = 16;
-            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-            btn_64arg.tileset_up = 16;
-            btn_64arg.field_3A = 16;
-            btn_64arg.xpos = _screenSize.x * 0.25;
-            btn_64arg.ypos = _screenSize.y * 0.4375;
-            btn_64arg.caption = " ";
-            btn_64arg.caption2.clear();
-            btn_64arg.downCode = 0;
-            btn_64arg.upCode = 0;
-            btn_64arg.pressedCode = 0;
-            btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-            btn_64arg.button_id = 1302;
-            btn_64arg.width = _screenSize.x * 0.5;
-            btn_64arg.txt_r = _iniColors[60].r;
-            btn_64arg.txt_g = _iniColors[60].g;
-            btn_64arg.txt_b = _iniColors[60].b;
-
-            if ( _GameShell->confirm_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.button_id = 1303;
-                btn_64arg.ypos = _screenSize.y * 0.46875;
-                btn_64arg.caption = " ";
-                btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                btn_64arg.caption2.clear();
-
-                _GameShell->confirm_button->button_func64(&btn_64arg);
-            }
-        }
-    }
-
-    v228.butID = 1300;
-    _GameShell->confirm_button->button_func67(&v228);
-
-    v228.butID = 1301;
-    _GameShell->confirm_button->button_func67(&v228);
-
-    _GameShell->confirm_button->Hide();
-
-    dword_5A50B2_h = v278_4 - _fontVBScrollW;
-
-    GuiList::tInit args;
-    args.resizeable = false;
-    args.numEntries = 45;
-    args.shownEntries = 8;
-    args.firstShownEntry = 0;
-    args.selectedEntry = 0;
-    args.maxShownEntries = 8;
-    args.withIcon = false;
-    args.entryHeight = _fontH;
-    args.entryWidth = dword_5A50B2_h;
-    args.enabled = true;
-    args.vborder = _fontBorderH;
-    args.instantInput = false;
-    args.keyboardInput = true;
-
-    if ( !_GameShell->input_listview.Init(this, args) )
-    {
-        ypa_log_out("Unable to create Input-ListView\n");
-        return false;
-    }
-
-    _GameShell->input_listview.x = v278;
-    _GameShell->input_listview.y = v273 + (word_5A50C2 + _fontH) * 4;
     
-    _GameShell->button_input_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)v278},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)v273},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - v278)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - v273)}});
-    if ( !_GameShell->button_input_button )
-    {
-        ypa_log_out("Unable to create Input-Button\n");
-        return false;
-    }
-
-
-    v70 = 0;
-    btn_64arg.tileset_down = 16;
-    btn_64arg.tileset_up = 16;
-    btn_64arg.field_3A = 16;
-    btn_64arg.xpos = 0;
-    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-    btn_64arg.ypos = 0;
-    btn_64arg.width = v278_4;
-    btn_64arg.caption = GetLocaleString(309, "INPUT SETTINGS");
-    btn_64arg.downCode = 0;
-    btn_64arg.caption2.clear();
-    btn_64arg.upCode = 0;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.button_id = 1057;
-    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = _iniColors[68].r;
-    btn_64arg.txt_g = _iniColors[68].g;
-    btn_64arg.txt_b = _iniColors[68].b;
-
-    if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C2 + _fontH;
-        btn_64arg.caption = GetLocaleString(310, "2");
-        btn_64arg.caption2.clear();
-        btn_64arg.pressedCode = 0;
-        btn_64arg.button_id = 1058;
-        btn_64arg.txt_r = _iniColors[60].r;
-        btn_64arg.txt_g = _iniColors[60].g;
-        btn_64arg.txt_b = _iniColors[60].b;
-
-        if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
-            btn_64arg.caption = GetLocaleString(311, "3");
-            btn_64arg.caption2.clear();
-            btn_64arg.pressedCode = 0;
-            btn_64arg.button_id = 1059;
-
-            if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.xpos = 0;
-                btn_64arg.ypos = 3 * (word_5A50C2 + _fontH);
-                btn_64arg.caption = GetLocaleString(312, "4");
-                btn_64arg.caption2.clear();
-                btn_64arg.pressedCode = 0;
-                btn_64arg.button_id = 1060;
-
-                if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.tileset_down = 19;
-                    btn_64arg.field_3A = 30;
-                    btn_64arg.tileset_up = 18;
-                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                    btn_64arg.xpos = v278_4 / 6;
-                    btn_64arg.caption = "g";
-                    btn_64arg.caption2 = "g";
-                    btn_64arg.upCode = 1051;
-                    btn_64arg.pressedCode = 0;
-                    btn_64arg.flags = 0;
-                    btn_64arg.ypos = 6 * word_5A50C2 + 14 * _fontH;
-                    btn_64arg.width = v259_4;
-                    btn_64arg.downCode = 1050;
-                    btn_64arg.button_id = 1050;
-
-                    if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.tileset_down = 16;
-                        btn_64arg.tileset_up = 16;
-                        btn_64arg.field_3A = 16;
-                        btn_64arg.xpos = (v259_4 + word_5A50C0 + v278_4 / 6);
-                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                        btn_64arg.width = (v278_4 / 2 - word_5A50C0);
-                        btn_64arg.caption = GetLocaleString(305, "JOYSTICK");
-                        btn_64arg.button_id = 2;
-                        btn_64arg.caption2.clear();
-                        btn_64arg.downCode = 0;
-                        btn_64arg.upCode = 0;
-                        btn_64arg.pressedCode = 0;
-                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.txt_r = _iniColors[60].r;
-                        btn_64arg.txt_g = _iniColors[60].g;
-                        btn_64arg.txt_b = _iniColors[60].b;
-
-                        if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.tileset_down = 19;
-                            btn_64arg.field_3A = 30;
-                            btn_64arg.tileset_up = 18;
-                            btn_64arg.caption = "g";
-                            btn_64arg.caption2 = "g";
-                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                            btn_64arg.xpos = word_5A50C0 + (v278_4 / 2);
-                            btn_64arg.width = v259_4;
-                            btn_64arg.downCode = 1058;
-                            btn_64arg.pressedCode = 0;
-                            btn_64arg.button_id = 1061;
-                            btn_64arg.upCode = 1059;
-                            btn_64arg.flags = 0;
-
-                            if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                            {
-                                btn_64arg.tileset_down = 16;
-                                btn_64arg.tileset_up = 16;
-                                btn_64arg.field_3A = 16;
-                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                btn_64arg.xpos = (v259_4 + (v278_4 / 2) + 2 * word_5A50C0);
-                                btn_64arg.width = ((v278_4 / 2) - word_5A50C0);
-                                btn_64arg.caption = GetLocaleString(2433, "ALTERNATE JOYSTICK MODEL");
-                                btn_64arg.caption2.clear();
-                                btn_64arg.downCode = 0;
-                                btn_64arg.upCode = 0;
-                                btn_64arg.pressedCode = 0;
-                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                btn_64arg.button_id = 2;
-                                btn_64arg.txt_r = _iniColors[60].r;
-                                btn_64arg.txt_g = _iniColors[60].g;
-                                btn_64arg.txt_b = _iniColors[60].b;
-
-                                if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                {
-                                    btn_64arg.tileset_down = 19;
-                                    btn_64arg.field_3A = 30;
-                                    btn_64arg.tileset_up = 18;
-                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                    btn_64arg.xpos = v278_4 / 3;
-                                    btn_64arg.caption = "g";
-                                    btn_64arg.caption2 = "g";
-                                    btn_64arg.upCode = 1055;
-                                    btn_64arg.button_id = 1055;
-                                    btn_64arg.ypos = 7 * word_5A50C2 + (15 * _fontH);
-                                    btn_64arg.pressedCode = 0;
-                                    btn_64arg.width = v259_4;
-                                    btn_64arg.flags = 0;
-                                    btn_64arg.downCode = 1056;
-
-                                    if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                    {
-                                        btn_64arg.tileset_down = 16;
-                                        btn_64arg.tileset_up = 16;
-                                        btn_64arg.field_3A = 16;
-                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                        btn_64arg.xpos = (v259_4 + (v278_4 / 3) + word_5A50C0);
-                                        btn_64arg.width = v278_4 / 2;
-                                        btn_64arg.caption = GetLocaleString(306, "DISABLE FORCE FEEDBACK");
-                                        btn_64arg.button_id = 2;
-                                        btn_64arg.caption2.clear();
-                                        btn_64arg.downCode = 0;
-                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                        btn_64arg.upCode = 0;
-                                        btn_64arg.pressedCode = 0;
-
-                                        if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                        {
-                                            btn_64arg.tileset_down = 19;
-                                            btn_64arg.tileset_up = 18;
-                                            btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                            btn_64arg.field_3A = 30;
-                                            btn_64arg.xpos = v278_4 / 6;
-                                            btn_64arg.ypos = 5 * word_5A50C2 + 13 * _fontH;
-                                            btn_64arg.width = (v278_4 / 3 - word_5A50C0);
-                                            btn_64arg.caption = GetLocaleString(307, "SWITCH OFF");
-                                            btn_64arg.downCode = 1251;
-                                            btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                            btn_64arg.caption2.clear();
-                                            btn_64arg.pressedCode = 0;
-                                            btn_64arg.upCode = 1057;
-                                            btn_64arg.button_id = 1056;
-                                            btn_64arg.txt_r = _iniColors[68].r;
-                                            btn_64arg.txt_g = _iniColors[68].g;
-                                            btn_64arg.txt_b = _iniColors[68].b;
-
-                                            if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                            {
-                                                btn_64arg.xpos = word_5A50C0 + v278_4 / 2;
-                                                btn_64arg.caption = GetLocaleString(13, "RESET");
-                                                btn_64arg.caption2.clear();
-                                                btn_64arg.pressedCode = 0;
-                                                btn_64arg.upCode = 1053;
-                                                btn_64arg.button_id = 1053;
-
-                                                if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                                {
-                                                    btn_64arg.xpos = v267;
-                                                    btn_64arg.ypos = v269;
-                                                    btn_64arg.width = v270;
-                                                    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                                    btn_64arg.caption = GetLocaleString(2, "OK");
-                                                    btn_64arg.caption2.clear();
-                                                    btn_64arg.pressedCode = 0;
-                                                    btn_64arg.button_id = 1051;
-                                                    btn_64arg.upCode = 1052;
-                                                    btn_64arg.downCode = 1251;
-
-                                                    if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                                    {
-                                                        btn_64arg.xpos = v274;
-                                                        btn_64arg.ypos = v258;
-                                                        btn_64arg.width = v262;
-                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
-                                                        btn_64arg.upCode = 1250;
-                                                        btn_64arg.caption2.clear();
-                                                        btn_64arg.button_id = 1052;
-                                                        btn_64arg.pressedCode = 0;
-
-                                                        if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                                        {
-                                                            btn_64arg.xpos = v264;
-                                                            btn_64arg.ypos = v276;
-                                                            btn_64arg.width = v298;
-                                                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
-                                                            btn_64arg.upCode = 1054;
-                                                            btn_64arg.button_id = 1054;
-                                                            btn_64arg.caption2.clear();
-                                                            btn_64arg.pressedCode = 0;
-
-                                                            if ( _GameShell->button_input_button->button_func64(&btn_64arg) )
-                                                            {
-                                                                v70 = 1;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add input-button\n");
-        return false;
-    }
-
-    _GameShell->button_input_button->Hide();
-
-    int v294 = v278_4 - 3 * word_5A50C0 - _fontVBScrollW;
-    int v94 = (v278_4 - 3 * word_5A50C0 - _fontVBScrollW) * 0.6;
-
-
-    args = GuiList::tInit();
-    args.resizeable = false;
-    args.numEntries = GFX::GFXEngine::Instance.GetAvailableModes().size();
-    args.shownEntries = 4;
-    args.firstShownEntry = 0;
-    args.selectedEntry = 0;
-    args.maxShownEntries = 4;
-    args.withIcon = false;
-    args.entryHeight = _fontH;
-    args.entryWidth = v94;
-    args.enabled = true;
-    args.vborder = _fontBorderH;
-    args.instantInput = true;
-    args.keyboardInput = true;
-
-    if ( !_GameShell->video_listvw.Init(this, args) )
-    {
-        ypa_log_out("Unable to create Game-Video-Menu\n");
-        return false;
-    }
-
-    args = GuiList::tInit();
-    args.resizeable = false;
-    args.numEntries = devices.size();
-    args.shownEntries = 4;
-    args.firstShownEntry = 0;
-    args.selectedEntry = v3;
-    args.maxShownEntries = 4;
-    args.withIcon = false;
-    args.entryHeight = _fontH;
-    args.entryWidth = v94;
-    args.enabled = true;
-    args.vborder = _fontBorderH;
-    args.instantInput = true;
-    args.keyboardInput = true;
-
-    if ( !_GameShell->d3d_listvw.Init(this, args) )
-    {
-        ypa_log_out("Unable to create D3D-Menu\n");
-        return false;
-    }
-
-    _GameShell->video_button = Nucleus::CInit<NC_STACK_button>({
-        {NC_STACK_button::BTN_ATT_X, (int32_t)v278},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)v273},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - v278)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - v273)}});
-
-    if ( !_GameShell->video_button )
-    {
-        ypa_log_out("Unable to create Video-Button\n");
-        return false;
-    }
-
-    int v98 = v294 * 0.4;
-    int v99 = v278 + word_5A50C0 + v98;
-
-    _GameShell->video_listvw.x = v99;
-    _GameShell->video_listvw.y = 6 * word_5A50C2 + 6 * _fontH + v273;
-
-    _GameShell->d3d_listvw.x = v99;
-    _GameShell->d3d_listvw.y = 7 * word_5A50C2 + 7 * _fontH + v273;
-
-    v70 = 0;
-
-    btn_64arg.tileset_down = 16;
-    btn_64arg.tileset_up = 16;
-    btn_64arg.field_3A = 16;
-    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-    btn_64arg.xpos = 0;
-    btn_64arg.ypos = 0;
-    btn_64arg.width = v278_4;
-    btn_64arg.caption = GetLocaleString(327, "GAME SETTINGS");
-    btn_64arg.caption2.clear();
-    btn_64arg.downCode = 0;
-    btn_64arg.upCode = 0;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.button_id = 1168;
-    btn_64arg.txt_r = _iniColors[68].r;
-    btn_64arg.txt_g = _iniColors[68].g;
-    btn_64arg.txt_b = _iniColors[68].b;
-
-    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C2 + _fontH;
-        btn_64arg.width = v278_4;
-        btn_64arg.caption = GetLocaleString(328, "2");
-        btn_64arg.caption2.clear();
-        btn_64arg.button_id = 1169;
-        btn_64arg.txt_r = _iniColors[60].r;
-        btn_64arg.txt_g = _iniColors[60].g;
-        btn_64arg.txt_b = _iniColors[60].b;
-
-        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
-            btn_64arg.width = v278_4;
-            btn_64arg.caption = GetLocaleString(329, "3");
-            btn_64arg.button_id = 1170;
-            btn_64arg.caption2.clear();
-
-            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.xpos = 0;
-                btn_64arg.width = v278_4;
-                btn_64arg.ypos = 3 * (_fontH + word_5A50C2);
-                btn_64arg.caption = GetLocaleString(330, "4");
-                btn_64arg.caption2.clear();
-                btn_64arg.button_id = 1171;
-
-                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.tileset_down = 16;
-                    btn_64arg.tileset_up = 16;
-                    btn_64arg.field_3A = 16;
-                    btn_64arg.xpos = 0;
-                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                    btn_64arg.ypos = 5 * (_fontH + word_5A50C2);
-                    btn_64arg.width = v98;
-                    btn_64arg.caption = GetLocaleString(340, "RESOLUTION SHELL");
-                    btn_64arg.caption2.clear();
-                    btn_64arg.downCode = 0;
-                    btn_64arg.upCode = 0;
-                    btn_64arg.pressedCode = 0;
-                    btn_64arg.button_id = 2;
-                    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
-                    btn_64arg.txt_r = _iniColors[60].r;
-                    btn_64arg.txt_g = _iniColors[60].g;
-                    btn_64arg.txt_b = _iniColors[60].b;
-
-                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.tileset_down = 19;
-                        btn_64arg.field_3A = 30;
-                        btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                        btn_64arg.caption = _gfxMode.name;
-                        btn_64arg.caption2.clear();
-                        btn_64arg.pressedCode = 0;
-                        btn_64arg.tileset_up = 18;
-                        btn_64arg.downCode = 1100;
-                        btn_64arg.button_id = 1156;
-                        btn_64arg.xpos = word_5A50C0 + v294 * 0.4;
-                        btn_64arg.upCode = 1101;
-                        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.width = v294 * 0.6;
-                        btn_64arg.txt_r = _iniColors[68].r;
-                        btn_64arg.txt_g = _iniColors[68].g;
-                        btn_64arg.txt_b = _iniColors[68].b;
-
-                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.tileset_down = 16;
-                            btn_64arg.tileset_up = 16;
-                            btn_64arg.field_3A = 16;
-                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                            btn_64arg.xpos = 0;
-                            btn_64arg.ypos = 2 * (3 * (word_5A50C2 + _fontH));
-                            btn_64arg.width = v294 * 0.4;
-                            btn_64arg.caption = GetLocaleString(352, "SELECT 3D DEVICE");
-                            btn_64arg.caption2.clear();
-                            btn_64arg.downCode = 0;
-                            btn_64arg.upCode = 0;
-                            btn_64arg.pressedCode = 0;
-                            btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_TEXT;
-                            btn_64arg.button_id = 2;
-                            btn_64arg.txt_r = _iniColors[60].r;
-                            btn_64arg.txt_g = _iniColors[60].g;
-                            btn_64arg.txt_b = _iniColors[60].b;
-
-                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                            {
-                                btn_64arg.width = v294 * 0.6;
-                                btn_64arg.tileset_down = 19;
-                                btn_64arg.field_3A = 30;
-                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                btn_64arg.downCode = 1134;
-                                btn_64arg.upCode = 1135;
-                                btn_64arg.tileset_up = 18;
-                                btn_64arg.caption2.clear();
-                                btn_64arg.pressedCode = 0;
-                                btn_64arg.xpos = word_5A50C0 + v294 * 0.4;
-                                btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                btn_64arg.caption = _GameShell->win3d_name;
-                                btn_64arg.button_id = 1172;
-                                btn_64arg.txt_r = _iniColors[68].r;
-                                btn_64arg.txt_g = _iniColors[68].g;
-                                btn_64arg.txt_b = _iniColors[68].b;
-
-                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                {
-                                    int v117 = dword_5A50B2 - 6 * word_5A50C0 - 2 * v259_4;
-
-                                    btn_64arg.tileset_down = 19;
-                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                    btn_64arg.tileset_up = 18;
-                                    btn_64arg.field_3A = 30;
-                                    btn_64arg.xpos = 0;
-                                    btn_64arg.caption = "g";
-                                    btn_64arg.caption2 = "g";
-                                    btn_64arg.downCode = 1102;
-                                    btn_64arg.width = v259_4;
-                                    btn_64arg.upCode = 1103;
-                                    btn_64arg.ypos = 7 * (word_5A50C2 + _fontH);
-                                    btn_64arg.pressedCode = 0;
-                                    btn_64arg.flags = 0;
-                                    btn_64arg.button_id = 1157;
-
-                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                    {
-                                        int v120 = v117 / 2;
-
-                                        btn_64arg.tileset_down = 16;
-                                        btn_64arg.tileset_up = 16;
-                                        btn_64arg.field_3A = 16;
-                                        btn_64arg.xpos = v259_4 + word_5A50C0;
-                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                        btn_64arg.width = v120;
-                                        btn_64arg.caption = GetLocaleString(344, "FAR VIEW");
-                                        btn_64arg.caption2.clear();
-                                        btn_64arg.downCode = 0;
-                                        btn_64arg.upCode = 0;
-                                        btn_64arg.pressedCode = 0;
-                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                        btn_64arg.button_id = 2;
-                                        btn_64arg.txt_r = _iniColors[60].r;
-                                        btn_64arg.txt_g = _iniColors[60].g;
-                                        btn_64arg.txt_b = _iniColors[60].b;
-
-                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                        {
-                                            btn_64arg.tileset_down = 19;
-                                            btn_64arg.tileset_up = 18;
-                                            btn_64arg.width = v259_4;
-                                            btn_64arg.caption = "g";
-                                            btn_64arg.caption2 = "g";
-                                            btn_64arg.field_3A = 30;
-                                            btn_64arg.upCode = 1107;
-                                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                            btn_64arg.downCode = 1106;
-                                            btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
-                                            btn_64arg.pressedCode = 0;
-                                            btn_64arg.flags = 0;
-                                            btn_64arg.button_id = 1160;
-
-                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                            {
-                                                btn_64arg.tileset_down = 16;
-                                                btn_64arg.tileset_up = 16;
-                                                btn_64arg.field_3A = 16;
-                                                btn_64arg.width = v120;
-                                                btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
-                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                btn_64arg.caption = GetLocaleString(345, "HEAVEN");
-                                                btn_64arg.caption2.clear();
-                                                btn_64arg.downCode = 0;
-                                                btn_64arg.upCode = 0;
-                                                btn_64arg.pressedCode = 0;
-                                                btn_64arg.button_id = 2;
-                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                {
-                                                    btn_64arg.tileset_down = 19;
-                                                    btn_64arg.tileset_up = 18;
-                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                    btn_64arg.xpos = 0;
-                                                    btn_64arg.field_3A = 30;
-                                                    btn_64arg.width = v259_4;
-                                                    btn_64arg.caption = "g";
-                                                    btn_64arg.caption2 = "g";
-                                                    btn_64arg.pressedCode = 0;
-                                                    btn_64arg.ypos = 8 * (_fontH + word_5A50C2);
-                                                    btn_64arg.downCode = 1132;
-                                                    btn_64arg.upCode = 1133;
-                                                    btn_64arg.button_id = 1165;
-                                                    btn_64arg.flags = 0;
-
-                                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                    {
-                                                        btn_64arg.tileset_down = 16;
-                                                        btn_64arg.tileset_up = 16;
-                                                        btn_64arg.field_3A = 16;
-                                                        btn_64arg.width = v120;
-                                                        btn_64arg.xpos = v259_4 + word_5A50C0;
-                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                        btn_64arg.caption = GetLocaleString(350, "SW MOUSEPOINTER");
-                                                        btn_64arg.caption2.clear();
-                                                        btn_64arg.downCode = 0;
-                                                        btn_64arg.upCode = 0;
-                                                        btn_64arg.pressedCode = 0;
-                                                        btn_64arg.button_id = 2;
-                                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                        {
-                                                            btn_64arg.width = v259_4;
-                                                            btn_64arg.tileset_down = 19;
-                                                            btn_64arg.tileset_up = 18;
-                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                            btn_64arg.field_3A = 30;
-                                                            btn_64arg.downCode = 1130;
-                                                            btn_64arg.pressedCode = 0;
-                                                            btn_64arg.flags = 0;
-                                                            btn_64arg.caption = "g";
-                                                            btn_64arg.caption2 = "g";
-                                                            btn_64arg.upCode = 1131;
-                                                            btn_64arg.button_id = 1166;
-                                                            btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
-
-                                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                            {
-                                                                btn_64arg.tileset_down = 16;
-                                                                btn_64arg.tileset_up = 16;
-                                                                btn_64arg.field_3A = 16;
-                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                btn_64arg.xpos = 4 * word_5A50C0 + v120 + 2 * v259_4;
-                                                                btn_64arg.width = v120;
-                                                                btn_64arg.caption = GetLocaleString(2445, "Windowed Mode");
-                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                btn_64arg.caption2.clear();
-                                                                btn_64arg.downCode = 0;
-                                                                btn_64arg.upCode = 0;
-                                                                btn_64arg.pressedCode = 0;
-                                                                btn_64arg.button_id = 2;
-
-                                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                {
-                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                    btn_64arg.xpos = v259_4 + word_5A50C0;
-                                                                    btn_64arg.ypos = 9 * (word_5A50C2 + _fontH);
-                                                                    btn_64arg.width = v120;
-                                                                    btn_64arg.caption = GetLocaleString(2431, "USE 16BIT TEXTURE");
-                                                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                    btn_64arg.caption2.clear();
-                                                                    btn_64arg.downCode = 0;
-                                                                    btn_64arg.upCode = 0;
-                                                                    btn_64arg.pressedCode = 0;
-                                                                    btn_64arg.button_id = 0;
-
-                                                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                    {
-                                                                        btn_64arg.width = v259_4;
-                                                                        btn_64arg.tileset_down = 19;
-                                                                        btn_64arg.tileset_up = 18;
-                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                                        btn_64arg.pressedCode = 0;
-                                                                        btn_64arg.flags = 0;
-                                                                        btn_64arg.field_3A = 30;
-                                                                        btn_64arg.xpos = 0;
-                                                                        btn_64arg.button_id = 1150;
-                                                                        btn_64arg.caption = "g";
-                                                                        btn_64arg.caption2 = "g";
-                                                                        btn_64arg.downCode = 1113;
-                                                                        btn_64arg.upCode = 1114;
-
-                                                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                        {
-                                                                            btn_64arg.tileset_down = 16;
-                                                                            btn_64arg.tileset_up = 16;
-                                                                            btn_64arg.field_3A = 16;
-                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                            btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
-                                                                            btn_64arg.width = v120;
-                                                                            btn_64arg.caption = GetLocaleString(326, "ENABLE CD AUDIO");
-                                                                            btn_64arg.caption2.clear();
-                                                                            btn_64arg.downCode = 0;
-                                                                            btn_64arg.upCode = 0;
-                                                                            btn_64arg.pressedCode = 0;
-                                                                            btn_64arg.button_id = 0;
-                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                            {
-                                                                                btn_64arg.width = v259_4;
-                                                                                btn_64arg.tileset_down = 19;
-                                                                                btn_64arg.tileset_up = 18;
-                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                                                btn_64arg.field_3A = 30;
-                                                                                btn_64arg.downCode = 1128;
-                                                                                btn_64arg.pressedCode = 0;
-                                                                                btn_64arg.flags = 0;
-                                                                                btn_64arg.caption = "g";
-                                                                                btn_64arg.caption2 = "g";
-                                                                                btn_64arg.upCode = 1129;
-                                                                                btn_64arg.button_id = 1164;
-                                                                                btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
-
-                                                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                {
-                                                                                    btn_64arg.tileset_down = 19;
-                                                                                    btn_64arg.field_3A = 30;
-                                                                                    btn_64arg.tileset_up = 18;
-                                                                                    btn_64arg.xpos = 0;
-                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                                                    btn_64arg.width = v259_4;
-                                                                                    btn_64arg.caption = "g";
-                                                                                    btn_64arg.caption2 = "g";
-                                                                                    btn_64arg.ypos = 10 * (word_5A50C2 + _fontH);
-                                                                                    btn_64arg.downCode = 1126;
-                                                                                    btn_64arg.pressedCode = 0;
-                                                                                    btn_64arg.button_id = 1163;
-                                                                                    btn_64arg.upCode = 1127;
-                                                                                    btn_64arg.flags = 0;
-
-                                                                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                    {
-                                                                                        btn_64arg.tileset_down = 16;
-                                                                                        btn_64arg.tileset_up = 16;
-                                                                                        btn_64arg.field_3A = 16;
-                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                        btn_64arg.xpos = v259_4 + word_5A50C0;
-                                                                                        btn_64arg.width = v120 - v259_4;
-                                                                                        btn_64arg.caption = GetLocaleString(325, "ENEMY INDICATOR");
-                                                                                        btn_64arg.caption2.clear();
-                                                                                        btn_64arg.downCode = 0;
-                                                                                        btn_64arg.upCode = 0;
-                                                                                        btn_64arg.pressedCode = 0;
-                                                                                        btn_64arg.button_id = 0;
-                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                        {
-                                                                                            btn_64arg.tileset_down = 16;
-                                                                                            btn_64arg.tileset_up = 16;
-                                                                                            btn_64arg.field_3A = 16;
-                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                            btn_64arg.xpos = v120 + 2 * v259_4 + 4 * word_5A50C0;
-                                                                                            btn_64arg.width = v120;
-                                                                                            btn_64arg.caption = GetLocaleString(323, "INVERT LEFT-RIGHT DIVISION ");
-                                                                                            btn_64arg.caption2.clear();
-                                                                                            btn_64arg.downCode = 0;
-                                                                                            btn_64arg.upCode = 0;
-                                                                                            btn_64arg.pressedCode = 0;
-                                                                                            btn_64arg.button_id = 0;
-                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                            {
-                                                                                                btn_64arg.width = v259_4;
-                                                                                                btn_64arg.tileset_down = 19;
-                                                                                                btn_64arg.tileset_up = 18;
-                                                                                                btn_64arg.pressedCode = 0;
-                                                                                                btn_64arg.flags = 0;
-                                                                                                btn_64arg.caption = "g";
-                                                                                                btn_64arg.caption2 = "g";
-                                                                                                btn_64arg.field_3A = 30;
-                                                                                                btn_64arg.button_id = 1151;
-                                                                                                btn_64arg.xpos = 3 * word_5A50C0 + v259_4 + v120;
-                                                                                                btn_64arg.downCode = 1112;
-                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                                                                btn_64arg.upCode = 1111;
-
-                                                                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                {
-                                                                                                    btn_64arg.tileset_down = 16;
-                                                                                                    btn_64arg.tileset_up = 16;
-                                                                                                    btn_64arg.field_3A = 16;
-                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                    btn_64arg.xpos = 0;
-                                                                                                    btn_64arg.ypos = 11 * (_fontH + word_5A50C2);
-                                                                                                    btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                    btn_64arg.caption = GetLocaleString(343, "DESTRUCTION FX");
-                                                                                                    btn_64arg.caption2.clear();
-                                                                                                    btn_64arg.downCode = 0;
-                                                                                                    btn_64arg.upCode = 0;
-                                                                                                    btn_64arg.pressedCode = 0;
-                                                                                                    btn_64arg.button_id = 2;
-                                                                                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                                                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                    {
-                                                                                                        NC_STACK_button::Slider v225;
-
-                                                                                                        v225.value = 8;
-                                                                                                        v225.max = 16;
-                                                                                                        v225.min = 0;
-
-                                                                                                        btn_64arg.caption2.clear();
-                                                                                                        btn_64arg.tileset_down = 18;
-                                                                                                        btn_64arg.tileset_up = 18;
-                                                                                                        btn_64arg.field_3A = 30;
-                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
-                                                                                                        btn_64arg.pressedCode = 1110;
-                                                                                                        btn_64arg.button_id = 1159;
-                                                                                                        btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                        btn_64arg.caption = " ";
-                                                                                                        btn_64arg.downCode = 1108;
-                                                                                                        btn_64arg.flags = 0;
-                                                                                                        btn_64arg.field_34 = &v225;
-                                                                                                        btn_64arg.upCode = 1109;
-                                                                                                        btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.55;
-
-                                                                                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                        {
-                                                                                                            btn_64arg.tileset_down = 16;
-                                                                                                            btn_64arg.tileset_up = 16;
-                                                                                                            btn_64arg.field_3A = 16;
-                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                            btn_64arg.caption2.clear();
-                                                                                                            btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.85;
-                                                                                                            btn_64arg.downCode = 0;
-                                                                                                            btn_64arg.upCode = 0;
-                                                                                                            btn_64arg.pressedCode = 0;
-                                                                                                            btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.15;
-                                                                                                            btn_64arg.button_id = 1158;
-                                                                                                            btn_64arg.caption = " 4";
-                                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-
-                                                                                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                            {
-                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                                btn_64arg.xpos = 0;
-                                                                                                                btn_64arg.ypos = 12 * (word_5A50C2 + _fontH);
-                                                                                                                btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                btn_64arg.caption = GetLocaleString(321, "FX VOLUME");
-                                                                                                                btn_64arg.caption2.clear();
-                                                                                                                btn_64arg.downCode = 0;
-                                                                                                                btn_64arg.upCode = 0;
-                                                                                                                btn_64arg.pressedCode = 0;
-                                                                                                                btn_64arg.button_id = 2;
-                                                                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                                                                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                {
-                                                                                                                    btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.55;
-
-                                                                                                                    v225.min = 1;
-                                                                                                                    v225.max = 127;
-                                                                                                                    v225.value = 100;
-
-                                                                                                                    btn_64arg.field_3A = 30;
-                                                                                                                    btn_64arg.tileset_down = 18;
-                                                                                                                    btn_64arg.tileset_up = 18;
-                                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
-                                                                                                                    btn_64arg.caption2.clear();
-                                                                                                                    btn_64arg.button_id = 1152;
-                                                                                                                    btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                    btn_64arg.caption = " ";
-                                                                                                                    btn_64arg.downCode = 1115;
-                                                                                                                    btn_64arg.upCode = 1117;
-                                                                                                                    btn_64arg.field_34 = &v225;
-                                                                                                                    btn_64arg.pressedCode = 1116;
-                                                                                                                    btn_64arg.flags = 0;
-
-                                                                                                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                    {
-                                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                                        btn_64arg.tileset_down = 16;
-                                                                                                                        btn_64arg.tileset_up = 16;
-                                                                                                                        btn_64arg.field_3A = 16;
-                                                                                                                        btn_64arg.caption = "4";
-                                                                                                                        btn_64arg.button_id = 1153;
-                                                                                                                        btn_64arg.caption2.clear();
-                                                                                                                        btn_64arg.xpos = (2 * word_5A50C0) + (dword_5A50B2 - 5 * word_5A50C0) * 0.85;
-                                                                                                                        btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.15;
-                                                                                                                        btn_64arg.downCode = 0;
-                                                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                                                                                                        btn_64arg.upCode = 0;
-                                                                                                                        btn_64arg.pressedCode = 0;
-
-                                                                                                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                        {
-                                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                                            btn_64arg.xpos = 0;
-                                                                                                                            btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                            btn_64arg.ypos = 13 * (word_5A50C2 + _fontH);
-                                                                                                                            btn_64arg.caption = GetLocaleString(324, "CD VOLUME");
-                                                                                                                            btn_64arg.caption2.clear();
-                                                                                                                            btn_64arg.downCode = 0;
-                                                                                                                            btn_64arg.upCode = 0;
-                                                                                                                            btn_64arg.pressedCode = 0;
-                                                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                                            btn_64arg.button_id = 2;
-
-                                                                                                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                            {
-                                                                                                                                btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.55;
-                                                                                                                                v225.min = 1;
-                                                                                                                                v225.max = 127;
-                                                                                                                                v225.value = 100;
-
-                                                                                                                                btn_64arg.tileset_down = 18;
-                                                                                                                                btn_64arg.tileset_up = 18;
-                                                                                                                                btn_64arg.upCode = 1120;
-                                                                                                                                btn_64arg.field_3A = 30;
-                                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_SLIDER;
-                                                                                                                                btn_64arg.caption2.clear();
-                                                                                                                                btn_64arg.downCode = 1118;
-                                                                                                                                btn_64arg.xpos = word_5A50C0 + (dword_5A50B2 - 5 * word_5A50C0) * 0.3;
-                                                                                                                                btn_64arg.caption = " ";
-                                                                                                                                btn_64arg.pressedCode = 1119;
-                                                                                                                                btn_64arg.field_34 = &v225;
-                                                                                                                                btn_64arg.flags = 0;
-                                                                                                                                btn_64arg.button_id = 1154;
-
-                                                                                                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                                {
-                                                                                                                                    btn_64arg.tileset_down = 16;
-                                                                                                                                    btn_64arg.tileset_up = 16;
-                                                                                                                                    btn_64arg.field_3A = 16;
-                                                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                                                    btn_64arg.caption = "4";
-                                                                                                                                    btn_64arg.caption2.clear();
-                                                                                                                                    btn_64arg.downCode = 0;
-                                                                                                                                    btn_64arg.upCode = 0;
-                                                                                                                                    btn_64arg.pressedCode = 0;
-                                                                                                                                    btn_64arg.xpos = (2 * word_5A50C0) + (dword_5A50B2 - 5 * word_5A50C0) * 0.85;
-                                                                                                                                    btn_64arg.width = (dword_5A50B2 - 5 * word_5A50C0) * 0.15;
-                                                                                                                                    btn_64arg.button_id = 1155;
-                                                                                                                                    btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-
-                                                                                                                                    if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                                    {
-                                                                                                                                        btn_64arg.tileset_up = 18;
-                                                                                                                                        btn_64arg.field_3A = 30;
-                                                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                                                                                                                        btn_64arg.xpos = v267;
-                                                                                                                                        btn_64arg.ypos = v269;
-                                                                                                                                        btn_64arg.width = v270;
-                                                                                                                                        btn_64arg.tileset_down = 19;
-                                                                                                                                        btn_64arg.caption = GetLocaleString(2, "OK");
-                                                                                                                                        btn_64arg.upCode = 1124;
-                                                                                                                                        btn_64arg.caption2.clear();
-                                                                                                                                        btn_64arg.downCode = 0;
-                                                                                                                                        btn_64arg.pressedCode = 0;
-                                                                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                                                                                                                        btn_64arg.button_id = 1161;
-                                                                                                                                        btn_64arg.txt_r = _iniColors[68].r;
-                                                                                                                                        btn_64arg.txt_g = _iniColors[68].g;
-                                                                                                                                        btn_64arg.txt_b = _iniColors[68].b;
-
-                                                                                                                                        if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                                        {
-                                                                                                                                            btn_64arg.xpos = v274;
-                                                                                                                                            btn_64arg.ypos = v258;
-                                                                                                                                            btn_64arg.width = v262;
-                                                                                                                                            btn_64arg.caption = GetLocaleString(20, "HELP");
-                                                                                                                                            btn_64arg.upCode = 1250;
-                                                                                                                                            btn_64arg.caption2.clear();
-                                                                                                                                            btn_64arg.downCode = 0;
-                                                                                                                                            btn_64arg.pressedCode = 0;
-                                                                                                                                            btn_64arg.button_id = 1167;
-
-                                                                                                                                            if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                                            {
-                                                                                                                                                btn_64arg.xpos = v264;
-                                                                                                                                                btn_64arg.ypos = v276;
-                                                                                                                                                btn_64arg.width = v298;
-                                                                                                                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
-                                                                                                                                                btn_64arg.upCode = 1125;
-                                                                                                                                                btn_64arg.caption2.clear();
-                                                                                                                                                btn_64arg.downCode = 0;
-                                                                                                                                                btn_64arg.pressedCode = 0;
-                                                                                                                                                btn_64arg.button_id = 1162;
-
-                                                                                                                                                if ( _GameShell->video_button->button_func64(&btn_64arg) )
-                                                                                                                                                {
-                                                                                                                                                    v70 = 1;
-                                                                                                                                                }
-                                                                                                                                            }
-                                                                                                                                        }
-                                                                                                                                    }
-                                                                                                                                }
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add video-button\n");
-        return false;
-    }
-
-    NC_STACK_button::button_66arg v229;
-    v229.butID = 1151;
-    v229.field_4 = ((_GameShell->soundFlags & World::SF_INVERTLR) == 0) + 1;
-
-    _GameShell->video_button->button_func73(&v229);
-
-
-    _GameShell->video_button->Hide();
-
-    word_5A50B0 = v278_4;
-
-    args = GuiList::tInit();
-    args.resizeable = false;
-    args.numEntries = _GameShell->profiles.size();
-    args.shownEntries = 10;
-    args.firstShownEntry = 0;
-    args.selectedEntry = 0;
-    args.maxShownEntries = 10;
-    args.withIcon = false;
-    args.entryHeight = _fontH;
-    args.entryWidth = v278_4;
-    args.enabled = true;
-    args.vborder = _fontBorderH;
-    args.instantInput = false;
-    args.keyboardInput = true;
-
-    if ( !_GameShell->disk_listvw.Init(this, args) )
-    {
-        ypa_log_out("Unable to create disk-listview\n");
-        return false;
-    }
-
-    _GameShell->disk_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)v278},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)v273},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - v278)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - v273)}} );
-
-    if ( !_GameShell->disk_button )
-    {
-        ypa_log_out("Unable to create disk-buttonobject\n");
-        return false;
-    }
-
-    _GameShell->disk_listvw.x = v278;
-    _GameShell->disk_listvw.y = 4 * (word_5A50C2 + _fontH) + v273;
-
-    _GameShell->userNameDir = _GameShell->UserName;
-
-    _GameShell->userNameDirCursor = _GameShell->userNameDir.size();
-
-    std::string v223 = _GameShell->userNameDir;
-
-    if ( _GameShell->diskScreenMode )
-        v223 += "h";
-
-    v70 = 0;
-
-    btn_64arg.tileset_down = 16;
-    btn_64arg.tileset_up = 16;
-    btn_64arg.field_3A = 16;
-    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-
-    btn_64arg.xpos = 0;
-    btn_64arg.ypos = 0;
-    btn_64arg.width = v278_4;
-    btn_64arg.caption = GetLocaleString(367, "LOAD, CREATE OR DELETE PLAYER");
-    btn_64arg.caption2.clear();
-    btn_64arg.button_id = 1108;
-    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.txt_r = _iniColors[68].r;
-    btn_64arg.txt_g = _iniColors[68].g;
-    btn_64arg.txt_b = _iniColors[68].b;
-
-    if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C0 + _fontH;
-        btn_64arg.caption = GetLocaleString(368, "2");
-        btn_64arg.button_id = 1109;
-        btn_64arg.caption2.clear();
-        btn_64arg.txt_r = _iniColors[60].r;
-        btn_64arg.txt_g = _iniColors[60].g;
-        btn_64arg.txt_b = _iniColors[60].b;
-
-        if ( _GameShell->disk_button->button_func64(&btn_64arg))
-        {
-            btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (_fontH + word_5A50C0);
-            btn_64arg.caption = GetLocaleString(369, "3");
-            btn_64arg.caption2.clear();
-            btn_64arg.button_id = 1110;
-
-            if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.xpos = 0;
-                btn_64arg.ypos = 3 * (word_5A50C0 + _fontH);
-                btn_64arg.caption = GetLocaleString(370, "4");
-                btn_64arg.caption2.clear();
-                btn_64arg.button_id = 1111;
-
-                if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.tileset_down = 17;
-                    btn_64arg.tileset_up = 17;
-                    btn_64arg.field_3A = 17;
-                    btn_64arg.xpos = 0;
-                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                    btn_64arg.width = v278_4;
-                    btn_64arg.caption2.clear();
-                    btn_64arg.downCode = 0;
-                    btn_64arg.upCode = 0;
-                    btn_64arg.pressedCode = 0;
-                    btn_64arg.caption = v223.c_str();
-                    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                    btn_64arg.button_id = 1100;
-                    btn_64arg.ypos = 6 * word_5A50C0 + 14 * _fontH;
-
-                    if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.tileset_down = 19;
-                        btn_64arg.tileset_up = 18;
-                        btn_64arg.field_3A = 30;
-                        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                        btn_64arg.xpos = word_5A50C0 + (v278_4 - 3 * word_5A50C0) * 0.25;
-                        btn_64arg.ypos = 7 * word_5A50C0 + 15 * _fontH;
-                        btn_64arg.width = (v278_4 - 3 * word_5A50C0) * 0.25;
-                        btn_64arg.caption = GetLocaleString(360, "LOAD");
-                        btn_64arg.downCode = 1251;
-                        btn_64arg.upCode = 1160;
-                        btn_64arg.caption2.clear();
-                        btn_64arg.pressedCode = 0;
-                        btn_64arg.button_id = 1101;
-                        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                        btn_64arg.txt_r = _iniColors[68].r;
-                        btn_64arg.txt_g = _iniColors[68].g;
-                        btn_64arg.txt_b = _iniColors[68].b;
-
-                        if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.xpos = (3 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.75;
-                            btn_64arg.caption = GetLocaleString(362, "DELETE");
-                            btn_64arg.caption2.clear();
-                            btn_64arg.upCode = 1161;
-                            btn_64arg.button_id = 1102;
-
-                            if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                            {
-                                btn_64arg.xpos = 0;
-                                btn_64arg.caption = GetLocaleString(363, "NEW GAME");
-                                btn_64arg.button_id = 1103;
-                                btn_64arg.caption2.clear();
-                                btn_64arg.upCode = 1162;
-
-                                if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                                {
-                                    btn_64arg.xpos = (2 * word_5A50C0) + (v278_4 - 3 * word_5A50C0) * 0.5;
-                                    btn_64arg.caption = GetLocaleString(361, "SAVE");
-                                    btn_64arg.button_id = 1104;
-                                    btn_64arg.caption2.clear();
-                                    btn_64arg.upCode = 1163;
-
-                                    if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                                    {
-                                        btn_64arg.xpos = v267;
-                                        btn_64arg.ypos = v269;
-                                        btn_64arg.width = v270;
-                                        btn_64arg.caption = GetLocaleString(2, "OK");
-                                        btn_64arg.caption2.clear();
-                                        btn_64arg.downCode = 1251;
-                                        btn_64arg.button_id = 1105;
-                                        btn_64arg.pressedCode = 0;
-                                        btn_64arg.upCode = 1164;
-
-                                        if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                                        {
-                                            btn_64arg.ypos = v258;
-                                            btn_64arg.width = v262;
-                                            btn_64arg.xpos = v274;
-                                            btn_64arg.caption = GetLocaleString(20, "HELP");
-                                            btn_64arg.button_id = 1107;
-                                            btn_64arg.caption2.clear();
-                                            btn_64arg.upCode = 1250;
-
-                                            if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                                            {
-                                                btn_64arg.ypos = v276;
-                                                btn_64arg.width = v298;
-                                                btn_64arg.xpos = v264;
-                                                btn_64arg.caption = GetLocaleString(3, "CANCEL");
-                                                btn_64arg.button_id = 1106;
-                                                btn_64arg.caption2.clear();
-                                                btn_64arg.upCode = 1165;
-
-                                                if ( _GameShell->disk_button->button_func64(&btn_64arg) )
-                                                {
-                                                    v70 = 1;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    printf("Creating CreateInputControls\n");    
+    if (!this->CreateInputControls()) return false;
+    printf("Creating CreateVideoControls\n");
+    if (!this->CreateVideoControls()) return false;
+    printf("Creating CreateDiskControls\n");
+    if (!this->CreateDiskControls()) return false;
+    printf("Creating CreateLocaleControls\n");
+    if (!this->CreateLocaleControls()) return false;
+    printf("Creating CreateAboutControls\n");
+    if (!this->CreateAboutControls()) return false;
     
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add button to disk-buttonobject\n");
-        return false;
-    }
 
+    dword_5A50B6 = menuWidth - _fontVBScrollW;
 
-    _GameShell->disk_button->Hide();
-
-    v228.field_4 = 0;
-    v228.butID = 1105;
-    _GameShell->disk_button->button_func67(&v228);
-
-    args = GuiList::tInit();
-    args.resizeable = false;
-    args.numEntries = 10;
-    args.shownEntries = 10;
-    args.firstShownEntry = 0;
-    args.selectedEntry = 0;
-    args.maxShownEntries = 10;
-    args.withIcon = false;
-    args.entryHeight = _fontH;
-    args.entryWidth = v278_4 - _fontVBScrollW;
-    args.enabled = true;
-    args.vborder = _fontBorderH;
-    args.instantInput = false;
-    args.keyboardInput = true;
-
-
-    if ( !_GameShell->local_listvw.Init(this, args) )
-    {
-        ypa_log_out("Unable to create local-listview\n");
-        return false;
-    }
-
-    _GameShell->locale_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)v278},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)v273},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - v278)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - v273)}} );
-
-    if ( !_GameShell->locale_button )
-    {
-        ypa_log_out("Unable to create locale-buttonobject\n");
-        return false;
-    }
-
-    _GameShell->local_listvw.x = v278;
-    _GameShell->local_listvw.y = 4 * (word_5A50C2 + _fontH) + v273;
-
-    v70 = 0;
-    btn_64arg.tileset_down = 16;
-    btn_64arg.tileset_up = 16;
-    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-    btn_64arg.xpos = 0;
-    btn_64arg.width = v278_4;
-    btn_64arg.field_3A = 30;
-    btn_64arg.ypos = 0;
-    btn_64arg.caption = GetLocaleString(395, "SELECT NEW LANGUAGE");
-    btn_64arg.caption2.clear();
-    btn_64arg.downCode = 0;
-    btn_64arg.upCode = 0;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.button_id = 1253;
-    btn_64arg.txt_r = _iniColors[68].r;
-    btn_64arg.txt_g = _iniColors[68].g;
-    btn_64arg.txt_b = _iniColors[68].b;
-
-    if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.xpos = 0;
-        btn_64arg.ypos = word_5A50C2 + _fontH;
-        btn_64arg.caption = GetLocaleString(396, "2");
-        btn_64arg.caption2.clear();
-        btn_64arg.button_id = 1254;
-        btn_64arg.txt_r = _iniColors[60].r;
-        btn_64arg.txt_g = _iniColors[60].g;
-        btn_64arg.txt_b = _iniColors[60].b;
-
-        if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.xpos = 0;
-            btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
-            btn_64arg.caption = GetLocaleString(397, "3");
-            btn_64arg.caption2.clear();
-            btn_64arg.button_id = 1255;
-
-            if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.xpos = 0;
-                btn_64arg.ypos = 3 * (word_5A50C2 + _fontH);
-                btn_64arg.caption = GetLocaleString(398, "4");
-                btn_64arg.caption2.clear();
-                btn_64arg.button_id = 1256;
-
-                if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.tileset_down = 19;
-                    btn_64arg.tileset_up = 18;
-                    btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                    btn_64arg.field_3A = 30;
-                    btn_64arg.xpos = v267;
-                    btn_64arg.ypos = v269;
-                    btn_64arg.width = v270;
-                    btn_64arg.caption = GetLocaleString(2, "OK");
-                    btn_64arg.caption2.clear();
-                    btn_64arg.downCode = 0;
-                    btn_64arg.pressedCode = 0;
-                    btn_64arg.upCode = 1300;
-                    btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                    btn_64arg.button_id = 1250;
-                    btn_64arg.txt_r = _iniColors[68].r;
-                    btn_64arg.txt_g = _iniColors[68].g;
-                    btn_64arg.txt_b = _iniColors[68].b;
-
-                    if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.xpos = v274;
-                        btn_64arg.ypos = v258;
-                        btn_64arg.width = v262;
-                        btn_64arg.caption = GetLocaleString(20, "HELP");
-                        btn_64arg.button_id = 1252;
-                        btn_64arg.caption2.clear();
-                        btn_64arg.downCode = 0;
-                        btn_64arg.upCode = 1250;
-                        btn_64arg.pressedCode = 0;
-
-                        if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.xpos = v264;
-                            btn_64arg.ypos = v276;
-                            btn_64arg.width = v298;
-                            btn_64arg.caption = GetLocaleString(3, "CANCEL");
-                            btn_64arg.caption2.clear();
-                            btn_64arg.downCode = 0;
-                            btn_64arg.pressedCode = 0;
-                            btn_64arg.upCode = 1301;
-                            btn_64arg.button_id = 1251;
-
-                            if ( _GameShell->locale_button->button_func64(&btn_64arg) )
-                                v70 = 1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add locale-button\n");
-        return false;
-    }
-
-    _GameShell->locale_button->Hide();
-
-    _GameShell->about_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)0},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)v273},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - 0)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - v273)}} );
-
-    if ( !_GameShell->about_button )
-    {
-        ypa_log_out("Unable to create sound-buttonobject\n");
-        return false;
-    }
-
-    v70 = 0;
-    btn_64arg.tileset_down = 16;
-    btn_64arg.tileset_up = 16;
-    btn_64arg.field_3A = 16;
-    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-    btn_64arg.xpos = 0;
-    btn_64arg.width = (_screenSize.x - 4 * word_5A50C0);
-    btn_64arg.caption2.clear();
-    btn_64arg.downCode = 0;
-    btn_64arg.upCode = 0;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.button_id = 2;
-    btn_64arg.ypos = word_5A50C2 + _fontH;
-    btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-    btn_64arg.caption = "Fuer den Kauf dieses erzgebirgischen Qualitaetsspielzeuges bedanken sich";
-
-    if ( _GameShell->about_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.ypos = 2 * (_fontH + word_5A50C2);
-        btn_64arg.caption = "Bernd Beyreuther,";
-
-        if ( _GameShell->about_button->button_func64(&btn_64arg) )
-        {
-            btn_64arg.ypos = 3 * (word_5A50C2 + _fontH);
-            btn_64arg.caption = "Andre 'Floh' Weissflog, Andreas Flemming,";
-
-            if ( _GameShell->about_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.ypos = 4 * (_fontH + word_5A50C2);
-                btn_64arg.caption = "Stefan 'Metzel Hetzel' Karau, Sylvius Lack,";
-
-                if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.ypos = 5 * (word_5A50C2 + _fontH);
-                    btn_64arg.caption = "Dietmar 'Didi' Koebelin, Nico Nitsch, Steffen Priebus, ";
-
-                    if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.ypos = 6 * (_fontH + word_5A50C2);
-                        btn_64arg.caption = "Stefan Warias, Henrik Volkening und";
-
-                        if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.ypos = 7 * (word_5A50C2 + _fontH);
-                            btn_64arg.caption = "Uta Kapp";
-
-                            if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                            {
-                                btn_64arg.ypos = 8 * (_fontH + word_5A50C2);
-                                btn_64arg.caption = " ";
-
-                                if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                {
-                                    btn_64arg.ypos = 9 * (_fontH + word_5A50C2);
-                                    btn_64arg.caption = "Unser Dank gilt:";
-
-                                    if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                    {
-                                        btn_64arg.ypos = 10 * (_fontH + word_5A50C2);
-                                        btn_64arg.caption = "dem gesamten Microsoft Team, besonders";
-
-                                        if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                        {
-                                            btn_64arg.ypos = 11 * (word_5A50C2 + _fontH);
-                                            btn_64arg.caption = "Michael Lyons, Jonathan Sposato und Earnest Yuen";
-
-                                            if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                            {
-                                                btn_64arg.ypos = 12 * (_fontH + word_5A50C2);
-                                                btn_64arg.caption = "weiterhin";
-
-                                                if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                                {
-                                                    btn_64arg.ypos = 13 * (_fontH + word_5A50C2);
-                                                    btn_64arg.caption = "Robert Birker, Andre 'Goetz' Blechschmidt, Jan Blechschmidt, Stephan Bludau,";
-
-                                                    if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                                    {
-                                                        btn_64arg.ypos = 14 * (_fontH + word_5A50C2);
-                                                        btn_64arg.caption = "Andre Kunth, Markus Lorenz, Dirk Mansbart";
-
-                                                        if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                                        {
-                                                            btn_64arg.ypos = 15 * (word_5A50C2 + _fontH);
-                                                            btn_64arg.caption = "und natuerlich";
-
-                                                            if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                                            {
-                                                                btn_64arg.ypos = 16 * (_fontH + word_5A50C2);
-                                                                btn_64arg.caption = "        GoldEd - dPaint - SAS/C";
-
-                                                                if ( _GameShell->about_button->button_func64(&btn_64arg) )
-                                                                {
-                                                                    v70 = 1;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add about-button\n");
-        return false;
-    }
-
-    _GameShell->about_button->Hide();
-
-    dword_5A50B6 = v278_4 - _fontVBScrollW;
-
-    args = GuiList::tInit();
-    args.resizeable = false;
-    args.numEntries = 12;
-    args.shownEntries = 12;
-    args.firstShownEntry = 0;
-    args.selectedEntry = 0;
-    args.maxShownEntries = 12;
-    args.withIcon = false;
-    args.entryHeight = _fontH;
-    args.entryWidth = dword_5A50B2_h;
-    args.enabled = true;
-    args.vborder = _fontBorderH;
-    args.instantInput = false;
-    args.keyboardInput = true;
-
-    if ( !_GameShell->network_listvw.Init(this, args) )
-    {
-        ypa_log_out("Unable to create network-listview\n");
-        return false;
-    }
-
-    int nypos = v273 - _fontH;
-
-    _GameShell->network_button = Nucleus::CInit<NC_STACK_button>( {
-        {NC_STACK_button::BTN_ATT_X, (int32_t)v278},
-        {NC_STACK_button::BTN_ATT_Y, (int32_t)nypos},
-        {NC_STACK_button::BTN_ATT_W, (int32_t)(_screenSize.x - v278)},
-        {NC_STACK_button::BTN_ATT_H, (int32_t)(_screenSize.y - nypos)}});
-    if ( !_GameShell->network_button )
-    {
-        ypa_log_out("Unable to create network-buttonobject\n");
-        return false;
-    }
-
-    _GameShell->netListY = 3 * (word_5A50C2 + _fontH) + nypos;
-
-    _GameShell->network_listvw.x = v278;
-    _GameShell->network_listvw.y = _GameShell->netListY;
-
-    btn_64arg.tileset_down = 17;
-    btn_64arg.tileset_up = 17;
-    btn_64arg.field_3A = 17;
-    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-    btn_64arg.xpos = 0;
-    btn_64arg.caption = "???";
-    btn_64arg.caption2.clear();
-    btn_64arg.downCode = 0;
-    btn_64arg.upCode = 0;
-    btn_64arg.pressedCode = 0;
-    btn_64arg.ypos = 14 * (word_5A50C2 + _fontH);
-    btn_64arg.button_id = 1200;
-    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-    btn_64arg.width = dword_5A50B6 * 0.8;
-    btn_64arg.txt_r = _iniColors[60].r;
-    btn_64arg.txt_g = _iniColors[60].g;
-    btn_64arg.txt_b = _iniColors[60].b;
-
-    v70 = 0;
-
-    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-    {
-        btn_64arg.tileset_down = 19;
-        btn_64arg.tileset_up = 18;
-        btn_64arg.xpos = word_5A50C0 + dword_5A50B6 * 0.8;
-        btn_64arg.field_3A = 30;
-        btn_64arg.width = dword_5A50B6 * 0.2 - word_5A50C0;
-        btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-        btn_64arg.caption = GetLocaleString(405, "SEND");
-        btn_64arg.caption2.clear();
-        btn_64arg.upCode = 1210;
-        btn_64arg.pressedCode = 0;
-        btn_64arg.button_id = 1225;
-        btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-        btn_64arg.txt_r = _iniColors[68].r;
-        btn_64arg.txt_g = _iniColors[68].g;
-        btn_64arg.txt_b = _iniColors[68].b;
-
-        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-        {
-            int v284 = ((dword_5A50B6 - 3 * word_5A50C0) * 0.25 - 3 * word_5A50C0) * 0.25;
-
-            TileMap *v198 = GFX::Engine.GetTileset(8);
-
-            btn_64arg.tileset_down = 16;
-            btn_64arg.tileset_up = 16;
-            btn_64arg.field_3A = 16;
-            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-            btn_64arg.ypos = (15 * (word_5A50C2 + _fontH));
-            btn_64arg.xpos = 0;
-            btn_64arg.width = dword_5A50B6 * 0.4 - 2 * word_5A50C0;
-            btn_64arg.caption = GetLocaleString(424, "SELECT YOUR RACE");
-            btn_64arg.caption2.clear();
-            btn_64arg.downCode = 0;
-            btn_64arg.flags = NC_STACK_button::FLAG_TEXT | NC_STACK_button::FLAG_RALIGN;
-            btn_64arg.button_id = 1220;
-            btn_64arg.txt_r = _iniColors[60].r;
-            btn_64arg.txt_g = _iniColors[60].g;
-            btn_64arg.txt_b = _iniColors[60].b;
-
-            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-            {
-                btn_64arg.tileset_down = 8;
-                btn_64arg.tileset_up = 8;
-                btn_64arg.field_3A = 30;
-                btn_64arg.button_type = 4;
-                btn_64arg.xpos += btn_64arg.width + 2 * word_5A50C0;
-                btn_64arg.width = v198->map[65].w;
-                btn_64arg.caption = "A";
-                btn_64arg.caption2 = "B";
-                btn_64arg.button_id = 1206;
-                btn_64arg.downCode = 1204;
-                btn_64arg.flags = 0;
-
-                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                {
-                    btn_64arg.caption = "C";
-                    btn_64arg.caption2 = "D";
-                    btn_64arg.downCode = 1205;
-                    btn_64arg.button_id = 1207;
-                    btn_64arg.xpos += v284 + word_5A50C0;
-
-                    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                    {
-                        btn_64arg.caption = "E";
-                        btn_64arg.caption2 = "F";
-                        btn_64arg.downCode = 1206;
-                        btn_64arg.button_id = 1208;
-                        btn_64arg.xpos += v284 + word_5A50C0;
-
-                        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                        {
-                            btn_64arg.caption = "G";
-                            btn_64arg.caption2 = "H";
-                            btn_64arg.downCode = 1207;
-                            btn_64arg.button_id = 1209;
-                            btn_64arg.xpos += v284 + word_5A50C0;
-
-                            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                            {
-                                btn_64arg.tileset_down = 19;
-                                btn_64arg.tileset_up = 18;
-                                btn_64arg.field_3A = 30;
-                                btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                btn_64arg.xpos += v284 + 2 * word_5A50C0;
-                                btn_64arg.width = dword_5A50B2_h - btn_64arg.xpos;
-                                btn_64arg.caption = GetLocaleString(401, "BACK");
-                                btn_64arg.caption2.clear();
-                                btn_64arg.pressedCode = 0;
-                                btn_64arg.button_id = 1205;
-                                btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                btn_64arg.upCode = 1203;
-                                btn_64arg.downCode = 1251;
-                                btn_64arg.txt_r = _iniColors[68].r;
-                                btn_64arg.txt_g = _iniColors[68].g;
-                                btn_64arg.txt_b = _iniColors[68].b;
-
-                                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                {
-                                    btn_64arg.tileset_down = 16;
-                                    btn_64arg.xpos = 0;
-                                    btn_64arg.ypos = 0;
-                                    btn_64arg.tileset_up = 16;
-                                    btn_64arg.field_3A = 16;
-                                    btn_64arg.width = dword_5A50B2_h;
-                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                    btn_64arg.caption = GetLocaleString(410, "SELECT PROVIDER");
-                                    btn_64arg.caption2.clear();
-                                    btn_64arg.downCode = 0;
-                                    btn_64arg.upCode = 0;
-                                    btn_64arg.button_id = 1204;
-                                    btn_64arg.pressedCode = 0;
-                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-
-                                    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                    {
-                                        btn_64arg.xpos = 0;
-                                        btn_64arg.ypos = word_5A50C0 + _fontH;
-                                        btn_64arg.caption = GetLocaleString(425, "2");
-                                        btn_64arg.caption2.clear();
-                                        btn_64arg.button_id = 1222;
-                                        btn_64arg.txt_r = _iniColors[60].r;
-                                        btn_64arg.txt_g = _iniColors[60].g;
-                                        btn_64arg.txt_b = _iniColors[60].b;
-
-                                        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                        {
-                                            btn_64arg.xpos = 0;
-                                            btn_64arg.ypos = 2 * (_fontH + word_5A50C0);
-                                            btn_64arg.caption = GetLocaleString(426, "3");
-                                            btn_64arg.caption2.clear();
-                                            btn_64arg.button_id = 1223;
-
-                                            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                            {
-                                                btn_64arg.tileset_down = 19;
-                                                btn_64arg.tileset_up = 18;
-                                                btn_64arg.button_type = NC_STACK_button::TYPE_BUTTON;
-                                                btn_64arg.field_3A = 30;
-                                                btn_64arg.xpos = dword_5A50B6 * 0.3;
-                                                btn_64arg.ypos = (word_5A50C0 + _fontH) * 15.2;
-                                                btn_64arg.width = dword_5A50B6 * 0.4;
-                                                btn_64arg.caption = GetLocaleString(402, "NEW");
-                                                btn_64arg.button_id = 1202;
-                                                btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
-                                                btn_64arg.downCode = 1251;
-                                                btn_64arg.upCode = 1201;
-                                                btn_64arg.caption2.clear();
-                                                btn_64arg.pressedCode = 0;
-                                                btn_64arg.txt_r = _iniColors[68].r;
-                                                btn_64arg.txt_g = _iniColors[68].g;
-                                                btn_64arg.txt_b = _iniColors[68].b;
-
-                                                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                {
-                                                    btn_64arg.xpos = v267;
-                                                    btn_64arg.ypos = v269 + _fontH;
-                                                    btn_64arg.width = v270;
-                                                    btn_64arg.caption = GetLocaleString(400, "NEXT");
-                                                    btn_64arg.caption2.clear();
-                                                    btn_64arg.pressedCode = 0;
-                                                    btn_64arg.button_id = 1201;
-                                                    btn_64arg.upCode = 1200;
-
-                                                    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                    {
-                                                        btn_64arg.xpos = v274;
-                                                        btn_64arg.ypos = v258 + _fontH;
-                                                        btn_64arg.width = v262;
-                                                        btn_64arg.caption = GetLocaleString(20, "HELP");
-                                                        btn_64arg.caption2.clear();
-                                                        btn_64arg.upCode = 1250;
-                                                        btn_64arg.pressedCode = 0;
-                                                        btn_64arg.button_id = 1218;
-
-                                                        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                        {
-                                                            btn_64arg.xpos = v264;
-                                                            btn_64arg.ypos = v276 + _fontH;
-                                                            btn_64arg.width = v298;
-                                                            btn_64arg.caption = GetLocaleString(403, "CANCEL");
-                                                            btn_64arg.caption2.clear();
-                                                            btn_64arg.upCode = 1202;
-                                                            btn_64arg.pressedCode = 0;
-                                                            btn_64arg.button_id = 1203;
-
-                                                            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                            {
-                                                                int v204;
-
-                                                                if ( _screenSize.x < 512 )
-                                                                    v204 = 6 * v259_4;
-                                                                else
-                                                                    v204 = 4 * v259_4;
-
-                                                                btn_64arg.tileset_down = 16;
-                                                                btn_64arg.tileset_up = 16;
-                                                                btn_64arg.field_3A = 16;
-                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                btn_64arg.xpos = v204 + v259_4;
-                                                                btn_64arg.ypos = 4 * (_fontH + word_5A50C0);
-                                                                btn_64arg.caption = " ";
-                                                                btn_64arg.width = dword_5A50B2_h - v204 - v259_4;
-                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                btn_64arg.caption2.clear();
-                                                                btn_64arg.downCode = 0;
-                                                                btn_64arg.upCode = 0;
-                                                                btn_64arg.pressedCode = 0;
-                                                                btn_64arg.button_id = 1210;
-                                                                btn_64arg.txt_r = _iniColors[60].r;
-                                                                btn_64arg.txt_g = _iniColors[60].g;
-                                                                btn_64arg.txt_b = _iniColors[60].b;
-
-                                                                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                {
-                                                                    btn_64arg.ypos = 5 * (word_5A50C0 + _fontH);
-                                                                    btn_64arg.button_id = 1211;
-
-                                                                    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                    {
-                                                                        btn_64arg.ypos = 6 * (word_5A50C0 + _fontH);
-                                                                        btn_64arg.button_id = 1212;
-
-                                                                        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                        {
-                                                                            btn_64arg.ypos = 7 * (word_5A50C0 + _fontH);
-                                                                            btn_64arg.button_id = 1213;
-
-                                                                            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                            {
-                                                                                btn_64arg.tileset_down = 8;
-                                                                                btn_64arg.tileset_up = 8;
-                                                                                btn_64arg.field_3A = 8;
-                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                btn_64arg.xpos = 0;
-                                                                                btn_64arg.width = v204;
-                                                                                btn_64arg.caption2.clear();
-                                                                                btn_64arg.downCode = 0;
-                                                                                btn_64arg.upCode = 0;
-                                                                                btn_64arg.ypos = 4 * (_fontH + word_5A50C0);
-                                                                                btn_64arg.pressedCode = 0;
-                                                                                btn_64arg.caption = " ";
-                                                                                btn_64arg.flags = 0;
-                                                                                btn_64arg.button_id = 1214;
-                                                                                btn_64arg.txt_r = _iniColors[60].r;
-                                                                                btn_64arg.txt_g = _iniColors[60].g;
-                                                                                btn_64arg.txt_b = _iniColors[60].b;
-
-                                                                                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                {
-                                                                                    btn_64arg.ypos = 5 * (_fontH + word_5A50C0);
-                                                                                    btn_64arg.button_id = 1215;
-
-                                                                                    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                    {
-                                                                                        btn_64arg.ypos = 6 * (word_5A50C0 + _fontH);
-                                                                                        btn_64arg.button_id = 1216;
-
-                                                                                        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                        {
-                                                                                            btn_64arg.ypos = 7 * (word_5A50C0 + _fontH);
-                                                                                            btn_64arg.button_id = 1217;
-
-                                                                                            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                            {
-                                                                                                btn_64arg.tileset_down = 19;
-                                                                                                btn_64arg.tileset_up = 18;
-                                                                                                btn_64arg.xpos = v267;
-                                                                                                btn_64arg.field_3A = 30;
-                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CHECKBX;
-                                                                                                btn_64arg.width = v259_4;
-                                                                                                btn_64arg.caption = "g";
-                                                                                                btn_64arg.caption2 = "g";
-                                                                                                btn_64arg.pressedCode = 0;
-                                                                                                btn_64arg.button_id = 1219;
-                                                                                                btn_64arg.ypos = v269 + _fontH;
-                                                                                                btn_64arg.downCode = 1208;
-                                                                                                btn_64arg.flags = 0;
-                                                                                                btn_64arg.upCode = 1209;
-
-                                                                                                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                                {
-                                                                                                    btn_64arg.tileset_down = 16;
-                                                                                                    btn_64arg.tileset_up = 16;
-                                                                                                    btn_64arg.field_3A = 16;
-                                                                                                    btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                    btn_64arg.xpos += word_5A50C0 + v259_4;
-                                                                                                    btn_64arg.width = v270 - v259_4 - word_5A50C0;
-                                                                                                    btn_64arg.caption = GetLocaleString(409, "READY");
-                                                                                                    btn_64arg.caption2.clear();
-                                                                                                    btn_64arg.downCode = 0;
-                                                                                                    btn_64arg.upCode = 0;
-                                                                                                    btn_64arg.pressedCode = 0;
-                                                                                                    btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                    btn_64arg.button_id = 1221;
-
-                                                                                                    if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                                    {
-                                                                                                        btn_64arg.xpos = 0;
-                                                                                                        btn_64arg.tileset_down = 16;
-                                                                                                        btn_64arg.tileset_up = 16;
-                                                                                                        btn_64arg.field_3A = 16;
-                                                                                                        btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                        btn_64arg.ypos = 3 * (_fontH + word_5A50C0);
-                                                                                                        btn_64arg.width = dword_5A50B6 * 0.3;
-                                                                                                        btn_64arg.caption = GetLocaleString(600, "YOU PLAY");
-                                                                                                        btn_64arg.caption2.clear();
-                                                                                                        btn_64arg.downCode = 0;
-                                                                                                        btn_64arg.upCode = 0;
-                                                                                                        btn_64arg.pressedCode = 0;
-                                                                                                        btn_64arg.button_id = 1227;
-                                                                                                        btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                        btn_64arg.txt_r = _iniColors[68].r;
-                                                                                                        btn_64arg.txt_g = _iniColors[68].g;
-                                                                                                        btn_64arg.txt_b = _iniColors[68].b;
-
-                                                                                                        if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                                        {
-                                                                                                            btn_64arg.xpos = dword_5A50B6 * 0.3;
-                                                                                                            btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                            btn_64arg.width = dword_5A50B6 * 0.7;
-                                                                                                            btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                            btn_64arg.button_id = 1226;
-                                                                                                            btn_64arg.caption = "...";
-
-                                                                                                            if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                                            {
-                                                                                                                btn_64arg.tileset_down = 16;
-                                                                                                                btn_64arg.tileset_up = 16;
-                                                                                                                btn_64arg.field_3A = 16;
-                                                                                                                btn_64arg.button_type = NC_STACK_button::TYPE_CAPTION;
-                                                                                                                btn_64arg.xpos = 0;
-                                                                                                                btn_64arg.ypos = (14 * (word_5A50C2 + _fontH));
-                                                                                                                btn_64arg.width = dword_5A50B2_h;
-                                                                                                                btn_64arg.caption = GetLocaleString(2402, "PRESS SPACEBAR TO UPDATE SESSION LIST");
-                                                                                                                btn_64arg.caption2.clear();
-                                                                                                                btn_64arg.downCode = 0;
-                                                                                                                btn_64arg.upCode = 0;
-                                                                                                                btn_64arg.pressedCode = 0;
-                                                                                                                btn_64arg.button_id = 1228;
-                                                                                                                btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
-                                                                                                                btn_64arg.txt_r = _iniColors[60].r;
-                                                                                                                btn_64arg.txt_g = _iniColors[60].g;
-                                                                                                                btn_64arg.txt_b = _iniColors[60].b;
-
-                                                                                                                if ( _GameShell->network_button->button_func64(&btn_64arg) )
-                                                                                                                    v70 = 1;
-                                                                                                            }
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if ( !v70 )
-    {
-        ypa_log_out("Unable to add network-button\n");
-        return false;
-    }
-
-    v228.butID = 1210;
-    v228.field_4 = 0;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1211;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1212;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1213;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1214;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1215;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1216;
-    _GameShell->network_button->button_func67(&v228);
-
-    v228.butID = 1217;
-    _GameShell->network_button->button_func67(&v228);
-
-    _GameShell->network_button->Hide();
+    if (!this->CreateNetworkControls()) return false;
 
     switch (_GameShell->EnvMode)
     {
@@ -5039,10 +5105,10 @@ bool NC_STACK_ypaworld::OpenGameShell()
             v231.field_4 = 0;
             v231.butID = 1014;
 
-            _GameShell->sub_bar_button->button_func67(&v231);
+            _GameShell->sub_bar_button->disable(&v231);
 
             v231.butID = 1013;
-            _GameShell->sub_bar_button->button_func67(&v231);
+            _GameShell->sub_bar_button->disable(&v231);
         }
         break;
     case ENVMODE_NETPLAY:
@@ -5893,26 +5959,26 @@ void NC_STACK_ypaworld::UpdateGameShell()
         NC_STACK_button::button_66arg v18;
         v18.field_4 = 1;
         v18.butID = 1101;
-        _GameShell->disk_button->button_func66(&v18);
+        _GameShell->disk_button->show(&v18);
 
         v18.butID = 1102;
-        _GameShell->disk_button->button_func66(&v18);
+        _GameShell->disk_button->show(&v18);
 
         v18.butID = 1103;
-        _GameShell->disk_button->button_func66(&v18);
+        _GameShell->disk_button->show(&v18);
     }
     else
     {
         NC_STACK_button::button_66arg v18;
         v18.field_4 = 1;
         v18.butID = 1101;
-        _GameShell->disk_button->button_func67(&v18);
+        _GameShell->disk_button->disable(&v18);
 
         v18.butID = 1102;
-        _GameShell->disk_button->button_func67(&v18);
+        _GameShell->disk_button->disable(&v18);
 
         v18.butID = 1103;
-        _GameShell->disk_button->button_func67(&v18);
+        _GameShell->disk_button->disable(&v18);
     }
 
     NC_STACK_button::button_66arg v16;
@@ -5960,7 +6026,7 @@ void NC_STACK_ypaworld::UpdateGameShell()
     v16.field_4 = (!_GameShell->IsWindowedFlag()) + 1;
     _GameShell->video_button->button_func73(&v16);
 
-    _GameShell->video_button->button_func71(1156, _GameShell->p_YW->_gfxMode.name);
+    _GameShell->video_button->setCaption(1156, _GameShell->p_YW->_gfxMode.name);
 
     tmp = _GameShell->video_button->button_func74(1159);
     tmp->value = _GameShell->fxnumber;
@@ -6433,7 +6499,6 @@ size_t NC_STACK_ypaworld::LoadSettings(const std::string &fileName, const std::s
 
     if ( sdfMask & World::SDF_BUDDY )
         _levelInfo.Buddies.clear();
-
     if ( !ParseSettingsFile(fmt::sprintf("save:%s", fileName), sdfMask) )
     {
         ypa_log_out("Error while loading information from %s\n", fileName.c_str());

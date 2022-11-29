@@ -130,21 +130,21 @@ public:
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t button_func64(button_64_arg *arg);
+    virtual size_t Add(button_64_arg *arg);
     virtual size_t button_func65(int butID);
-    virtual size_t button_func66(button_66arg *arg);
-    virtual size_t button_func67(button_66arg *arg);
+    virtual size_t show(button_66arg *arg);
+    virtual size_t disable(button_66arg *arg);
     virtual size_t Show(); // Part of 68th method
     virtual size_t Hide(); // Part of 68th method
     virtual ResCode button_func69(TInputState *arg);
     virtual size_t button_func70(void *);
-    bool button_func71(int butID, const std::string &field_4, const std::string &field_8);
-    bool button_func71(int butID, const std::string &field_4);
-    int button_func72(int butid);
+    bool setCaption(int butID, const std::string &field_4, const std::string &field_8);
+    bool setCaption(int butID, const std::string &field_4);
+    int findButtonNumById(int butid);
     virtual void button_func73(button_66arg *arg);
     Slider * button_func74(int butid);
     size_t button_func75(int butid);
-    virtual size_t button_func76(button_arg76 *arg);
+    virtual size_t setXYWidth(button_arg76 *arg);
 
     NC_STACK_button() {
         clear();

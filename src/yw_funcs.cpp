@@ -2164,7 +2164,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 if (usr->netSel == -1 && i == 0)
                 {
                     usr->netName = str1;
-                    usr->network_button->button_func71(1200, usr->netName);
+                    usr->network_button->setCaption(1200, usr->netName);
                     usr->netSel = 0;
                 }
             }
@@ -2214,7 +2214,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                     usr->netName = yw->_globalMapRegions.MapRegions[ lvlid ].MapName;
 
-                    usr->network_button->button_func71(1200, usr->netName);
+                    usr->network_button->setCaption(1200, usr->netName);
 
                     usr->netSel = 0;
                 }
@@ -2287,7 +2287,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     usr->netName = usr->mapDescriptions[ i ].pstring;
 
-                    usr->network_button->button_func71(1200, usr->netName);
+                    usr->network_button->setCaption(1200, usr->netName);
 
                     usr->netLevelName = usr->mapDescriptions[ i ].pstring;
                     usr->netLevelID = usr->mapDescriptions[ i ].id;

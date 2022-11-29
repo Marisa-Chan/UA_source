@@ -740,7 +740,7 @@ public:
     void sub_46AA0C();
 
     void GameShellUiHandleInput();
-    void sub_4DE248(int id);
+    void ShowToolTip(int id);
     void sub_46D698();
     void yw_NetPrintStartInfo();
 
@@ -1887,6 +1887,15 @@ public:
     virtual void ypaworld_func153(bact_hudi *arg);
     virtual bool InitGameShell(UserData *usr);
     virtual void DeinitGameShell();
+    virtual bool CreateTitleControls();
+    virtual bool CreateSubBarControls();
+    virtual bool CreateConfirmControls();
+    virtual bool CreateInputControls();
+    virtual bool CreateVideoControls();
+    virtual bool CreateDiskControls();
+    virtual bool CreateLocaleControls();
+    virtual bool CreateAboutControls();
+    virtual bool CreateNetworkControls();
     virtual bool OpenGameShell();
     virtual void CloseGameShell();
     virtual void ProcessGameShell();
