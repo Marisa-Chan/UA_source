@@ -1182,15 +1182,15 @@ void UserData::ShowToolTip(int id)
     default:
         break;
 
-    case 1001:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SAVE_LOAD:
         p_YW->SetShowingTooltip(World::TIP_MENU_PROFILESCREEN);
         break;
 
-    case 1003:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_INPUT_SETTINGS:
         p_YW->SetShowingTooltip(World::TIP_MENU_INPUTSCREEN);
         break;
 
-    case 1004:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_OPTIONS:
         p_YW->SetShowingTooltip(World::TIP_MENU_VIDEOSCREEN);
         break;
 
@@ -1198,11 +1198,11 @@ void UserData::ShowToolTip(int id)
         p_YW->SetShowingTooltip(World::TIP_MENU_SOUNDSCREEN);
         break;
 
-    case 1007:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_QUIT:
         p_YW->SetShowingTooltip(World::TIP_MENU_QUIT);
         break;
 
-    case 1008:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_LANGUAGE:
         p_YW->SetShowingTooltip(World::TIP_MENU_LANGSCREEN);
         break;
 
@@ -1222,11 +1222,11 @@ void UserData::ShowToolTip(int id)
         p_YW->SetShowingTooltip(World::TIP_MENU_LOADLAST);
         break;
 
-    case 1016:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_MULTIPLAYER:
         p_YW->SetShowingTooltip(World::TIP_MENU_NETSCREEN);
         break;
 
-    case 1017:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_HELP:
     case 1052:
     case 1107:
     case 1167:
@@ -1234,7 +1234,7 @@ void UserData::ShowToolTip(int id)
         p_YW->SetShowingTooltip(World::TIP_MENU_HELP);
         break;
 
-    case 1018:
+    case UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SINGLE_PLAYER:
         p_YW->SetShowingTooltip(World::TIP_MENU_LVLSELECTMAP);
         break;
 
@@ -1495,7 +1495,7 @@ void UserData::ShowToolTip(int id)
 }
 
 // Go to options menu
-void UserData::ypaworld_func158__sub0__sub2()
+void UserData::ShowOptionsMenu()
 {
     titel_button->Hide();
 
@@ -1512,7 +1512,7 @@ void UserData::ypaworld_func158__sub0__sub2()
     video_listvw.selectedEntry = _gfxModeIndex;
 }
 
-void UserData::sub_46C3E4()
+void UserData::ShowSaveLoadMenu()
 {
     titel_button->Hide();
 
@@ -1532,7 +1532,7 @@ void UserData::sub_46C3E4()
     p_YW->GuiWinOpen( &disk_listvw );
 }
 
-void UserData::ypaworld_func158__sub0__sub1()
+void UserData::ShowInputSettings()
 {
     titel_button->Hide();
 
@@ -1637,7 +1637,7 @@ void UserData::yw_returnToTitle()
     returnToTitle = false;
 }
 
-void UserData::ypaworld_func158__sub0__sub3()
+void UserData::ShowLanguageMenu()
 {
     titel_button->Hide();
 
@@ -1678,7 +1678,7 @@ void UserData::ShowMenuMsgBox(int code, const std::string &txt1, const std::stri
 }
 
 
-void UserData::sub_46D9E0( int a2, const std::string &txt1, const std::string &txt2, int a5)
+void UserData::ShowConfirmDialog( int a2, const std::string &txt1, const std::string &txt2, int a5)
 {
     confirmMode = a2;
 
@@ -1730,12 +1730,12 @@ void ypaworld_func158__sub0__sub9(NC_STACK_ypaworld *yw)
     yw->_briefScreen.Stage = TBriefengScreen::STAGE_PLAYLEVEL;
 }
 
-void ypaworld_func158__sub0__sub12(NC_STACK_ypaworld *yw)
+void ShowInputSettings2(NC_STACK_ypaworld *yw)
 {
     yw->_briefScreen.TimerStatus = TBriefengScreen::TIMER_RESTART;
 }
 
-void ypaworld_func158__sub0__sub11(NC_STACK_ypaworld *yw)
+void ShowInputSettings1(NC_STACK_ypaworld *yw)
 {
     yw->_briefScreen.TimerStatus = TBriefengScreen::TIMER_FAST;
 }
@@ -1756,7 +1756,7 @@ void UserData::InputPageCancel()
     InputConfCancel();
 
     NC_STACK_button::button_66arg v6;
-    v6.butID = 1003;
+    v6.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_INPUT_SETTINGS;
     v6.field_4 = 2;
     sub_bar_button->button_func73(&v6);
 
@@ -2082,7 +2082,7 @@ void UserData::sub_46B0E0()
     titel_button->Show();
 }
 
-void UserData::sub_46AA0C()
+void UserData::ExitFromLanguageMenu()
 {
     EnvMode = ENVMODE_TITLE;
 
@@ -2101,7 +2101,7 @@ int NC_STACK_ypaworld::sub_449678(TInputState *struc, int kkode)
     return struc->KbdLastHit == kkode && ( (struc->ClickInf.flag & TClickBoxInf::FLAG_RM_HOLD) || _easyCheatKeys );
 }
 
-void UserData::ypaworld_func158__sub0__sub4()
+void UserData::ShowAbout()
 {
     titel_button->Hide();
 
@@ -2172,21 +2172,21 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1020;
     sub_bar_button->disable(&v410);
 
-    v410.butID = 1003;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_INPUT_SETTINGS;
     titel_button->disable(&v410);
-    v410.butID = 1004;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_OPTIONS;
     titel_button->disable(&v410);
-    v410.butID = 1001;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SAVE_LOAD;
     titel_button->disable(&v410);
-    v410.butID = 1008;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_LANGUAGE;
     titel_button->disable(&v410);
-    v410.butID = 1007;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_QUIT;
     titel_button->disable(&v410);
-    v410.butID = 1018;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SINGLE_PLAYER;
     titel_button->disable(&v410);
-    v410.butID = 1017;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_HELP;
     titel_button->disable(&v410);
-    v410.butID = 1016;
+    v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_MULTIPLAYER;
     titel_button->disable(&v410);
 
     NC_STACK_button::button_arg76 v393;
@@ -2254,31 +2254,31 @@ void UserData::GameShellUiHandleInput()
     }
     else if ( EnvMode == ENVMODE_TITLE )
     {
-        v410.butID = 1003;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_INPUT_SETTINGS;
         titel_button->show(&v410);
 
-        v410.butID = 1004;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_OPTIONS;
         titel_button->show(&v410);
 
         v410.butID = 1001;
         titel_button->show(&v410);
 
-        v410.butID = 1008;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_LANGUAGE;
         if ( lang_dlls.size() > 1 )
             titel_button->show(&v410);
         else
             titel_button->disable(&v410);
 
-        v410.butID = 1007;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_QUIT;
         titel_button->show(&v410);
 
-        v410.butID = 1017;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_HELP;
         titel_button->show(&v410);
 
-        v410.butID = 1018;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SINGLE_PLAYER;
         titel_button->show(&v410);
 
-        v410.butID = 1016;
+        v410.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_MULTIPLAYER;
         titel_button->show(&v410);
     }
     else if ( EnvMode == ENVMODE_SINGLEPLAY || EnvMode == ENVMODE_TUTORIAL )
@@ -2307,7 +2307,7 @@ void UserData::GameShellUiHandleInput()
     if ( confirmMode )
         v3 = 1;
 
-    NC_STACK_button::ResCode r = confirm_button->button_func69(Input);
+    NC_STACK_button::ResCode r = confirm_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -2457,42 +2457,42 @@ void UserData::GameShellUiHandleInput()
     if ( EnvMode == ENVMODE_TITLE && Input->HotKeyID == 43 )
         p_YW->_helpURL = p_YW->GetLocaleString(750, "help\\start.html");
 
-    r = titel_button->button_func69(Input);
+    r = titel_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
         if ( r.btn )
             ShowToolTip(r.btn);
 
-        if ( r.code == 1001 )
+        if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_SAVE_LOAD_UP )
         {
-            sub_46C3E4();
+            ShowSaveLoadMenu();
             diskEnterFromMapSelect = false;
         }
-        else if ( r.code == 1005 ) // Options button
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_OPTIONS_UP )
         {
-            ypaworld_func158__sub0__sub2();
+            ShowOptionsMenu();
         }
-        else if ( r.code == 1007 )
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_INPUT_SETTINGS_UP )
         {
-            ypaworld_func158__sub0__sub1();
+            ShowInputSettings();
         }
-        else if ( r.code == 1011 )
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_LANGUAGE_UP )
         {
-            ypaworld_func158__sub0__sub3();
+            ShowLanguageMenu();
         }
-        else if ( r.code == 1013 )
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_QUIT_UP )
         {
             titel_button->Hide();
 
             envAction.action = EnvAction::ACTION_QUIT;
             SFXEngine::SFXe.startSound(&samples1_info, 4);
         }
-        else if ( r.code == 1022 )
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_MULTIPLAYER_UP )
         {
             GameShellUiOpenNetwork();
         }
-        else if ( r.code == 1024 )
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_SINGLE_PLAYER_UP )
         {
             sub_bar_button->Show();
 
@@ -2500,7 +2500,7 @@ void UserData::GameShellUiHandleInput()
 
             EnvMode = ENVMODE_SINGLEPLAY;
         }
-        else if ( r.code == 1025 )
+        else if ( r.code == UIWidgets::MAIN_MENU_EVENT_IDS::BTN_HELP_UP )
         {
             p_YW->_helpURL = p_YW->GetLocaleString(750, "help\\start.html");
         }
@@ -2533,7 +2533,7 @@ void UserData::GameShellUiHandleInput()
         }
     }
 
-    r = sub_bar_button->button_func69(Input);
+    r = sub_bar_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -2581,26 +2581,26 @@ void UserData::GameShellUiHandleInput()
         case 1021:
             if ( ypaworld_func158__sub0__sub7() )
             {
-                sub_46D9E0(1, p_YW->GetLocaleString(2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?")
+                ShowConfirmDialog(1, p_YW->GetLocaleString(2434, "DO YOU WANT TO LOAD >>>OLDER<<< SAVEGAME?")
                             , p_YW->GetLocaleString(2439, "2439"), 0);
             }
             else
             {
-                sub_46D9E0(1, p_YW->GetLocaleString(2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?")
+                ShowConfirmDialog(1, p_YW->GetLocaleString(2482, "DO YOU WANT TO LOAD INGAME SAVEGAME?")
                             , p_YW->GetLocaleString(2440, "2440"), 0);
             }
             break;
 
         case 1016:
-            ypaworld_func158__sub0__sub12(p_YW);
+            ShowInputSettings2(p_YW);
             break;
 
         case 1020:
-            ypaworld_func158__sub0__sub11(p_YW);
+            ShowInputSettings1(p_YW);
             break;
 
         case 1026:
-            sub_46C3E4();
+            ShowSaveLoadMenu();
             diskEnterFromMapSelect = true;
             break;
 
@@ -2680,7 +2680,7 @@ void UserData::GameShellUiHandleInput()
         button_input_button->show(&v410);
     }
 
-    r = button_input_button->button_func69(Input);
+    r = button_input_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -2800,7 +2800,7 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( _settingsChangeOptions & 1 && _gfxMode != p_YW->_gfxMode && _gfxMode )
                 {
-                    sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
+                    ShowConfirmDialog(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
                                 , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
                 }
                 else
@@ -2836,7 +2836,7 @@ void UserData::GameShellUiHandleInput()
     }
 
 
-    r = video_button->button_func69(Input);
+    r = video_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -2915,7 +2915,7 @@ void UserData::GameShellUiHandleInput()
         {
             if ( (_settingsChangeOptions & 1) &&  _gfxMode != p_YW->_gfxMode && _gfxMode )
             {
-                sub_46D9E0(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
+                ShowConfirmDialog(5, p_YW->GetLocaleString(341, "DO YOU WANT TO CHANGE VIDEOMODE?")
                             , p_YW->GetLocaleString(342, "THIS CAN ... PROBLEMS"), 0);
             }
             else
@@ -3070,7 +3070,7 @@ void UserData::GameShellUiHandleInput()
                     case 1:
                         if ( diskListActiveElement )
                         {
-                            sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                            ShowConfirmDialog(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                         , p_YW->GetLocaleString(2441, "2441"), 0);
                         }
                         else if (userNameDir.size() > 0)
@@ -3086,7 +3086,7 @@ void UserData::GameShellUiHandleInput()
                     case 3:
                         if ( diskListActiveElement )
                         {
-                            sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                            ShowConfirmDialog(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                         , p_YW->GetLocaleString(2441, "2441"), 0);
                         }
                         else if (userNameDir.size() > 0)
@@ -3164,7 +3164,7 @@ void UserData::GameShellUiHandleInput()
         v108++;
     }
 
-    r = disk_button->button_func69(Input);
+    r = disk_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -3244,7 +3244,7 @@ void UserData::GameShellUiHandleInput()
             case 1:
                 if ( diskListActiveElement )
                 {
-                    sub_46D9E0(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                    ShowConfirmDialog(3, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                 , p_YW->GetLocaleString(2441, "2441"), 0);
                 }
                 else
@@ -3258,7 +3258,7 @@ void UserData::GameShellUiHandleInput()
             case 3:
                 if ( diskListActiveElement )
                 {
-                    sub_46D9E0(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
+                    ShowConfirmDialog(6, p_YW->GetLocaleString(2436, "DO YOU WANT TO OVERWRITE THIS PLAYER STATUS?")
                                 , p_YW->GetLocaleString(2441, "2441"), 0);
                 }
                 else
@@ -3414,7 +3414,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( Input->KbdLastHit == Input::KC_ESCAPE )
         {
-            sub_46AA0C();
+            ExitFromLanguageMenu();
         }
 
         if ( Input->HotKeyID == 43 )
@@ -3422,7 +3422,7 @@ void UserData::GameShellUiHandleInput()
     }
 
 
-    r = locale_button->button_func69(Input);
+    r = locale_button->ProcessWidgetsEvents(Input);
 
     if (r)
     {
@@ -3431,7 +3431,7 @@ void UserData::GameShellUiHandleInput()
 
         if ( r.code == 103 )
         {
-            sub_46AA0C();
+            ExitFromLanguageMenu();
         }
         else if ( r.code == 1250 )
         {
@@ -3443,7 +3443,7 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1301 )
         {
-            sub_46AA0C();
+            ExitFromLanguageMenu();
         }
     }
 
@@ -3461,7 +3461,7 @@ void UserData::GameShellUiHandleInput()
         local_listvw.Formate(p_YW);
     }
 
-    r = about_button->button_func69(Input);
+    r = about_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -3539,7 +3539,7 @@ void UserData::GameShellUiHandleInput()
             case 3:
                 if ( p_YW->sub_449678(Input, Input::KC_K) )
                 {
-                    ypaworld_func158__sub0__sub4();
+                    ShowAbout();
                     SFXEngine::SFXe.startSound(&samples1_info, World::SOUND_ID_SECRET);
                 }
                 else
@@ -3592,7 +3592,7 @@ void UserData::GameShellUiHandleInput()
     yw_arg181 v346;
     uamessage_fraction fracMsg;
 
-    r = network_button->button_func69(Input);
+    r = network_button->ProcessWidgetsEvents(Input);
 
     if ( r )
     {
@@ -3613,7 +3613,7 @@ void UserData::GameShellUiHandleInput()
 
         if ( r.code == 103 || r.code == 1202 )
         {
-            sub_46D698();
+            ExitFromNetworkToMain();
         }
         else if ( r.code == 1204 )
         {
@@ -3785,7 +3785,7 @@ void UserData::GameShellUiHandleInput()
 
                     if ( p_YW->_netDriver->GetPlayerCount() <= 1 )
                     {
-                        sub_46D9E0(2, p_YW->GetLocaleString(2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?")
+                        ShowConfirmDialog(2, p_YW->GetLocaleString(2435, "DO YOU REALLY WANT TO START WITHOUT OTHER PLAYERS?")
                                     , p_YW->GetLocaleString(2442, "2442"), 0);
                     }
                     else
@@ -4111,7 +4111,7 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( Input->KbdLastHit == Input::KC_ESCAPE )
             {
-                sub_46D698();
+                ExitFromNetworkToMain();
             }
 
             if ( Input->HotKeyID == 43 && !nInputMode )

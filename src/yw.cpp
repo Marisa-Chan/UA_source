@@ -2596,10 +2596,10 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
     btn_64arg.width = _screenSize.x / 3;
     btn_64arg.caption = GetLocaleString(80, "GAME");
     btn_64arg.caption2.clear();
-    btn_64arg.downCode = 1251;
+    btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
     btn_64arg.pressedCode = 0;
-    btn_64arg.button_id = 1018;
-    btn_64arg.upCode = 1024;
+    btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SINGLE_PLAYER;
+    btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_SINGLE_PLAYER_UP;
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
     btn_64arg.txt_r = _iniColors[68].r;
     btn_64arg.txt_g = _iniColors[68].g;
@@ -2610,10 +2610,10 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
         btn_64arg.ypos = _screenSize.y * 0.3083333333333334;
         btn_64arg.caption = GetLocaleString(81, "NETWORK");
         btn_64arg.caption2.clear();
-        btn_64arg.upCode = 1022;
+        btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_MULTIPLAYER_UP;
         btn_64arg.pressedCode = 0;
-        btn_64arg.downCode = 1251;
-        btn_64arg.button_id = 1016;
+        btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+        btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_MULTIPLAYER;
 
         if ( _GameShell->titel_button->Add(&btn_64arg) )
         {
@@ -2623,19 +2623,19 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
             btn_64arg.caption = GetLocaleString(83, "INPUT");
             btn_64arg.caption2.clear();
             btn_64arg.pressedCode = 0;
-            btn_64arg.downCode = 1251;
-            btn_64arg.button_id = 1003;
-            btn_64arg.upCode = 1007;
+            btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+            btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_INPUT_SETTINGS;
+            btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_INPUT_SETTINGS_UP;
 
             if ( _GameShell->titel_button->Add(&btn_64arg) )
             {
                 btn_64arg.ypos = _screenSize.y * 0.5125;
                 btn_64arg.caption = GetLocaleString(84, "SETTINGS");
                 btn_64arg.caption2.clear();
-                btn_64arg.upCode = 1005;
+                btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_OPTIONS_UP;
                 btn_64arg.pressedCode = 0;
-                btn_64arg.downCode = 1251;
-                btn_64arg.button_id = 1004;
+                btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+                btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_OPTIONS;
 
                 if ( _GameShell->titel_button->Add(&btn_64arg) )
                 {
@@ -2643,9 +2643,9 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
                     btn_64arg.caption = GetLocaleString(85, "PLAYER");
                     btn_64arg.caption2.clear();
                     btn_64arg.pressedCode = 0;
-                    btn_64arg.downCode = 1251;
-                    btn_64arg.upCode = 1001;
-                    btn_64arg.button_id = 1001;
+                    btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+                    btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_SAVE_LOAD_UP;
+                    btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_SAVE_LOAD;
 
                     if ( _GameShell->titel_button->Add(&btn_64arg) )
                     {
@@ -2654,10 +2654,10 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
                         btn_64arg.width = _screenSize.x * 0.1;
                         btn_64arg.caption = GetLocaleString(86, "LOCALE");
                         btn_64arg.caption2.clear();
-                        btn_64arg.upCode = 1011;
+                        btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_LANGUAGE_UP;
                         btn_64arg.pressedCode = 0;
-                        btn_64arg.downCode = 1251;
-                        btn_64arg.button_id = 1008;
+                        btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+                        btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_LANGUAGE;
 
                         if ( _GameShell->titel_button->Add(&btn_64arg) )
                         {
@@ -2667,19 +2667,19 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
                             btn_64arg.caption = GetLocaleString(87, "HELP");
                             btn_64arg.caption2.clear();
                             btn_64arg.pressedCode = 0;
-                            btn_64arg.downCode = 1251;
-                            btn_64arg.button_id = 1017;
-                            btn_64arg.upCode = 1025;
+                            btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+                            btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_HELP;
+                            btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_HELP_UP;
 
                             if ( _GameShell->titel_button->Add(&btn_64arg) )
                             {
                                 btn_64arg.ypos = _screenSize.y * 0.7958333333333333;
                                 btn_64arg.caption = GetLocaleString(88, "QUIT");
                                 btn_64arg.caption2.clear();
-                                btn_64arg.upCode = 1013;
+                                btn_64arg.upCode = UIWidgets::MAIN_MENU_EVENT_IDS::BTN_QUIT_UP;
                                 btn_64arg.pressedCode = 0;
-                                btn_64arg.downCode = 1251;
-                                btn_64arg.button_id = 1007;
+                                btn_64arg.downCode = UIWidgets::MAIN_MENU_EVENT_IDS::ALL_DOWN;
+                                btn_64arg.button_id = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_QUIT;
 
                                 if ( _GameShell->titel_button->Add(&btn_64arg) )
                                     v70 = 1;
@@ -2702,7 +2702,7 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
     if ( _GameShell->lang_dlls.size() <= 1 )
     {
         v228.field_4 = 0;
-        v228.butID = 1008;
+        v228.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_LANGUAGE;
         _GameShell->titel_button->disable(&v228);
     }
 

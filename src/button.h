@@ -136,7 +136,7 @@ public:
     virtual size_t disable(button_66arg *arg);
     virtual size_t Show(); // Part of 68th method
     virtual size_t Hide(); // Part of 68th method
-    virtual ResCode button_func69(TInputState *arg);
+    virtual ResCode ProcessWidgetsEvents(TInputState *arg);
     virtual size_t button_func70(void *);
     bool setCaption(int butID, const std::string &field_4, const std::string &field_8);
     bool setCaption(int butID, const std::string &field_4);
@@ -184,7 +184,7 @@ public:
 
 protected:
     void clear();
-    void sub_436F58(NC_STACK_button *btn, button_str2 *sbt);
+    void UpdateSlider(NC_STACK_button *btn, button_str2 *sbt);
     void button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
     void button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
 

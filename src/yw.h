@@ -60,6 +60,31 @@ struct uamessage_vhclDataI;
 
 struct TSectorCollision;
 
+namespace UIWidgets {
+    enum MAIN_MENU_WIDGET_IDS{
+        BTN_SAVE_LOAD = 1001,
+        BTN_INPUT_SETTINGS = 1003,
+        BTN_OPTIONS = 1004,
+        BTN_QUIT = 1007,
+        BTN_LANGUAGE = 1008,
+        BTN_MULTIPLAYER = 1016,
+        BTN_HELP = 1017,
+        BTN_SINGLE_PLAYER = 1018
+        
+    };
+    enum MAIN_MENU_EVENT_IDS{
+        ALL_DOWN = 1251,
+        BTN_SINGLE_PLAYER_UP = 1024,
+        BTN_MULTIPLAYER_UP = 1022,
+        BTN_INPUT_SETTINGS_UP = 1007,
+        BTN_OPTIONS_UP = 1005,
+        BTN_SAVE_LOAD_UP = 1001,
+        BTN_LANGUAGE_UP = 1011,
+        BTN_HELP_UP = 1025,
+        BTN_QUIT_UP = 1013
+    };
+
+}
 
 namespace World
 {
@@ -727,9 +752,9 @@ public:
     void sb_0x46ca74();
     void sb_0x46cdf8();
     void sb_0x46aa8c();
-    void sub_46C3E4();
-    void ypaworld_func158__sub0__sub1();
-    void ypaworld_func158__sub0__sub3();
+    void ShowSaveLoadMenu();
+    void ShowInputSettings();
+    void ShowLanguageMenu();
     void yw_returnToTitle();
     void InputPageCancel();
     void InputConfCancel();
@@ -737,11 +762,11 @@ public:
     void sub_46C914();
     void sub_46C748();
     void sub_46B0E0();
-    void sub_46AA0C();
+    void ExitFromLanguageMenu();
 
     void GameShellUiHandleInput();
     void ShowToolTip(int id);
-    void sub_46D698();
+    void ExitFromNetworkToMain();
     void yw_NetPrintStartInfo();
 
     void AfterMapChoose();
@@ -753,10 +778,10 @@ public:
     void yw_netcleanup();
     void sub_46DC1C();
     void sub_46D960();
-    void ypaworld_func158__sub0__sub2();
+    void ShowOptionsMenu();
     void GameShellUiOpenNetwork();
     int ypaworld_func158__sub0__sub7();
-    void sub_46D9E0(int a2, const std::string &txt1, const std::string &txt2, int a5);
+    void ShowConfirmDialog(int a2, const std::string &txt1, const std::string &txt2, int a5);
     void ShowMenuMsgBox(int code, const std::string &txt1, const std::string &txt2, bool OkOnly);
     void sub_46D2B4();
     void InputConfCopyToBackup();
@@ -764,7 +789,7 @@ public:
     void sub_46C5F0();
     void  UpdateSelected3DDevFromList();
     void sub_46A7F8();
-    void ypaworld_func158__sub0__sub4();
+    void ShowAbout();
     
 
     bool  ShellSoundsLoad();

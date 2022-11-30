@@ -1131,7 +1131,7 @@ void UserData::yw_JoinNetGame()
                 if ( p_YW->_netDriver->GetProvType() == 4 )
                 {
                     netSel = -1;
-                    sub_46D698();
+                    ExitFromNetworkToMain();
                 }
                 else
                 {
@@ -1289,7 +1289,7 @@ void UserData::JoinLobbyLessGame()
                 if ( p_YW->_netDriver->GetProvType() == 4 )
                 {
                     netSel = -1;
-                    sub_46D698();
+                    ExitFromNetworkToMain();
                 }
                 else
                 {
@@ -1385,7 +1385,7 @@ void UserData::yw_netcleanup()
     log_netlog("netcleanup:      ende\n");
 }
 
-void UserData::sub_46D698()
+void UserData::ExitFromNetworkToMain()
 {
     EnvMode = ENVMODE_TITLE;
 
@@ -1396,7 +1396,7 @@ void UserData::sub_46D698()
     p_YW->GuiWinClose(&network_listvw);
 
     NC_STACK_button::button_66arg arg66;
-    arg66.butID = 1016;
+    arg66.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_MULTIPLAYER;
     arg66.field_4 = 2;
 
     sub_bar_button->button_func73(&arg66);

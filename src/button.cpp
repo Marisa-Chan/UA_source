@@ -105,7 +105,7 @@ size_t NC_STACK_button::Deinit()
 
 
 // Update slider
-void NC_STACK_button::sub_436F58(NC_STACK_button *btn, button_str2 *sbt)
+void NC_STACK_button::UpdateSlider(NC_STACK_button *btn, button_str2 *sbt)
 {
     Slider *sbttt = sbt->field_41C;
 
@@ -258,7 +258,7 @@ size_t NC_STACK_button::Add(button_64_arg *arg)
 
             sbt.field_41C = sbtt;
 
-            sub_436F58(this, &sbt);
+            UpdateSlider(this, &sbt);
             return 1;
         }
     }
@@ -349,7 +349,7 @@ size_t NC_STACK_button::Hide()
     return 1;
 }
 
-NC_STACK_button::ResCode NC_STACK_button::button_func69(TInputState *arg)
+NC_STACK_button::ResCode NC_STACK_button::ProcessWidgetsEvents(TInputState *arg)
 {
     ResCode result = ResCode(0);
 
@@ -420,7 +420,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(TInputState *arg)
                     if ( sbttt->value > sbttt->max )
                         sbttt->value = sbttt->max;
 
-                    sub_436F58(this, &(*it));
+                    UpdateSlider(this, &(*it));
                 }
             }
         }
@@ -520,7 +520,7 @@ NC_STACK_button::ResCode NC_STACK_button::button_func69(TInputState *arg)
                         result = ResCode(sbt.pressed_id, sbt.button_id);
                     }
                 }
-                sub_436F58(this, &sbt);
+                UpdateSlider(this, &sbt);
                 break;
 
             default:
@@ -872,7 +872,7 @@ size_t NC_STACK_button::button_func75(int butid)
     int id = findButtonNumById(butid);
 
     if ( id != -1 && field_d8[id].button_type == TYPE_SLIDER)
-        sub_436F58(this, &field_d8[id]);
+        UpdateSlider(this, &field_d8[id]);
 
     return 1;
 }
