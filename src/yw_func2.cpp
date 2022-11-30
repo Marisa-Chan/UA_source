@@ -2122,7 +2122,28 @@ int ypaworld_func158__sub0__sub6(char a1)
 
 
 
+void UserData::ConnectToServer(std::string connStr){
+    fmt::printf("Connectiong to: %s\n", connStr);
+    if ( p_YW->_netDriver->Connect(connStr) )
+    {
+        if (p_YW->_netDriver->HasLobby())
+        {
+            netSelMode = NETSCREEN_SESSION_SELECT;
+            netSel = -1;
+            network_listvw.firstShownEntries = 0;
 
+            p_YW->GuiWinOpen( &network_listvw );
+        }
+        else
+        {
+            JoinLobbyLessGame();
+        }
+    }
+    else
+    {
+        printf("Can't connect: Time OUT\n");
+    }
+}
 
 
 void UserData::GameShellUiHandleInput()
@@ -2422,27 +2443,7 @@ void UserData::GameShellUiHandleInput()
             case 17:
                 {
 
-                    fmt::printf("Connectiong to: %s\n", _connString);
-
-                    if ( p_YW->_netDriver->Connect(_connString) )
-                    {
-                        if (p_YW->_netDriver->HasLobby())
-                        {
-                            netSelMode = NETSCREEN_SESSION_SELECT;
-                            netSel = -1;
-                            network_listvw.firstShownEntries = 0;
-
-                            p_YW->GuiWinOpen( &network_listvw );
-                        }
-                        else
-                        {
-                            JoinLobbyLessGame();
-                        }
-                    }
-                    else
-                    {
-                        printf("Can't connect: Time OUT\n");
-                    }
+                    ConnectToServer(_connString);
                 }
                 break;
             default:
@@ -3579,6 +3580,10 @@ void UserData::GameShellUiHandleInput()
         network_listvw.maxShownEntries = 12;
         nInputMode = 1;
         break;
+    case NETSCREEN_ENTER_IP:
+        network_listvw.maxShownEntries = 12;
+        nInputMode = 1;
+        break;
     case NETSCREEN_INSESSION:
         nInputMode = 1;
         network_listvw.maxShownEntries = 6;
@@ -3687,6 +3692,18 @@ void UserData::GameShellUiHandleInput()
             }
             break;
 
+        case NETSCREEN_ENTER_IP:
+            if ( r.code == 1200 ){
+                if ( !netName.empty() )
+                {
+                    printf("Net name not empty\n");
+                    std::string ip = netName;
+                    netName = "";
+                    ConnectToServer(ip);
+                }
+            }
+            break;
+
         case NETSCREEN_ENTER_NAME:
             if ( r.code == 1200 )
             {
@@ -3707,7 +3724,7 @@ void UserData::GameShellUiHandleInput()
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
                         netSelMode = NETSCREEN_CHOOSE_MAP;
-
+    printf("CASE1\n");
                         p_YW->GuiWinOpen( &network_listvw );
                         break;
 
@@ -3726,7 +3743,11 @@ void UserData::GameShellUiHandleInput()
 
                         _connString = connStr;
                         printf("netSelMode = %d\n", netSelMode);
-                        ShowMenuMsgBox(17, p_YW->GetLocaleString(421, "Connect to"), connStr, false);
+                        //ShowMenuMsgBox(17, p_YW->GetLocaleString(421, "Connect to"), connStr, false);
+                        netSelMode = NETSCREEN_ENTER_IP;
+                        netName = "";
+                        netNameCurPos = 0;
+
                     }
                         break;
 
@@ -3990,6 +4011,7 @@ void UserData::GameShellUiHandleInput()
         {
             if ( nInputMode )
             {
+                
                 uint32_t v233;
 
                 if ( netSelMode == NETSCREEN_ENTER_NAME )
@@ -3999,10 +4021,13 @@ void UserData::GameShellUiHandleInput()
 
                 if ( netName.size() < v233 )
                 {
+                    printf("Key code = %d\n", Input->KbdLastHit);
                     if ( Input->chr > ' ' && Input->chr != '*' )
                     {
+                        printf("str: %s, netNameCurPos %d, size %d\n", netName.c_str(), netNameCurPos, (int)netName.size());
                         if (netNameCurPos <= (int)netName.size())
                         {
+                            printf("Insert!\n");
                             netName.insert(netNameCurPos, 1, Input->chr);
                             netNameCurPos++;
                         }                           
@@ -4138,8 +4163,9 @@ void UserData::GameShellUiHandleInput()
                 }
             }
 
-            if ( netSel != -1 )
+            if ( netSel != -1 ){
                 network_listvw.PosOnSelected(netSel);
+            }
 
             Input->KbdLastHit = Input::KC_NONE;
         }
@@ -4175,7 +4201,7 @@ void UserData::GameShellUiHandleInput()
     v410.butID = 1205;
     network_button->disable(&v410);
 
-    v410.butID = 1202;
+    v410.butID = UIWidgets::NETWORK_MENU_WIDGET_IDS::BTN_CREATE_SESSTION;
     network_button->disable(&v410);
 
     v410.butID = 1203;
@@ -4269,20 +4295,20 @@ void UserData::GameShellUiHandleInput()
         network_button->show(&v410);
     }
 
-    if ( !nInputMode && netSelMode != NETSCREEN_ENTER_NAME )
+    if ( !nInputMode && (netSelMode != NETSCREEN_ENTER_NAME || netSelMode != NETSCREEN_ENTER_IP) )
     {
-        v410.butID = 1200;
+        v410.butID = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX;
         network_button->disable(&v410);
     }
     else
     {
-        v410.butID = 1200;
+        v410.butID = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX;
         network_button->show(&v410);
 
         v393.xpos = -1;
-        v393.butID = 1200;
+        v393.butID = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX;
 
-        if ( netSelMode == NETSCREEN_ENTER_NAME )
+        if ( netSelMode == NETSCREEN_ENTER_NAME || netSelMode == NETSCREEN_ENTER_IP)
         {
             v393.width = dword_5A50B6;
             v393.ypos = 3 * (vertMenuSpace + p_YW->_fontH);
@@ -4299,12 +4325,12 @@ void UserData::GameShellUiHandleInput()
         if (tmp.size() >= (size_t)netNameCurPos)
             tmp.insert(netNameCurPos, 1, '_');
         
-        network_button->setCaption(1200, tmp);
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, tmp);
     }
 
     v393.xpos = -1;
     v393.width = -1;
-    v393.butID = 1202;
+    v393.butID = UIWidgets::NETWORK_MENU_WIDGET_IDS::BTN_CREATE_SESSTION;
 
     if ( netSelMode == 2 )
     {
@@ -4325,28 +4351,28 @@ void UserData::GameShellUiHandleInput()
 
         network_button->disable(&v410);
 
-        network_button->setCaption(1204, p_YW->GetLocaleString(410, "SELECT PROVIDER"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, p_YW->GetLocaleString(410, "SELECT PROVIDER"));
 
-        network_button->setCaption(1222, p_YW->GetLocaleString(425, "2"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, p_YW->GetLocaleString(425, "2"));
 
-        network_button->setCaption(1223, p_YW->GetLocaleString(426, "3"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, p_YW->GetLocaleString(426, "3"));
         break;
 
     case NETSCREEN_SESSION_SELECT:
     {
         if ( p_YW->_netDriver->GetProvType() != 4 || !modemAskSession )
         {
-            network_button->setCaption(1202, p_YW->GetLocaleString(402, "NEW"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::BTN_CREATE_SESSTION, p_YW->GetLocaleString(402, "NEW"));
 
-            v410.butID = 1202;
+            v410.butID = UIWidgets::NETWORK_MENU_WIDGET_IDS::BTN_CREATE_SESSTION;
             network_button->show(&v410);
         }
 
-        network_button->setCaption(1204, p_YW->GetLocaleString(411, "SELECT SESSION"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, p_YW->GetLocaleString(411, "SELECT SESSION"));
 
-        network_button->setCaption(1222, p_YW->GetLocaleString(428, "5"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, p_YW->GetLocaleString(428, "5"));
 
-        network_button->setCaption(1223, p_YW->GetLocaleString(429, "6"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, p_YW->GetLocaleString(429, "6"));
 
         windp_getNameMsg msg;
         msg.id = 0;
@@ -4368,12 +4394,28 @@ void UserData::GameShellUiHandleInput()
     break;
 
     case NETSCREEN_ENTER_NAME:
-        network_button->setCaption(1204, p_YW->GetLocaleString(413, "ENTER PLAYER"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, p_YW->GetLocaleString(413, "ENTER PLAYER"));
 
-        network_button->setCaption(1222, p_YW->GetLocaleString(434, "11"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, p_YW->GetLocaleString(434, "11"));
 
-        network_button->setCaption(1223, p_YW->GetLocaleString(435, "12"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, p_YW->GetLocaleString(435, "12"));
+        
+//        if ( str17_NOT_FALSE )
+//        {
+//            v410.butID = 1202;
+//            network_button->show(&v410);
+//
+//            network_button->setCaption(1202, get_lang_string(423, "CHANGE"));
+//        }
+        break;
 
+    case NETSCREEN_ENTER_IP:
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, "Server address");
+
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, "Please enter server IP");
+
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, " ");
+        //network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, netName);
 //        if ( str17_NOT_FALSE )
 //        {
 //            v410.butID = 1202;
@@ -4390,11 +4432,11 @@ void UserData::GameShellUiHandleInput()
             network_button->disable(&v410);
         }
 
-        network_button->setCaption(1204, p_YW->GetLocaleString(412, "SELECT LEVEL"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, p_YW->GetLocaleString(412, "SELECT LEVEL"));
 
-        network_button->setCaption(1222, p_YW->GetLocaleString(431, "8"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, p_YW->GetLocaleString(431, "8"));
 
-        network_button->setCaption(1223, p_YW->GetLocaleString(432, "9"));
+        network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, p_YW->GetLocaleString(432, "9"));
         break;
 
     case NETSCREEN_INSESSION:
@@ -4585,11 +4627,11 @@ void UserData::GameShellUiHandleInput()
 
         if ( isHost )
         {
-            network_button->setCaption(1204, p_YW->GetLocaleString(414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, p_YW->GetLocaleString(414, "START GAME OR ENTER MESSAGE TO THE PLAYERS"));
 
-            network_button->setCaption(1222, p_YW->GetLocaleString(437, "14"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, p_YW->GetLocaleString(437, "14"));
 
-            network_button->setCaption(1223, p_YW->GetLocaleString(438, "15"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, p_YW->GetLocaleString(438, "15"));
 
             network_button->setCaption(1201, p_YW->GetLocaleString(407, "START"));
 
@@ -4602,11 +4644,11 @@ void UserData::GameShellUiHandleInput()
         }
         else
         {
-            network_button->setCaption(1204, p_YW->GetLocaleString(415, "WAIT FOR START OR SEND MESSAGES"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, p_YW->GetLocaleString(415, "WAIT FOR START OR SEND MESSAGES"));
 
-            network_button->setCaption(1222, p_YW->GetLocaleString(440, "17"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, p_YW->GetLocaleString(440, "17"));
 
-            network_button->setCaption(1223, p_YW->GetLocaleString(441, "18"));
+            network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, p_YW->GetLocaleString(441, "18"));
 
             if ( isWelcmd )
             {

@@ -2122,6 +2122,7 @@ char * sub_4DDF78(NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
 
 void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
+    printf("Draw list\n");
     const std::array<std::string, 2> connNames
     { "Host the game"
     , "Connect to game"};
@@ -2164,7 +2165,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 if (usr->netSel == -1 && i == 0)
                 {
                     usr->netName = str1;
-                    usr->network_button->setCaption(1200, usr->netName);
+                    usr->network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
                     usr->netSel = 0;
                 }
             }
@@ -2214,7 +2215,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                     usr->netName = yw->_globalMapRegions.MapRegions[ lvlid ].MapName;
 
-                    usr->network_button->setCaption(1200, usr->netName);
+                    usr->network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
 
                     usr->netSel = 0;
                 }
@@ -2287,7 +2288,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     usr->netName = usr->mapDescriptions[ i ].pstring;
 
-                    usr->network_button->setCaption(1200, usr->netName);
+                    usr->network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
 
                     usr->netLevelName = usr->mapDescriptions[ i ].pstring;
                     usr->netLevelID = usr->mapDescriptions[ i ].id;
@@ -2754,7 +2755,7 @@ void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr)
     case ENVMODE_NETPLAY:
         usr->network_button->button_func70(0);
 
-        if ( usr->netSelMode != UserData::NETSCREEN_ENTER_NAME )
+        if ( usr->netSelMode != UserData::NETSCREEN_ENTER_NAME && usr->netSelMode != UserData::NETSCREEN_ENTER_IP)
             ypaworld_func158__network_list_draw(yw, usr);
         break;
 

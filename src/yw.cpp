@@ -4494,12 +4494,13 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
     btn_64arg.upCode = 0;
     btn_64arg.pressedCode = 0;
     btn_64arg.ypos = 14 * (vertMenuSpace + _fontH);
-    btn_64arg.button_id = 1200;
+    btn_64arg.button_id = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX;
     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
     btn_64arg.width = dword_5A50B6 * 0.8;
     btn_64arg.txt_r = _iniColors[60].r;
     btn_64arg.txt_g = _iniColors[60].g;
     btn_64arg.txt_b = _iniColors[60].b;
+
 
     v70 = 0;
 
@@ -4550,7 +4551,7 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
                 btn_64arg.field_3A = 30;
                 btn_64arg.button_type = 4;
                 btn_64arg.xpos += btn_64arg.width + 2 * buttonsSpace;
-                btn_64arg.width = v198->map[65].w;
+                btn_64arg.width = v198->map[65].w/2;
                 btn_64arg.caption = "A";
                 btn_64arg.caption2 = "B";
                 btn_64arg.button_id = 1206;
@@ -4613,7 +4614,7 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
                                     btn_64arg.caption2.clear();
                                     btn_64arg.downCode = 0;
                                     btn_64arg.upCode = 0;
-                                    btn_64arg.button_id = 1204;
+                                    btn_64arg.button_id = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE;
                                     btn_64arg.pressedCode = 0;
                                     btn_64arg.flags = NC_STACK_button::FLAG_TEXT;
 
@@ -4623,7 +4624,7 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
                                         btn_64arg.ypos = buttonsSpace + _fontH;
                                         btn_64arg.caption = GetLocaleString(425, "2");
                                         btn_64arg.caption2.clear();
-                                        btn_64arg.button_id = 1222;
+                                        btn_64arg.button_id = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1;
                                         btn_64arg.txt_r = _iniColors[60].r;
                                         btn_64arg.txt_g = _iniColors[60].g;
                                         btn_64arg.txt_b = _iniColors[60].b;
@@ -4634,7 +4635,7 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
                                             btn_64arg.ypos = 2 * (_fontH + buttonsSpace);
                                             btn_64arg.caption = GetLocaleString(426, "3");
                                             btn_64arg.caption2.clear();
-                                            btn_64arg.button_id = 1223;
+                                            btn_64arg.button_id = UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2;
 
                                             if ( _GameShell->network_button->Add(&btn_64arg) )
                                             {
@@ -4646,7 +4647,7 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
                                                 btn_64arg.ypos = (buttonsSpace + _fontH) * 15.2;
                                                 btn_64arg.width = dword_5A50B6 * 0.4;
                                                 btn_64arg.caption = GetLocaleString(402, "NEW");
-                                                btn_64arg.button_id = 1202;
+                                                btn_64arg.button_id = UIWidgets::NETWORK_MENU_WIDGET_IDS::BTN_CREATE_SESSTION;
                                                 btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
                                                 btn_64arg.downCode = 1251;
                                                 btn_64arg.upCode = 1201;

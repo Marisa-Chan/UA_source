@@ -83,6 +83,13 @@ namespace UIWidgets {
         BTN_HELP_UP = 1025,
         BTN_QUIT_UP = 1013
     };
+    enum NETWORK_MENU_WIDGET_IDS{
+        TXT_MENU_TITLE = 1204,
+        TXT_MENU_DESCR_LINE1 = 1222,
+        TXT_MENU_DESCR_LINE2 = 1223,
+        BTN_CREATE_SESSTION = 1202,
+        TXTBOX = 1200
+    };
 
 }
 
@@ -455,6 +462,7 @@ public:
         NETSCREEN_MODE_SELECT = 0,
         NETSCREEN_SESSION_SELECT = 1, // Only on dedicated server
         NETSCREEN_ENTER_NAME  = 2,
+        NETSCREEN_ENTER_IP = 5,
         NETSCREEN_CHOOSE_MAP  = 3,
         NETSCREEN_INSESSION = 4,
     };
@@ -765,6 +773,7 @@ public:
     void ExitFromLanguageMenu();
 
     void GameShellUiHandleInput();
+    void ConnectToServer(std::string connStr);
     void ShowToolTip(int id);
     void ExitFromNetworkToMain();
     void yw_NetPrintStartInfo();
