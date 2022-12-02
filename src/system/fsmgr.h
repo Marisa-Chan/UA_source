@@ -8,7 +8,9 @@
 
 #include <string>
 #include <list>
+#include <memory>
 #include <inttypes.h>
+#include <stdio.h>
 
 namespace FSMgr
 {
@@ -185,8 +187,8 @@ public:
     FileHandle(const std::string &diskPath, const std::string &mode);
     virtual ~FileHandle();
     
-    FileHandle(FileHandle &&b);
-    FileHandle& operator=(FileHandle &&b);
+    FileHandle(FileHandle &&b) = default;
+    FileHandle& operator=(FileHandle &&b) = default;
     
     FileHandle(FileHandle *b, bool del = true);
     
@@ -221,7 +223,9 @@ public:
     }
 
 protected:
-    FILE *hndl = NULL;
+    typedef std::unique_ptr<FILE, decltype(&fclose)> __FPtr;
+    
+    __FPtr hndl = {nullptr, nullptr};
     bool _writeMode = false;
     
 };

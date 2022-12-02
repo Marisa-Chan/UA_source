@@ -132,7 +132,7 @@ struct TVhclProto
         return false;
     }
     
-    
+    int32_t Index = -1;
     int model_id = 0;
     uint8_t disable_enable_bitmask = 0;
     int8_t weapon = 0;
@@ -275,6 +275,7 @@ struct TBuildingProto
         vec3d Dir;
     };
     
+    int32_t Index = -1;
     uint8_t SecType = 0;
     uint8_t EnableMask = 0;
     uint8_t ModelID = 0;

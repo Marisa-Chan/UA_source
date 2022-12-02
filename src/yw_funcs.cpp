@@ -12,7 +12,6 @@
 #include "env.h"
 #include "loaders.h"
 #include "system/inivals.h"
-#include "world/stringids.h"
 
 extern GuiList stru_5C91D0;
 
@@ -1421,7 +1420,7 @@ void NC_STACK_ypaworld::DrawMapRegionsTutorial()
             {
                 if ( !_globalMapRegions.MapRegions[ _globalMapRegions.SelectedRegion ].MapName.empty() )
                 {
-                    const std::string &v12 = GetLocaleString(_globalMapRegions.SelectedRegion + 1800, _globalMapRegions.MapRegions[ _globalMapRegions.SelectedRegion ].MapName);
+                    const std::string v12 = GetLevelName(_globalMapRegions.SelectedRegion);
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
@@ -1505,7 +1504,7 @@ void NC_STACK_ypaworld::DrawMapRegions()
             {
                 if ( !_globalMapRegions.MapRegions[ _globalMapRegions.SelectedRegion ].MapName.empty() )
                 {
-                    const std::string &v12 = GetLocaleString(_globalMapRegions.SelectedRegion + 1800, _globalMapRegions.MapRegions[ _globalMapRegions.SelectedRegion ].MapName);
+                    const std::string v12 = GetLevelName(_globalMapRegions.SelectedRegion);
 
                     FontUA::select_tileset(&v11, 15);
                     FontUA::set_xpos(&v11, 0);
@@ -1524,7 +1523,7 @@ void NC_STACK_ypaworld::DrawMapRegions()
 
             GFX::Engine.raster_func209(&v19);
         }
-        const std::string &v13 = GetLocaleString(_tipOfDayId + 2490, " ");
+        const std::string &v13 = Locale::Text::ToD(_tipOfDayId, " ");
         splashScreen_OutText(this, v13, _screenSize.x / 20, _screenSize.x / 20);
     }
 }
@@ -1603,7 +1602,7 @@ bool NC_STACK_ypaworld::InitBriefing(int lvlid)
     if ( !_briefScreen.Desc.IsOk() )
         goto ON_ERR;
 
-    _briefScreen.BriefingText = GetLocaleString(_levelInfo.LevelID + 2100, "<NO INFO AVAILABLE>");
+    _briefScreen.BriefingText = Locale::Text::MissionText(_levelInfo.LevelID, "<NO INFO AVAILABLE>");
 
     if ( mproto.Mbmaps.empty() )
         goto ON_ERR;
@@ -2089,7 +2088,7 @@ void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         std::string name;
 
         if ( !StriCmp(dev.name, "software") )
-            name = yw->GetLocaleString(2472, "2472 = Software");
+            name = Locale::Text::Advanced(Locale::ADV_SOFTWARE);
         else
             name = dev.name;
 
@@ -2186,7 +2185,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                 int lvlid = std::stoi(str1);
 
-                str1 = yw->GetLocaleString(lvlid + 1800, yw->_globalMapRegions.MapRegions[ lvlid ].MapName);
+                str1 = yw->GetLevelName(lvlid);
 
                 if (msg.name[j] == 0)
                     str4 = "";

@@ -63,6 +63,8 @@ OBJS =  \
 	iwimp.cpp\
 	log.cpp\
 	loaders.cpp\
+	locale/default.cpp\
+	locale/locale.cpp\
 	lstvw.cpp\
 	main.cpp\
 	IFFile.cpp\
@@ -99,7 +101,6 @@ OBJS =  \
 	winp.cpp\
 	wintimer.cpp\
 	world/analyzer.cpp\
-	world/defstr.cpp\
 	world/luaevents.cpp\
 	world/parsers.cpp\
 	world/nparticle.cpp\

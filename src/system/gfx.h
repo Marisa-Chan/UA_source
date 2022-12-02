@@ -624,7 +624,7 @@ public:
     virtual void windd_func322(windd_dlgBox *dlgBox);
     
     virtual const std::vector<TGFXDeviceInfo>& GetDevices();
-    virtual void SetDeviceByGUID(const std::string &guid);
+    virtual void SetDeviceByGUID(const std::string &guid, bool writefile = true);
 
     
     void MeshMakeVBO(TMesh *);

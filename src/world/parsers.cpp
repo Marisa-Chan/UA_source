@@ -40,7 +40,7 @@ bool UserParser::IsScope(ScriptParser::Parser &parser, const std::string &word, 
     if (!_o._GameShell->remoteMode)
     {
         if ( !ReadUserNameFile("callsign.def") )
-            _o._GameShell->netPlayerName =  _o.GetLocaleString(366, "UNNAMED");
+            _o._GameShell->netPlayerName =  Locale::Text::Dialogs(Locale::DLG_P_UNNAMED);
     }
     return true;
 }
@@ -1067,6 +1067,8 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
         _vhcl = &_o._vhclProtos.at(_vhclID);
         
         *_vhcl = TVhclProto();
+        
+        _vhcl->Index = _vhclID;
 
         _vhcl->model_id = BACT_TYPES_TANK;
         _vhcl->weapon = -1;
@@ -1125,7 +1127,9 @@ bool VhclProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &w
     {
         _vhclID = parser.stol(opt, NULL, 0);
         _vhcl = &_o._vhclProtos.at(_vhclID);
-
+        
+        _vhcl->Index = _vhclID;
+        
         _o._upgradeVehicleId = _vhclID;
         return true;
     }
@@ -1493,6 +1497,7 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
 
         _o._buildProtos[bldId] = TBuildingProto();
         _bld = &_o._buildProtos[bldId];
+        _bld->Index = bldId;
         _bld->Energy = 50000;
         _bld->TypeIcon = 65;
         _bld->SndFX.volume = 120;
@@ -1504,6 +1509,7 @@ bool BuildProtoParser::IsScope(ScriptParser::Parser &parser, const std::string &
         int bldId = parser.stol(opt, NULL, 0);
 
         _bld = &_o._buildProtos[bldId];
+        _bld->Index = bldId;
         _o._upgradeBuildId = bldId;
         return true;
     }
@@ -2120,7 +2126,7 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
 
     if ( p1.find("title_") != std::string::npos )
     {
-        std::string title_lang = std::string("title_") + _o._localeName;
+        std::string title_lang = std::string("title_") + Locale::Text::GetLocaleName();
 
         if ( !StriCmp(p1, "title_default") || !StriCmp(p1, title_lang) )
                 _o._levelInfo.MapName = p2;
@@ -2830,7 +2836,7 @@ int LevelGemParser::Handle(ScriptParser::Parser &parser, const std::string &p1, 
 
     if ( p1.find("msg_") != std::string::npos )
     {
-        std::string tmp = fmt::sprintf("msg_%s", _o._localeName);
+        std::string tmp = fmt::sprintf("msg_%s", Locale::Text::GetLocaleName());
 
         if ( !StriCmp(p1, "msg_default") || !StriCmp(p1, tmp) )
             _g->MsgDefault = p2;

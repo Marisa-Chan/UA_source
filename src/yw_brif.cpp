@@ -209,7 +209,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub6(NC_STACK_ypaworld *yw, TInputState
     brf->StartTime = brf->CurrTime;
 
     brf->SelectedObjID = -1;
-    brf->ObjDescription = yw->GetLocaleString(150, "YOU ARE HERE");
+    brf->ObjDescription = Locale::Text::Brief(Locale::BRIEF_YOU);
 }
 
 void NC_STACK_ypaworld::BriefingSetObject(const TBriefObject &obj, bool doAdd)
@@ -238,7 +238,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub7(NC_STACK_ypaworld *yw, TInputState
         brf->ActiveElementID = 0;
         yw->BriefingSetObject( TBriefObject(TBriefObject::TYPE_VEHICLE, robo.VhclID, robo.Pos.x, robo.Pos.z,
                                            26, 128 + robo.Owner, 25,
-                                           yw->GetLocaleString(robo.VhclID + 1200, yw->_vhclProtos[ robo.VhclID ].name)), 
+                                           yw->GetVehicleName(robo.VhclID)), 
                                brf->AddObjectsFlag);
     }
 }
@@ -251,7 +251,7 @@ void yw_BriefSetupKeySectors(NC_STACK_ypaworld *yw, TInputState *inpt, TBriefeng
     brf->ElementsCount = 0;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = yw->GetLocaleString(151, "PRIMARY TARGETS");
+    brf->ObjDescription = Locale::Text::Brief(Locale::BRIEF_PRIM);
 
     for (const TMapGate &gate : yw->_levelInfo.Gates )
     {
@@ -291,7 +291,7 @@ void yw_BriefUpdateKeySectors(NC_STACK_ypaworld *yw, TInputState *inpt, TBriefen
                         uint8_t v12 = yw->_lvlTypeMap(ks.CellId);
 
                         yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_SECTOR, v12, ps.x, ps.y, 26, 146, 25, 
-                                                            yw->GetLocaleString(157, "KEY SECTOR")),
+                                                            Locale::Text::Brief(Locale::BRIEF_KEYSECT)),
                                                brf->AddObjectsFlag);
                     }
 
@@ -309,7 +309,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub10(NC_STACK_ypaworld *yw, TInputStat
     brf->ActiveElementID = -1;
     brf->ElementsCount = 0;
     brf->StartTime = brf->CurrTime;
-    brf->ObjDescription = yw->GetLocaleString(152, "TECHNOLOGY UPGRADES");
+    brf->ObjDescription = Locale::Text::Brief(Locale::BRIEF_TECH);
 
     for ( const TMapGem &gem : yw->_techUpgrades)
     {
@@ -351,7 +351,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub11(NC_STACK_ypaworld *yw, TInputStat
         int v13 = yw->_buildProtos[pGem->BuildingID].SecType;
 
         yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_SECTOR, v13, ps.x, ps.y, 26, 144, 25, 
-                                            yw->GetLocaleString(158, "TECH UPGRADE") ),  
+                                            Locale::Text::Brief(Locale::BRIEF_TECH2) ),  
                                brf->AddObjectsFlag);
     }
 }
@@ -363,7 +363,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub12(NC_STACK_ypaworld *yw, TInputStat
     brf->ActiveElementID = -1;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = yw->GetLocaleString(153, "ENEMY DEFENSE STATIONS");
+    brf->ObjDescription = Locale::Text::Brief(Locale::BRIEF_ENMYHS);
     brf->ElementsCount = 0;
 
     for (size_t i = 1; i < brf->Desc.Robos.size(); i++)
@@ -404,7 +404,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub13(NC_STACK_ypaworld *yw, TInputStat
         }
 
         yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_VEHICLE, robo->VhclID, robo->Pos.x, robo->Pos.z, 26, 128 + robo->Owner, 25, 
-                                            yw->GetLocaleString(robo->VhclID + 1200, yw->_vhclProtos[ robo->VhclID ].name) ),  
+                                            yw->GetVehicleName(robo->VhclID) ),  
                                brf->AddObjectsFlag);
     }
 }
@@ -417,7 +417,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub14(NC_STACK_ypaworld *yw, TInputStat
     brf->ElementsCount = 0;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = yw->GetLocaleString(154, "ENEMY FORCES");
+    brf->ObjDescription = Locale::Text::Brief(Locale::BRIEF_ENMYFORCE);
 
     for ( const MapSquad &squad : brf->Desc.Squads )
     {
@@ -456,7 +456,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub15(NC_STACK_ypaworld *yw, TInputStat
 
         if ( squad )
         {
-            std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetLocaleString(squad->VhclID + 1200, yw->_vhclProtos[squad->VhclID].name));
+            std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetVehicleName(squad->VhclID));
 
             yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 36, 
                                                 nm ),  
@@ -514,7 +514,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub17(NC_STACK_ypaworld *yw, TInputStat
 
         if ( squad )
         {
-            std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetLocaleString(squad->VhclID + 1200, yw->_vhclProtos[squad->VhclID].name));
+            std::string nm = fmt::sprintf("%d %s", squad->Count, yw->GetVehicleName(squad->VhclID));
 
             yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_VEHICLE, squad->VhclID, squad->X, squad->Z, 26, 136 + squad->Owner, 25, 
                                                 nm ),  
@@ -533,7 +533,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub18(NC_STACK_ypaworld *yw, TInputStat
     brf->Stage = TBriefengScreen::STAGE_GATE_RN;
     brf->StartTime = brf->CurrTime;
 
-    brf->ObjDescription = yw->GetLocaleString(156, "TRANSPORTER GATES");
+    brf->ObjDescription = Locale::Text::Brief(Locale::BRIEF_GATE);
 
     for ( const TMapGate &gate : yw->_levelInfo.Gates )
     {
@@ -576,7 +576,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub19(NC_STACK_ypaworld *yw, TInputStat
         int v13 = yw->_buildProtos[ pGate->ClosedBldID ].SecType;
 
         yw->BriefingSetObject( TBriefObject( TBriefObject::TYPE_SECTOR, v13, ps.x, ps.y, 26, 145, 25, 
-                                            yw->GetLocaleString(159, "BEAM GATE") ),  
+                                            Locale::Text::Brief(Locale::BRIEF_GATE2) ),  
                                brf->AddObjectsFlag);
     }
 }
@@ -710,7 +710,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
     {
         int v20 = brf->CurrTime - brf->PreTextTime;
 
-        const std::string v21 = yw->GetLocaleString(2467, "LOADING MISSION OBJECTIVES...");
+        const std::string v21 = Locale::Text::Advanced(Locale::ADV_LOADINGOBJ);
 
         int v24;
 
@@ -808,7 +808,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     FontUA::set_center_ypos(&pos, 4 + v37);
     FontUA::set_txtColor(&pos, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
-    const std::string v7 = yw->GetLocaleString(yw->_levelInfo.LevelID + 1800, yw->_levelInfo.MapName);
+    const std::string v7 = yw->GetLevelName(yw->_levelInfo);
 
     pos = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[16], pos, v7, v34 - v35);
     FontUA::set_end(&pos);
@@ -1407,7 +1407,7 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, TBrie
     int v13 = (yw->_screenSize.x / 2) * 0.03125;
     int v16 = (yw->_screenSize.y / 2) * -0.9333333333333333;
 
-    const std::string v7 = yw->GetLocaleString(yw->_levelInfo.LevelID + 1800, yw->_levelInfo.MapName);
+    const std::string v7 = yw->GetLevelName(yw->_levelInfo);
 
     char cmdBuff[264];
     char *cur = cmdBuff;
@@ -1436,7 +1436,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, cha
     FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
     FontUA::ColumnItem elms[3];
 
-    elms[0].txt = yw->GetLocaleString(2450, "KILLS");
+    elms[0].txt = Locale::Text::Advanced(Locale::ADV_KILLSFACTION);
     elms[0].spaceChar = 32;
     elms[0].prefixChar = 0;
     elms[0].postfixChar = 0;
@@ -1444,7 +1444,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, cha
     elms[0].flags = 36;
     elms[0].fontID = 15;
 
-    elms[1].txt = yw->GetLocaleString(2451, "BY PLAYER");
+    elms[1].txt = Locale::Text::Advanced(Locale::ADV_KILLSBYPLAYER);
     elms[1].fontID = 15;
     elms[1].width = a4 * 0.3;
     elms[1].spaceChar = 32;
@@ -1452,7 +1452,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, cha
     elms[1].prefixChar = 0;
     elms[1].postfixChar = 0;
 
-    elms[2].txt = yw->GetLocaleString(2452, "ALL");
+    elms[2].txt = Locale::Text::Advanced(Locale::ADV_KILLSALL);
     elms[2].width = a4 * 0.3;
     elms[2].fontID = 15;
     elms[2].spaceChar = 32;
@@ -1496,37 +1496,37 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
         switch ( v28[i].owner )
         {
         case 1:
-            who = yw->GetLocaleString(2411, "RESISTANCE");
+            who = Locale::Text::Advanced(Locale::ADV_RESIST);
             clr_id = 1;
             break;
 
         case 2:
-            who = yw->GetLocaleString(2412, "SULGOGARS");
+            who = Locale::Text::Advanced(Locale::ADV_SULG);
             clr_id = 2;
             break;
 
         case 3:
-            who = yw->GetLocaleString(2413, "MYKONIANS");
+            who = Locale::Text::Advanced(Locale::ADV_MYKO);
             clr_id = 3;
             break;
 
         case 4:
-            who = yw->GetLocaleString(2414, "TAERKASTEN");
+            who = Locale::Text::Advanced(Locale::ADV_TAER);
             clr_id = 4;
             break;
 
         case 5:
-            who = yw->GetLocaleString(2415, "BLACK SECT");
+            who = Locale::Text::Advanced(Locale::ADV_BLKSCT);
             clr_id = 5;
             break;
 
         case 6:
-            who = yw->GetLocaleString(2416, "GHORKOV");
+            who = Locale::Text::Advanced(Locale::ADV_GHOR);
             clr_id = 6;
             break;
 
         default:
-            who = yw->GetLocaleString(2417, "NEUTRAL");
+            who = Locale::Text::Advanced(Locale::ADV_NEUTRAL);
             clr_id = 7;
             break;
         }
@@ -1578,7 +1578,7 @@ char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
 
     FontUA::ColumnItem elm;
 
-    elm.txt = yw->GetLocaleString(2453, "SCORE");
+    elm.txt = Locale::Text::Advanced(Locale::ADV_SCORE);
     elm.width = a4;
     elm.spaceChar = 32;
     elm.fontID = 15;
@@ -1622,37 +1622,37 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
             switch ( v32[i].owner )
             {
             case 1:
-                who = yw->GetLocaleString(2411, "RESISTANCE");
+                who = Locale::Text::Advanced(Locale::ADV_RESIST);
                 clr_id = 1;
                 break;
 
             case 2:
-                who = yw->GetLocaleString(2412, "SULGOGARS");
+                who = Locale::Text::Advanced(Locale::ADV_SULG);
                 clr_id = 2;
                 break;
 
             case 3:
-                who = yw->GetLocaleString(2413, "MYKONIANS");
+                who = Locale::Text::Advanced(Locale::ADV_MYKO);
                 clr_id = 3;
                 break;
 
             case 4:
-                who = yw->GetLocaleString(2414, "TAERKASTEN");
+                who = Locale::Text::Advanced(Locale::ADV_TAER);
                 clr_id = 4;
                 break;
 
             case 5:
-                who = yw->GetLocaleString(2415, "BLACK SECT");
+                who = Locale::Text::Advanced(Locale::ADV_BLKSCT);
                 clr_id = 5;
                 break;
 
             case 6:
-                who = yw->GetLocaleString(2416, "GHORKOV");
+                who = Locale::Text::Advanced(Locale::ADV_GHOR);
                 clr_id = 6;
                 break;
 
             default:
-                who = yw->GetLocaleString(2417, "NEUTRAL");
+                who = Locale::Text::Advanced(Locale::ADV_NEUTRAL);
                 clr_id = 7;
                 break;
             }
@@ -1688,7 +1688,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
 
         FontUA::ColumnItem v35[2];
 
-        v35[0].txt = yw->GetLocaleString(2457, "SCORE THIS MISSION:");
+        v35[0].txt = Locale::Text::Advanced(Locale::ADV_SCOREMISSION);
         v35[0].spaceChar = 32;
         v35[0].prefixChar = 0;
         v35[0].postfixChar = 0;
@@ -1708,7 +1708,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
 
         FontUA::next_line(&cur);
 
-        v35[0].txt = yw->GetLocaleString(2458, "SCORE OVERALL:");
+        v35[0].txt = Locale::Text::Advanced(Locale::ADV_SCOREOVERALL);
         v35[0].flags = 36;
         v35[0].spaceChar = 32;
         v35[0].width = a4 * 0.7;
@@ -1741,7 +1741,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
     if ( yw->_gameWasNetGame )
     {
         FontUA::ColumnItem v30[2];
-        v30[0].txt = yw->GetLocaleString(2456, "PLAYING TIME:");
+        v30[0].txt = Locale::Text::Advanced(Locale::ADV_PLAYTIME);
         v30[0].spaceChar = 32;
         v30[0].prefixChar = 0;
         v30[0].postfixChar = 0;
@@ -1765,7 +1765,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
     {
 
         FontUA::ColumnItem a4a[2];
-        a4a[0].txt = yw->GetLocaleString(2454, "PLAYING TIME THIS MISSION:");
+        a4a[0].txt = Locale::Text::Advanced(Locale::ADV_MISSIONTIME);
         a4a[0].spaceChar = 32;
         a4a[0].prefixChar = 0;
         a4a[0].postfixChar = 0;
@@ -1787,7 +1787,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
 
         FontUA::next_line(&cur);
 
-        a4a[0].txt = yw->GetLocaleString(2455, "PLAYING TIME OVERALL:");
+        a4a[0].txt = Locale::Text::Advanced(Locale::ADV_OVERALLTIME);
         a4a[0].flags = 36;
         a4a[0].spaceChar = 32;
         a4a[0].width = a4 * 0.7;
@@ -1891,14 +1891,14 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
 
     if ( vhcl )
     {
-        v33 = yw->GetLocaleString(lastVhcl + 1200, vhcl->name);
+        v33 = yw->GetVehicleName(*vhcl);
     }
     else if ( bld )
     {
         if ( yw->_gameWasNetGame )
-            v33 = yw->GetLocaleString(lastBuild + 1700, bld->Name);
+            v33 = yw->GetBuildingName(*bld, true);
         else
-            v33 = yw->GetLocaleString(lastBuild + 1500, bld->Name);
+            v33 = yw->GetBuildingName(*bld, false);
     }
 
     switch ( upg.upgradeType )
@@ -1908,7 +1908,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
         {
             if ( vhcl )
             {
-                v13 = yw->GetLocaleString(2459, "WEAPON UPGRADE:");
+                v13 = Locale::Text::Advanced(Locale::ADV_WEAPONUPG);
 
                 if ( vhcl->num_weapons > 1 )
                     v14 = fmt::sprintf("(%d x%d)", wpn->energy / 100, vhcl->num_weapons);
@@ -1921,7 +1921,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
     case World::UPGRADE_ARMOR:
         if ( vhcl )
         {
-            v13 = yw->GetLocaleString(2460, "ARMOR UPGRADE:");
+            v13 = Locale::Text::Advanced(Locale::ADV_ARMORUPG);
 
             v14 = fmt::sprintf("(%d%%)", vhcl->shield);
         }
@@ -1930,21 +1930,21 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
     case World::UPGRADE_VEHICLE:
         if ( vhcl )
         {
-            v13 = yw->GetLocaleString(2461, "NEW VEHICLE TECH:");
+            v13 = Locale::Text::Advanced(Locale::ADV_NEWVEHICLE);
         }
         break;
 
     case World::UPGRADE_BUILDING:
         if ( bld )
         {
-            v13 = yw->GetLocaleString(2462, "NEW BUILDING TECH:");
+            v13 = Locale::Text::Advanced(Locale::ADV_NEWBUILDING);
         }
         break;
 
     case World::UPGRADE_RADARE:
         if ( vhcl )
         {
-            v13 = yw->GetLocaleString(2463, "RADAR UPGRADE:");
+            v13 = Locale::Text::Advanced(Locale::ADV_RADARUPG);
         }
         break;
 
@@ -1954,17 +1954,17 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
             if ( bld )
             {
                 if ( yw->_gameWasNetGame )
-                    v14 = yw->GetLocaleString(lastBuild + 1700, bld->Name);
+                    v14 = yw->GetBuildingName(*bld, true);
                 else
-                    v14 = yw->GetLocaleString(lastBuild + 1500, bld->Name);
+                    v14 = yw->GetBuildingName(*bld, false);
 
-                v13 = yw->GetLocaleString(2464, "COMBINED UPGRADE:");
+                v13 = Locale::Text::Advanced(Locale::ADV_COMBINEDUPG);
             }
         }
         break;
 
     case World::UPGRADE_GENERIC:
-        v13 = yw->GetLocaleString(2465, "GENERIC TECH UPGRADE");
+        v13 = Locale::Text::Advanced(Locale::ADV_GENERICUPG);
         break;
 
     default:

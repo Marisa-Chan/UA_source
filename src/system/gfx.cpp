@@ -2002,20 +2002,60 @@ const std::vector<TGFXDeviceInfo>& GFXEngine::GetDevices()
     return _devices;
 }
 
-void GFXEngine::SetDeviceByGUID(const std::string &guid)
+void GFXEngine::SetDeviceByGUID(const std::string &guid, bool writefile)
 {
+    std::string guidWrite = guid;
+    
+    bool found = false;
     for( TGFXDeviceInfo &dev: _devices )
     {
         if (dev.guid == guid)
+        {
             dev.isCurrent = true;
+            found = true;
+        }
         else
             dev.isCurrent = false;
     }
     
-    if (guid == "<primary>" || guid == "<software>")
-        out_guid_to_file("env/guid3d.def", guid);
-    else
-        out_guid_to_file("env/guid3d.def", "<error>");
+    if ( !found )
+    {
+        for( TGFXDeviceInfo &dev: _devices )
+        {
+            if (dev.guid == "<primary>")
+            {
+                dev.isCurrent = true;
+                found = true;
+                guidWrite = "<primary>";
+            }
+        }
+        
+        for( TGFXDeviceInfo &dev: _devices )
+        {
+            if (dev.guid == "<software>")
+            {
+                dev.isCurrent = true;
+                found = true;
+                guidWrite = "<software>";
+            }
+        }
+        
+        if (!_devices.empty())
+        {
+            TGFXDeviceInfo &dev = _devices[0];
+            found = true;
+            dev.isCurrent = true;
+            guidWrite = dev.guid;
+        }
+    }
+    
+    if (writefile)
+    {
+        if (guidWrite == "<primary>" || guidWrite == "<software>")
+            out_guid_to_file("env/guid3d.def", guidWrite);
+        else
+            out_guid_to_file("env/guid3d.def", "<error>");
+    }
 }
 
 
@@ -2576,15 +2616,7 @@ void GFXEngine::Init()
     
     _glext = Glext::init();
     
-    std::string wantGuid = read_guid("env/guid3d.def");
-    
-    for(TGFXDeviceInfo &dev : _devices)
-    {
-        if (dev.guid == wantGuid)
-            dev.isCurrent = true;
-        else
-            dev.isCurrent = false;
-    }
+    SetDeviceByGUID( read_guid("env/guid3d.def") );
     
     System::EventsAddHandler(EventsWatcher);
     
