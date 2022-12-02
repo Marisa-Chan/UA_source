@@ -302,7 +302,7 @@ int sb_0x411324__sub2()
     }
     return 1;
 }
-int8_t preEnvAct = -1;
+
 int sb_0x411324__sub1()
 {
     userdata.GlobalTime = world_update_arg.TimeStamp;
@@ -310,10 +310,7 @@ int sb_0x411324__sub1()
     userdata.Input = &input_states;
 
     ypaworld->ProcessGameShell();
-    if (preEnvAct != userdata.envAction.action){
-        printf("Env action %d -> %d\n", preEnvAct, userdata.envAction.action);
-        preEnvAct = userdata.envAction.action;
-    }
+    
     if ( userdata.envAction.action == EnvAction::ACTION_QUIT )
         return 0;
     else if ( userdata.envAction.action == EnvAction::ACTION_PLAY )

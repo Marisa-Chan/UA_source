@@ -2121,7 +2121,6 @@ char * sub_4DDF78(NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
 
 void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
-    printf("Draw list\n");
     const std::array<std::string, 2> connNames
     { "Host the game"
     , "Connect to game"};

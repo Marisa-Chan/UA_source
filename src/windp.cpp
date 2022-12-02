@@ -249,7 +249,7 @@ bool NC_STACK_windp::Host(const std::string &gameName, int playerNum)
 size_t NC_STACK_windp::EnumSessions(IDVPair *stak)
 {
     //ask sessions
-    //printf("%s\n", __PRETTY_FUNCTION__);
+    printf("%s\n", __PRETTY_FUNCTION__);
     return 0;
 }
 
@@ -588,7 +588,7 @@ void NC_STACK_windp::SetVersion(const std::string &ver)
 size_t NC_STACK_windp::GetProvType()
 {
     // get provider type
-    //printf("%s\n", __PRETTY_FUNCTION__);
+    printf("%s\n", __PRETTY_FUNCTION__);
     return connType;
 }
 

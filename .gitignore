@@ -1,3 +1,4 @@
 *.d
 *.o
-.vscode/settings.json
+.vscode
+src/UA_source
