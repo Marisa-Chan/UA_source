@@ -3707,16 +3707,12 @@ void UserData::GameShellUiHandleInput()
         case NETSCREEN_ENTER_NAME:
             if ( r.code == 1200 )
             {
-                printf("Code 1200\n");
                 if ( !netName.empty() )
                 {
-                    printf("Net name not empty\n");
                     netPlayerName = netName;
                     netName = "";
                 }
-                printf("Set wanted name\n");
                 p_YW->_netDriver->SetWantedName(netPlayerName);
-                printf("Net Driver mode, %d\n", p_YW->_netDriver->GetMode());
                 switch ( p_YW->_netDriver->GetMode() )
                 {
                     case 1:
@@ -3724,7 +3720,6 @@ void UserData::GameShellUiHandleInput()
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
                         netSelMode = NETSCREEN_CHOOSE_MAP;
-    printf("CASE1\n");
                         p_YW->GuiWinOpen( &network_listvw );
                         break;
 
@@ -3757,7 +3752,6 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1201 )
             {
-                printf("Code 1201?\n");
 //                if ( str17_NOT_FALSE )
 //                {
 //                    windd_dlgBox v339;
@@ -4021,13 +4015,10 @@ void UserData::GameShellUiHandleInput()
 
                 if ( netName.size() < v233 )
                 {
-                    printf("Key code = %d\n", Input->KbdLastHit);
                     if ( Input->chr > ' ' && Input->chr != '*' )
                     {
-                        printf("str: %s, netNameCurPos %d, size %d\n", netName.c_str(), netNameCurPos, (int)netName.size());
                         if (netNameCurPos <= (int)netName.size())
                         {
-                            printf("Insert!\n");
                             netName.insert(netNameCurPos, 1, Input->chr);
                             netNameCurPos++;
                         }                           
@@ -4061,8 +4052,6 @@ void UserData::GameShellUiHandleInput()
 
             if ( Input->KbdLastHit == Input::KC_RETURN )
             {
-                            printf("Line = %d, netselmode = %d\n", __LINE__, netSelMode);
-
                 switch ( netSelMode )
                 {
                 case NETSCREEN_MODE_SELECT:
@@ -4092,9 +4081,6 @@ void UserData::GameShellUiHandleInput()
                         netSel = -1;
                         network_listvw.firstShownEntries = 0;
                         netName.clear();
-
-                        //NET NAME ENTERED HERE!!!
-                        
                         p_YW->GuiWinOpen( &network_listvw );
                     }
                     break;
@@ -4395,34 +4381,14 @@ void UserData::GameShellUiHandleInput()
 
     case NETSCREEN_ENTER_NAME:
         network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, Locale::Text::Netdlg(Locale::NETDLG_ENTERPL));
-
         network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, Locale::Text::Netdlg(Locale::NETDLG_TXT11));
-
         network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, Locale::Text::Netdlg(Locale::NETDLG_TXT12));
-        
-//        if ( str17_NOT_FALSE )
-//        {
-//            v410.butID = 1202;
-//            network_button->show(&v410);
-//
-//            network_button->setCaption(1202, get_lang_string(423, "CHANGE"));
-//        }
         break;
 
     case NETSCREEN_ENTER_IP:
         network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_TITLE, "Server address");
-
         network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE1, "Please enter server IP");
-
         network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXT_MENU_DESCR_LINE2, " ");
-        //network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, netName);
-//        if ( str17_NOT_FALSE )
-//        {
-//            v410.butID = 1202;
-//            network_button->show(&v410);
-//
-//            network_button->setCaption(1202, get_lang_string(423, "CHANGE"));
-//        }
         break;
 
     case NETSCREEN_CHOOSE_MAP:
