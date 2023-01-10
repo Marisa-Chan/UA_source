@@ -54,7 +54,14 @@ int input_inited = 0;
 
 static bool fixWeaponRadius = false;
 
+enum GAME_SCREEN_MODE {
+    GAME_SCREEN_MODE_UNKNOWN = 0,
+    GAME_SCREEN_MODE_MENU = 1,
+    GAME_SCREEN_MODE_GAME = 2,
+    GAME_SCREEN_MODE_REPLAY = 3
+};
 
+GAME_SCREEN_MODE GameScreenMode;
 int sub_4107FC(UserData *usr)
 {
     return ypaworld->SaveSettings(usr, "settings.tmp", (World::SDF_BUDDY | World::SDF_PROTO | World::SDF_USER));
@@ -111,7 +118,7 @@ int sb_0x411324__sub0()
             userdata.returnToTitle = false;
         }
 
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+        GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
         world_update_arg.TimeStamp = 0;
 
         userdata.lastInputEvent = 0;
@@ -119,7 +126,7 @@ int sb_0x411324__sub0()
 
         if ( ypaworld->OpenGameShell() )
         {
-            gameScreen = GAME_SCREEN_MODE_MENU;;
+            GameScreenMode = GAME_SCREEN_MODE_MENU;
             INPe.QueryInput(&input_states);
 
             if (!v0)
@@ -203,7 +210,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
 
         if ( !ypaworld->ypaworld_func162( sub_4107A0(arg->TimeStamp) ) )
         {
-            gameScreen = GAME_SCREEN_MODE_MENU;;
+            GameScreenMode = GAME_SCREEN_MODE_MENU;
 
             INPe.QueryInput(&input_states);
 
@@ -211,7 +218,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
         }
 
         dword_513630 = 1;
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN3;;
+        GameScreenMode = GAME_SCREEN_MODE_REPLAY;
     }
 
     ypaworld->ypaworld_func163(arg);
@@ -280,7 +287,7 @@ int sb_0x411324__sub2()
             dword_513638 = 0;
         }
 
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+        GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
         world_update_arg.TimeStamp = 0;
         userdata.lastInputEvent = 0;
 
@@ -294,7 +301,7 @@ int sb_0x411324__sub2()
 
         userdata.p_YW->_levelInfo.State = TLevelInfo::STATE_MENU;
 
-        gameScreen = GAME_SCREEN_MODE_MENU;;
+        GameScreenMode = GAME_SCREEN_MODE_MENU;
 
         input_states = TInputState();
 
@@ -318,7 +325,7 @@ int sb_0x411324__sub1()
         sub_410628();
         ypaworld->CloseGameShell();
 
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+        GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
 
         if ( !sub_4107FC(&userdata) )
             return 0;
@@ -334,12 +341,12 @@ int sb_0x411324__sub1()
             ypaworld->DeinitGameShell();
             return 0;
         }
-        gameScreen = GAME_SCREEN_MODE_GAME;;
+        GameScreenMode = GAME_SCREEN_MODE_GAME;
         INPe.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_LOAD )
     {
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+        GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
 
         const TLevelInfo &a4 = ypaworld->getYW_levelInfo();
 
@@ -356,7 +363,7 @@ int sb_0x411324__sub1()
             ypaworld->DeinitGameShell();
             return 0;
         }
-        gameScreen = GAME_SCREEN_MODE_GAME;;
+        GameScreenMode = GAME_SCREEN_MODE_GAME;
         INPe.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_NETPLAY )
@@ -374,7 +381,7 @@ int sb_0x411324__sub1()
         v22.lvlID = userdata.envAction.params[0];
         v22.field_4 = 0;
 
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+        GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
 
         if ( !ypaworld->ypaworld_func179(&v22) )
         {
@@ -384,7 +391,7 @@ int sb_0x411324__sub1()
             return 0;
         }
 
-        gameScreen = GAME_SCREEN_MODE_GAME;;
+        GameScreenMode = GAME_SCREEN_MODE_GAME;
         INPe.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
@@ -403,12 +410,12 @@ int sb_0x411324__sub1()
 
         ypaworld->CloseGameShell();
 
-        gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+        GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
 
         if ( ypaworld->ypaworld_func162(repname) )
         {
             dword_513630 = 1;
-            gameScreen = GAME_SCREEN_MODE_UNKNOWN3;;
+            GameScreenMode = GAME_SCREEN_MODE_REPLAY;
         }
         else
         {
@@ -423,7 +430,7 @@ int sb_0x411324__sub1()
                 return 0;
             }
 
-            gameScreen = GAME_SCREEN_MODE_MENU;;
+            GameScreenMode = GAME_SCREEN_MODE_MENU;
         }
 
         INPe.QueryInput(&input_states);
@@ -460,15 +467,15 @@ int sb_0x411324()
     
     Gui::Root::Instance.TimersUpdate( input_states.Period );
 
-    if ( gameScreen == GAME_SCREEN_MODE_MENU )
+    if ( GameScreenMode == GAME_SCREEN_MODE_MENU )
     {
         return sb_0x411324__sub1();
     }
-    else if ( gameScreen == GAME_SCREEN_MODE_GAME )
+    else if ( GameScreenMode == GAME_SCREEN_MODE_GAME )
     {
         return sb_0x411324__sub0();
     }
-    else if ( gameScreen == GAME_SCREEN_MODE_UNKNOWN3 )
+    else if ( GameScreenMode == GAME_SCREEN_MODE_REPLAY )
     {
         return sb_0x411324__sub2();
     }
@@ -536,7 +543,7 @@ void deinit_globl_engines()
 int WinMain__sub0__sub0()
 {
     ypaworld = 0;
-    gameScreen = GAME_SCREEN_MODE_UNKNOWN;;
+    GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
     userdata.clear();
     input_states = TInputState();
     world_update_arg = base_64arg();
@@ -675,12 +682,12 @@ void sub_4113E8()
 {
     if ( ypaworld )
     {
-        if ( gameScreen == GAME_SCREEN_MODE_GAME )
+        if ( GameScreenMode == GAME_SCREEN_MODE_GAME )
         {
             ypaworld->DeleteLevel();
             ypaworld->DeinitGameShell();
         }
-        else if ( gameScreen == GAME_SCREEN_MODE_MENU )
+        else if ( GameScreenMode == GAME_SCREEN_MODE_MENU )
         {
             sub_410628();
             ypaworld->CloseGameShell();
@@ -728,7 +735,7 @@ int WinMain__sub0__sub1()
         return 0;
     }
 
-    gameScreen = GAME_SCREEN_MODE_MENU;;
+    GameScreenMode = GAME_SCREEN_MODE_MENU;
     ReadSnapsDir();
 
     return 1;

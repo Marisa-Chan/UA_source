@@ -1390,9 +1390,9 @@ void UserData::ExitFromNetworkToMain()
 {
     EnvMode = ENVMODE_TITLE;
 
-    network_button->Hide();
+    network_button->HideScreen();
 
-    titel_button->Show();
+    titel_button->ShowScreen();
 
     p_YW->GuiWinClose(&network_listvw);
 
@@ -1400,11 +1400,11 @@ void UserData::ExitFromNetworkToMain()
     arg66.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_MULTIPLAYER;
     arg66.field_4 = 2;
 
-    sub_bar_button->button_func73(&arg66);
+    sub_bar_button->SetState(&arg66);
 
     arg66.butID = 1219;
     arg66.field_4 = 2;
-    sub_bar_button->button_func73(&arg66);
+    sub_bar_button->SetState(&arg66);
 
     yw_netcleanup();
 }

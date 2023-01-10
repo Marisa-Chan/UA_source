@@ -2163,7 +2163,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 if (usr->netSel == -1 && i == 0)
                 {
                     usr->netName = str1;
-                    usr->network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
+                    usr->network_button->SetText(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
                     usr->netSel = 0;
                 }
             }
@@ -2213,7 +2213,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
                     usr->netName = yw->_globalMapRegions.MapRegions[ lvlid ].MapName;
 
-                    usr->network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
+                    usr->network_button->SetText(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
 
                     usr->netSel = 0;
                 }
@@ -2286,7 +2286,7 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     usr->netName = usr->mapDescriptions[ i ].pstring;
 
-                    usr->network_button->setCaption(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
+                    usr->network_button->SetText(UIWidgets::NETWORK_MENU_WIDGET_IDS::TXTBOX, usr->netName);
 
                     usr->netLevelName = usr->mapDescriptions[ i ].pstring;
                     usr->netLevelID = usr->mapDescriptions[ i ].id;
@@ -2718,7 +2718,7 @@ void ypaworld_func158__confirm_draw(UserData *usr)
 
         sb_0x4dee74__sub0(usr, v8, v7, v6, v4);
 
-        usr->confirm_button->button_func70(0);
+        usr->confirm_button->Draw();
     }
 }
 
@@ -2727,16 +2727,16 @@ void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr)
     switch ( usr->EnvMode )
     {
     case ENVMODE_TITLE:
-        usr->titel_button->button_func70(0);
+        usr->titel_button->Draw();
         break;
 
     case ENVMODE_INPUT:
-        usr->button_input_button->button_func70(0);
+        usr->button_input_button->Draw();
         yw_draw_input_list(yw, usr);
         break;
 
     case ENVMODE_SETTINGS:
-        usr->video_button->button_func70(0);
+        usr->video_button->Draw();
 
         if ( usr->video_listvw.IsOpen() )
             ypaworld_func158__video_list_draw(yw, usr);
@@ -2747,27 +2747,27 @@ void ypaworld_func158__sub3(NC_STACK_ypaworld *yw, UserData *usr)
 
     case ENVMODE_TUTORIAL:
     case ENVMODE_SINGLEPLAY:
-        usr->sub_bar_button->button_func70(0);
+        usr->sub_bar_button->Draw();
         break;
 
     case ENVMODE_NETPLAY:
-        usr->network_button->button_func70(0);
+        usr->network_button->Draw();
 
         if ( usr->netSelMode != UserData::NETSCREEN_ENTER_NAME && usr->netSelMode != UserData::NETSCREEN_ENTER_IP)
             ypaworld_func158__network_list_draw(yw, usr);
         break;
 
     case ENVMODE_SELLOCALE:
-        usr->locale_button->button_func70(0);
+        usr->locale_button->Draw();
         ypaworld_func158__locale_list_draw(yw, usr);
         break;
 
     case ENVMODE_ABOUT:
-        usr->about_button->button_func70(0);
+        usr->about_button->Draw();
         break;
 
     case ENVMODE_SELPLAYER:
-        usr->disk_button->button_func70(0);
+        usr->disk_button->Draw();
         ypaworld_func158__saveload_list_draw(yw, usr);
         break;
 

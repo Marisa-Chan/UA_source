@@ -131,19 +131,21 @@ public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     virtual size_t Add(button_64_arg *arg);
-    virtual size_t button_func65(int butID);
-    virtual size_t show(button_66arg *arg);
-    virtual size_t disable(button_66arg *arg);
-    virtual size_t Show(); // Part of 68th method
-    virtual size_t Hide(); // Part of 68th method
+    virtual size_t Remove(int butID);
+    virtual size_t Enable(button_66arg *arg);
+    virtual size_t Disable(button_66arg *arg);
+    
+    virtual void ShowScreen(); // Part of 68th method
+    virtual void HideScreen(); // Part of 68th method
+    
     virtual ResCode ProcessWidgetsEvents(TInputState *arg);
-    virtual size_t button_func70(void *);
-    bool setCaption(int butID, const std::string &field_4, const std::string &field_8);
-    bool setCaption(int butID, const std::string &field_4);
-    int findButtonNumById(int butid);
-    virtual void button_func73(button_66arg *arg);
-    Slider * button_func74(int butid);
-    size_t button_func75(int butid);
+    virtual size_t Draw();
+    bool SetText(int butID, const std::string &field_4, const std::string &field_8);
+    bool SetText(int butID, const std::string &field_4);
+    int GetIndexByID(int butid);
+    virtual void SetState(button_66arg *arg);
+    Slider * GetSliderData(int butid);
+    size_t Refresh(int butid);
     virtual size_t setXYWidth(button_arg76 *arg);
 
     NC_STACK_button() {

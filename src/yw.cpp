@@ -37,9 +37,6 @@ int checkBoxWidth;
 int dword_5A50B6;
 int dword_5A50B6_h;
 
-int menuWidth;
-int menuHeight;
-int posLeftPaddingX;
 int scaledFontHeight;
 int bottomButtonsY;
 int button1LineWidth;
@@ -2692,10 +2689,10 @@ bool NC_STACK_ypaworld::CreateTitleControls(){
     {
         v228.field_4 = 0;
         v228.butID = UIWidgets::MAIN_MENU_WIDGET_IDS::BTN_LANGUAGE;
-        _GameShell->titel_button->disable(&v228);
+        _GameShell->titel_button->Disable(&v228);
     }
 
-    _GameShell->titel_button->Hide();
+    _GameShell->titel_button->HideScreen();
     return true;
 }
 bool NC_STACK_ypaworld::CreateSubBarControls(){
@@ -2731,6 +2728,9 @@ bool NC_STACK_ypaworld::CreateSubBarControls(){
     btn_64arg.flags = NC_STACK_button::FLAG_BORDER | NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
     btn_64arg.button_id = 1011;
     btn_64arg.upCode = 1016;
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
     if ( _GameShell->sub_bar_button->Add(&btn_64arg) )
     {
@@ -2801,23 +2801,24 @@ bool NC_STACK_ypaworld::CreateSubBarControls(){
     {
         v228.butID = 1015;
         v228.field_4 = 0;
-        _GameShell->sub_bar_button->disable(&v228);
+        _GameShell->sub_bar_button->Disable(&v228);
     }
 
     v228.field_4 = 0;
     v228.butID = 1014;
-    _GameShell->sub_bar_button->disable(&v228);
+    _GameShell->sub_bar_button->Disable(&v228);
 
     v228.butID = 1013;
-    _GameShell->sub_bar_button->disable(&v228);
+    _GameShell->sub_bar_button->Disable(&v228);
 
     v228.butID = 1011;
-    _GameShell->sub_bar_button->disable(&v228);
+    _GameShell->sub_bar_button->Disable(&v228);
 
-    _GameShell->sub_bar_button->Hide();
+    _GameShell->sub_bar_button->HideScreen();
     return true;
 }
-bool NC_STACK_ypaworld::CreateConfirmControls(){
+bool NC_STACK_ypaworld::CreateConfirmControls()
+{
 
     _GameShell->confirm_button = Nucleus::CInit<NC_STACK_button>( {
         {NC_STACK_button::BTN_ATT_X, (int32_t)0},
@@ -2894,15 +2895,19 @@ bool NC_STACK_ypaworld::CreateConfirmControls(){
     NC_STACK_button::button_66arg v228;
     v228.field_4 = 0;
     v228.butID = 1300;
-    _GameShell->confirm_button->disable(&v228);
+    _GameShell->confirm_button->Disable(&v228);
 
     v228.butID = 1301;
-    _GameShell->confirm_button->disable(&v228);
+    _GameShell->confirm_button->Disable(&v228);
 
-    _GameShell->confirm_button->Hide();
+    _GameShell->confirm_button->HideScreen();
     return true;
 }
-bool NC_STACK_ypaworld::CreateInputControls(){
+bool NC_STACK_ypaworld::CreateInputControls()
+{
+    int menuWidth = _screenSize.x * 0.7;
+    int posLeftPaddingX = (_screenSize.x - menuWidth) / 2;
+    
     GuiList::tInit args;
     args.resizeable = false;
     args.numEntries = 45;
@@ -3181,11 +3186,14 @@ bool NC_STACK_ypaworld::CreateInputControls(){
         return false;
     }
 
-    _GameShell->button_input_button->Hide();
+    _GameShell->button_input_button->HideScreen();
     return true;
 }
-bool NC_STACK_ypaworld::CreateVideoControls(){
-
+bool NC_STACK_ypaworld::CreateVideoControls()
+{
+    int menuWidth = _screenSize.x * 0.7;
+    int posLeftPaddingX = (_screenSize.x - menuWidth) / 2;
+    
     int v261 = 0;
     int v3 = 0;
 
@@ -3922,13 +3930,17 @@ bool NC_STACK_ypaworld::CreateVideoControls(){
     v229.butID = 1151;
     v229.field_4 = ((_GameShell->soundFlags & World::SF_INVERTLR) == 0) + 1;
 
-    _GameShell->video_button->button_func73(&v229);
+    _GameShell->video_button->SetState(&v229);
 
 
-    _GameShell->video_button->Hide();
+    _GameShell->video_button->HideScreen();
     return true;
 }
-bool NC_STACK_ypaworld::CreateDiskControls(){
+bool NC_STACK_ypaworld::CreateDiskControls()
+{
+    int menuWidth = _screenSize.x * 0.7;
+    int posLeftPaddingX = (_screenSize.x - menuWidth) / 2;
+    
     GuiList::tInit args;
     args = GuiList::tInit();
     args.resizeable = false;
@@ -4139,14 +4151,18 @@ bool NC_STACK_ypaworld::CreateDiskControls(){
     }
 
 
-    _GameShell->disk_button->Hide();
+    _GameShell->disk_button->HideScreen();
     NC_STACK_button::button_66arg v228;
     v228.field_4 = 0;
     v228.butID = 1105;
-    _GameShell->disk_button->disable(&v228);
+    _GameShell->disk_button->Disable(&v228);
     return true;
 }
-bool NC_STACK_ypaworld::CreateLocaleControls(){
+bool NC_STACK_ypaworld::CreateLocaleControls()
+{
+    int menuWidth = _screenSize.x * 0.7;
+    int posLeftPaddingX = (_screenSize.x - menuWidth) / 2;
+    
     GuiList::tInit args;
     args = GuiList::tInit();
     args.resizeable = false;
@@ -4292,7 +4308,7 @@ bool NC_STACK_ypaworld::CreateLocaleControls(){
         return false;
     }
 
-    _GameShell->locale_button->Hide();
+    _GameShell->locale_button->HideScreen();
     return true;
 }
 bool NC_STACK_ypaworld::CreateAboutControls(){
@@ -4324,6 +4340,9 @@ bool NC_STACK_ypaworld::CreateAboutControls(){
     btn_64arg.ypos = vertMenuSpace + _fontH;
     btn_64arg.flags = NC_STACK_button::FLAG_CENTER | NC_STACK_button::FLAG_TEXT;
     btn_64arg.caption = "Fuer den Kauf dieses erzgebirgischen Qualitaetsspielzeuges bedanken sich";
+    btn_64arg.txt_r = _iniColors[68].r;
+    btn_64arg.txt_g = _iniColors[68].g;
+    btn_64arg.txt_b = _iniColors[68].b;
 
     if ( _GameShell->about_button->Add(&btn_64arg) )
     {
@@ -4425,10 +4444,13 @@ bool NC_STACK_ypaworld::CreateAboutControls(){
         return false;
     }
 
-    _GameShell->about_button->Hide();
+    _GameShell->about_button->HideScreen();
     return true;
 }
-bool NC_STACK_ypaworld::CreateNetworkControls(){
+bool NC_STACK_ypaworld::CreateNetworkControls()
+{
+    int posLeftPaddingX = (_screenSize.x * 0.3) / 2;
+    
     GuiList::tInit args;
     args = GuiList::tInit();
     args.resizeable = false;
@@ -4540,7 +4562,7 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
                 btn_64arg.field_3A = 30;
                 btn_64arg.button_type = 4;
                 btn_64arg.xpos += btn_64arg.width + 2 * buttonsSpace;
-                btn_64arg.width = v198->map[65].w/2;
+                btn_64arg.width = v198->map[65].w;
                 btn_64arg.caption = "A";
                 btn_64arg.caption2 = "B";
                 btn_64arg.button_id = 1206;
@@ -4875,30 +4897,30 @@ bool NC_STACK_ypaworld::CreateNetworkControls(){
     NC_STACK_button::button_66arg v228;
     v228.butID = 1210;
     v228.field_4 = 0;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1211;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1212;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1213;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1214;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1215;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1216;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
     v228.butID = 1217;
-    _GameShell->network_button->disable(&v228);
+    _GameShell->network_button->Disable(&v228);
 
-    _GameShell->network_button->Hide();
+    _GameShell->network_button->HideScreen();
     return true;
 }
 bool NC_STACK_ypaworld::OpenGameShell()
@@ -5031,10 +5053,9 @@ bool NC_STACK_ypaworld::OpenGameShell()
         word_5A50BE = 480;
     }
 
-    menuWidth = _screenSize.x * 0.7;
-    menuHeight = _screenSize.y * 0.8;
-
-    posLeftPaddingX = (_screenSize.x - menuWidth) / 2;
+    
+    int menuWidth = _screenSize.x * 0.7;
+    int menuHeight = _screenSize.y * 0.8;
 
     scaledFontHeight = _fontH;
     if ( _screenSize.x >= 512 )
@@ -5084,11 +5105,11 @@ bool NC_STACK_ypaworld::OpenGameShell()
     switch (_GameShell->EnvMode)
     {
     default:
-        _GameShell->titel_button->Show();
+        _GameShell->titel_button->ShowScreen();
         break;
     case ENVMODE_TUTORIAL:
     case ENVMODE_SINGLEPLAY:
-        _GameShell->sub_bar_button->Show();
+        _GameShell->sub_bar_button->ShowScreen();
 
         if ( _GameShell->GameIsOver )
         {
@@ -5096,14 +5117,14 @@ bool NC_STACK_ypaworld::OpenGameShell()
             v231.field_4 = 0;
             v231.butID = 1014;
 
-            _GameShell->sub_bar_button->disable(&v231);
+            _GameShell->sub_bar_button->Disable(&v231);
 
             v231.butID = 1013;
-            _GameShell->sub_bar_button->disable(&v231);
+            _GameShell->sub_bar_button->Disable(&v231);
         }
         break;
     case ENVMODE_NETPLAY:
-        _GameShell->network_button->Show();
+        _GameShell->network_button->ShowScreen();
         break;
     }
 
@@ -5146,21 +5167,21 @@ void NC_STACK_ypaworld::CloseGameShell()
     {       
         if ( _GameShell->confirm_button )
         {
-            _GameShell->confirm_button->Hide();
+            _GameShell->confirm_button->HideScreen();
             _GameShell->confirm_button->Delete();
         }
         _GameShell->confirm_button = NULL;
 
         if ( _GameShell->sub_bar_button )
         {
-            _GameShell->sub_bar_button->Hide();
+            _GameShell->sub_bar_button->HideScreen();
             _GameShell->sub_bar_button->Delete();
         }
         _GameShell->sub_bar_button = NULL;
 
         if ( _GameShell->titel_button )
         {
-            _GameShell->titel_button->Hide();
+            _GameShell->titel_button->HideScreen();
             _GameShell->titel_button->Delete();
         }
         _GameShell->titel_button = NULL;
@@ -5171,7 +5192,7 @@ void NC_STACK_ypaworld::CloseGameShell()
                 _GameShell->p_YW->GuiWinClose( &_GameShell->input_listview );
             _GameShell->input_listview.Free();
 
-            _GameShell->button_input_button->Hide();
+            _GameShell->button_input_button->HideScreen();
             _GameShell->button_input_button->Delete();
             _GameShell->button_input_button = NULL;
         }
@@ -5186,7 +5207,7 @@ void NC_STACK_ypaworld::CloseGameShell()
                 _GameShell->p_YW->GuiWinClose( &_GameShell->d3d_listvw );
             _GameShell->d3d_listvw.Free();
 
-            _GameShell->video_button->Hide();
+            _GameShell->video_button->HideScreen();
             _GameShell->video_button->Delete();
             _GameShell->video_button = NULL;
         }
@@ -5197,7 +5218,7 @@ void NC_STACK_ypaworld::CloseGameShell()
                 _GameShell->p_YW->GuiWinClose( &_GameShell->disk_listvw );
             _GameShell->disk_listvw.Free();
 
-            _GameShell->disk_button->Hide();
+            _GameShell->disk_button->HideScreen();
             _GameShell->disk_button->Delete();
             _GameShell->disk_button = NULL;
         }
@@ -5208,14 +5229,14 @@ void NC_STACK_ypaworld::CloseGameShell()
                 _GameShell->p_YW->GuiWinClose( &_GameShell->local_listvw );
             _GameShell->local_listvw.Free();
 
-            _GameShell->locale_button->Hide();
+            _GameShell->locale_button->HideScreen();
             _GameShell->locale_button->Delete();
             _GameShell->locale_button = NULL;
         }
 
         if ( _GameShell->about_button )
         {
-            _GameShell->about_button->Hide();
+            _GameShell->about_button->HideScreen();
             _GameShell->about_button->Delete();
             _GameShell->about_button = NULL;
         }
@@ -5226,7 +5247,7 @@ void NC_STACK_ypaworld::CloseGameShell()
                 _GameShell->p_YW->GuiWinClose( &_GameShell->network_listvw );
             _GameShell->network_listvw.Free();
 
-            _GameShell->network_button->Hide();
+            _GameShell->network_button->HideScreen();
             _GameShell->network_button->Delete();
             _GameShell->network_button = NULL;
         }
@@ -5881,93 +5902,93 @@ void NC_STACK_ypaworld::UpdateGameShell()
         NC_STACK_button::button_66arg v18;
         v18.field_4 = 1;
         v18.butID = 1101;
-        _GameShell->disk_button->show(&v18);
+        _GameShell->disk_button->Enable(&v18);
 
         v18.butID = 1102;
-        _GameShell->disk_button->show(&v18);
+        _GameShell->disk_button->Enable(&v18);
 
         v18.butID = 1103;
-        _GameShell->disk_button->show(&v18);
+        _GameShell->disk_button->Enable(&v18);
     }
     else
     {
         NC_STACK_button::button_66arg v18;
         v18.field_4 = 1;
         v18.butID = 1101;
-        _GameShell->disk_button->disable(&v18);
+        _GameShell->disk_button->Disable(&v18);
 
         v18.butID = 1102;
-        _GameShell->disk_button->disable(&v18);
+        _GameShell->disk_button->Disable(&v18);
 
         v18.butID = 1103;
-        _GameShell->disk_button->disable(&v18);
+        _GameShell->disk_button->Disable(&v18);
     }
 
     NC_STACK_button::button_66arg v16;
     v16.butID = 1151;
     v16.field_4 = ((_GameShell->soundFlags & World::SF_INVERTLR) == 0) + 1;
 
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
 
     v16.butID = 1150;
     v16.field_4 = ((_GameShell->GFXFlags & World::GFX_FLAG_16BITTEXTURE) == 0) + 1;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
     v16.field_4 = ((_GameShell->soundFlags & World::SF_CDSOUND) == 0) + 1;
     v16.butID = 1164;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
-    NC_STACK_button::Slider *tmp = _GameShell->video_button->button_func74(1152);
+    NC_STACK_button::Slider *tmp = _GameShell->video_button->GetSliderData(1152);
     tmp->value = _GameShell->soundVolume;
 
-    _GameShell->video_button->button_func75(1152);
+    _GameShell->video_button->Refresh(1152);
 
-    tmp = _GameShell->video_button->button_func74(1154);
+    tmp = _GameShell->video_button->GetSliderData(1154);
     tmp->value = _GameShell->musicVolume;
 
-    _GameShell->video_button->button_func75(1154);
+    _GameShell->video_button->Refresh(1154);
 
     v16.butID = 1163;
     v16.field_4 = (_GameShell->enemyIndicator == 0) + 1;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
     v16.butID = 1157;
     v16.field_4 = ((_GameShell->GFXFlags & World::GFX_FLAG_FARVIEW) == 0) + 1;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
     v16.field_4 = ((_GameShell->GFXFlags & World::GFX_FLAG_SKYRENDER) == 0) + 1;
     v16.butID = 1160;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
     v16.butID = 1165;
     v16.field_4 = ((_GameShell->GFXFlags & World::GFX_FLAG_SOFTMOUSE) == 0) + 1;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
     v16.butID = 1166;
     v16.field_4 = (!_GameShell->IsWindowedFlag()) + 1;
-    _GameShell->video_button->button_func73(&v16);
+    _GameShell->video_button->SetState(&v16);
 
-    _GameShell->video_button->setCaption(1156, _GameShell->p_YW->_gfxMode.name);
+    _GameShell->video_button->SetText(1156, _GameShell->p_YW->_gfxMode.name);
 
-    tmp = _GameShell->video_button->button_func74(1159);
+    tmp = _GameShell->video_button->GetSliderData(1159);
     tmp->value = _GameShell->fxnumber;
 
-    _GameShell->video_button->button_func75(1159);
+    _GameShell->video_button->Refresh(1159);
 
     NC_STACK_button::button_66arg v9;
     v9.butID = 1050;
     v9.field_4 = ((_GameShell->p_YW->_preferences & World::PREF_JOYDISABLE) != 0) + 1;
 
-    _GameShell->button_input_button->button_func73(&v9);
+    _GameShell->button_input_button->SetState(&v9);
 
     v9.butID = 1061;
     v9.field_4 = (_GameShell->altJoystickEnabled == false) + 1;
-    _GameShell->button_input_button->button_func73(&v9);
+    _GameShell->button_input_button->SetState(&v9);
 
     v9.butID = 1055;
     v9.field_4 = ((_GameShell->p_YW->_preferences & World::PREF_FFDISABLE) != 0) + 1;
-    _GameShell->button_input_button->button_func73(&v9);
+    _GameShell->button_input_button->SetState(&v9);
 
     if ( _GameShell->inpListActiveElement )
     {

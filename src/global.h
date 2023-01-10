@@ -22,14 +22,5 @@ EXTR base_64arg world_update_arg;
 
 EXTR NC_STACK_ypaworld *ypaworld;
 
-enum GameScreenMode {
-    GAME_SCREEN_MODE_UNKNOWN = 0,
-    GAME_SCREEN_MODE_MENU = 1,
-    GAME_SCREEN_MODE_GAME = 2,
-    GAME_SCREEN_MODE_UNKNOWN3 = 3
-};
-
-EXTR GameScreenMode gameScreen;
-
 
 #endif // GLOBAL_H_INCLUDED1
