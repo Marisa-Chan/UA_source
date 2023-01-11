@@ -3,8 +3,6 @@
 
 #include "nucleas.h"
 
-class NC_STACK_idev;
-
 class NC_STACK_idev: public NC_STACK_nucleus
 {
 public:
@@ -25,16 +23,12 @@ public:
     NC_STACK_idev() {};
     virtual ~NC_STACK_idev() {};
 
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_idev();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "idev.class";
 };
 
 #endif // IDEV_H_INCLUDED

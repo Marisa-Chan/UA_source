@@ -12,8 +12,6 @@
 #include "system/inivals.h"
 
 
-const Nucleus::ClassDescr NC_STACK_amesh::description("amesh.class", &newinstance);
-
 size_t NC_STACK_amesh::Init(IDVList &stak)
 {
     if ( !NC_STACK_area::Init(stak) )

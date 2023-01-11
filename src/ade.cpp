@@ -4,8 +4,6 @@
 #include "utils.h"
 
 
-const Nucleus::ClassDescr NC_STACK_ade::description("ade.class", &newinstance);
-
 
 size_t NC_STACK_ade::Init(IDVList &stak)
 {

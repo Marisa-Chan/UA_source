@@ -6,8 +6,6 @@
 
 
 
-const Nucleus::ClassDescr NC_STACK_wintimer::description("wintimer.class", &newinstance);
-
 
 uint32_t wintimer_func64__sub0()
 {

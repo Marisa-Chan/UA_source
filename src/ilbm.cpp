@@ -5,8 +5,6 @@
 #include "utils.h"
 
 
-const Nucleus::ClassDescr NC_STACK_ilbm::description("ilbm.class", &newinstance);
-
 size_t NC_STACK_ilbm::Init(IDVList &stak)
 {
     if ( !NC_STACK_bitmap::Init(stak) )

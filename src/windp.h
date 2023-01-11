@@ -192,12 +192,8 @@ public:
     };
     virtual ~NC_STACK_windp() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_windp();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum
@@ -241,7 +237,7 @@ protected:
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "windp.class";
 
     ProviderStruct providers[MAX_PROVIDERS];
 

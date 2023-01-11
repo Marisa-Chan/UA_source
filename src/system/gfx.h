@@ -737,7 +737,7 @@ protected:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
+    //static constexpr const char * __ClassName = ;
     
     
 public:

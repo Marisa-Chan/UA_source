@@ -16,16 +16,11 @@ public:
     };
     virtual ~NC_STACK_network() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_network();
-    };
-
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "network.class";
 };
 
 #endif // NETWORK_H_INCLUDED

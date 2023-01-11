@@ -9,9 +9,6 @@
 #include <math.h>
 
 
-const Nucleus::ClassDescr NC_STACK_ypaufo::description("ypaufo.class", &newinstance);
-
-
 size_t NC_STACK_ypaufo::Init(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::Init(stak) )

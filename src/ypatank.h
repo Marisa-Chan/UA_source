@@ -48,12 +48,8 @@ public:
     NC_STACK_ypatank();
     virtual ~NC_STACK_ypatank() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_ypatank();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
     
     
@@ -74,7 +70,7 @@ public:
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypatank.class";
 
 protected:
     uint8_t _tankFlags;

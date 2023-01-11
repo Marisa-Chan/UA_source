@@ -19,10 +19,22 @@ namespace Nucleus
 struct ClassDescr
 {
     const std::string _classname;
-    NC_STACK_nucleus *(*_newinstance)();
+    NC_STACK_nucleus *(*_newinstance)() = NULL;
 
-    ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)() );
+    ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)() )
+    : _classname(clsname)
+    , _newinstance(newinst)
+    {}
 };
+
+template <class _T>
+static NC_STACK_nucleus * __ClassInstanciator() { return new _T(); };
+
+template <class _T>
+static ClassDescr MakeClassDescr()
+{ 
+    return ClassDescr(_T::__ClassName, __ClassInstanciator<_T>); 
+}
 
 }
 
@@ -40,12 +52,8 @@ public:
     };
     virtual ~NC_STACK_nucleus() {};
 
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_nucleus();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum NC_ATT
@@ -71,7 +79,7 @@ public:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "nucleus.class";
 
 public:
     std::string NAME;

@@ -10,9 +10,6 @@
 #include "system/inivals.h"
 #include "locale/locale.h"
 
-
-const Nucleus::ClassDescr NC_STACK_windp::description("windp.class", &newinstance);
-
 const char *SERV_STR = "UA:SOURCE TEST NETWORK";
 
 size_t NC_STACK_windp::Init(IDVList &stak)

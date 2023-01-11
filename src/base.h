@@ -136,12 +136,8 @@ public:
 
     virtual ~NC_STACK_base();
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * NewInstance() {
-        return new NC_STACK_base();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum //Flags
@@ -208,7 +204,7 @@ public:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "base.class";
 
 public:
     

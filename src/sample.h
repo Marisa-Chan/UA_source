@@ -14,12 +14,8 @@ public:
     NC_STACK_sample() {};
     virtual ~NC_STACK_sample() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_sample();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum SMPL_ATT
@@ -36,7 +32,7 @@ public:
     virtual void *getSMPL_buffer();
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "sample.class";
 
 public:
     TSampleData * p_sampl = NULL;

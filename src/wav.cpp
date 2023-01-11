@@ -5,8 +5,6 @@
 #include "utils.h"
 
 
-const Nucleus::ClassDescr NC_STACK_wav::description("wav.class", &newinstance);
-
 struct __attribute__((packed)) RIFF_HDR
 {
     uint32_t ChunkID;

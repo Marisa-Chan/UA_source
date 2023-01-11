@@ -6,7 +6,6 @@
 #include "input.h"
 
 
-const Nucleus::ClassDescr NC_STACK_input::description("input.class", &newinstance);
 
 
 size_t NC_STACK_input::Init(IDVList &stak)

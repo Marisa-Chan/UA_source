@@ -18,13 +18,10 @@ public:
     NC_STACK_bitmap() {};
     virtual ~NC_STACK_bitmap() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_bitmap();
-    };
 
     enum BMD_ATT
     {
@@ -58,7 +55,7 @@ public:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "bitmap.class";
 
 public:
     ResBitmap *bitm_intern = NULL;

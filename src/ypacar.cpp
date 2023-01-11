@@ -12,8 +12,6 @@
 #include "log.h"
 
 
-const Nucleus::ClassDescr NC_STACK_ypacar::description("ypacar.class", &newinstance);
-
 NC_STACK_ypacar::NC_STACK_ypacar() 
 {
     _carKamikaze = false;

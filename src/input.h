@@ -216,13 +216,6 @@ public:
     NC_STACK_input() {};
     virtual ~NC_STACK_input() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_input();
-    };
 
 protected:
     static void FreeKNodes(InputNodeList *lst);
@@ -233,7 +226,6 @@ protected:
 
 //Data
 public:
-    static const Nucleus::ClassDescr description;
 
     NC_STACK_itimer *_timer    = NULL;
     NC_STACK_iwimp * _wimp     = NULL;

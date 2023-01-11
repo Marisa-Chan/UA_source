@@ -20,12 +20,8 @@ public:
     };
     virtual ~NC_STACK_area() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_area();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum AREA_FLAG
@@ -119,7 +115,7 @@ public:
 
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "area.class";
 
 public:
     NC_STACK_bitmap *_texImg = NULL;

@@ -26,12 +26,8 @@ public:
     };
     virtual ~NC_STACK_ypaufo() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_ypaufo();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum UFO_ATT
@@ -45,7 +41,7 @@ public:
     virtual int getUFO_togo();
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypaufo.class";
 
     
     float _ufoTogo        = 0.0;

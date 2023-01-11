@@ -7,9 +7,6 @@
 
 
 
-const Nucleus::ClassDescr NC_STACK_iwimp::description("iwimp.class", &newinstance);
-
-
 
 size_t NC_STACK_iwimp::Init(IDVList &stak)
 {

@@ -5,9 +5,6 @@
 #include "utils.h"
 
 
-const Nucleus::ClassDescr NC_STACK_bitmap::description("bitmap.class", &newinstance);
-
-
 
 size_t NC_STACK_bitmap::Init(IDVList &stak)
 {

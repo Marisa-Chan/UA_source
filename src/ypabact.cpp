@@ -13,10 +13,6 @@
 #include "log.h"
 
 
-
-const Nucleus::ClassDescr NC_STACK_ypabact::description("ypabact.class", &newinstance);
-
-
 int ypabact_id = 1;
 
 

@@ -36,13 +36,8 @@ public:
     };
     virtual ~NC_STACK_ypagun() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance()
-    {
-        return new NC_STACK_ypagun();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum GUN_ATT
@@ -91,7 +86,7 @@ public:
     bool CheckPedestal();
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypagun.class";
 
     float _gunMaxUp;
     float _gunMaxDown;

@@ -17,7 +17,6 @@
 #include "system/inivals.h"
 #include "particle.h"
 
-const Nucleus::ClassDescr NC_STACK_base::description("base.class", &NewInstance);
 
 size_t NC_STACK_base::Init(IDVList &stak)
 {

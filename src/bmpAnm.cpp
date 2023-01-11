@@ -6,8 +6,6 @@
 #include "utils.h"
 
 
-const Nucleus::ClassDescr NC_STACK_bmpanim::description("bmpanim.class", &newinstance);
-
 
 size_t NC_STACK_bmpanim::Init(IDVList &stak)
 {

@@ -17,12 +17,8 @@ public:
     NC_STACK_ypacar();
     virtual ~NC_STACK_ypacar() {};
 
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_ypacar();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum CAR_ATT
@@ -42,7 +38,7 @@ public:
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypacar.class";
 
 protected:
     bool _carKamikaze;

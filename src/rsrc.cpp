@@ -3,8 +3,6 @@
 #include "rsrc.h"
 #include "utils.h"
 
-const Nucleus::ClassDescr NC_STACK_rsrc::description("rsrc.class", &newinstance);
-
 RSRCList NC_STACK_rsrc::privateList;
 RSRCList NC_STACK_rsrc::publicList;
 

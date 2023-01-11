@@ -4,9 +4,6 @@
 #include "utils.h"
 
 
-const Nucleus::ClassDescr NC_STACK_sample::description("sample.class", &newinstance);
-
-
 size_t NC_STACK_sample::Init(IDVList &stak)
 {
     if ( !NC_STACK_rsrc::Init(stak) )

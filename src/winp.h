@@ -40,6 +40,9 @@ public:
     };
 
 public:
+    static constexpr const char * __ClassName = "winp.class";
+
+public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
     virtual bool GetState();
@@ -53,12 +56,8 @@ public:
     NC_STACK_winp() {};
     virtual ~NC_STACK_winp() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_winp();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
     static void initfirst();
     
@@ -91,7 +90,6 @@ protected:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
     static std::map<int16_t, int16_t> KBDMapping;
     
     int16_t _bindedKey = -1;

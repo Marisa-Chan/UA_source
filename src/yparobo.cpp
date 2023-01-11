@@ -12,7 +12,6 @@
 
 #include <math.h>
 
-const Nucleus::ClassDescr NC_STACK_yparobo::description("yparobo.class", &newinstance);
 
 
 int dword_5B1128 = 1;

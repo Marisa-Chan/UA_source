@@ -11,8 +11,6 @@
 
 #include <math.h>
 
-const Nucleus::ClassDescr NC_STACK_ypamissile::description("ypamissile.class", &newinstance);
-
 size_t NC_STACK_ypamissile::Init(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::Init(stak) )

@@ -7,8 +7,6 @@
 #include "log.h"
 #include "gui/widget.h"
 
-const Nucleus::ClassDescr NC_STACK_winp::description("winp.class", &newinstance);
-
 std::map<int16_t, int16_t> NC_STACK_winp::KBDMapping;
 
 int NC_STACK_winp::_kbdLastDown;

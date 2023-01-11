@@ -19,9 +19,6 @@
 #include "system/inivals.h"
 #include "locale/locale.h"
 
-
-const Nucleus::ClassDescr NC_STACK_ypaworld::description("ypaworld.class", &newinstance);
-
 extern yw_infolog info_log;
 
 int vertMenuSpace;

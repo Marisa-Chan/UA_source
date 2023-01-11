@@ -8,9 +8,6 @@
 
 #include <math.h>
 
-
-const Nucleus::ClassDescr NC_STACK_particle::description("particle.class", &newinstance);
-
 uint32_t NC_STACK_particle::_randomIndex = 0;
 
 std::array<float, 1024> NC_STACK_particle::_randomTable

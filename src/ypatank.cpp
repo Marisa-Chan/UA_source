@@ -10,9 +10,6 @@
 
 #include "yw_net.h"
 
-
-const Nucleus::ClassDescr NC_STACK_ypatank::description("ypatank.class", &newinstance);
-
 NC_STACK_ypatank::NC_STACK_ypatank()
 {
     _tankFlags = 0;

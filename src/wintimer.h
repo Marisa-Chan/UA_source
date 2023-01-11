@@ -11,16 +11,12 @@ public:
     NC_STACK_wintimer() {};
     virtual ~NC_STACK_wintimer() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_wintimer();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "wintimer.class";
 
 public:
     uint32_t ticks = 0;

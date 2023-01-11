@@ -52,12 +52,8 @@ public:
 
     virtual ~NC_STACK_rsrc() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_rsrc();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum RSRC_ATT
@@ -90,7 +86,7 @@ public:
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "rsrc.class";
 
 protected:
     rsrc *resource;

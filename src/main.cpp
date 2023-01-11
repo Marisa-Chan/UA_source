@@ -6,6 +6,9 @@
 #include "includes.h"
 #include "system/gfx.h"
 #include "system/inpt.h"
+#include "winp.h"
+#include "wintimer.h"
+
 #include "ade.h"
 #include "area.h"
 #include "amesh.h"
@@ -488,42 +491,42 @@ int init_classesLists_and_variables()
     init_d3dlog();
     init_dinputlog();
 
-    Nucleus::ClassList.push_back(NC_STACK_nucleus::description);
-    Nucleus::ClassList.push_back(NC_STACK_rsrc::description);
-    Nucleus::ClassList.push_back(NC_STACK_bitmap::description);
-    Nucleus::ClassList.push_back(NC_STACK_skeleton::description);
-    Nucleus::ClassList.push_back(NC_STACK_ilbm::description);
-    Nucleus::ClassList.push_back(NC_STACK_sklt::description);
-    Nucleus::ClassList.push_back(NC_STACK_ade::description);
-    Nucleus::ClassList.push_back(NC_STACK_area::description);
-    Nucleus::ClassList.push_back(NC_STACK_base::description);
-    Nucleus::ClassList.push_back(NC_STACK_bmpanim::description);
-    Nucleus::ClassList.push_back(NC_STACK_amesh::description);
-    Nucleus::ClassList.push_back(NC_STACK_particle::description);
-    Nucleus::ClassList.push_back(NC_STACK_embed::description);
-    Nucleus::ClassList.push_back(NC_STACK_idev::description);
-    Nucleus::ClassList.push_back(NC_STACK_input::description);
-    Nucleus::ClassList.push_back(NC_STACK_itimer::description);
-    Nucleus::ClassList.push_back(NC_STACK_iwimp::description);
-    Nucleus::ClassList.push_back(NC_STACK_sample::description);
-    Nucleus::ClassList.push_back(NC_STACK_wav::description);
-    Nucleus::ClassList.push_back(NC_STACK_button::description);
-    Nucleus::ClassList.push_back(NC_STACK_network::description);
-    Nucleus::ClassList.push_back(NC_STACK_winp::description);
-    Nucleus::ClassList.push_back(NC_STACK_wintimer::description);
-    Nucleus::ClassList.push_back(NC_STACK_windp::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypaworld::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypabact::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypatank::description);
-    Nucleus::ClassList.push_back(NC_STACK_yparobo::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypamissile::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypaflyer::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypacar::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypaufo::description);
-    Nucleus::ClassList.push_back(NC_STACK_ypagun::description);
-    Nucleus::ClassList.push_back(NC_STACK_3ds::description);
-    Nucleus::ClassList.push_back(NC_STACK_image::description);
-    Nucleus::ClassList.push_back(NC_STACK_Obj3D::description);
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_nucleus>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_rsrc>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_bitmap>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_skeleton>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ilbm>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_sklt>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ade>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_area>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_base>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_bmpanim>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_amesh>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_particle>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_embed>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_idev>() );
+    //Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_input>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_itimer>() );
+    //Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_iwimp>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_sample>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_wav>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_button>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_network>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_winp>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_wintimer>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_windp>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypaworld>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypabact>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypatank>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_yparobo>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypamissile>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypaflyer>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypacar>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypaufo>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_ypagun>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_3ds>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_image>() );
+    Nucleus::ClassList.push_back( Nucleus::MakeClassDescr<NC_STACK_Obj3D>() );
 
     return 1;
 }

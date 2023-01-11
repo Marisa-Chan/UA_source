@@ -430,13 +430,8 @@ public:
     NC_STACK_ypabact();
     virtual ~NC_STACK_ypabact();
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance()
-    {
-        return new NC_STACK_ypabact();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum BACT_ATT
@@ -559,7 +554,7 @@ protected:
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypabact.class";
 public:    
     
     World::RefBactList::Node _cellRef;

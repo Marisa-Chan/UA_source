@@ -16,9 +16,6 @@
 
 
 
-const Nucleus::ClassDescr NC_STACK_sklt::description("sklt.class", &newinstance);
-
-
 
 size_t NC_STACK_sklt::LoadingFromIFF(IFFile **file)
 {

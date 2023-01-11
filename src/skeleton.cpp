@@ -15,8 +15,6 @@
 #include <float.h>
 
 
-const Nucleus::ClassDescr NC_STACK_skeleton::description("skeleton.class", &newinstance);
-
 size_t NC_STACK_skeleton::Init(IDVList &stak)
 {
     if ( !NC_STACK_rsrc::Init(stak) )

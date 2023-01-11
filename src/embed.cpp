@@ -10,10 +10,6 @@
 #include "inttypes.h"
 
 
-
-const Nucleus::ClassDescr NC_STACK_embed::description("embed.class", &newinstance);
-
-
 // Create embed resource node and fill rsrc field data
 size_t NC_STACK_embed::Init(IDVList &)
 {

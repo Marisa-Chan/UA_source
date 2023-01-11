@@ -53,13 +53,10 @@ public:
     NC_STACK_bmpanim() {};
     virtual ~NC_STACK_bmpanim() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_bmpanim();
-    };
 
     enum BANM_ATT
     {
@@ -107,7 +104,7 @@ public:
     static bool WriteFrameData(FSMgr::iFileHandle *fil, ResBmpAnm *arg);
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "bmpanim.class";
 
 public:
     ResBmpAnm *_pData = NULL;

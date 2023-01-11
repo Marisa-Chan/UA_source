@@ -24,12 +24,8 @@ public:
     };
     virtual ~NC_STACK_ypaflyer() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_ypaflyer();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum FLY_ATT
@@ -46,7 +42,7 @@ public:
     void ypaflyer_func70__sub0(float angl);
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypaflyer.class";
     
     float _flyerBoost = 0.0;
     int _flyerType    = 0;

@@ -25,13 +25,6 @@ public:
     };
     virtual ~NC_STACK_iwimp() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_iwimp();
-    };
 
 protected:
     void clear();
@@ -40,8 +33,6 @@ protected:
 
 //Data
 public:
-    static const Nucleus::ClassDescr description;
-
 protected:
     std::list<ClickBox *> cboxList;
     ClickBox *selectedCbox;

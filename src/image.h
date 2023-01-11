@@ -14,17 +14,14 @@ public:
     NC_STACK_image();
     virtual ~NC_STACK_image();
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_image();
-    };
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "image.class";
 };
 
 #endif // ILBM_H_INCLUDED

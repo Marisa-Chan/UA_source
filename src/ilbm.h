@@ -39,12 +39,8 @@ public:
     NC_STACK_ilbm() {};
     virtual ~NC_STACK_ilbm() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_ilbm();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum ILBM_ATT
@@ -61,7 +57,7 @@ public:
     rsrc * READ_ILBM(IDVList &stak, IFFile *mfil, int val5);
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ilbm.class";
 
 public:
     bool _saveAsIlbm = false;

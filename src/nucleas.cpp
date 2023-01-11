@@ -17,10 +17,7 @@ TClassList::iterator TClassList::find(const std::string &clsname)
     return end();
 }
 
-ClassDescr::ClassDescr(const std::string &clsname,  NC_STACK_nucleus *(*newinst)() )
-: _classname(clsname)
-, _newinstance(newinst)
-{}
+
 
 
 
@@ -55,10 +52,6 @@ NC_STACK_nucleus *CFInit(const std::string &classname, IDVList::TInitList lst)
 
 }
 
-
-
-
-const Nucleus::ClassDescr NC_STACK_nucleus::description("nucleus.class", &newinstance);
 
 size_t NC_STACK_nucleus::Init(IDVList &stak)
 {

@@ -92,12 +92,8 @@ public:
     NC_STACK_yparobo();
     virtual ~NC_STACK_yparobo() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_yparobo();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum ROBOSTATE
@@ -311,7 +307,7 @@ protected:
 public:
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "yparobo.class";
 
     
     float _roboFlotage;

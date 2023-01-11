@@ -46,13 +46,10 @@ public:
     NC_STACK_Obj3D();
     virtual ~NC_STACK_Obj3D();
 
-    virtual const std::string &ClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_Obj3D();
-    };
     
     virtual void RecalcInternal(bool kids = false) override {};
 
@@ -71,7 +68,7 @@ private:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "obj3d.class";
 
 private:
     std::vector<vec3d> _v;

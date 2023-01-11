@@ -7,9 +7,6 @@
 #include "log.h"
 #include <math.h>
 
-
-const Nucleus::ClassDescr NC_STACK_ypaflyer::description("ypaflyer.class", &newinstance);
-
 size_t NC_STACK_ypaflyer::Init(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::Init(stak) )

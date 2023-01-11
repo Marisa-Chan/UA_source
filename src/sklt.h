@@ -14,16 +14,12 @@ public:
     NC_STACK_sklt() {};
     virtual ~NC_STACK_sklt() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_sklt();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "sklt.class";
 };
 
 #endif // SKLT_H_INCLUDED

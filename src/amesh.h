@@ -27,12 +27,8 @@ public:
     NC_STACK_amesh() {};
     virtual ~NC_STACK_amesh() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_amesh();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum AMESH_ATT
@@ -58,7 +54,7 @@ public:
     }
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "amesh.class";
     
 public:
     int16_t polyCnt = 0;

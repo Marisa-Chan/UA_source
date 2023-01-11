@@ -42,12 +42,8 @@ public:
     NC_STACK_ade() {};
     virtual ~NC_STACK_ade() {};
     
-    virtual const std::string &ClassName() const {
-        return description._classname;
-    };
-
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_ade();
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
     enum ADE_FLAG
@@ -86,7 +82,7 @@ public:
     virtual std::vector<tUtV> *GetOutline( size_t polyID = 0 ) { return NULL; };
 
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ade.class";
 
 
 public:

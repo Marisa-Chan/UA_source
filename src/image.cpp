@@ -9,7 +9,6 @@
 
 #include "glob_funcs.h"
 
-const Nucleus::ClassDescr NC_STACK_image::description("image.class", &newinstance);
 
 NC_STACK_image::NC_STACK_image()
 {

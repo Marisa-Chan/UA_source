@@ -1962,14 +1962,10 @@ public:
     NC_STACK_ypaworld();
     virtual ~NC_STACK_ypaworld() {};
     
-    virtual const std::string &GetClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
-    static NC_STACK_nucleus * newinstance()
-    {
-        return new NC_STACK_ypaworld();
-    };
 
     enum YW_ATT
     {
@@ -2394,7 +2390,7 @@ public:
 
 public:
     //Data
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "ypaworld.class";
   
     
     

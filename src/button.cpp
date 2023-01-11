@@ -9,8 +9,6 @@
 #include "font.h"
 
 
-const Nucleus::ClassDescr NC_STACK_button::description("button.class", &newinstance);
-
 void NC_STACK_button::clear()
 {
     x = 0;

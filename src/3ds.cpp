@@ -4,9 +4,6 @@
 #include "env.h"
 #include "system/inivals.h"
 
-
-const Nucleus::ClassDescr NC_STACK_3ds::description("3ds.class", &newinstance);
-
 NC_STACK_3ds::NC_STACK_3ds()
 {}
 

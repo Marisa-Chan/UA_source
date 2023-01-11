@@ -7,9 +7,6 @@
 #include "ypagun.h"
 #include "yparobo.h"
 
-
-const Nucleus::ClassDescr NC_STACK_ypagun::description("ypagun.class", &newinstance);
-
 size_t NC_STACK_ypagun::Init(IDVList &stak)
 {
     if ( !NC_STACK_ypabact::Init(stak) )

@@ -11,8 +11,6 @@
 #include "system/inivals.h"
 
 
-const Nucleus::ClassDescr NC_STACK_area::description("area.class", &newinstance);
-
 size_t NC_STACK_area::Init(IDVList &stak)
 {
     if ( !NC_STACK_ade::Init(stak) )

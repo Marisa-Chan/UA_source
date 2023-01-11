@@ -6,9 +6,6 @@
 #include "fmtlib/printf.h"
 
 
-
-const Nucleus::ClassDescr NC_STACK_Obj3D::description("Obj3D.class", &newinstance);
-
 NC_STACK_Obj3D::NC_STACK_Obj3D()
 {}
 

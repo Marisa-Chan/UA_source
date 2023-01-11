@@ -155,13 +155,10 @@ public:
     };
     virtual ~NC_STACK_button() {};
 
-    virtual const std::string &ClassName() const {
-        return description._classname;
+    virtual const std::string ClassName() const {
+        return __ClassName;
     };
 
-    static NC_STACK_nucleus * newinstance() {
-        return new NC_STACK_button();
-    };
 
     enum BTN_ATT
     {
@@ -194,7 +191,7 @@ protected:
 
     //Data
 public:
-    static const Nucleus::ClassDescr description;
+    static constexpr const char * __ClassName = "button.class";
 
     WidgetArr field_d8;
     int16_t idd;
