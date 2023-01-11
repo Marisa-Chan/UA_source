@@ -1323,8 +1323,6 @@ void NC_STACK_ypaworld::sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision 
 
 void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 {
-    NC_STACK_input *inpt = INPe.GetInput();
-    
     if ( _shellConfIsParsed )
     {
         if ( _preferences & (World::PREF_JOYDISABLE | World::PREF_FFDISABLE) )
@@ -1335,8 +1333,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
     {
         _ffTimeStamp = _timeStamp;
 
-        if ( inpt )
-            inpt->ForceFeedback(NC_STACK_winp::FF_STATE_STOP, NC_STACK_winp::FF_TYPE_ALL);
+        Input::Engine.ForceFeedback(Input::FF_STATE_STOP, Input::FF_TYPE_ALL);
 
         int effectType;
         float v13;
@@ -1354,7 +1351,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
         switch ( _userUnit->_bact_type )
         {
         case BACT_TYPES_BACT:
-            effectType = NC_STACK_winp::FF_TYPE_HELIENGINE;
+            effectType = Input::FF_TYPE_HELIENGINE;
             v16 = 300.0;
             v13 = 800.0;
             v15 = 1.0;
@@ -1369,7 +1366,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
 
         case BACT_TYPES_TANK:
         case BACT_TYPES_CAR:
-            effectType = NC_STACK_winp::FF_TYPE_TANKENGINE;
+            effectType = Input::FF_TYPE_TANKENGINE;
             v16 = 200.0;
             v13 = 500.0;
             v15 = 0.6;
@@ -1383,7 +1380,7 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
             break;
 
         case BACT_TYPES_FLYER:
-            effectType = NC_STACK_winp::FF_TYPE_JETENGINE;
+            effectType = Input::FF_TYPE_JETENGINE;
             v16 = 200.0;
             v13 = 500.0;
             v15 = 1.0;
@@ -1430,11 +1427,8 @@ void NC_STACK_ypaworld::FFeedback_VehicleChanged()
             _ffPeriod = v23;
             _ffMagnitude = v21;
 
-            if ( inpt )
-            {
-                inpt->ForceFeedback(NC_STACK_winp::FF_STATE_START, effectType, v21, v23);
-                inpt->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_ROTDAMPER, v20);
-            }
+            Input::Engine.ForceFeedback(Input::FF_STATE_START, effectType, v21, v23);
+            Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_ROTDAMPER, v20);
         }
     }
 }
@@ -3528,8 +3522,6 @@ void NC_STACK_ypaworld::ProtosFreeSounds()
 
 void NC_STACK_ypaworld::FFeedback_Update()
 {
-    NC_STACK_input *inpt = INPe.GetInput();
-    
     if ( _shellConfIsParsed )
     {
         if ( _preferences & (World::PREF_JOYDISABLE | World::PREF_FFDISABLE) )
@@ -3544,8 +3536,7 @@ void NC_STACK_ypaworld::FFeedback_Update()
 
             if ( _userUnit->_status == BACT_STATUS_DEAD )
             {
-                if ( inpt )
-                    inpt->ForceFeedback(NC_STACK_winp::FF_STATE_UPDATE, _ffEffectType);
+                Input::Engine.ForceFeedback(Input::FF_STATE_UPDATE, _ffEffectType);
             }
             else
             {
@@ -3562,8 +3553,7 @@ void NC_STACK_ypaworld::FFeedback_Update()
                     else if (v17 < 0.0)
                         v17 = 0.0;
 
-                    if ( inpt )
-                        inpt->ForceFeedback(NC_STACK_winp::FF_STATE_UPDATE, _ffEffectType,
+                    Input::Engine.ForceFeedback(Input::FF_STATE_UPDATE, _ffEffectType,
                                                         _ffMagnitude, _ffPeriod * v17);
                 }
             }
@@ -3586,8 +3576,7 @@ void NC_STACK_ypaworld::FFeedback_Update()
 
                 if ( p2 > 0.0 )
                 {
-                    if ( inpt )
-                        inpt->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_SHAKE,
+                    Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_SHAKE,
                                                         p1, p2, p3, p4);
                 }
             }

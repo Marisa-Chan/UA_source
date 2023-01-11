@@ -12,13 +12,10 @@ public:
     virtual float GetSlider() { 
         return 0.0; 
     };
-    virtual void QueryKeyboard(TInputState *arg) {};
-    virtual bool BindKey(const std::string &keyName) {
-        return false;
-    };
 
     virtual void ResetSlider() {};
-    virtual void ForceFeedBack(uint8_t state, uint8_t effID, float p1 = 0.0, float p2 = 0.0, float p3 = 0.0, float p4 = 0.0) {};
+    
+    virtual bool BindKey(const std::string &keyName) {return false;};
 
     NC_STACK_idev() {};
     virtual ~NC_STACK_idev() {};

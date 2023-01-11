@@ -268,7 +268,7 @@ void sb_0x451034__sub8(NC_STACK_ypaworld *yw)
 
     up_panel.cmdstrm.cmdbuf = byte_51805C;
 
-    INPe.AddClickBoxFront(&up_panel);
+    Input::Engine.AddClickBoxFront(&up_panel);
 }
 
 
@@ -2537,7 +2537,7 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *yw)
         if ( !(bzda.field_1D8 & 1) )
         {
             bzda.field_1D8 |= 1;
-            INPe.AddClickBoxFront(&bzda);
+            Input::Engine.AddClickBoxFront(&bzda);
         }
     }
 
@@ -2862,7 +2862,7 @@ void sub_4C39A4(NC_STACK_ypaworld *yw)
     if ( bzda.field_1D8 & 1 )
     {
         bzda.field_1D8 &= 0xFFFFFFFE;
-        INPe.RemClickBox(&bzda);
+        Input::Engine.RemClickBox(&bzda);
     }
 
     gui_lstvw.Free();
@@ -2870,7 +2870,7 @@ void sub_4C39A4(NC_STACK_ypaworld *yw)
 
 void sub_4E1D24()
 {
-    INPe.RemClickBox(&up_panel);
+    Input::Engine.RemClickBox(&up_panel);
 }
 
 void sub_4E2B24(NC_STACK_ypaworld *yw)
@@ -2893,10 +2893,7 @@ void sub_4C8524(NC_STACK_ypaworld *yw)
 
 void NC_STACK_ypaworld::FFeedback_StopAll()
 {
-    NC_STACK_input *inpt = INPe.GetInput();
-    
-    if ( inpt )
-        inpt->ForceFeedback(NC_STACK_winp::FF_STATE_STOP, NC_STACK_winp::FF_TYPE_ALL);
+    Input::Engine.ForceFeedback(Input::FF_STATE_STOP, Input::FF_TYPE_ALL);
 }
 
 int sb_0x451034(NC_STACK_ypaworld *yw)
@@ -3126,8 +3123,8 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
 {
     char *pcur = gui_lstvw.itemBlock;
 
-    INPe.RemClickBox(&gui_lstvw);
-    INPe.AddClickBoxFront(&gui_lstvw);
+    Input::Engine.RemClickBox(&gui_lstvw);
+    Input::Engine.AddClickBoxFront(&gui_lstvw);
 
     gui_lstvw.numEntries = bzda.field_8E8;
     gui_lstvw.selectedEntry = bzda.field_8F8;
@@ -3634,11 +3631,11 @@ void ypaworld_func64__sub7__sub2__sub1(NC_STACK_ypaworld *yw)
         if ( !(bzda.field_1D8 & 1) )
         {
             bzda.field_1D8 |= 1;
-            INPe.AddClickBoxFront(&bzda);
+            Input::Engine.AddClickBoxFront(&bzda);
         }
 
-        INPe.RemClickBox(&bzda);
-        INPe.AddClickBoxFront(&bzda);
+        Input::Engine.RemClickBox(&bzda);
+        Input::Engine.AddClickBoxFront(&bzda);
 
         FontUA::select_tileset(&pcur, 21);
         FontUA::set_center_xpos(&pcur, v20);
@@ -4988,8 +4985,8 @@ char * ypaworld_func64__sub7__sub7__sub0(NC_STACK_ypaworld *yw)
         else
             v35 = 0;
 
-        INPe.RemClickBox(&up_panel);
-        INPe.AddClickBoxFront(&up_panel);
+        Input::Engine.RemClickBox(&up_panel);
+        Input::Engine.AddClickBoxFront(&up_panel);
 
         int x = (up_panel.field_1D4 & 0xFFFF) + v3;
 
@@ -7048,8 +7045,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7(TInputState *inpt)
                         {
                             v9->flags &= 0xFFFFFFFE;
 
-                            INPe.RemClickBox(&v9->iconBox);
-                            INPe.AddClickBoxFront(v9);
+                            Input::Engine.RemClickBox(&v9->iconBox);
+                            Input::Engine.AddClickBoxFront(v9);
 
                             v9->Attach(_guiActive);
                         }
@@ -7058,8 +7055,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7(TInputState *inpt)
                     {
                         if ( winpt->flag & TClickBoxInf::FLAG_LM_DOWN )
                         {
-                            INPe.RemClickBox(v9);
-                            INPe.AddClickBoxFront(v9);
+                            Input::Engine.RemClickBox(v9);
+                            Input::Engine.AddClickBoxFront(v9);
 
                             v9->Attach(_guiActive);
                         }
@@ -7079,11 +7076,11 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7(TInputState *inpt)
 
                                 if ( winpt->flag & TClickBoxInf::FLAG_BTN_UP )
                                 {
-                                    INPe.RemClickBox(v9);
+                                    Input::Engine.RemClickBox(v9);
 
                                     if ( v9->flags & 4 )
                                     {
-                                        INPe.AddClickBoxFront(&v9->iconBox);
+                                        Input::Engine.AddClickBoxFront(&v9->iconBox);
 
                                         v9->flags |= 1;
                                     }
@@ -11308,10 +11305,8 @@ void NC_STACK_ypaworld::ypaworld_func64__sub1(TInputState *inpt)
         {
             _mouseGrabbed = true;
 
-            NC_STACK_input *input = INPe.GetInput();
-
-            input->ResetSlider(10);
-            input->ResetSlider(11);
+            Input::Engine.ResetSlider(10);
+            Input::Engine.ResetSlider(11);
         }
     }
 
@@ -11543,8 +11538,8 @@ void NC_STACK_ypaworld::GuiWinToFront(GuiBase *win)
     {
         win->Detach();
         win->Attach(_guiActive);
-        INPe.RemClickBox(win);
-        INPe.AddClickBoxFront(win);
+        Input::Engine.RemClickBox(win);
+        Input::Engine.AddClickBoxFront(win);
     }
 }
 
@@ -11553,7 +11548,7 @@ void NC_STACK_ypaworld::GuiWinOpen(GuiBase *win)
     if ( win->flags & GuiBase::FLAG_CLOSED )
     {
         win->flags &= ~GuiBase::FLAG_CLOSED;
-        INPe.AddClickBoxFront(win);
+        Input::Engine.AddClickBoxFront(win);
         _guiDragDefaultMouse = false;
     }
 }
@@ -11563,7 +11558,7 @@ void NC_STACK_ypaworld::GuiWinClose(GuiBase *win)
     if ( !(win->flags & GuiBase::FLAG_CLOSED) )
     {
         win->flags |= GuiBase::FLAG_CLOSED;
-        INPe.RemClickBox(win);
+        Input::Engine.RemClickBox(win);
         _guiDragDefaultMouse = false;
     }
 }

@@ -51,18 +51,6 @@ Common::Point        NC_STACK_winp::_joyPov;
 Common::Point        NC_STACK_winp::_joyXYpos;
 Common::Point        NC_STACK_winp::_joyZRZpos;
 
-Input::FF::TankEngine     NC_STACK_winp::_ffTankEngine;
-Input::FF::JetEngine      NC_STACK_winp::_ffJetEngine;
-Input::FF::CopterEngine   NC_STACK_winp::_ffCopterEngine;
-Input::FF::RotationDamper NC_STACK_winp::_ffRotDamper;
-Input::FF::MiniGun        NC_STACK_winp::_ffMGun;
-Input::FF::MissileFire    NC_STACK_winp::_ffMissFire;
-Input::FF::GrenadeFire    NC_STACK_winp::_ffGrenadeFire;
-Input::FF::BombFire       NC_STACK_winp::_ffBombFire;
-Input::FF::Collision      NC_STACK_winp::_ffCollide;
-Input::FF::Shake          NC_STACK_winp::_ffShake;
-
-
 
 
 
@@ -221,7 +209,7 @@ void NC_STACK_winp::sdlJoyReadMapping(SDL_Joystick* joystick)
 void NC_STACK_winp::KeyDown(int16_t vk)
 {
     if ( vk != Input::KC_NONE )
-        NC_STACK_input::KeyMatrix.at(vk).down = true;
+        Input::Engine.KeyMatrix.at(vk).down = true;
 
     _kbdLastDown = vk;
     _kbdLastHit = vk;
@@ -230,7 +218,7 @@ void NC_STACK_winp::KeyDown(int16_t vk)
 void NC_STACK_winp::KeyUp(int16_t vk)
 {
     if ( vk != Input::KC_NONE )
-        NC_STACK_input::KeyMatrix.at(vk).down = false;
+        Input::Engine.KeyMatrix.at(vk).down = false;
 
     if (_kbdLastDown == vk)
         _kbdLastDown = Input::KC_NONE;
@@ -377,7 +365,7 @@ void NC_STACK_winp::OnMouseMove(Common::Point pos, Common::Point rel)
 
 size_t NC_STACK_winp::Init(IDVList &stak)
 {
-    if ( !NC_STACK_iwimp::Init(stak) )
+    if ( !NC_STACK_idev::Init(stak) )
         return 0;
 
     _bindedKey = -1;
@@ -387,7 +375,7 @@ size_t NC_STACK_winp::Init(IDVList &stak)
 
 size_t NC_STACK_winp::Deinit()
 {
-    return NC_STACK_iwimp::Deinit();
+    return NC_STACK_idev::Deinit();
 }
 
 
@@ -421,7 +409,7 @@ bool NC_STACK_winp::GetState()
             return false;
         break;
     default:
-        return NC_STACK_input::KeyMatrix.at(_bindedKey).down;
+        return Input::Engine.KeyMatrix.at(_bindedKey).down;
     }
     
     return false;
@@ -593,7 +581,7 @@ float NC_STACK_winp::GetSlider()
         break;
 
         default:
-            if (NC_STACK_input::KeyMatrix.at( _bindedKey ).down )
+            if (Input::Engine.KeyMatrix.at( _bindedKey ).down )
             {
                 v6 = 0;
                 _sliderPos += 37;
@@ -631,12 +619,12 @@ void NC_STACK_winp::QueryKeyboard(TInputState *arg)
 
 bool NC_STACK_winp::BindKey(const std::string &keyName)
 {
-    int16_t id = NC_STACK_input::GetKeyIDByName(keyName);
+    int16_t id = Input::Engine.GetKeyIDByName(keyName);
     if (id == -1)
         return false;
     
     _bindedKey = id;
-    return NC_STACK_input::KeyMatrix.at(id).IsSlider;
+    return Input::Engine.KeyMatrix.at(id).IsSlider;
 }
 
 void NC_STACK_winp::ResetSlider()
@@ -644,280 +632,9 @@ void NC_STACK_winp::ResetSlider()
     _sliderPos = 0;
 }
 
-void NC_STACK_winp::FFDOTankEngine(int state, float p1, float p2)
-{
-    if ( _ffTankEngine.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffTankEngine.Stop();
-            _ffJetEngine.Stop();
-            _ffCopterEngine.Stop();
-
-            _ffTankEngine.Run();
-
-            float a2 = p1 * 16383.0; // 5000
-            float a3 = 1000.0 / (p2 * 13.0 + 5.0);
-            _ffTankEngine.Update(a2, a3);
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffTankEngine.Stop();
-        }
-        else if ( state == FF_STATE_UPDATE )
-        {
-            float v5 = p1 * 19660.0; // 6000
-            float v6 = 1000.0 / (p2 * 13.0 + 5.0);
-            _ffTankEngine.Update(v5, v6);
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOJetEngine(int state, float p1, float p2)
-{
-    if ( _ffJetEngine.OK() )
-    {
-        if ( state == FF_STATE_START)
-        {
-            _ffTankEngine.Stop();
-            _ffJetEngine.Stop();
-            _ffCopterEngine.Stop();
-
-            _ffJetEngine.Run();
-
-            float a2 = p1 * 19660.0; // 6000
-            float a3 = 1000.0 / (p2 * 12.0 + 14.0);
-            _ffJetEngine.Update(a2, a3);
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffJetEngine.Stop();
-        }
-        else if ( state == FF_STATE_UPDATE )
-        {
-            float v5 = p1 * 19660.0; // 6000
-            float v6 = 1000.0 / (p2 * 12.0 + 14.0);
-            _ffJetEngine.Update(v5, v6);
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOHeliEngine(int state, float p1, float p2)
-{
-    if ( _ffCopterEngine.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffTankEngine.Stop();
-            _ffJetEngine.Stop();
-            _ffCopterEngine.Stop();
-
-            _ffCopterEngine.Run();
-
-            float a2 = p1 * 26213.6; //8000.0;
-            float a3 = 1000.0 / (p2 * 12.0 + 6.0);
-            _ffCopterEngine.Update(a2, a3);
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffCopterEngine.Stop();
-        }
-        else if ( state == FF_STATE_UPDATE )
-        {
-            float v5 = p1 * 26213.6; //8000.0;
-            float v6 = 1000.0 / (p2 * 12.0 + 6.0);
-            _ffCopterEngine.Update(v5, v6);
-        }
-    }
-}
-
-void NC_STACK_winp::FFDORotDamper(int state, float p1)
-{
-    if ( _ffRotDamper.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffRotDamper.Stop();
-
-            _ffRotDamper.Update(p1 * 32767.0);
-
-            _ffRotDamper.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffRotDamper.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOMiniGun(int state)
-{
-    if ( _ffMGun.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffMGun.Stop();
-
-            _ffMGun.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffMGun.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOMissileFire(int state)
-{
-    if ( _ffMissFire.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffMissFire.Stop();
-            _ffGrenadeFire.Stop();
-            _ffBombFire.Stop();
-
-            _ffMissFire.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffMissFire.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOGrenadeFire(int state)
-{
-    if ( _ffGrenadeFire.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffMissFire.Stop();
-            _ffGrenadeFire.Stop();
-            _ffBombFire.Stop();
-
-            _ffGrenadeFire.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffGrenadeFire.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOBombFire(int state)
-{
-    if ( _ffBombFire.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffMissFire.Stop();
-            _ffGrenadeFire.Stop();
-            _ffBombFire.Stop();
-
-            _ffBombFire.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffBombFire.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOCollision(int state, float a2, float a3, float a4)
-{
-    if ( _ffCollide.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffCollide.Stop();
-
-            _ffCollide.Update(a2, a3, a4);
-
-            _ffCollide.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffCollide.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFDOShake(int state, float a2, float a3, float a4, float a5)
-{
-    if ( _ffShake.OK() )
-    {
-        if ( state == FF_STATE_START )
-        {
-            _ffShake.Stop();
-
-            _ffShake.Update(a2, a3, a4, a5);
-
-            _ffShake.Run();
-        }
-        else if ( state == FF_STATE_STOP )
-        {
-            _ffShake.Stop();
-        }
-    }
-}
-
-void NC_STACK_winp::FFstopAll()
-{
-    _ffTankEngine.Stop();
-    _ffJetEngine.Stop();
-    _ffCopterEngine.Stop();
-    _ffRotDamper.Stop();
-    _ffMGun.Stop();
-    _ffMissFire.Stop();
-    _ffGrenadeFire.Stop();
-    _ffBombFire.Stop();
-    _ffCollide.Stop();
-    _ffShake.Stop();
-}
 
 
-void NC_STACK_winp::ForceFeedBack(uint8_t state, uint8_t effID, float p1, float p2, float p3, float p4)
-{
-    switch ( effID )
-    {
-    case FF_TYPE_TANKENGINE:
-        FFDOTankEngine(state, p1, p2);
-        break;
-    case FF_TYPE_JETENGINE:
-        FFDOJetEngine(state, p1, p2);
-        break;
-    case FF_TYPE_HELIENGINE:
-        FFDOHeliEngine(state, p1, p2);
-        break;
-    case FF_TYPE_ROTDAMPER:
-        FFDORotDamper(state, p1);
-        break;
-    case FF_TYPE_MINIGUN:
-        FFDOMiniGun(state);
-        break;
-    case FF_TYPE_MISSILEFIRE:
-        FFDOMissileFire(state);
-        break;
-    case FF_TYPE_GRENADEFIRE:
-        FFDOGrenadeFire(state);
-        break;
-    case FF_TYPE_BOMBFIRE:
-        FFDOBombFire(state);
-        break;
-    case FF_TYPE_COLLISION:
-        FFDOCollision(state, p1, p3, p4);
-        break;
-    case FF_TYPE_SHAKE:
-        FFDOShake(state, p1, p2, p3, p4);
-        break;
-    case FF_TYPE_ALL:
-        FFstopAll();
-        break;
-    default:
-        return;
-    }
-}
+
 
 void NC_STACK_winp::CheckJoy()
 {
@@ -1017,7 +734,7 @@ void NC_STACK_winp::CheckJoy()
     }
 }
 
-void NC_STACK_winp::CheckClick(TClickBoxInf *arg)
+void NC_STACK_winp::QueryPointer(TClickBoxInf *arg)
 {
     arg->flag = 0;
 
@@ -1073,11 +790,9 @@ void NC_STACK_winp::CheckClick(TClickBoxInf *arg)
     _mRUcnt = 0;
     _mMDcnt = 0;
     _mMUcnt = 0;
-
-    NC_STACK_iwimp::CheckClick(arg);
 }
 
-void NC_STACK_winp::initfirst()
+void NC_STACK_winp::InitFirst()
 {
     KBDMapping.clear();
     
@@ -1252,19 +967,5 @@ void NC_STACK_winp::initfirst()
     _joyButtonStates = 0;
 
     System::EventsAddHandler(InputWatch);
-
-    if (_joyHaptic)
-    {
-        _ffTankEngine.Bind(_joyHaptic);
-        _ffJetEngine.Bind(_joyHaptic);
-        _ffCopterEngine.Bind(_joyHaptic);
-        _ffRotDamper.Bind(_joyHaptic);
-        _ffMGun.Bind(_joyHaptic);
-        _ffMissFire.Bind(_joyHaptic);
-        _ffGrenadeFire.Bind(_joyHaptic);
-        _ffBombFire.Bind(_joyHaptic);
-        _ffCollide.Bind(_joyHaptic);
-        _ffShake.Bind(_joyHaptic);
-    }
 }
 

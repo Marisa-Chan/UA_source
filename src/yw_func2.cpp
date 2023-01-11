@@ -256,12 +256,12 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             {
                 std::string negKeyName, posKeyName;
                 if ( usr->InputConfig[ v24 ].NKeyCode )
-                    negKeyName = NC_STACK_input::KeyTitle.at( usr->InputConfig[ v24 ].NKeyCode );
+                    negKeyName = Input::Engine.KeyTitle.at( usr->InputConfig[ v24 ].NKeyCode );
                 else
                     negKeyName = "-";
 
                 if ( usr->InputConfig[ v24 ].PKeyCode )
-                    posKeyName = NC_STACK_input::KeyTitle.at( usr->InputConfig[ v24 ].PKeyCode );
+                    posKeyName = Input::Engine.KeyTitle.at( usr->InputConfig[ v24 ].PKeyCode );
                 else
                     posKeyName = "-";
 
@@ -276,7 +276,7 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             else
             {
                 if ( usr->InputConfig[ v24 ].PKeyCode )
-                    v19 = NC_STACK_input::KeyTitle.at( usr->InputConfig[ v24 ].PKeyCode );
+                    v19 = Input::Engine.KeyTitle.at( usr->InputConfig[ v24 ].PKeyCode );
                 else
                     v19 = "-";
 
@@ -331,127 +331,127 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
 
 void NC_STACK_ypaworld::LoadKeyNames()
 {
-    for (std::string &a: NC_STACK_input::KeyTitle)
+    for (std::string &a: Input::Engine.KeyTitle)
         a.clear();
 
-    NC_STACK_input::KeyTitle[Input::KC_NONE]       = "*"; // Locale::Text::GetKeyNameString(Locale::KEYNAME_NOP);
-    NC_STACK_input::KeyTitle[Input::KC_ESCAPE]     = Locale::Text::KeyName(Locale::KEYNAME_ESC);
-    NC_STACK_input::KeyTitle[Input::KC_SPACE]      = Locale::Text::KeyName(Locale::KEYNAME_SPACE);
-    NC_STACK_input::KeyTitle[Input::KC_UP]         = Locale::Text::KeyName(Locale::KEYNAME_UP);
-    NC_STACK_input::KeyTitle[Input::KC_DOWN]       = Locale::Text::KeyName(Locale::KEYNAME_DOWN);
-    NC_STACK_input::KeyTitle[Input::KC_LEFT]       = Locale::Text::KeyName(Locale::KEYNAME_LEFT);
-    NC_STACK_input::KeyTitle[Input::KC_RIGHT]      = Locale::Text::KeyName(Locale::KEYNAME_RIGHT);
-    NC_STACK_input::KeyTitle[Input::KC_F1]         = Locale::Text::KeyName(Locale::KEYNAME_F1);
-    NC_STACK_input::KeyTitle[Input::KC_F2]         = Locale::Text::KeyName(Locale::KEYNAME_F2);
-    NC_STACK_input::KeyTitle[Input::KC_F3]         = Locale::Text::KeyName(Locale::KEYNAME_F3);
-    NC_STACK_input::KeyTitle[Input::KC_F4]         = Locale::Text::KeyName(Locale::KEYNAME_F4);
-    NC_STACK_input::KeyTitle[Input::KC_F5]         = Locale::Text::KeyName(Locale::KEYNAME_F5);
-    NC_STACK_input::KeyTitle[Input::KC_F6]         = Locale::Text::KeyName(Locale::KEYNAME_F6);
-    NC_STACK_input::KeyTitle[Input::KC_F7]         = Locale::Text::KeyName(Locale::KEYNAME_F7);
-    NC_STACK_input::KeyTitle[Input::KC_F8]         = Locale::Text::KeyName(Locale::KEYNAME_F8);
-    NC_STACK_input::KeyTitle[Input::KC_F9]         = Locale::Text::KeyName(Locale::KEYNAME_F9);
-    NC_STACK_input::KeyTitle[Input::KC_F10]        = Locale::Text::KeyName(Locale::KEYNAME_F10);
-    NC_STACK_input::KeyTitle[Input::KC_F11]        = Locale::Text::KeyName(Locale::KEYNAME_F11);
-    NC_STACK_input::KeyTitle[Input::KC_F12]        = Locale::Text::KeyName(Locale::KEYNAME_F12);
-    NC_STACK_input::KeyTitle[Input::KC_BACKSPACE]  = Locale::Text::KeyName(Locale::KEYNAME_BACK);
-    NC_STACK_input::KeyTitle[Input::KC_TAB]        = Locale::Text::KeyName(Locale::KEYNAME_TAB);
-    NC_STACK_input::KeyTitle[Input::KC_CLEAR]      = Locale::Text::KeyName(Locale::KEYNAME_CLEAR);
-    NC_STACK_input::KeyTitle[Input::KC_RETURN]     = Locale::Text::KeyName(Locale::KEYNAME_RETURN);
-    NC_STACK_input::KeyTitle[Input::KC_CTRL]       = Locale::Text::KeyName(Locale::KEYNAME_CTRL);
-    NC_STACK_input::KeyTitle[Input::KC_SHIFT]      = Locale::Text::KeyName(Locale::KEYNAME_SHIFT);
-    NC_STACK_input::KeyTitle[Input::KC_ALT]        = Locale::Text::KeyName(Locale::KEYNAME_ALT);
-    NC_STACK_input::KeyTitle[Input::KC_PAUSE]      = Locale::Text::KeyName(Locale::KEYNAME_PAUSE);
-    NC_STACK_input::KeyTitle[Input::KC_PGUP]       = Locale::Text::KeyName(Locale::KEYNAME_PGUP);
-    NC_STACK_input::KeyTitle[Input::KC_PGDOWN]     = Locale::Text::KeyName(Locale::KEYNAME_PGDOWN);
-    NC_STACK_input::KeyTitle[Input::KC_END]        = Locale::Text::KeyName(Locale::KEYNAME_END);
-    NC_STACK_input::KeyTitle[Input::KC_HOME]       = Locale::Text::KeyName(Locale::KEYNAME_HOME);
-    NC_STACK_input::KeyTitle[Input::KC_SELECT]     = Locale::Text::KeyName(Locale::KEYNAME_SELECT);
-    NC_STACK_input::KeyTitle[Input::KC_EXECUTE]    = Locale::Text::KeyName(Locale::KEYNAME_EXEC);
-    NC_STACK_input::KeyTitle[Input::KC_SNAPSHOT]   = Locale::Text::KeyName(Locale::KEYNAME_PRINT);
-    NC_STACK_input::KeyTitle[Input::KC_INSERT]     = Locale::Text::KeyName(Locale::KEYNAME_INS);
-    NC_STACK_input::KeyTitle[Input::KC_DELETE]     = Locale::Text::KeyName(Locale::KEYNAME_DEL);
-    NC_STACK_input::KeyTitle[Input::KC_HELP]       = Locale::Text::KeyName(Locale::KEYNAME_HELP);
-    NC_STACK_input::KeyTitle[Input::KC_1]          = Locale::Text::KeyName(Locale::KEYNAME_1);
-    NC_STACK_input::KeyTitle[Input::KC_2]          = Locale::Text::KeyName(Locale::KEYNAME_2);
-    NC_STACK_input::KeyTitle[Input::KC_3]          = Locale::Text::KeyName(Locale::KEYNAME_3);
-    NC_STACK_input::KeyTitle[Input::KC_4]          = Locale::Text::KeyName(Locale::KEYNAME_4);
-    NC_STACK_input::KeyTitle[Input::KC_5]          = Locale::Text::KeyName(Locale::KEYNAME_5);
-    NC_STACK_input::KeyTitle[Input::KC_6]          = Locale::Text::KeyName(Locale::KEYNAME_6);
-    NC_STACK_input::KeyTitle[Input::KC_7]          = Locale::Text::KeyName(Locale::KEYNAME_7);
-    NC_STACK_input::KeyTitle[Input::KC_8]          = Locale::Text::KeyName(Locale::KEYNAME_8);
-    NC_STACK_input::KeyTitle[Input::KC_9]          = Locale::Text::KeyName(Locale::KEYNAME_9);
-    NC_STACK_input::KeyTitle[Input::KC_0]          = Locale::Text::KeyName(Locale::KEYNAME_0);
-    NC_STACK_input::KeyTitle[Input::KC_A]          = Locale::Text::KeyName(Locale::KEYNAME_A);
-    NC_STACK_input::KeyTitle[Input::KC_B]          = Locale::Text::KeyName(Locale::KEYNAME_B);
-    NC_STACK_input::KeyTitle[Input::KC_C]          = Locale::Text::KeyName(Locale::KEYNAME_C);
-    NC_STACK_input::KeyTitle[Input::KC_D]          = Locale::Text::KeyName(Locale::KEYNAME_D);
-    NC_STACK_input::KeyTitle[Input::KC_E]          = Locale::Text::KeyName(Locale::KEYNAME_E);
-    NC_STACK_input::KeyTitle[Input::KC_F]          = Locale::Text::KeyName(Locale::KEYNAME_F);
-    NC_STACK_input::KeyTitle[Input::KC_G]          = Locale::Text::KeyName(Locale::KEYNAME_G);
-    NC_STACK_input::KeyTitle[Input::KC_H]          = Locale::Text::KeyName(Locale::KEYNAME_H);
-    NC_STACK_input::KeyTitle[Input::KC_I]          = Locale::Text::KeyName(Locale::KEYNAME_I);
-    NC_STACK_input::KeyTitle[Input::KC_J]          = Locale::Text::KeyName(Locale::KEYNAME_J);
-    NC_STACK_input::KeyTitle[Input::KC_K]          = Locale::Text::KeyName(Locale::KEYNAME_K);
-    NC_STACK_input::KeyTitle[Input::KC_L]          = Locale::Text::KeyName(Locale::KEYNAME_L);
-    NC_STACK_input::KeyTitle[Input::KC_M]          = Locale::Text::KeyName(Locale::KEYNAME_M);
-    NC_STACK_input::KeyTitle[Input::KC_N]          = Locale::Text::KeyName(Locale::KEYNAME_N);
-    NC_STACK_input::KeyTitle[Input::KC_O]          = Locale::Text::KeyName(Locale::KEYNAME_O);
-    NC_STACK_input::KeyTitle[Input::KC_P]          = Locale::Text::KeyName(Locale::KEYNAME_P);
-    NC_STACK_input::KeyTitle[Input::KC_Q]          = Locale::Text::KeyName(Locale::KEYNAME_Q);
-    NC_STACK_input::KeyTitle[Input::KC_R]          = Locale::Text::KeyName(Locale::KEYNAME_R);
-    NC_STACK_input::KeyTitle[Input::KC_S]          = Locale::Text::KeyName(Locale::KEYNAME_S);
-    NC_STACK_input::KeyTitle[Input::KC_T]          = Locale::Text::KeyName(Locale::KEYNAME_T);
-    NC_STACK_input::KeyTitle[Input::KC_U]          = Locale::Text::KeyName(Locale::KEYNAME_U);
-    NC_STACK_input::KeyTitle[Input::KC_V]          = Locale::Text::KeyName(Locale::KEYNAME_V);
-    NC_STACK_input::KeyTitle[Input::KC_W]          = Locale::Text::KeyName(Locale::KEYNAME_W);
-    NC_STACK_input::KeyTitle[Input::KC_X]          = Locale::Text::KeyName(Locale::KEYNAME_X);
-    NC_STACK_input::KeyTitle[Input::KC_Y]          = Locale::Text::KeyName(Locale::KEYNAME_Y);
-    NC_STACK_input::KeyTitle[Input::KC_Z]          = Locale::Text::KeyName(Locale::KEYNAME_Z);
-    NC_STACK_input::KeyTitle[Input::KC_NUM0]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_0);
-    NC_STACK_input::KeyTitle[Input::KC_NUM1]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_1);
-    NC_STACK_input::KeyTitle[Input::KC_NUM2]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_2);
-    NC_STACK_input::KeyTitle[Input::KC_NUM3]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_3);
-    NC_STACK_input::KeyTitle[Input::KC_NUM4]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_4);
-    NC_STACK_input::KeyTitle[Input::KC_NUM5]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_5);
-    NC_STACK_input::KeyTitle[Input::KC_NUM6]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_6);
-    NC_STACK_input::KeyTitle[Input::KC_NUM7]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_7);
-    NC_STACK_input::KeyTitle[Input::KC_NUM8]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_8);
-    NC_STACK_input::KeyTitle[Input::KC_NUM9]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_9);
-    NC_STACK_input::KeyTitle[Input::KC_NUMMUL]     = Locale::Text::KeyName(Locale::KEYNAME_MUL);
-    NC_STACK_input::KeyTitle[Input::KC_NUMPLUS]    = Locale::Text::KeyName(Locale::KEYNAME_ADD);
-    NC_STACK_input::KeyTitle[Input::KC_NUMDOT]     = Locale::Text::KeyName(Locale::KEYNAME_DOT);
-    NC_STACK_input::KeyTitle[Input::KC_NUMMINUS]   = Locale::Text::KeyName(Locale::KEYNAME_SUB);
-    NC_STACK_input::KeyTitle[Input::KC_NUMENTER]   = Locale::Text::KeyName(Locale::KEYNAME_ENTER);
-    NC_STACK_input::KeyTitle[Input::KC_NUMDIV]     = Locale::Text::KeyName(Locale::KEYNAME_DIV);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA1]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_1);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA2]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_2);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA3]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_3);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA4]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_4);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA5]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_5);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA6]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_6);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA7]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_7);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA8]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_8);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA9]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_9);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA10]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_10);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA11]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_11);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA12]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_12);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA13]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_13);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA14]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_14);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA15]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_15);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA16]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_16);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA17]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_17);
-    NC_STACK_input::KeyTitle[Input::KC_EXTRA18]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_18);
+    Input::Engine.KeyTitle[Input::KC_NONE]       = "*"; // Locale::Text::GetKeyNameString(Locale::KEYNAME_NOP);
+    Input::Engine.KeyTitle[Input::KC_ESCAPE]     = Locale::Text::KeyName(Locale::KEYNAME_ESC);
+    Input::Engine.KeyTitle[Input::KC_SPACE]      = Locale::Text::KeyName(Locale::KEYNAME_SPACE);
+    Input::Engine.KeyTitle[Input::KC_UP]         = Locale::Text::KeyName(Locale::KEYNAME_UP);
+    Input::Engine.KeyTitle[Input::KC_DOWN]       = Locale::Text::KeyName(Locale::KEYNAME_DOWN);
+    Input::Engine.KeyTitle[Input::KC_LEFT]       = Locale::Text::KeyName(Locale::KEYNAME_LEFT);
+    Input::Engine.KeyTitle[Input::KC_RIGHT]      = Locale::Text::KeyName(Locale::KEYNAME_RIGHT);
+    Input::Engine.KeyTitle[Input::KC_F1]         = Locale::Text::KeyName(Locale::KEYNAME_F1);
+    Input::Engine.KeyTitle[Input::KC_F2]         = Locale::Text::KeyName(Locale::KEYNAME_F2);
+    Input::Engine.KeyTitle[Input::KC_F3]         = Locale::Text::KeyName(Locale::KEYNAME_F3);
+    Input::Engine.KeyTitle[Input::KC_F4]         = Locale::Text::KeyName(Locale::KEYNAME_F4);
+    Input::Engine.KeyTitle[Input::KC_F5]         = Locale::Text::KeyName(Locale::KEYNAME_F5);
+    Input::Engine.KeyTitle[Input::KC_F6]         = Locale::Text::KeyName(Locale::KEYNAME_F6);
+    Input::Engine.KeyTitle[Input::KC_F7]         = Locale::Text::KeyName(Locale::KEYNAME_F7);
+    Input::Engine.KeyTitle[Input::KC_F8]         = Locale::Text::KeyName(Locale::KEYNAME_F8);
+    Input::Engine.KeyTitle[Input::KC_F9]         = Locale::Text::KeyName(Locale::KEYNAME_F9);
+    Input::Engine.KeyTitle[Input::KC_F10]        = Locale::Text::KeyName(Locale::KEYNAME_F10);
+    Input::Engine.KeyTitle[Input::KC_F11]        = Locale::Text::KeyName(Locale::KEYNAME_F11);
+    Input::Engine.KeyTitle[Input::KC_F12]        = Locale::Text::KeyName(Locale::KEYNAME_F12);
+    Input::Engine.KeyTitle[Input::KC_BACKSPACE]  = Locale::Text::KeyName(Locale::KEYNAME_BACK);
+    Input::Engine.KeyTitle[Input::KC_TAB]        = Locale::Text::KeyName(Locale::KEYNAME_TAB);
+    Input::Engine.KeyTitle[Input::KC_CLEAR]      = Locale::Text::KeyName(Locale::KEYNAME_CLEAR);
+    Input::Engine.KeyTitle[Input::KC_RETURN]     = Locale::Text::KeyName(Locale::KEYNAME_RETURN);
+    Input::Engine.KeyTitle[Input::KC_CTRL]       = Locale::Text::KeyName(Locale::KEYNAME_CTRL);
+    Input::Engine.KeyTitle[Input::KC_SHIFT]      = Locale::Text::KeyName(Locale::KEYNAME_SHIFT);
+    Input::Engine.KeyTitle[Input::KC_ALT]        = Locale::Text::KeyName(Locale::KEYNAME_ALT);
+    Input::Engine.KeyTitle[Input::KC_PAUSE]      = Locale::Text::KeyName(Locale::KEYNAME_PAUSE);
+    Input::Engine.KeyTitle[Input::KC_PGUP]       = Locale::Text::KeyName(Locale::KEYNAME_PGUP);
+    Input::Engine.KeyTitle[Input::KC_PGDOWN]     = Locale::Text::KeyName(Locale::KEYNAME_PGDOWN);
+    Input::Engine.KeyTitle[Input::KC_END]        = Locale::Text::KeyName(Locale::KEYNAME_END);
+    Input::Engine.KeyTitle[Input::KC_HOME]       = Locale::Text::KeyName(Locale::KEYNAME_HOME);
+    Input::Engine.KeyTitle[Input::KC_SELECT]     = Locale::Text::KeyName(Locale::KEYNAME_SELECT);
+    Input::Engine.KeyTitle[Input::KC_EXECUTE]    = Locale::Text::KeyName(Locale::KEYNAME_EXEC);
+    Input::Engine.KeyTitle[Input::KC_SNAPSHOT]   = Locale::Text::KeyName(Locale::KEYNAME_PRINT);
+    Input::Engine.KeyTitle[Input::KC_INSERT]     = Locale::Text::KeyName(Locale::KEYNAME_INS);
+    Input::Engine.KeyTitle[Input::KC_DELETE]     = Locale::Text::KeyName(Locale::KEYNAME_DEL);
+    Input::Engine.KeyTitle[Input::KC_HELP]       = Locale::Text::KeyName(Locale::KEYNAME_HELP);
+    Input::Engine.KeyTitle[Input::KC_1]          = Locale::Text::KeyName(Locale::KEYNAME_1);
+    Input::Engine.KeyTitle[Input::KC_2]          = Locale::Text::KeyName(Locale::KEYNAME_2);
+    Input::Engine.KeyTitle[Input::KC_3]          = Locale::Text::KeyName(Locale::KEYNAME_3);
+    Input::Engine.KeyTitle[Input::KC_4]          = Locale::Text::KeyName(Locale::KEYNAME_4);
+    Input::Engine.KeyTitle[Input::KC_5]          = Locale::Text::KeyName(Locale::KEYNAME_5);
+    Input::Engine.KeyTitle[Input::KC_6]          = Locale::Text::KeyName(Locale::KEYNAME_6);
+    Input::Engine.KeyTitle[Input::KC_7]          = Locale::Text::KeyName(Locale::KEYNAME_7);
+    Input::Engine.KeyTitle[Input::KC_8]          = Locale::Text::KeyName(Locale::KEYNAME_8);
+    Input::Engine.KeyTitle[Input::KC_9]          = Locale::Text::KeyName(Locale::KEYNAME_9);
+    Input::Engine.KeyTitle[Input::KC_0]          = Locale::Text::KeyName(Locale::KEYNAME_0);
+    Input::Engine.KeyTitle[Input::KC_A]          = Locale::Text::KeyName(Locale::KEYNAME_A);
+    Input::Engine.KeyTitle[Input::KC_B]          = Locale::Text::KeyName(Locale::KEYNAME_B);
+    Input::Engine.KeyTitle[Input::KC_C]          = Locale::Text::KeyName(Locale::KEYNAME_C);
+    Input::Engine.KeyTitle[Input::KC_D]          = Locale::Text::KeyName(Locale::KEYNAME_D);
+    Input::Engine.KeyTitle[Input::KC_E]          = Locale::Text::KeyName(Locale::KEYNAME_E);
+    Input::Engine.KeyTitle[Input::KC_F]          = Locale::Text::KeyName(Locale::KEYNAME_F);
+    Input::Engine.KeyTitle[Input::KC_G]          = Locale::Text::KeyName(Locale::KEYNAME_G);
+    Input::Engine.KeyTitle[Input::KC_H]          = Locale::Text::KeyName(Locale::KEYNAME_H);
+    Input::Engine.KeyTitle[Input::KC_I]          = Locale::Text::KeyName(Locale::KEYNAME_I);
+    Input::Engine.KeyTitle[Input::KC_J]          = Locale::Text::KeyName(Locale::KEYNAME_J);
+    Input::Engine.KeyTitle[Input::KC_K]          = Locale::Text::KeyName(Locale::KEYNAME_K);
+    Input::Engine.KeyTitle[Input::KC_L]          = Locale::Text::KeyName(Locale::KEYNAME_L);
+    Input::Engine.KeyTitle[Input::KC_M]          = Locale::Text::KeyName(Locale::KEYNAME_M);
+    Input::Engine.KeyTitle[Input::KC_N]          = Locale::Text::KeyName(Locale::KEYNAME_N);
+    Input::Engine.KeyTitle[Input::KC_O]          = Locale::Text::KeyName(Locale::KEYNAME_O);
+    Input::Engine.KeyTitle[Input::KC_P]          = Locale::Text::KeyName(Locale::KEYNAME_P);
+    Input::Engine.KeyTitle[Input::KC_Q]          = Locale::Text::KeyName(Locale::KEYNAME_Q);
+    Input::Engine.KeyTitle[Input::KC_R]          = Locale::Text::KeyName(Locale::KEYNAME_R);
+    Input::Engine.KeyTitle[Input::KC_S]          = Locale::Text::KeyName(Locale::KEYNAME_S);
+    Input::Engine.KeyTitle[Input::KC_T]          = Locale::Text::KeyName(Locale::KEYNAME_T);
+    Input::Engine.KeyTitle[Input::KC_U]          = Locale::Text::KeyName(Locale::KEYNAME_U);
+    Input::Engine.KeyTitle[Input::KC_V]          = Locale::Text::KeyName(Locale::KEYNAME_V);
+    Input::Engine.KeyTitle[Input::KC_W]          = Locale::Text::KeyName(Locale::KEYNAME_W);
+    Input::Engine.KeyTitle[Input::KC_X]          = Locale::Text::KeyName(Locale::KEYNAME_X);
+    Input::Engine.KeyTitle[Input::KC_Y]          = Locale::Text::KeyName(Locale::KEYNAME_Y);
+    Input::Engine.KeyTitle[Input::KC_Z]          = Locale::Text::KeyName(Locale::KEYNAME_Z);
+    Input::Engine.KeyTitle[Input::KC_NUM0]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_0);
+    Input::Engine.KeyTitle[Input::KC_NUM1]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_1);
+    Input::Engine.KeyTitle[Input::KC_NUM2]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_2);
+    Input::Engine.KeyTitle[Input::KC_NUM3]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_3);
+    Input::Engine.KeyTitle[Input::KC_NUM4]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_4);
+    Input::Engine.KeyTitle[Input::KC_NUM5]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_5);
+    Input::Engine.KeyTitle[Input::KC_NUM6]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_6);
+    Input::Engine.KeyTitle[Input::KC_NUM7]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_7);
+    Input::Engine.KeyTitle[Input::KC_NUM8]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_8);
+    Input::Engine.KeyTitle[Input::KC_NUM9]       = Locale::Text::KeyName(Locale::KEYNAME_NUM_9);
+    Input::Engine.KeyTitle[Input::KC_NUMMUL]     = Locale::Text::KeyName(Locale::KEYNAME_MUL);
+    Input::Engine.KeyTitle[Input::KC_NUMPLUS]    = Locale::Text::KeyName(Locale::KEYNAME_ADD);
+    Input::Engine.KeyTitle[Input::KC_NUMDOT]     = Locale::Text::KeyName(Locale::KEYNAME_DOT);
+    Input::Engine.KeyTitle[Input::KC_NUMMINUS]   = Locale::Text::KeyName(Locale::KEYNAME_SUB);
+    Input::Engine.KeyTitle[Input::KC_NUMENTER]   = Locale::Text::KeyName(Locale::KEYNAME_ENTER);
+    Input::Engine.KeyTitle[Input::KC_NUMDIV]     = Locale::Text::KeyName(Locale::KEYNAME_DIV);
+    Input::Engine.KeyTitle[Input::KC_EXTRA1]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_1);
+    Input::Engine.KeyTitle[Input::KC_EXTRA2]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_2);
+    Input::Engine.KeyTitle[Input::KC_EXTRA3]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_3);
+    Input::Engine.KeyTitle[Input::KC_EXTRA4]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_4);
+    Input::Engine.KeyTitle[Input::KC_EXTRA5]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_5);
+    Input::Engine.KeyTitle[Input::KC_EXTRA6]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_6);
+    Input::Engine.KeyTitle[Input::KC_EXTRA7]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_7);
+    Input::Engine.KeyTitle[Input::KC_EXTRA8]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_8);
+    Input::Engine.KeyTitle[Input::KC_EXTRA9]     = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_9);
+    Input::Engine.KeyTitle[Input::KC_EXTRA10]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_10);
+    Input::Engine.KeyTitle[Input::KC_EXTRA11]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_11);
+    Input::Engine.KeyTitle[Input::KC_EXTRA12]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_12);
+    Input::Engine.KeyTitle[Input::KC_EXTRA13]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_13);
+    Input::Engine.KeyTitle[Input::KC_EXTRA14]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_14);
+    Input::Engine.KeyTitle[Input::KC_EXTRA15]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_15);
+    Input::Engine.KeyTitle[Input::KC_EXTRA16]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_16);
+    Input::Engine.KeyTitle[Input::KC_EXTRA17]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_17);
+    Input::Engine.KeyTitle[Input::KC_EXTRA18]    = Locale::Text::KeyName(Locale::KEYNAME_EXTRA_18);
     
-    NC_STACK_input::KeyTitle[Input::KC_MMB]        = Locale::Text::KeyName(Locale::KEYNAME_MIDDLE_MOUSE);
+    Input::Engine.KeyTitle[Input::KC_MMB]        = Locale::Text::KeyName(Locale::KEYNAME_MIDDLE_MOUSE);
 
-    NC_STACK_input::KeyTitle[Input::KC_JOYB0]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB0);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB1]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB1);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB2]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB2);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB3]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB3);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB4]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB4);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB5]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB5);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB6]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB6);
-    NC_STACK_input::KeyTitle[Input::KC_JOYB7]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB7);
+    Input::Engine.KeyTitle[Input::KC_JOYB0]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB0);
+    Input::Engine.KeyTitle[Input::KC_JOYB1]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB1);
+    Input::Engine.KeyTitle[Input::KC_JOYB2]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB2);
+    Input::Engine.KeyTitle[Input::KC_JOYB3]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB3);
+    Input::Engine.KeyTitle[Input::KC_JOYB4]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB4);
+    Input::Engine.KeyTitle[Input::KC_JOYB5]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB5);
+    Input::Engine.KeyTitle[Input::KC_JOYB6]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB6);
+    Input::Engine.KeyTitle[Input::KC_JOYB7]      = Locale::Text::KeyName(Locale::KEYNAME_JOYB7);
 }
 
 
@@ -624,7 +624,7 @@ void NC_STACK_ypaworld::PlayIntroMovie()
             GFX::Engine.BeginFrame();
         }
 
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
         input_states.KbdLastHit = Input::KC_NONE;
         input_states.KbdLastDown = Input::KC_NONE;
         input_states.HotKeyID = -1;
@@ -2621,7 +2621,7 @@ void UserData::GameShellUiHandleInput()
             {
                 input_listview.listFlags &= ~GuiList::GLIST_FLAG_KEYB_INPUT;
 
-                if ( !NC_STACK_input::KeyTitle.at( Input->KbdLastHit ).empty() )
+                if ( !Input::Engine.KeyTitle.at( Input->KbdLastHit ).empty() )
                 {
                     if ( confFirstKey )
                     {

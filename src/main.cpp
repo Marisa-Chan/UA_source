@@ -130,7 +130,7 @@ int sb_0x411324__sub0()
         if ( ypaworld->OpenGameShell() )
         {
             GameScreenMode = GAME_SCREEN_MODE_MENU;
-            INPe.QueryInput(&input_states);
+            Input::Engine.QueryInput(&input_states);
 
             if (!v0)
                 return 0;
@@ -151,7 +151,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.rst", userdata.UserName, var_2d90.LevelID) ) )
             ypa_log_out("Warning, load error\n");
 
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     break;
 
@@ -160,7 +160,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->SaveGame( fmt::sprintf("save:%s/%d.sgm", userdata.UserName, 0) ) )
             ypa_log_out("Warning, Save error\n");
 
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     break;
 
@@ -171,7 +171,7 @@ int sb_0x411324__sub0()
         if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.UserName, 0) ) )
             ypa_log_out("Warning, load error\n");
 
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     break;
 
@@ -215,7 +215,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
         {
             GameScreenMode = GAME_SCREEN_MODE_MENU;
 
-            INPe.QueryInput(&input_states);
+            Input::Engine.QueryInput(&input_states);
 
             return 0;
         }
@@ -308,7 +308,7 @@ int sb_0x411324__sub2()
 
         input_states = TInputState();
 
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     return 1;
 }
@@ -345,7 +345,7 @@ int sb_0x411324__sub1()
             return 0;
         }
         GameScreenMode = GAME_SCREEN_MODE_GAME;
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_LOAD )
     {
@@ -367,7 +367,7 @@ int sb_0x411324__sub1()
             return 0;
         }
         GameScreenMode = GAME_SCREEN_MODE_GAME;
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_NETPLAY )
     {
@@ -395,7 +395,7 @@ int sb_0x411324__sub1()
         }
 
         GameScreenMode = GAME_SCREEN_MODE_GAME;
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
     {
@@ -436,7 +436,7 @@ int sb_0x411324__sub1()
             GameScreenMode = GAME_SCREEN_MODE_MENU;
         }
 
-        INPe.QueryInput(&input_states);
+        Input::Engine.QueryInput(&input_states);
     }
 
     return 1;
@@ -446,7 +446,7 @@ int sb_0x411324__sub1()
 int sb_0x411324()
 {
     input_states = TInputState();
-    INPe.QueryInput(&input_states);
+    Input::Engine.QueryInput(&input_states);
 
     if ( userdata.ResetInputPeriod )
     {
@@ -536,7 +536,7 @@ void deinit_globl_engines()
     if ( tform_inited )
         TF::Engine.Deinit();
     if ( input_inited )
-        INPe.deinit();
+        Input::Engine.Deinit();
     if ( audio_inited )
         SFXEngine::SFXe.deinit();
 
@@ -582,7 +582,7 @@ int WinMain__sub0__sub0()
     Common::Env.AddGlobalIniKey("input.button[23] = winp:joyb7");
 
     audio_inited = SFXEngine::SFXe.init();
-    input_inited = INPe.init();
+    input_inited = Input::Engine.Init();
     tform_inited = TF::Engine.Init();
 
     if ( !audio_inited )

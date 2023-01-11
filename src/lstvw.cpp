@@ -777,7 +777,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, TInputState *struc)
                     if ( listFlags & GLIST_FLAG_INSTANT_INPUT )
                     {
                         flags |= FLAG_CLOSED;
-                        INPe.RemClickBox(struc->ClickInf.selected_btn);
+                        Input::Engine.RemClickBox(struc->ClickInf.selected_btn);
                     }
                 }
             }
@@ -917,7 +917,7 @@ void GuiList::InputHandle(NC_STACK_ypaworld *yw, TInputState *struc)
         if ( v6->flag & TClickBoxInf::FLAG_LM_DOWN )
         {
             flags |= FLAG_CLOSED;
-            INPe.RemClickBox(this);
+            Input::Engine.RemClickBox(this);
         }
     }
 }

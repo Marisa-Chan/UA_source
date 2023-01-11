@@ -330,7 +330,7 @@ void NC_STACK_button::ShowScreen()
     if ( !visible )
     {
         visible = true;
-        INPe.AddClickBoxFront(this);
+        Input::Engine.AddClickBoxFront(this);
     }
 }
 
@@ -339,7 +339,7 @@ void NC_STACK_button::HideScreen()
     if ( visible )
     {
         visible = false;
-        INPe.RemClickBox(this);
+        Input::Engine.RemClickBox(this);
     }
 }
 

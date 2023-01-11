@@ -4,20 +4,11 @@
 #include "wintimer.h"
 #include "utils.h"
 
-
-
-
-uint32_t wintimer_func64__sub0()
+int NC_STACK_wintimer::itimer_func64()
 {
     Uint64 freq = SDL_GetPerformanceFrequency();
     Uint64 cnt = SDL_GetPerformanceCounter();
-    return cnt / (freq / 1024);
-//        return SDL_GetTicks();
-}
-
-int NC_STACK_wintimer::itimer_func64()
-{
-    uint32_t tik = wintimer_func64__sub0();
+    uint32_t tik = cnt / (freq / 1024);
 
     int period = tik - ticks;
 

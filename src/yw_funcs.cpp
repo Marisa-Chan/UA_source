@@ -1200,7 +1200,7 @@ void NC_STACK_ypaworld::sub_4491A0(const std::string &movie_fname)
         GFX::Engine.BeginFrame();
     }
     
-    INPe.QueryInput(&input_states);
+    Input::Engine.QueryInput(&input_states);
 
     input_states.KbdLastHit = Input::KC_NONE;
     input_states.KbdLastDown = Input::KC_NONE;

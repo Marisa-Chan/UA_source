@@ -4058,7 +4058,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     SDL_Delay(50);
 
     TInputState inpt;
-    INPe.QueryInput(&inpt);
+    Input::Engine.QueryInput(&inpt);
 
     char buf[1024];
     char *cur = buf;

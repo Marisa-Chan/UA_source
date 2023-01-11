@@ -1262,9 +1262,9 @@ void NC_STACK_ypaworld::ypaworld_func139(GuiBase *lstvw)
     lstvw->pobject = lstvw;
 
     if ( lstvw->flags & GuiBase::FLAG_ICONIFED )
-        INPe.AddClickBoxFront(&lstvw->iconBox);
+        Input::Engine.AddClickBoxFront(&lstvw->iconBox);
     else if ( lstvw->IsOpen() )
-        INPe.AddClickBoxFront(lstvw);
+        Input::Engine.AddClickBoxFront(lstvw);
 }
 
 
@@ -1277,9 +1277,9 @@ void NC_STACK_ypaworld::ypaworld_func140(GuiBase *lstvw)
         lstvw->flags &= ~GuiBase::FLAG_IN_LIST;
 
         if ( lstvw->flags & GuiBase::FLAG_ICONIFED )
-            INPe.RemClickBox(&lstvw->iconBox);
+            Input::Engine.RemClickBox(&lstvw->iconBox);
         else if ( lstvw->IsOpen() )
-            INPe.RemClickBox(lstvw);
+            Input::Engine.RemClickBox(lstvw);
     }
 }
 
@@ -2089,12 +2089,10 @@ void NC_STACK_ypaworld::ypaworld_func153(bact_hudi *arg)
 
 void UserData::sub_46D2B4()
 {
-    NC_STACK_input *input_class = INPe.GetInput();
-
     int v10 = inpListActiveElement;
 
     for (int i = 0; i <= 48; i++)
-        input_class->SetHotKey(i, "nop");
+        Input::Engine.SetHotKey(i, "nop");
 
     for (int i = 1; i <= 45; i++)
     {
@@ -5303,15 +5301,13 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
         
         if ( yw->_toolTipHotKeyId != -1 )
         {
-            NC_STACK_input *inpt = INPe.GetInput();
-
-            int16_t keycode = inpt->GetHotKey(yw->_toolTipHotKeyId);
+            int16_t keycode = Input::Engine.GetHotKey(yw->_toolTipHotKeyId);
 
             if ( keycode != Input::KC_NONE )
             {
-                if ( yw->_GameShell && !NC_STACK_input::KeyTitle.at(keycode).empty())
+                if ( yw->_GameShell && !Input::Engine.KeyTitle.at(keycode).empty())
                 {
-                    v2 = fmt::sprintf("[%s]", NC_STACK_input::KeyTitle.at(keycode));
+                    v2 = fmt::sprintf("[%s]", Input::Engine.KeyTitle.at(keycode));
                     v15 = -(yw->_downScreenBorder + 2 * yw->_fontH + yw->_fontH / 4);
                 }
             }
@@ -6482,17 +6478,17 @@ bool NC_STACK_ypaworld::ReloadInput(size_t id)
 
     UserData::TInputConf &kconf = _GameShell->InputConfig.at(id);
 
-    if ( NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
+    if ( Input::Engine.KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
         return false;
 
-    if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER && NC_STACK_input::KeyNamesTable.at(kconf.NKeyCode).Name.empty() )
+    if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER && Input::Engine.KeyNamesTable.at(kconf.NKeyCode).Name.empty() )
         return false;
 
     if ( kconf.Type == World::INPUT_BIND_TYPE_SLIDER )
     {
         keyConfStr += "~#";
         keyConfStr += "winp:";
-        keyConfStr += NC_STACK_input::KeyNamesTable.at(kconf.NKeyCode).Name;
+        keyConfStr += Input::Engine.KeyNamesTable.at(kconf.NKeyCode).Name;
         keyConfStr += " #";
         keyConfStr += "winp:";
     }
@@ -6501,28 +6497,26 @@ bool NC_STACK_ypaworld::ReloadInput(size_t id)
         keyConfStr += "winp:";
     }
 
-    if ( NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
+    if ( Input::Engine.KeyNamesTable.at(kconf.PKeyCode).Name.empty() )
         return false;
 
-    keyConfStr += NC_STACK_input::KeyNamesTable.at(kconf.PKeyCode).Name;
-
-    NC_STACK_input *v38 = INPe.GetInput();
+    keyConfStr += Input::Engine.KeyNamesTable.at(kconf.PKeyCode).Name;
 
     if ( kconf.Type == World::INPUT_BIND_TYPE_HOTKEY )
     {
-        if ( !v38->SetHotKey(kconf.KeyID, keyConfStr) )
+        if ( !Input::Engine.SetHotKey(kconf.KeyID, keyConfStr) )
             ypa_log_out("input.engine: WARNING: Hotkey[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr.c_str());
     }
     else
     {
         if ( kconf.Type == World::INPUT_BIND_TYPE_BUTTON )
         {
-            if ( !v38->SetInputExpression(false, kconf.KeyID, keyConfStr) )
+            if ( !Input::Engine.SetInputExpression(false, kconf.KeyID, keyConfStr) )
                 ypa_log_out("input.engine: WARNING: Button[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr.c_str());
         }
         else
         {
-            if ( !v38->SetInputExpression(true, kconf.KeyID, keyConfStr) )
+            if ( !Input::Engine.SetInputExpression(true, kconf.KeyID, keyConfStr) )
                 ypa_log_out("input.engine: WARNING: Slider[%d] (%s) not accepted.\n", kconf.KeyID, keyConfStr.c_str());
         }
     }
@@ -6700,45 +6694,32 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
             return;
     }
     
-    NC_STACK_input *input = INPe.GetInput();
-
     switch ( arg->effects_type )
     {
     case 0:
-        if ( input )
-            input->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_MISSILEFIRE);
-
+        Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_MISSILEFIRE);
         break;
 
     case 1:
-        if ( input )
-            input->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_GRENADEFIRE);
-
+        Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_GRENADEFIRE);
         break;
 
     case 2:
-        if ( input )
-            input->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_BOMBFIRE);
-
+        Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_BOMBFIRE);
         break;
 
     case 3:
-        if ( input )
-            input->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_MINIGUN);
-
+        Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_MINIGUN);
         break;
 
     case 4:
-        if ( input )
-            input->ForceFeedback(NC_STACK_winp::FF_STATE_STOP, NC_STACK_winp::FF_TYPE_MINIGUN);
-
+        Input::Engine.ForceFeedback(Input::FF_STATE_STOP, Input::FF_TYPE_MINIGUN);
         break;
 
     case 5:
     {
         NC_STACK_ypabact *bct = _userUnit;
-        if ( input )
-            input->ForceFeedback(NC_STACK_winp::FF_STATE_START, NC_STACK_winp::FF_TYPE_COLLISION,
+        Input::Engine.ForceFeedback(Input::FF_STATE_START, Input::FF_TYPE_COLLISION,
             arg->field_4, 0.0,
             (arg->field_C - bct->_position.z) * bct->_rotation.m02 + (arg->field_8 - bct->_position.x) * bct->_rotation.m00,
             -((arg->field_8 - bct->_position.x) * bct->_rotation.m20 + (arg->field_C - bct->_position.z) * bct->_rotation.m22));

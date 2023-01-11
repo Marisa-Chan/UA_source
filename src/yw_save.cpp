@@ -101,7 +101,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
             fil->printf("$");
 
             if ( usr->InputConfig[i].PKeyCode )
-                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name.c_str());
+                fil->printf(Input::Engine.KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name.c_str());
             else
                 fil->printf("nop");
         }
@@ -114,7 +114,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 
             if ( usr->InputConfig[i].NKeyCode != Input::KC_NONE )
             {
-                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].NKeyCode).Name.c_str());
+                fil->printf(Input::Engine.KeyNamesTable.at(usr->InputConfig[i].NKeyCode).Name.c_str());
             }
             else
             {
@@ -129,7 +129,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
 
             if ( usr->InputConfig[i].PKeyCode != Input::KC_NONE )
             {
-                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name.c_str());
+                fil->printf(Input::Engine.KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name.c_str());
             }
             else
             {
@@ -144,7 +144,7 @@ int yw_write_input(FSMgr::FileHandle *fil, UserData *usr)
             fil->printf("    input.hotkey[%d] = ", usr->InputConfig[i].KeyID);
 
             if ( usr->InputConfig[i].PKeyCode != Input::KC_NONE )
-                fil->printf(NC_STACK_input::KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name.c_str());
+                fil->printf(Input::Engine.KeyNamesTable.at(usr->InputConfig[i].PKeyCode).Name.c_str());
             else
                 fil->printf("nop");
         }

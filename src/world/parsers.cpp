@@ -229,7 +229,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             bool ok = false;
             int cfgIdex = parser.stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.GetInput()->SetInputExpression(true, cfgIdex, buf) )
+            if ( !Input::Engine.SetInputExpression(true, cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set slider %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_BAD_DATA;
@@ -249,7 +249,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o._GameShell->InputConfig[ gsIndex ].NKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                _o._GameShell->InputConfig[ gsIndex ].NKeyCode = Input::Engine.GetKeyIDByName(tmp);
 
                 if ( _o._GameShell->InputConfig[ gsIndex ].NKeyCode == -1 )
                 {
@@ -259,7 +259,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
                 if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
                 {
-                    _o._GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                    _o._GameShell->InputConfig[ gsIndex ].PKeyCode = Input::Engine.GetKeyIDByName(tmp);
 
                     if ( _o._GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                     {
@@ -282,7 +282,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
             int cfgIdex = parser.stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.GetInput()->SetInputExpression(false, cfgIdex, buf) )
+            if ( !Input::Engine.SetInputExpression(false, cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set button %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_BAD_DATA;
@@ -301,7 +301,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             std::string tmp;
             if ( stok.GetNext(&tmp) && stok.GetNext(&tmp) ) // skip drivername before ':'
             {
-                _o._GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                _o._GameShell->InputConfig[ gsIndex ].PKeyCode = Input::Engine.GetKeyIDByName(tmp);
 
                 if ( _o._GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
@@ -323,7 +323,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
 
             int cfgIdex = parser.stoi( Stok::Fast(p1.substr(13), "] \t=\n") );
 
-            if ( !INPe.GetInput()->SetHotKey(cfgIdex, buf) )
+            if ( !Input::Engine.SetHotKey(cfgIdex, buf) )
             {
                 ypa_log_out("WARNING: cannot set hotkey %d with %s\n", cfgIdex, buf.c_str());
                 return ScriptParser::RESULT_OK;
@@ -342,7 +342,7 @@ int InputParser::Handle(ScriptParser::Parser &parser, const std::string &p1, con
             std::string tmp = Stok::Fast(buf, " :\t\n");
             if ( !tmp.empty() )
             {
-                _o._GameShell->InputConfig[ gsIndex ].PKeyCode = NC_STACK_input::GetKeyIDByName(tmp);
+                _o._GameShell->InputConfig[ gsIndex ].PKeyCode = Input::Engine.GetKeyIDByName(tmp);
                 if ( _o._GameShell->InputConfig[ gsIndex ].PKeyCode == -1 )
                 {
                     ypa_log_out("Unknown keyword for hotkey: %s\n", tmp.c_str());

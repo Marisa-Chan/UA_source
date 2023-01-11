@@ -3,35 +3,13 @@
 
 #include <map>
 #include <queue>
-#include "iwimp.h"
+#include "idev.h"
 #include "utils.h"
-#include "inp_ff.h"
+#include "system/inpt.h"
 
-class NC_STACK_winp: public NC_STACK_iwimp
+class NC_STACK_winp: public NC_STACK_idev
 {
 public:
-    enum FF_TYPE
-    {
-        FF_TYPE_ALL = 0,
-        FF_TYPE_TANKENGINE = 1,
-        FF_TYPE_JETENGINE = 2,
-        FF_TYPE_HELIENGINE = 3,
-        FF_TYPE_ROTDAMPER = 4,
-        FF_TYPE_MINIGUN = 5,
-        FF_TYPE_MISSILEFIRE = 6,
-        FF_TYPE_GRENADEFIRE = 7,
-        FF_TYPE_BOMBFIRE = 8,
-        FF_TYPE_COLLISION = 9,
-        FF_TYPE_SHAKE = 10
-    };
-
-    enum FF_STATE
-    {
-        FF_STATE_START = 0,
-        FF_STATE_STOP = 1,
-        FF_STATE_UPDATE = 2
-    };
-    
     enum 
     {
         MAXCHARQUEUE = 8,
@@ -45,13 +23,12 @@ public:
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
+    
     virtual bool GetState();
     virtual float GetSlider();
-    virtual void QueryKeyboard(TInputState *arg);
+    
     virtual bool BindKey(const std::string &keyName);
     virtual void ResetSlider();
-    virtual void ForceFeedBack(uint8_t state, uint8_t effID, float p1 = 0.0, float p2 = 0.0, float p3 = 0.0, float p4 = 0.0);
-    virtual void CheckClick(TClickBoxInf *arg);
 
     NC_STACK_winp() {};
     virtual ~NC_STACK_winp() {};
@@ -59,11 +36,22 @@ public:
     virtual const std::string ClassName() const {
         return __ClassName;
     };
-    static void initfirst();
+  
+public:
+    static void InitFirst();
     
     static void OnMouseDown(Common::Point pos, int btn, int clkNum);
     static void OnMouseUp(Common::Point pos, int btn, int clkNum);
     static void OnMouseMove(Common::Point pos, Common::Point rel);
+    
+    static SDL_Haptic * GetJoyHaptic() { return _joyHaptic; };
+    
+    static void QueryKeyboard(TInputState *arg);
+    static void QueryPointer(TClickBoxInf *arg);
+    static bool HasFocus() { return true; };
+    
+    static Input::TQueryState GetQueryInterface()
+    { return Input::TQueryState(__ClassName, QueryKeyboard, QueryPointer, HasFocus); };
     
 protected:
     static void CheckJoy();
@@ -75,25 +63,13 @@ protected:
     static bool sdlGUIDcmp(SDL_JoystickGUID &gd1, SDL_JoystickGUID &gd2);
     static int sdlJoyAxis(SDL_Joystick* joystick, int axis);
     static void sdlJoyReadMapping(SDL_Joystick* joystick);
-    
-    void FFstopAll();
-    void FFDOTankEngine(int state, float p1, float p2);
-    void FFDOJetEngine(int state, float p1, float p2);
-    void FFDOHeliEngine(int state, float p1, float p2);
-    void FFDORotDamper(int state, float p1);
-    void FFDOMiniGun(int state);
-    void FFDOMissileFire(int state);
-    void FFDOGrenadeFire(int state);
-    void FFDOBombFire(int state);
-    void FFDOCollision(int state, float a2, float a3, float a4);
-    void FFDOShake(int state, float a2, float a3, float a4, float a5);
+   
 
 public:
-    //Data
-    static std::map<int16_t, int16_t> KBDMapping;
-    
     int16_t _bindedKey = -1;
     int32_t _sliderPos = 0;
+    
+    static std::map<int16_t, int16_t> KBDMapping;
     
 protected:
     static int _kbdLastDown;
@@ -138,17 +114,6 @@ protected:
     static Common::Point        _joyPov;
     static Common::Point        _joyXYpos;
     static Common::Point        _joyZRZpos;
-    
-    static Input::FF::TankEngine     _ffTankEngine;
-    static Input::FF::JetEngine      _ffJetEngine;
-    static Input::FF::CopterEngine   _ffCopterEngine;
-    static Input::FF::RotationDamper _ffRotDamper;
-    static Input::FF::MiniGun        _ffMGun;
-    static Input::FF::MissileFire    _ffMissFire;
-    static Input::FF::GrenadeFire    _ffGrenadeFire;
-    static Input::FF::BombFire       _ffBombFire;
-    static Input::FF::Collision      _ffCollide;
-    static Input::FF::Shake          _ffShake;
 };
 
 #endif // WINP_H_INCLUDED
