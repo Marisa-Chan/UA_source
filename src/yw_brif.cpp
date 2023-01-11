@@ -2141,74 +2141,71 @@ void yw_debriefUpdate(NC_STACK_ypaworld *yw, TInputState *inpt)
 {
     TBriefengScreen *brf = &yw->_briefScreen;
 
-    if ( yw->_history.Size() ) //FIXME
+    if ( yw->_briefScreen.TimerStatus == TBriefengScreen::TIMER_NORMAL )
     {
-        if ( yw->_briefScreen.TimerStatus == TBriefengScreen::TIMER_NORMAL )
+        if ( brf->Stage == TBriefengScreen::STAGE_PLAYER_RN )
         {
-            if ( brf->Stage == TBriefengScreen::STAGE_PLAYER_RN )
-            {
-                brf->CurrTime += 60 * inpt->Period;
-            }
-            else if ( brf->Stage != TBriefengScreen::STAGE_PLAYER_END )
-            {
-                brf->CurrTime += inpt->Period;
-            }
+            brf->CurrTime += 60 * inpt->Period;
         }
-        else if ( yw->_briefScreen.TimerStatus == TBriefengScreen::TIMER_STOP )
+        else if ( brf->Stage != TBriefengScreen::STAGE_PLAYER_END )
         {
-            inpt->Period = 1;
-        }
-        else if ( yw->_briefScreen.TimerStatus == TBriefengScreen::TIMER_RESTART )
-        {
-            brf->TimerStatus = TBriefengScreen::TIMER_NORMAL;
-            brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
-        }
-
-        if ( brf->Stage != TBriefengScreen::STAGE_LOADED )
-        {
-            if ( brf->BriefingMapImg )
-            {
-                GFX::rstr_arg204 arg204;
-                arg204.pbitm = brf->BriefingMapImg->GetBitmap();
-
-                arg204.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
-                arg204.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
-
-                GFX::Engine.raster_func204(&arg204);
-            }
-
-            GFX::Engine.raster_func204(&brf->MapBlitParams);
-        }
-
-        switch ( brf->Stage )
-        {
-        case TBriefengScreen::STAGE_LOADED:
-            ypaworld_func158__sub4__sub1__sub6__sub0(yw, inpt, brf);
-            break;
-
-        case TBriefengScreen::STAGE_SCALING:
-            ypaworld_func158__sub4__sub1__sub6__sub1(yw, inpt, brf);
-            break;
-
-        case TBriefengScreen::STAGE_SCALEEND:
-            brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
-            break;
-
-        case TBriefengScreen::STAGE_PLAYER_ST:
-            ypaworld_func158__sub4__sub1__sub6__sub2(yw, inpt, brf);
-            break;
-
-        case TBriefengScreen::STAGE_PLAYER_RN:
-        case TBriefengScreen::STAGE_PLAYER_END:
-            yw_DebriefRunDebrief(yw, inpt, brf);
-            break;
-
-        default:
-            break;
+            brf->CurrTime += inpt->Period;
         }
     }
-    else
+    else if ( yw->_briefScreen.TimerStatus == TBriefengScreen::TIMER_STOP )
     {
-        yw->_briefScreen.Stage = TBriefengScreen::STAGE_CANCEL;
+        inpt->Period = 1;
     }
+    else if ( yw->_briefScreen.TimerStatus == TBriefengScreen::TIMER_RESTART )
+    {
+        brf->TimerStatus = TBriefengScreen::TIMER_NORMAL;
+        brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
+    }
+
+    if ( brf->Stage != TBriefengScreen::STAGE_LOADED )
+    {
+        if ( brf->BriefingMapImg )
+        {
+            GFX::rstr_arg204 arg204;
+            arg204.pbitm = brf->BriefingMapImg->GetBitmap();
+
+            arg204.float4 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+            arg204.float14 = Common::FRect(-1.0, -1.0, 1.0, 1.0);
+
+            GFX::Engine.raster_func204(&arg204);
+        }
+
+        GFX::Engine.raster_func204(&brf->MapBlitParams);
+    }
+
+    switch ( brf->Stage )
+    {
+    case TBriefengScreen::STAGE_LOADED:
+        ypaworld_func158__sub4__sub1__sub6__sub0(yw, inpt, brf);
+        break;
+
+    case TBriefengScreen::STAGE_SCALING:
+        ypaworld_func158__sub4__sub1__sub6__sub1(yw, inpt, brf);
+        break;
+
+    case TBriefengScreen::STAGE_SCALEEND:
+        brf->Stage = TBriefengScreen::STAGE_PLAYER_ST;
+        break;
+
+    case TBriefengScreen::STAGE_PLAYER_ST:
+        ypaworld_func158__sub4__sub1__sub6__sub2(yw, inpt, brf);
+        break;
+
+    case TBriefengScreen::STAGE_PLAYER_RN:
+    case TBriefengScreen::STAGE_PLAYER_END:
+        yw_DebriefRunDebrief(yw, inpt, brf);
+        break;
+
+    default:
+        break;
+    }
+
+    //{
+    //    yw->_briefScreen.Stage = TBriefengScreen::STAGE_CANCEL;
+    //}
 }

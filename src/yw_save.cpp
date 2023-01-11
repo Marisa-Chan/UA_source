@@ -836,56 +836,53 @@ int yw_write_histbuffer(const std::vector<uint8_t> &buff, FSMgr::FileHandle *fil
 
 int yw_write_history(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
 {
-    if ( yw->_history.Size() )
+    fil->printf(";------------------------------------------------------------\n");
+    fil->printf("; History Buffers\n");
+    fil->printf(";------------------------------------------------------------\n");
+    fil->printf("begin_history\n");
+
+    std::vector<uint8_t> buf;
+    const size_t BuffSize = 64 * 64;
+
+    World::History::Instance HistDecoders;
+
+    auto reader = yw->_history.GetReader();
+
+    bool run = true;
+    while ( run && !reader.Eof() )
     {
-        fil->printf(";------------------------------------------------------------\n");
-        fil->printf("; History Buffers\n");
-        fil->printf(";------------------------------------------------------------\n");
-        fil->printf("begin_history\n");
-        
-        std::vector<uint8_t> buf;
-        const size_t BuffSize = 64 * 64;
-       
-        World::History::Instance HistDecoders;
-        
-        auto reader = yw->_history.GetReader();
-        
-        bool run = true;
-        while ( run && !reader.Eof() )
+        World::History::Record *decoder = HistDecoders[ reader.ReadU8() ];
+
+        if (decoder)
         {
-            World::History::Record *decoder = HistDecoders[ reader.ReadU8() ];
-            
-            if (decoder)
+            if ( buf.size() + 1 + decoder->dataSize > BuffSize ) // Write buffer
             {
-                if ( buf.size() + 1 + decoder->dataSize > BuffSize ) // Write buffer
-                {
-                    if (BuffSize - buf.size() > 0)
-                        Common::Append(&buf, std::vector<uint8_t>(BuffSize - buf.size(), 0));
-                    
-                    yw_write_histbuffer(buf, fil);
-                    
-                    buf.clear();
-                }
-                
-                buf.push_back(decoder->type);
-                Common::Append(&buf, reader.Read(decoder->dataSize));
+                if (BuffSize - buf.size() > 0)
+                    Common::Append(&buf, std::vector<uint8_t>(BuffSize - buf.size(), 0));
+
+                yw_write_histbuffer(buf, fil);
+
+                buf.clear();
             }
-            else
-            {
-                run = false;
-            }
+
+            buf.push_back(decoder->type);
+            Common::Append(&buf, reader.Read(decoder->dataSize));
         }
-        
-        if (buf.size())
+        else
         {
-            if (BuffSize - buf.size() > 0)
-                Common::Append(&buf, std::vector<uint8_t>(BuffSize - buf.size(), 0));
-            
-            yw_write_histbuffer(buf, fil);
+            run = false;
         }
-        
-        fil->printf("end");
     }
+
+    if (buf.size())
+    {
+        if (BuffSize - buf.size() > 0)
+            Common::Append(&buf, std::vector<uint8_t>(BuffSize - buf.size(), 0));
+
+        yw_write_histbuffer(buf, fil);
+    }
+
+    fil->printf("end");
 
     return 1;
 }
