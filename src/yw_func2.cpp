@@ -2431,29 +2431,7 @@ void UserData::GameShellUiHandleInput()
         Input->KbdLastDown = Input::KC_NONE;
         Input->chr = 0;
         Input->HotKeyID = -1;
-    }
-    
-    
-    if (_menuMsgBox->GetMsgBox()->Result)
-    {
-        if (_menuMsgBox->GetMsgBox()->Result == 1)
-        {
-            switch ( _menuMsgBoxCode )
-            {
-            case 17:
-                {
-
-                    ConnectToServer(_connString);
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        
-        _menuMsgBox->GetMsgBox()->Result = 0;
-    }
-    
+    }    
 
     if ( EnvMode == ENVMODE_TITLE && Input->HotKeyID == 43 )
         p_YW->_helpURL = Locale::Text::Help(Locale::HELP_MAIN);
@@ -3696,10 +3674,14 @@ void UserData::GameShellUiHandleInput()
             if ( r.code == 1200 ){
                 if ( !netName.empty() )
                 {
-                    printf("Net name not empty\n");
                     std::string ip = netName;
                     netName = "";
                     ConnectToServer(ip);
+                }
+                else
+                {
+                    netName = "127.0.0.1";
+                    netNameCurPos = netName.size();
                 }
             }
             break;
@@ -3725,24 +3707,9 @@ void UserData::GameShellUiHandleInput()
 
                     case 2:
                     {
-                        std::string connStr("127.0.0.1");
-
-                        char * clpbrd = SDL_GetClipboardText();
-                        if (clpbrd)
-                        {
-                            IPaddress tmp;
-                            if (SDLNet_ResolveHost(&tmp, clpbrd, 0) == 0)
-                                connStr = clpbrd;
-                            SDL_free(clpbrd);
-                        }
-
-                        _connString = connStr;
-                        printf("netSelMode = %d\n", netSelMode);
-                        //ShowMenuMsgBox(17, Locale::Text::Netdlg(Locale::NETDLG_CONNECT), connStr, false);
                         netSelMode = NETSCREEN_ENTER_IP;
                         netName = "";
                         netNameCurPos = 0;
-
                     }
                         break;
 
@@ -4146,6 +4113,21 @@ void UserData::GameShellUiHandleInput()
                     break;
                 default:
                     break;
+                }
+            }
+            
+            if ( netSelMode == NETSCREEN_ENTER_IP && Input->KbdLastHit == Input::KC_V && Input::Engine.GetKeyState(Input::KC_CTRL) )
+            {
+                char * clpbrd = SDL_GetClipboardText();
+                if (clpbrd)
+                {
+                    IPaddress tmp;
+                    if (SDLNet_ResolveHost(&tmp, clpbrd, 0) == 0)
+                    {
+                        netName = clpbrd;
+                        netNameCurPos = netName.size();
+                    }
+                    SDL_free(clpbrd);
                 }
             }
 
