@@ -58,7 +58,6 @@ OBJS =  \
 	ilbm.cpp\
 	image.cpp\
 	ini.cpp\
-	input.cpp\
 	itimer.cpp\
 	iwimp.cpp\
 	log.cpp\

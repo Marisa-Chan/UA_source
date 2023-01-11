@@ -4,7 +4,6 @@
 #include "nucleas.h"
 #include "inttypes.h"
 #include "utils.h"
-#include "input.h"
 #include <vector>
 
 class NC_STACK_button: public NC_STACK_nucleus, public ClickBox

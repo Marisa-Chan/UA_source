@@ -25,8 +25,6 @@
 #include "lstvw.h"
 #include "listnode.h"
 
-#include "input.h"
-
 #include "glob_funcs.h"
 
 #include "world/consts.h"

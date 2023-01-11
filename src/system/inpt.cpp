@@ -2,7 +2,6 @@
 #include "../ini.h"
 #include "../log.h"
 #include "inpt.h"
-#include "../input.h"
 #include "inivals.h"
 #include "winp.h"
 

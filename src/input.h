@@ -1,6 +1,0 @@
-#ifndef INPUT_H_INCLUDED
-#define INPUT_H_INCLUDED
-
-
-
-#endif // INPUT_H_INCLUDED

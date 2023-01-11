@@ -3,7 +3,6 @@
 #include "includes.h"
 #include "yw_internal.h"
 #include "yw.h"
-#include "input.h"
 #include "yparobo.h"
 
 

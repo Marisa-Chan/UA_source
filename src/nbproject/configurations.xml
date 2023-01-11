@@ -79,7 +79,6 @@
       <in>ilbm.cpp</in>
       <in>image.cpp</in>
       <in>ini.cpp</in>
-      <in>input.cpp</in>
       <in>itimer.cpp</in>
       <in>iwimp.cpp</in>
       <in>loaders.cpp</in>
@@ -381,13 +380,6 @@
         </ccTool>
       </item>
       <item path="ini.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-      </item>
-      <item path="input.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
           <incDir>
             <pElem>.</pElem>

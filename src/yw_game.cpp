@@ -6,7 +6,6 @@
 #include "yw_internal.h"
 #include "yw.h"
 #include "yw_net.h"
-#include "input.h"
 #include "windp.h"
 #include "loaders.h"
 

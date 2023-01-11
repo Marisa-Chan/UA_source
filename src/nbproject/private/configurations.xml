@@ -161,8 +161,6 @@
       <in>ini.cpp</in>
       <in>ini.h</in>
       <in>inp_ff.h</in>
-      <in>input.cpp</in>
-      <in>input.h</in>
       <in>itimer.cpp</in>
       <in>itimer.h</in>
       <in>iwimp.cpp</in>
