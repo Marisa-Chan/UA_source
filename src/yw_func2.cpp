@@ -4749,6 +4749,20 @@ bool UserData::LoadSample(int sampleID, const std::string &file)
     return true;
 }
 
+bool UserData::SaveBuildProtoState()
+{
+    return p_YW->SaveSettings(this, "settings.tmp", (World::SDF_BUDDY | World::SDF_PROTO | World::SDF_USER));
+}
+
+void UserData::SaveSettings()
+{
+    p_YW->SaveSettings(this, fmt::sprintf("%s/user.txt", UserName), World::SDF_ALL);
+
+    FSMgr::FileHandle fil = uaOpenFile("env:user.def", "w");
+    if ( fil.OK() )
+        fil.write(UserName.c_str(), UserName.size());
+}
+
 bool UserData::ShellSoundsLoad()
 {
     ScriptParser::HandlersList hndls {

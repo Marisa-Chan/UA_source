@@ -149,7 +149,6 @@ public:
     virtual size_t setXYWidth(button_arg76 *arg);
 
     NC_STACK_button() {
-        clear();
         field_d8.reserve(ClickBox::RESERVED);
         buttons.reserve(ClickBox::RESERVED);
     };
@@ -182,7 +181,6 @@ public:
     virtual int getBTN_h();
 
 protected:
-    void clear();
     void UpdateSlider(NC_STACK_button *btn, button_str2 *sbt);
     void button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
     void button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
@@ -194,16 +192,16 @@ public:
     static constexpr const char * __ClassName = "button.class";
 
     WidgetArr field_d8;
-    int16_t idd;
-    bool    visible;
-    uint8_t field_19c;
-    uint8_t field_19D;
-    uint8_t field_19E;
-    uint8_t field_19F;
-    uint8_t field_1A0;
-    uint8_t field_1A1;
-    int16_t screen_width;
-    int16_t screen_height;
+    int16_t idd = 0;
+    bool    visible = false;
+    uint8_t field_19c = 0;
+    uint8_t field_19D = 0;
+    uint8_t field_19E = 0;
+    uint8_t field_19F = 0;
+    uint8_t field_1A0 = 0;
+    uint8_t field_1A1 = 0;
+    int16_t screen_width = 0;
+    int16_t screen_height = 0;
 };
 
 #endif // BUTTON_H_INCLUDED

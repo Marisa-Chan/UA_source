@@ -65,37 +65,22 @@ enum GAME_SCREEN_MODE {
 };
 
 GAME_SCREEN_MODE GameScreenMode;
-int sub_4107FC(UserData *usr)
-{
-    return ypaworld->SaveSettings(usr, "settings.tmp", (World::SDF_BUDDY | World::SDF_PROTO | World::SDF_USER));
-}
+UserData userdata;
 
-void sub_410628()
-{
-    ypaworld->SaveSettings(&userdata, fmt::sprintf("%s/user.txt", userdata.UserName), World::SDF_ALL);
-
-    FSMgr::FileHandle *fil = uaOpenFileAlloc("env:user.def", "w");
-    if ( fil )
-    {
-        fil->write(userdata.UserName.c_str(), userdata.UserName.size());
-        delete fil;
-    }
-}
-
-int sb_0x411324__sub0()
+int ProcessGameplayFrame()
 {
     ypaworld->Process(&world_update_arg);
 
-    const TLevelInfo &var_2d90 = ypaworld->getYW_levelInfo();
+    const TLevelInfo &levelInfo = ypaworld->GetLevelInfo();
 
-    switch( var_2d90.State )
+    switch( levelInfo.State )
     {
     case TLevelInfo::STATE_COMPLETED:
     case TLevelInfo::STATE_ABORTED:
     {
         ypaworld->DeleteLevel();
 
-        if ( dword_513638 || var_2d90.State == TLevelInfo::STATE_ABORTED )
+        if ( dword_513638 || levelInfo.State == TLevelInfo::STATE_ABORTED )
         {
             if ( !ypaworld->LoadSettings("settings.tmp", 
                                          userdata.UserName,
@@ -148,7 +133,7 @@ int sb_0x411324__sub0()
     {
         ypaworld->DeleteLevel();
 
-        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.rst", userdata.UserName, var_2d90.LevelID) ) )
+        if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.rst", userdata.UserName, levelInfo.LevelID) ) )
             ypa_log_out("Warning, load error\n");
 
         Input::Engine.QueryInput(&input_states);
@@ -273,7 +258,7 @@ int sb_0x411324__sub2__sub0(base_64arg *arg)
     return cont_play;
 }
 
-int sb_0x411324__sub2()
+int ProcessReplayFrame()
 {
     if ( !sb_0x411324__sub2__sub0(&world_update_arg) )
     {
@@ -313,7 +298,7 @@ int sb_0x411324__sub2()
     return 1;
 }
 
-int sb_0x411324__sub1()
+int ProcessMenuFrame()
 {
     userdata.GlobalTime = world_update_arg.TimeStamp;
     userdata.DTime = world_update_arg.DTime;
@@ -325,12 +310,12 @@ int sb_0x411324__sub1()
         return 0;
     else if ( userdata.envAction.action == EnvAction::ACTION_PLAY )
     {
-        sub_410628();
+        userdata.SaveSettings();
         ypaworld->CloseGameShell();
 
         GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
 
-        if ( !sub_4107FC(&userdata) )
+        if ( !userdata.SaveBuildProtoState() )
             return 0;
 
         yw_arg161 v22;
@@ -351,12 +336,12 @@ int sb_0x411324__sub1()
     {
         GameScreenMode = GAME_SCREEN_MODE_UNKNOWN;
 
-        const TLevelInfo &a4 = ypaworld->getYW_levelInfo();
+        const TLevelInfo &a4 = ypaworld->GetLevelInfo();
 
-        sub_410628();
+        userdata.SaveSettings();
         ypaworld->CloseGameShell();
 
-        if ( !sub_4107FC(&userdata) )
+        if ( !userdata.SaveBuildProtoState() )
             return 0;
 
         if ( !ypaworld->LoadGame( fmt::sprintf("save:%s/%d.sgm", userdata.UserName, 0) ) )
@@ -371,9 +356,9 @@ int sb_0x411324__sub1()
     }
     else if ( userdata.envAction.action == EnvAction::ACTION_NETPLAY )
     {
-        sub_410628();
+        userdata.SaveSettings();
 
-        if ( !sub_4107FC(&userdata) )
+        if ( !userdata.SaveBuildProtoState() )
             return 0;
 
         dword_513638 = 1;
@@ -397,7 +382,7 @@ int sb_0x411324__sub1()
         GameScreenMode = GAME_SCREEN_MODE_GAME;
         Input::Engine.QueryInput(&input_states);
     }
-    else if ( userdata.envAction.action == EnvAction::ACTION_DEMO )
+    else if ( userdata.envAction.action == EnvAction::ACTION_REPLAY )
     {
         std::string repname = sub_4107A0(world_update_arg.TimeStamp);
         if ( repname.empty() )
@@ -406,7 +391,7 @@ int sb_0x411324__sub1()
             return 1;
         }
 
-        if ( !sub_4107FC(&userdata) )
+        if ( !userdata.SaveBuildProtoState() )
             return 0;
 
         dword_513638 = 1;
@@ -443,7 +428,7 @@ int sb_0x411324__sub1()
 }
 
 
-int sb_0x411324()
+int ProcessNextFrame()
 {
     input_states = TInputState();
     Input::Engine.QueryInput(&input_states);
@@ -472,15 +457,15 @@ int sb_0x411324()
 
     if ( GameScreenMode == GAME_SCREEN_MODE_MENU )
     {
-        return sb_0x411324__sub1();
+        return ProcessMenuFrame();
     }
     else if ( GameScreenMode == GAME_SCREEN_MODE_GAME )
     {
-        return sb_0x411324__sub0();
+        return ProcessGameplayFrame();
     }
     else if ( GameScreenMode == GAME_SCREEN_MODE_REPLAY )
     {
-        return sb_0x411324__sub2();
+        return ProcessReplayFrame();
     }
     return 1;
 }
@@ -692,7 +677,7 @@ void sub_4113E8()
         }
         else if ( GameScreenMode == GAME_SCREEN_MODE_MENU )
         {
-            sub_410628();
+            userdata.SaveSettings();
             ypaworld->CloseGameShell();
             ypaworld->DeinitGameShell();
         }
@@ -892,7 +877,7 @@ int main(int argc, char *argv[])
 
         if (GFX::Engine.FpsMaxTicks == 0)
         {
-            if ( !sb_0x411324() )
+            if ( !ProcessNextFrame() )
                 break;
 
             if ( System::ProcessEvents() )
@@ -904,7 +889,7 @@ int main(int argc, char *argv[])
 
             if (curTick >= ticks)
             {
-                if ( !sb_0x411324() )
+                if ( !ProcessNextFrame() )
                     break;
 
                 if ( System::ProcessEvents() )

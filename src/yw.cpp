@@ -5047,7 +5047,6 @@ bool NC_STACK_ypaworld::OpenGameShell()
         word_5A50BA = 500;
         word_5A50BE = 480;
     }
-
     
     int menuWidth = _screenSize.x * 0.7;
     int menuHeight = _screenSize.y * 0.8;
@@ -5431,7 +5430,7 @@ void NC_STACK_ypaworld::ProcessGameShell()
         _GameShell->lastInputEvent = _GameShell->GlobalTime;
 
     if ( (_GameShell->GlobalTime - _GameShell->lastInputEvent) > World::CVDemoWait && _GameShell->EnvMode == ENVMODE_TITLE )
-        _GameShell->envAction.action = EnvAction::ACTION_DEMO;
+        _GameShell->envAction.action = EnvAction::ACTION_REPLAY;
 
     _GameShell->GameIsOver = false;
 
@@ -7011,7 +7010,7 @@ int NC_STACK_ypaworld::getYW_screenH()
     return _screenSize.y;
 }
 
-TLevelInfo &NC_STACK_ypaworld::getYW_levelInfo()
+TLevelInfo &NC_STACK_ypaworld::GetLevelInfo()
 {
     return _levelInfo;
 }

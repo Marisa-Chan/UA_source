@@ -444,7 +444,7 @@ struct EnvAction
         ACTION_PLAY     = 2,
         ACTION_LOAD     = 3,
         ACTION_NETPLAY  = 4,
-        ACTION_DEMO     = 5
+        ACTION_REPLAY     = 5
     };
 
     int8_t action = ACTION_NONE;
@@ -700,7 +700,6 @@ public:
     
     uint8_t confirmMode;
     int _menuMsgBoxCode = 0;
-    std::string _connString;
 
     EnvAction envAction;
 
@@ -798,6 +797,9 @@ public:
     void  UpdateSelected3DDevFromList();
     void sub_46A7F8();
     void ShowAbout();
+    
+    bool SaveBuildProtoState();
+    void SaveSettings();
     
 
     bool  ShellSoundsLoad();
@@ -2034,7 +2036,7 @@ public:
     virtual int getYW_lvlFinished();
     virtual int getYW_screenW();
     virtual int getYW_screenH();
-    virtual TLevelInfo &getYW_levelInfo();
+    virtual TLevelInfo &GetLevelInfo();
     virtual int getYW_destroyFX();
     virtual NC_STACK_windp *getYW_pNET();
     virtual int getYW_invulnerable();

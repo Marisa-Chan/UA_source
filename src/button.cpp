@@ -9,27 +9,6 @@
 #include "font.h"
 
 
-void NC_STACK_button::clear()
-{
-    x = 0;
-    y = 0;
-    w = 0;
-    h = 0;
-    buttons.clear();
-
-    field_d8.clear();
-    idd = 0;
-    visible = false;
-    field_19c = 0;
-    field_19D = 0;
-    field_19E = 0;
-    field_19F = 0;
-    field_1A0 = 0;
-    field_1A1 = 0;
-    screen_width = 0;
-    screen_height = 0;
-}
-
 size_t NC_STACK_button::Init(IDVList &stak)
 {
     if ( !NC_STACK_nucleus::Init(stak) )
