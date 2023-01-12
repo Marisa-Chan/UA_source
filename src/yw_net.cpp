@@ -374,7 +374,7 @@ void yw_cleanPlayer(NC_STACK_ypaworld *yw, const std::string &name, uint8_t owne
         {
             if (own >= 8)
             {
-                log_netlog("destroy player: robo of player %s not found!\n", name);
+                log_netlog("destroy player: robo of player %s not found!\n", name.c_str());
                 log_netlog("In cases of trouble with other players this is no problem\n");
                 return;
             }

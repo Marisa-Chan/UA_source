@@ -1,5 +1,5 @@
 CDEFS = 
-CFLAGS = -std=c++11 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I "$(PWD)"
+CFLAGS = -std=c++14 -O3 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I "$(PWD)"
 TARGET = UA_source
 LDFLAGS = 
 OBJDIR := obj
@@ -25,6 +25,15 @@ msys: TARGET := $(TARGET).exe
 msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
 msys: LDFLAGS = -L$(MINGW)/lib/
 msys: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
+
+msys_xp: MINGW = /usr/i686-w64-mingw32
+msys_xp: CXX = clang++
+msys_xp: CC = clang
+msys_xp: CDEFS = -DWIN32 -DNOLUAVERSION
+msys_xp: TARGET := $(TARGET)_O3.exe
+msys_xp: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
+msys_xp: LDFLAGS = -L$(MINGW)/lib/
+msys_xp: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
 mac: CXX = clang++
 mac: CC = clang
@@ -153,7 +162,7 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 
-win32 nix mac msys: $(OBJFILES)
+win32 nix mac msys msys_xp: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 clean:
