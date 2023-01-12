@@ -26,7 +26,7 @@ protected:
     struct Mtl
     {
         std::string name;
-        float diffuse[3];
+        float diffuse[3] = {1.0, 1.0, 1.0};
         NC_STACK_bitmap *diffuseMap = NULL;
         float d = 1.0;
         

@@ -165,7 +165,7 @@ bool NC_STACK_Obj3D::ParseObj(FSMgr::FileHandle *fil)
                     msh->BoundBox.Add( _v.at(ftx.V - 1) );
 
                     if (ftx.T > 0)
-                        msh->Vertexes.back().TexCoord = tUtV(_vt.at(ftx.T - 1).x, _vt.at(ftx.T - 1).y);
+                        msh->Vertexes.back().TexCoord = tUtV(_vt.at(ftx.T - 1).x, 1.0 - _vt.at(ftx.T - 1).y);
                 }
 
                 for(int j = 2; j < numvtx; ++j)
@@ -412,6 +412,7 @@ bool NC_STACK_Obj3D::ExportObj(NC_STACK_base *base, const std::string &fname)
     obj.puts(std::string("mtllib ") + fname + ".mtl\n\n");
     
     int vid = 1;
+    int tvid = 1;
     
     int matID = 0;
     for( GFX::TMesh &m : base->Meshes )
@@ -445,7 +446,7 @@ Ni 1.450000\n");
         if (m.Mat.Flags & GFX::RFLAGS_TEXTURED)
         {
             for(GFX::TVertex &v : m.Vertexes)
-                obj.printf("vt %f %f\n", v.TexCoord.tu, v.TexCoord.tv);
+                obj.printf("vt %f %f\n", v.TexCoord.tu, 1.0 - v.TexCoord.tv);
         }
         
         obj.printf("usemtl Mat%d\n", matID);
@@ -453,16 +454,18 @@ Ni 1.450000\n");
         for (uint32_t i = 0; i < m.Indixes.size(); i += 3)
         {
             if (m.Mat.Flags & GFX::RFLAGS_TEXTURED)
-                obj.printf("f %d/%d %d/%d %d/%d\n", vid + m.Indixes[i], vid + m.Indixes[i],
-                        vid + m.Indixes[i + 2], vid + m.Indixes[i + 2],
-                        vid + m.Indixes[i + 1], vid + m.Indixes[i + 1]);
+                obj.printf("f %d/%d %d/%d %d/%d\n", vid + m.Indixes[i], tvid + m.Indixes[i],
+                        vid + m.Indixes[i + 2], tvid + m.Indixes[i + 2],
+                        vid + m.Indixes[i + 1], tvid + m.Indixes[i + 1]);
             else
                 obj.printf("f %d %d %d\n", vid + m.Indixes[i],
                         vid + m.Indixes[i + 2],
                         vid + m.Indixes[i + 1]);
         }
         
-        vid += m.Vertexes.size();        
+        vid += m.Vertexes.size();  
+        if (m.Mat.Flags & GFX::RFLAGS_TEXTURED)
+            tvid += m.Vertexes.size();  
         ++matID;
     }
     return true;
