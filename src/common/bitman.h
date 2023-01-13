@@ -270,7 +270,7 @@ public:
     using BASE::at;
     using BASE::clear;
     
-    constexpr uint32_t GetSize() const { return BASE::size() * 32; }
+    uint32_t GetSize() const { return BASE::size() * 32; }
     void Resize(uint32_t sz) { BASE::resize( (sz + 31) / 32 , 0 ); }
     
     operator bool() const

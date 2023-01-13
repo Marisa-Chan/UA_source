@@ -26,7 +26,8 @@ struct IDVPair
     template <typename T>
     T Get()
     {
-        T t;
+        T t = T();
+        
         try
         {
             t = nonstd::any_cast<T>(Value);

@@ -4043,12 +4043,46 @@ void UserData::GameShellUiHandleInput()
                     if ( !netName.empty() )
                     {
                         netPlayerName = netName;
+                        netName = "";
 
-                        netSelMode = NETSCREEN_SESSION_SELECT;
-                        netSel = -1;
-                        network_listvw.firstShownEntries = 0;
-                        netName.clear();
-                        p_YW->GuiWinOpen( &network_listvw );
+                        p_YW->_netDriver->SetWantedName(netPlayerName);
+                        switch ( p_YW->_netDriver->GetMode() )
+                        {
+                            case 1:
+                                isHost = true;
+                                netSel = -1;
+                                network_listvw.firstShownEntries = 0;
+                                netSelMode = NETSCREEN_CHOOSE_MAP;
+                                p_YW->GuiWinOpen( &network_listvw );
+                                break;
+
+                            case 2:
+                            {
+                                netSelMode = NETSCREEN_ENTER_IP;
+                                netName = "";
+                                netNameCurPos = 0;
+                            }
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                
+                case NETSCREEN_ENTER_IP:
+                    {
+                        if ( !netName.empty() )
+                        {
+                            std::string ip = netName;
+                            netName = "";
+                            ConnectToServer(ip);
+                        }
+                        else
+                        {
+                            netName = "127.0.0.1";
+                            netNameCurPos = netName.size();
+                        }
                     }
                     break;
 

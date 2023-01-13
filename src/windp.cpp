@@ -1200,6 +1200,7 @@ void UserData::JoinLobbyLessGame()
             netNameCurPos = 0;
             network_listvw.firstShownEntries = 0;
             network_listvw.selectedEntry = 0;
+            p_YW->GuiWinOpen( &network_listvw );
             isHost = false;
 
             yw_FractionInit();

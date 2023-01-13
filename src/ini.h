@@ -10,10 +10,10 @@ namespace Ini {
 
 enum KEYTYPE
 {
-    KT_DIGIT = 0x0,
-    KT_WORD  = 0x1,
-    KT_BOOL  = 0x2,
-    KT_STRING = 0x3,
+    KT_DIGIT = 0x0, // int32_t
+    KT_WORD  = 0x1, // std::string
+    KT_BOOL  = 0x2, // bool
+    KT_STRING = 0x3, // std::string
 };
 
 struct Key
@@ -24,11 +24,12 @@ struct Key
     
     Key(const std::string &k, KEYTYPE t, nonstd::any v);
     Key(const std::string &k, KEYTYPE t);
-    
+
     template <typename T>
     T Get()
     {
-        T t;
+        T t = T();
+
         try
         {
             t = nonstd::any_cast<T>(Value);
