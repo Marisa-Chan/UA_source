@@ -239,14 +239,7 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
                             viewMsg.launcher = miss->getMISS_launcher()->_gid;
                         }
 
-                        yw_arg181 ywMsg;
-                        ywMsg.recvID = 0;
-                        ywMsg.recvFlags = 2;
-                        ywMsg.data = &viewMsg;
-                        ywMsg.garant = 1;
-                        ywMsg.dataSize = sizeof(viewMsg);
-
-                        _world->ypaworld_func181(&ywMsg);
+                        _world->NetBroadcastMessage(&viewMsg, sizeof(viewMsg), true);
                     }
                 }
                 break;
@@ -3187,16 +3180,7 @@ void NC_STACK_ypabact::Die()
         if ( _owner )
         {
             if ( _bact_type != BACT_TYPES_ROBO )
-            {
-                yw_arg181 arg181;
-                arg181.data = &deadMsg;
-                arg181.recvFlags = 2;
-                arg181.dataSize = sizeof(deadMsg);
-                arg181.recvID = 0;
-                arg181.garant = 1;
-
-                _world->ypaworld_func181(&arg181);
-            }
+                _world->NetBroadcastMessage(&deadMsg, sizeof(deadMsg), true);
         }
     }
 
@@ -3235,14 +3219,7 @@ void NC_STACK_ypabact::SetState(setState_msg *arg)
                 ssMsg.unsetFlags = arg->unsetFlags;
                 ssMsg.classID = _bact_type;
 
-                yw_arg181 v9;
-                v9.recvFlags = 2;
-                v9.dataSize = sizeof(ssMsg);
-                v9.garant = 1;
-                v9.recvID = 0;
-                v9.data = &ssMsg;
-
-                _world->ypaworld_func181(&v9);
+                _world->NetBroadcastMessage(&ssMsg, sizeof(ssMsg), true);
             }
         }
     }
@@ -3422,14 +3399,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
                 wpnMsg.targetOwner = wobj->_primT.pbact->_owner;
             }
 
-            yw_arg181 arg181;
-            arg181.data = &wpnMsg;
-            arg181.dataSize = sizeof(wpnMsg);
-            arg181.recvFlags = 2;
-            arg181.recvID = 0;
-            arg181.garant = 1;
-
-            _world->ypaworld_func181(&arg181);
+            _world->NetBroadcastMessage(&wpnMsg, sizeof(wpnMsg), true);
         }
 
         if ( arg->flags & 1 )
@@ -3664,15 +3634,7 @@ void NC_STACK_ypabact::ModifyEnergy(bact_arg84 *arg)
             vhclEnrgy.killerOwner = 0;
         }
 
-        yw_arg181 arg181;
-
-        arg181.recvID = 0;
-        arg181.recvFlags = 2;
-        arg181.data = &vhclEnrgy;
-        arg181.dataSize = sizeof(vhclEnrgy);
-        arg181.garant = 1;
-
-        _world->ypaworld_func181(&arg181);
+        _world->NetBroadcastMessage(&vhclEnrgy, sizeof(vhclEnrgy), true);
     }
     else
     {
@@ -4236,14 +4198,7 @@ size_t NC_STACK_ypabact::CollisionWithBact(int arg)
                             epMsg.owner = bnode->_owner;
                             epMsg.id = bnode->_gid;
 
-                            yw_arg181 v32;
-                            v32.recvFlags = 2;
-                            v32.dataSize = sizeof(epMsg);
-                            v32.recvID = 0;
-                            v32.garant = 1;
-                            v32.data = &epMsg;
-
-                            _world->ypaworld_func181(&v32);
+                            _world->NetBroadcastMessage(&epMsg, sizeof(epMsg), true);
 
                             if ( bnode->_owner != _owner )
                             {
@@ -5994,14 +5949,7 @@ void NC_STACK_ypabact::sub_493480(NC_STACK_ypabact *bact2, int mode)
         ordMsg.mode = mode;
         ordMsg.msgID = UAMSG_REORDER;
 
-        yw_arg181 arg181;
-        arg181.dataSize = ordMsg.sz;
-        arg181.recvID = 0;
-        arg181.garant = 1;
-        arg181.data = &ordMsg;
-        arg181.recvFlags = 2;
-
-        _world->ypaworld_func181(&arg181);
+        _world->NetBroadcastMessage(&ordMsg, ordMsg.sz, true);
     }
 }
 
@@ -6882,14 +6830,7 @@ void NC_STACK_ypabact::Release()
                 destrMsg.id = _gid;
                 destrMsg.type = _bact_type;
 
-                yw_arg181 v6;
-                v6.recvFlags = 2;
-                v6.recvID = 0;
-                v6.data = &destrMsg;
-                v6.garant = 1;
-                v6.dataSize = sizeof(destrMsg);
-
-                _world->ypaworld_func181(&v6);
+                _world->NetBroadcastMessage(&destrMsg, sizeof(destrMsg), true);
             }
         }
     }
@@ -7248,14 +7189,7 @@ void NC_STACK_ypabact::ChangeSectorEnergy(yw_arg129 *arg)
         else
             seMsg.whoHit = 0;
 
-        yw_arg181 arg181;
-        arg181.recvID = 0;
-        arg181.recvFlags = 2;
-        arg181.data = &seMsg;
-        arg181.dataSize = sizeof(seMsg);
-        arg181.garant = 1;
-
-        _world->ypaworld_func181(&arg181);
+        _world->NetBroadcastMessage(&seMsg, sizeof(seMsg), true);
     }
 }
 
@@ -7344,14 +7278,7 @@ void NC_STACK_ypabact::DeadTimeUpdate(update_msg *arg)
                     splMsg.pos = _position;
                     splMsg.dir = _rotation;
 
-                    yw_arg181 arg181;
-                    arg181.data = &splMsg;
-                    arg181.dataSize = sizeof(splMsg);
-                    arg181.recvID = 0;
-                    arg181.recvFlags = 2;
-                    arg181.garant = 1;
-
-                    _world->ypaworld_func181(&arg181);
+                    _world->NetBroadcastMessage(&splMsg, sizeof(splMsg), true);
                 }
             }
         }
@@ -7844,14 +7771,7 @@ void NC_STACK_ypabact::setBACT_viewer(bool vwr)
             viewMsg.launcher = miss->getMISS_launcher()->_gid;
         }
 
-        yw_arg181 v13;
-        v13.recvID = 0;
-        v13.recvFlags = 2;
-        v13.data = &viewMsg;
-        v13.garant = 1;
-        v13.dataSize = sizeof(viewMsg);
-
-        _world->ypaworld_func181(&v13);
+        _world->NetBroadcastMessage(&viewMsg, sizeof(viewMsg), true);
     }
 }
 

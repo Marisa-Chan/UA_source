@@ -185,16 +185,7 @@ void NC_STACK_ypacar::DoKamikaze()
                                 veMsg.id = v19->_gid;
                                 veMsg.energy = -v67;
 
-                                yw_arg181 arg181;
-                                arg181.recvID = 0;
-                                arg181.recvFlags = 2;
-                                arg181.senderFlags = 1;
-                                arg181.dataSize = sizeof(veMsg);
-                                arg181.senderID = _world->_GameShell->netPlayerName.c_str();
-                                arg181.garant = 1;
-                                arg181.data = &veMsg;
-
-                                _world->ypaworld_func181(&arg181);
+                                _world->NetBroadcastMessage(&veMsg, sizeof(veMsg), true);
                             }
                         }
 

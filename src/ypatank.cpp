@@ -1337,14 +1337,7 @@ size_t NC_STACK_ypatank::CollisionWithBact(int arg)
                                     eplMsg.owner = v12->_owner;
                                     eplMsg.id = v12->_gid;
 
-                                    yw_arg181 arg181;
-                                    arg181.recvID = 0;
-                                    arg181.dataSize = sizeof(eplMsg);
-                                    arg181.recvFlags = 2;
-                                    arg181.garant = 1;
-                                    arg181.data = &eplMsg;
-
-                                    _world->ypaworld_func181(&arg181);
+                                    _world->NetBroadcastMessage(&eplMsg, sizeof(eplMsg), true);
 
                                     if ( _owner != v12->_owner )
                                     {

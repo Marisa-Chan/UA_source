@@ -6465,22 +6465,14 @@ GuiBase * ypaworld_func64__sub7__sub6__sub1()
     return dword_5BAFAC;
 }
 
-void NC_STACK_ypaworld::sub_47DB04(char a2)
+void NC_STACK_ypaworld::NetSendExitMsg(uint8_t normExit)
 {
-    yw_arg181 v3;
-
     uamessage_exit exMsg;
     exMsg.msgID = UAMSG_EXIT;
     exMsg.owner = _GameShell->netPlayerOwner;
-    exMsg.norm = a2;
+    exMsg.norm = normExit;
 
-    v3.recvID = 0;
-    v3.recvFlags = 2;
-    v3.data = &exMsg;
-    v3.dataSize = sizeof(exMsg);
-    v3.garant = 1;
-
-    ypaworld_func181(&v3);
+    NetBroadcastMessage(&exMsg, sizeof(exMsg), true);
 
     _GameShell->sentAQ = false;
 }
@@ -6659,7 +6651,7 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
                 _levelInfo.State = TLevelInfo::STATE_ABORTED;
 
                 if ( _isNetGame )
-                    sub_47DB04(1);
+                    NetSendExitMsg(1);
 
                 break;
 

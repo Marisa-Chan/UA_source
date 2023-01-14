@@ -1702,16 +1702,6 @@ struct yw_arg172
     int InitGameShell;
 };
 
-struct yw_arg181
-{
-    uamessage_base *data;
-    int dataSize;
-    const char *senderID;
-    int senderFlags;
-    const char *recvID;
-    int recvFlags;
-    int garant;
-};
 
 struct yw_arg161
 {
@@ -1953,8 +1943,9 @@ public:
     virtual void ypaworld_func177(yw_arg177 *arg);
     virtual size_t ypaworld_func179(yw_arg161 *arg);
     virtual void ypaworld_func180(yw_arg180 *arg);
-    virtual bool ypaworld_func181(yw_arg181 *arg);
-    virtual void ypaworld_func182(void *arg);
+    virtual bool NetSendMessage(uamessage_base *data, size_t dataSize, const std::string &recvID, bool garantee);
+    virtual bool NetBroadcastMessage(uamessage_base *data, size_t dataSize, bool garantee);
+
     virtual size_t ypaworld_func183(yw_arg161 *arg);
     virtual void HistoryEventAdd(const World::History::Record &arg);
     virtual void ypaworld_func185(const void *arg);
@@ -2278,7 +2269,7 @@ public:
     int yw_MouseFindCreationPoint(TClickBoxInf *winp);
     
     void sb_0x4c87fc(const std::string &a2, GuiBase *lstvw);
-    void sub_47DB04(char a2);
+    void NetSendExitMsg(uint8_t normExit);
     void sub_449DE8(const std::string &a2);
     
     void LoadKeyNames();

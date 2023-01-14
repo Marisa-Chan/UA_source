@@ -113,14 +113,7 @@ void NC_STACK_ypaworld::SendCRC(int lvlid)
     crcmsg.owner = _GameShell->netPlayerOwner;
     crcmsg.checksum = crc;
 
-    yw_arg181 ywmsg;
-    ywmsg.data = &crcmsg;
-    ywmsg.dataSize = sizeof(crcmsg);
-    ywmsg.garant = 1;
-    ywmsg.recvID = 0;
-    ywmsg.recvFlags = 2;
-
-    ypaworld_func181(&ywmsg);
+    NetBroadcastMessage(&crcmsg, sizeof(crcmsg), true);
 }
 
 void yw_CheckCRCs(NC_STACK_ypaworld *yw)
@@ -847,14 +840,7 @@ void yw_netSendUpdate(NC_STACK_ypaworld *yw, uint8_t owner, const char *recvID)
     updinf.msgID = UAMSG_UPDATE;
     updinf.num = numb;
 
-    yw_arg181 arg181;
-    arg181.recvID = recvID;
-    arg181.recvFlags = 1;
-    arg181.dataSize = updinf.sz;
-    arg181.data = &updinf;
-    arg181.garant = 1;
-
-    if ( yw->ypaworld_func181(&arg181) )
+    if ( yw->NetSendMessage(&updinf, updinf.sz, recvID, true) )
         log_netlog("\n+++ UPD: Ok, sent Update from owner %d to reciever %s\n", owner, recvID);
     else
         log_netlog("\n+++ UPD: Send-Error. Hmmmm...\n");
@@ -2383,14 +2369,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         frMsg.newfrac = yw->_GameShell->SelectedFraction;
         frMsg.owner = yw->_GameShell->netPlayerOwner;
 
-        yw_arg181 nMsg;
-        nMsg.dataSize = sizeof(uamessage_fraction);
-        nMsg.recvFlags = 2;
-        nMsg.data = &frMsg;
-        nMsg.recvID = 0;
-        nMsg.garant = 1;
-
-        yw->ypaworld_func181(&nMsg);
+        yw->NetBroadcastMessage(&frMsg, sizeof(frMsg), true);
     }
     break;
 
@@ -2975,26 +2954,12 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         pongMsg.msgID = UAMSG_PONG;
         pongMsg.timestamp = pingMsg->timestamp;
 
-        yw_arg181 nMsg;
-        nMsg.data = &pongMsg;
-        nMsg.dataSize = sizeof(pongMsg);
-        nMsg.recvFlags = 1;
-        nMsg.recvID = msg->senderName.c_str();
-        nMsg.garant = 1;
-
-        yw->ypaworld_func181(&nMsg);
+        yw->NetSendMessage(&pongMsg, sizeof(pongMsg), msg->senderName, true);
 
         if ( yw->_updateMessage.frameTime >= 3 )
             break;
 
-        windp_arg82 warg82;
-        warg82.senderFlags = 1;
-        warg82.senderID = yw->_GameShell->netPlayerName.c_str();
-        warg82.receiverID = 0;
-        warg82.guarant = 0;
-        warg82.receiverFlags = 2;
-
-        yw->_netDriver->FlushBuffer(warg82);
+        yw->_netDriver->FlushBroadcastBuffer();
     }
     break;
 
@@ -3024,14 +2989,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
             prblm.msgID = UAMSG_STARTPROBLEM;
             prblm.problem = 1;
 
-            yw_arg181 nMsg;
-            nMsg.data = &prblm;
-            nMsg.dataSize = sizeof(prblm);
-            nMsg.recvFlags = 2;
-            nMsg.recvID = 0;
-            nMsg.garant = 1;
-
-            yw->ypaworld_func181(&nMsg);
+            yw->NetBroadcastMessage(&prblm, sizeof(prblm), true);
         }
     }
     break;
@@ -3173,9 +3131,6 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
         if ( yw_prepareVHCLData(yw, vhcldata) )
         {
-            yw_arg181 ywMsg;
-            ywMsg.data = vhcldata;
-
             if ( yw->_netInterpolate )
                 vhcldata->hdr.size = ((char *)&vhcldata_interpolate.data[ vhcldata->hdr.number ]) - ((char *)vhcldata);
             else
@@ -3183,12 +3138,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
             vhcldata->hdr.diffTime = yw->_timeStamp - yw->_netUpdateTimeStamp;
 
-            ywMsg.dataSize = vhcldata->hdr.size;
-            ywMsg.recvID = 0;
-            ywMsg.garant = 0;
-            ywMsg.recvFlags = 2;
-
-            yw->ypaworld_func181(&ywMsg);
+            yw->NetBroadcastMessage(vhcldata, vhcldata->hdr.size, false);
         }
 
         yw->_netUpdateTimeStamp = yw->_timeStamp;
@@ -3207,13 +3157,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                 for(int i = 0; i < 8; i++)
                     scoreMsg.status[i] = yw->_gameplayStats[i];
 
-                yw_arg181 ywMsg;
-                ywMsg.data = &scoreMsg;
-                ywMsg.dataSize = sizeof(scoreMsg);
-                ywMsg.recvID = 0;
-                ywMsg.garant = 0;
-                ywMsg.recvFlags = 2;
-                yw->ypaworld_func181(&ywMsg);
+                yw->NetBroadcastMessage(&scoreMsg, sizeof(scoreMsg), false);
 
                 usr->sendScoreCountDown = 1500;
             }
@@ -3240,7 +3184,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
 
             if ( yw->_levelInfo.State != TLevelInfo::STATE_ABORTED || !yw->_isNetGameStarted )
             {
-                if ( yw->_netDriver->GetPlayerCount() * 5 >= msgcount )
+                if ( yw->_netDriver->GetPlayerCount() * 10 >= msgcount )
                 {
                     yw->_netInfoOverkill = false;
                 }
@@ -3268,13 +3212,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                             lbyMsg.lvlID = usr->netLevelID;
                             lbyMsg.owner = 0;
 
-                            yw_arg181 ywMsg;
-                            ywMsg.data = &lbyMsg;
-                            ywMsg.dataSize = sizeof(lbyMsg);
-                            ywMsg.garant = 1;
-                            ywMsg.recvFlags = 2;
-                            ywMsg.recvID = 0;
-                            yw->ypaworld_func181(&ywMsg);
+                            yw->NetBroadcastMessage(&lbyMsg, sizeof(lbyMsg), true);
                         }
                     }
 
@@ -3284,13 +3222,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                     wlcmMsg.fraction = usr->SelectedFraction;
                     wlcmMsg.rdy = usr->rdyStart;
 
-                    yw_arg181 ywMsg;
-                    ywMsg.data = &wlcmMsg;
-                    ywMsg.dataSize = sizeof(wlcmMsg);
-                    ywMsg.recvFlags = 1;
-                    ywMsg.garant = 1;
-                    ywMsg.recvID = (char *)recvMsg.senderName.c_str();
-                    yw->ypaworld_func181(&ywMsg);
+                    yw->NetSendMessage(&wlcmMsg, sizeof(wlcmMsg), recvMsg.senderName, true);
 
                     if ( usr->netLevelID )
                         yw->SendCRC(usr->netLevelID);
@@ -3418,6 +3350,9 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                         else
                             recvMsg.data = (char *)recvMsg.data + msg_size;
                     }
+                    if (msgcnt == 1)
+                        printf("RECVMSG_NORMAL ID %d\n", HNDL_MSG[1]);
+                    printf("RECVMSG_NORMAL msgcnt %d\n", msgcnt);
 
                     std::string crpt = yw_corruptionCheck(usr);
                     if ( !crpt.empty() )
@@ -3443,13 +3378,7 @@ void yw_HandleNetMsg(NC_STACK_ypaworld *yw)
                                 updMsg.msgID = UAMSG_REQUPDATE;
                                 updMsg.owner = usr->netPlayerOwner;
 
-                                yw_arg181 ywMsg;
-                                ywMsg.data = &updMsg;
-                                ywMsg.dataSize = sizeof(updMsg);
-                                ywMsg.recvFlags = 1;
-                                ywMsg.garant = 1;
-                                ywMsg.recvID = err_sender.c_str();
-                                yw->ypaworld_func181(&ywMsg);
+                                yw->NetSendMessage(&updMsg, sizeof(updMsg), err_sender, true);
 
                                 pl.UpdateCountDown = 2000;
                             }
@@ -3802,22 +3731,9 @@ size_t NC_STACK_ypaworld::ypaworld_func179(yw_arg161 *arg)
             }
         }
 
-        yw_arg181 ywMsg;
-        ywMsg.data = &syncMsg;
-        ywMsg.dataSize = sizeof(syncMsg);
-        ywMsg.recvFlags = 2;
-        ywMsg.recvID = 0;
-        ywMsg.garant = 1;
-        ypaworld_func181(&ywMsg);
+        NetBroadcastMessage(&syncMsg, sizeof(syncMsg), true);
 
-        windp_arg82 windp82;
-        windp82.senderFlags = 1;
-        windp82.receiverFlags = 2;
-        windp82.receiverID = 0;
-        windp82.senderID = _GameShell->netPlayerName.c_str();
-        windp82.guarant = 1;
-
-        _netDriver->FlushBuffer(windp82);
+        _netDriver->FlushBroadcastBuffer();
 
         log_netlog("Sent a READY TO PLAY to all for my Owner %d\n", _GameShell->netPlayerOwner);
 
@@ -3875,14 +3791,7 @@ void yw_NetHandleProblems(NC_STACK_ypaworld *yw)
                 eProblm.msgID = UAMSG_ENDPROBLEM;
                 eProblm.solved = 3;
 
-                yw_arg181 arg181;
-                arg181.recvFlags = 2;
-                arg181.recvID = 0;
-                arg181.data = &eProblm;
-                arg181.garant = 1;
-                arg181.dataSize = sizeof(uamessage_endproblem);
-
-                yw->ypaworld_func181(&arg181);
+                yw->NetBroadcastMessage(&eProblm, sizeof(eProblm), true);
             }
         }
         break;
@@ -3978,13 +3887,7 @@ int yw_NetCheckPlayers(NC_STACK_ypaworld *yw)
 
                             v2 = 1;
 
-                            yw_arg181 yw181;
-                            yw181.data = &msgKk;
-                            yw181.dataSize = sizeof(uamessage_kick);
-                            yw181.recvFlags = 2;
-                            yw181.recvID = 0;
-                            yw181.garant = 1;
-                            yw->ypaworld_func181(&yw181);
+                            yw->NetBroadcastMessage(&msgKk, sizeof(msgKk), true);
 
                             yw_DestroyPlayer(yw, msgKk.text);
 
@@ -4091,14 +3994,7 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
 
             yw_cleanPlayer(yw, pl->Name, 0, 0);
 
-            yw_arg181 yw181;
-            yw181.recvFlags = 2;
-            yw181.data = &msgKk;
-            yw181.recvID = 0;
-            yw181.garant = 1;
-            yw181.dataSize = sizeof(uamessage_kick);
-
-            yw->ypaworld_func181(&yw181);
+            yw->NetBroadcastMessage(&msgKk, sizeof(msgKk), true);
 
             yw_DestroyPlayer(yw, msgKk.text);
 
@@ -4164,24 +4060,11 @@ void yw_NetCheckPing(NC_STACK_ypaworld *yw)
         rPing.msgID = UAMSG_REQPING;
         rPing.timestamp = yw->_timeStamp;
 
-        yw_arg181 yw181;
-        yw181.recvFlags = 2;
-        yw181.recvID = 0;
-        yw181.data = &rPing;
-        yw181.garant = 1;
-        yw181.dataSize = sizeof(uamessage_ping);
-
-        yw->ypaworld_func181(&yw181);
+        yw->NetBroadcastMessage(&rPing, sizeof(rPing), true);
 
         if ( yw->_updateMessage.frameTime < 3 )
         {
-            windp_arg82 dp82;
-            dp82.senderFlags = 1;
-            dp82.receiverID = 0;
-            dp82.senderID = usr->netPlayerName.c_str();
-            dp82.guarant = 0;
-            dp82.receiverFlags = 2;
-            yw->_netDriver->FlushBuffer(dp82);
+            yw->_netDriver->FlushBroadcastBuffer();
         }
     }
     else

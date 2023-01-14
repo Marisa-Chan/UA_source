@@ -844,14 +844,7 @@ void NC_STACK_ypamissile::Impact()
         impMsg.dir_len = _fly_dir_length;
         impMsg.mass = _mass;
 
-        yw_arg181 arg181;
-        arg181.recvID = 0;
-        arg181.dataSize = sizeof(impMsg);
-        arg181.recvFlags = 2;
-        arg181.garant = 1;
-        arg181.data = &impMsg;
-
-        _world->ypaworld_func181(&arg181);
+        _world->NetBroadcastMessage(&impMsg, sizeof(impMsg), true);
     }
 }
 

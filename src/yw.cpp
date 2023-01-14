@@ -535,14 +535,8 @@ size_t NC_STACK_ypaworld::Process(base_64arg *arg)
 
                 if ( _netFlushTimer <= 0 )
                 {
-                    windp_arg82 arg82;
-                    arg82.senderID = _GameShell->netPlayerName.c_str();
-                    arg82.senderFlags = 1;
-                    arg82.receiverFlags = 2;
-                    arg82.receiverID = 0;
-                    arg82.guarant = 0;
 
-                    uint32_t v44 = _netDriver->FlushBuffer(arg82);
+                    uint32_t v44 = _netDriver->FlushBroadcastBuffer();
 
                     _GameShell->netsend_count += v44;
 
@@ -741,14 +735,7 @@ void sub_47C29C(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         upMsg.enable = 1;
         upMsg.upgradeID = a3;
 
-        yw_arg181 arg181;
-        arg181.recvID = 0;
-        arg181.dataSize = sizeof(upMsg);
-        arg181.garant = 1;
-        arg181.recvFlags = 2;
-        arg181.data = &upMsg;
-
-        yw->ypaworld_func181(&arg181);
+        yw->NetBroadcastMessage(&upMsg, sizeof(upMsg), true);
     }
 
     cell->PurposeType = cellArea::PT_TECHDEACTIVE;
@@ -787,14 +774,7 @@ void ypaworld_func129__sub1(NC_STACK_ypaworld *yw, cellArea *cell, int a3)
         upMsg.enable = 0;
         upMsg.upgradeID = a3;
 
-        yw_arg181 arg181;
-        arg181.recvFlags = 2;
-        arg181.dataSize = sizeof(upMsg);
-        arg181.recvID = 0;
-        arg181.garant = 1;
-        arg181.data = &upMsg;
-
-        yw->ypaworld_func181(&arg181);
+        yw->NetBroadcastMessage(&upMsg, sizeof(upMsg), true);
     }
 
     cell->PurposeIndex = 0;
@@ -1980,7 +1960,7 @@ void NC_STACK_ypaworld::DeleteLevel()
     if ( _isNetGame )
     {
         if ( !_GameShell->sentAQ )
-            sub_47DB04(0);
+            NetSendExitMsg(0);
 
         _GameShell->ypaworld_func151__sub7();
         _GameShell->yw_netcleanup();
@@ -5397,14 +5377,7 @@ void NC_STACK_ypaworld::ProcessGameShell()
         _netFlushTimer -= _GameShell->DTime;
         if ( _netFlushTimer <= 0 )
         {
-            windp_arg82 arg82;
-            arg82.senderFlags = 1;
-            arg82.senderID = _GameShell->netPlayerName.c_str();
-            arg82.receiverFlags = 2;
-            arg82.receiverID = 0;
-            arg82.guarant = 1;
-
-            _netDriver->FlushBuffer(arg82);
+            _netDriver->FlushBroadcastBuffer();
 
             _netFlushTimer = 100;
         }
@@ -6732,31 +6705,23 @@ void NC_STACK_ypaworld::ypaworld_func180(yw_arg180 *arg)
 }
 
 
-bool NC_STACK_ypaworld::ypaworld_func181(yw_arg181 *arg)
+bool NC_STACK_ypaworld::NetSendMessage(uamessage_base *data, size_t dataSize, const std::string &recvID, bool garantee)
+{
+    if (_GameShell->noSent)
+        return false;
+
+    return _netDriver->Send(data, dataSize, recvID, garantee);
+}
+
+bool NC_STACK_ypaworld::NetBroadcastMessage(uamessage_base *data, size_t dataSize, bool garantee)
 {
     if (_GameShell->noSent)
         return false;
     
-    arg->data->tstamp = _timeStamp;
-    
-    if ( _GameShell->netPlayerOwner )
-    {
-        if ( arg->recvFlags == 2 && arg->data->msgID != UAMSG_VHCLENERGY )
-        {
-            arg->data->msgCnt = _GameShell->msgcount;
-            _GameShell->msgcount++; 
-        }
-    }
-    
-    arg->senderFlags = 1;
-    arg->senderID = _GameShell->netPlayerName.c_str();
-    return _netDriver->Send(arg);
-}
+    if ( _GameShell->netPlayerOwner != 0 && data->msgID != UAMSG_VHCLENERGY )
+        _GameShell->msgcount++; 
 
-
-void NC_STACK_ypaworld::ypaworld_func182(void *arg)
-{
-    dprintf("MAKE ME %s\n","ypaworld_func182");
+    return _netDriver->Broadcast(data, dataSize, garantee);
 }
 
 int ypaworld_func183__sub0(int lvlID, const char *userName)

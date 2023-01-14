@@ -1133,23 +1133,9 @@ void UserData::sub_46DC1C()
     lvlMsg.owner = 0;
     lvlMsg.level = netLevelID;
 
-    yw_arg181 v5;
-    v5.data = &lvlMsg;
-    v5.dataSize = sizeof(lvlMsg);
-    v5.recvID = 0;
-    v5.recvFlags = 2;
-    v5.garant = 1;
+    p_YW->NetBroadcastMessage(&lvlMsg, sizeof(lvlMsg), true);
 
-    p_YW->ypaworld_func181(&v5);
-
-    windp_arg82 v6;
-    v6.senderID = netPlayerName.c_str();
-    v6.senderFlags = 1;
-    v6.receiverID = 0;
-    v6.receiverFlags = 2;
-    v6.guarant = 1;
-
-    p_YW->_netDriver->FlushBuffer(v6);
+    p_YW->_netDriver->FlushBroadcastBuffer();
 
     envAction.action = EnvAction::ACTION_NETPLAY;
     envAction.params[0] = netLevelID;
@@ -3571,8 +3557,6 @@ void UserData::GameShellUiHandleInput()
         break;
     }
 
-
-    yw_arg181 v346;
     uamessage_fraction fracMsg;
 
     r = network_button->ProcessWidgetsEvents(Input);
@@ -3586,12 +3570,6 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.msgID = UAMSG_FRACTION;
             fracMsg.owner = 0;
-
-            v346.recvID = 0;
-            v346.garant = 1;
-            v346.data = &fracMsg;
-            v346.dataSize = sizeof(fracMsg);
-            v346.recvFlags = 2;
         }
 
         if ( r.code == 103 || r.code == 1202 )
@@ -3606,7 +3584,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = NET_FRACTION_RESISTANCE;
             FreeFraction &= ~NET_FRACTION_RESISTANCE;
 
-            p_YW->ypaworld_func181(&v346);
+            p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
         else if ( r.code == 1205 )
         {
@@ -3616,7 +3594,7 @@ void UserData::GameShellUiHandleInput()
             FreeFraction &= ~NET_FRACTION_GHORKOV;
             SelectedFraction = NET_FRACTION_GHORKOV;
 
-            p_YW->ypaworld_func181(&v346);
+            p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
         else if ( r.code == 1206 )
         {
@@ -3626,7 +3604,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = NET_FRACTION_MIKO;
             FreeFraction &= ~NET_FRACTION_MIKO;
 
-            p_YW->ypaworld_func181(&v346);
+            p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
         else if ( r.code == 1207 )
         {
@@ -3636,7 +3614,7 @@ void UserData::GameShellUiHandleInput()
             SelectedFraction = NET_FRACTION_TAER;
             FreeFraction &= ~NET_FRACTION_TAER;
 
-            p_YW->ypaworld_func181(&v346);
+            p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
 
         switch ( netSelMode )
@@ -3790,7 +3768,6 @@ void UserData::GameShellUiHandleInput()
             }
             else if ( r.code == 1208 )
             {
-                yw_arg181 v353;
                 uamessage_ready rdyMsg;
 
                 rdyStart = true;
@@ -3804,26 +3781,12 @@ void UserData::GameShellUiHandleInput()
                 rdyMsg.owner = 0;
                 rdyMsg.rdy = 1;
 
-                v353.dataSize = sizeof(rdyMsg);
-                v353.recvFlags = 2;
-                v353.data = &rdyMsg;
-                v353.recvID = 0;
-                v353.garant = 1;
+                p_YW->NetBroadcastMessage(&rdyMsg, sizeof(rdyMsg), true);
 
-                p_YW->ypaworld_func181(&v353);
-
-                windp_arg82 v387;
-                v387.receiverFlags = 2;
-                v387.receiverID = 0;
-                v387.senderFlags = 1;
-                v387.senderID = netPlayerName.c_str();
-                v387.guarant = 1;
-
-                p_YW->_netDriver->FlushBuffer(v387);
+                p_YW->_netDriver->FlushBroadcastBuffer();
             }
             else if ( r.code == 1209 )
             {
-                yw_arg181 v353;
                 uamessage_ready rdyMsg;
 
                 rdyStart = false;
@@ -3837,22 +3800,9 @@ void UserData::GameShellUiHandleInput()
                 rdyMsg.owner = 0;
                 rdyMsg.rdy = 0;
 
-                v353.recvFlags = 2;
-                v353.recvID = 0;
-                v353.data = &rdyMsg;
-                v353.dataSize = sizeof(rdyMsg);
-                v353.garant = 1;
+                p_YW->NetBroadcastMessage(&rdyMsg, sizeof(rdyMsg), true);
 
-                p_YW->ypaworld_func181(&v353);
-
-                windp_arg82 v387;
-                v387.receiverFlags = 2;
-                v387.receiverID = 0;
-                v387.senderFlags = 1;
-                v387.senderID = netPlayerName.c_str();
-                v387.guarant = 1;
-
-                p_YW->_netDriver->FlushBuffer(v387);
+                p_YW->_netDriver->FlushBroadcastBuffer();
             }
             else if ( r.code == 1210 )
             {
@@ -3885,15 +3835,7 @@ void UserData::GameShellUiHandleInput()
 
                     strncpy(msgMsg.message, netName.c_str(), 64);
 
-                    v346.senderFlags = 1;
-                    v346.data = &msgMsg;
-                    v346.dataSize = sizeof(msgMsg);
-                    v346.recvFlags = 2;
-                    v346.recvID = 0;
-                    v346.senderID = netPlayerName.c_str();
-                    v346.garant = 1;
-
-                    p_YW->ypaworld_func181(&v346);
+                    p_YW->NetBroadcastMessage(&msgMsg, sizeof(msgMsg), true);
 
                     sub_4D0C24(p_YW, netPlayerName, msgMsg.message);
 
@@ -4098,15 +4040,7 @@ void UserData::GameShellUiHandleInput()
 
                         strncpy(msgMsg.message, netName.c_str(), 64);
 
-                        yw_arg181 v325;
-
-                        v325.garant = 1;
-                        v325.data = &msgMsg;
-                        v325.dataSize = sizeof(msgMsg);
-                        v325.recvFlags = 2;
-                        v325.recvID = 0;
-
-                        p_YW->ypaworld_func181(&v325);
+                        p_YW->NetBroadcastMessage(&msgMsg, sizeof(msgMsg), true);
 
                         sub_4D0C24(p_YW, netPlayerName, msgMsg.message);
                         netName.clear();

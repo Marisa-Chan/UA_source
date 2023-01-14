@@ -466,14 +466,7 @@ void NC_STACK_yparobo::InitForce(NC_STACK_ypabact *unit)
         nvMsg.kind = 2;
         nvMsg.commandID = unit->_commandID;
 
-        yw_arg181 arg181;
-        arg181.recvFlags = 2;
-        arg181.dataSize = sizeof(nvMsg);
-        arg181.recvID = 0;
-        arg181.garant = 1;
-        arg181.data = &nvMsg;
-
-        _world->ypaworld_func181(&arg181);
+        _world->NetBroadcastMessage(&nvMsg, sizeof(nvMsg), true);
     }
 
     if ( _roboState & ROBOSTATE_USEVHCLPARTS )
@@ -787,14 +780,7 @@ void NC_STACK_yparobo::doBeamUpdate(int a2)
             ebMsg.owner = _owner;
             ebMsg.id = _gid;
 
-            yw_arg181 v16;
-            v16.recvID = 0;
-            v16.recvFlags = 2;
-            v16.dataSize = sizeof(ebMsg);
-            v16.garant = 1;
-            v16.data = &ebMsg;
-
-            _world->ypaworld_func181(&v16);
+            _world->NetBroadcastMessage(&ebMsg, sizeof(ebMsg), true);
         }
     }
 }
@@ -1310,7 +1296,6 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
     setState_msg arg78;
     bact_arg109 arg109;
     ypaworld_arg148 arg148;
-    yw_arg181 arg181;
     robo_arg134 arg134;
     bact_arg124 arg124;
 
@@ -1450,12 +1435,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     nvMsg.kind = 1;
                     nvMsg.commandID = newbact->_commandID;
 
-                    arg181.recvFlags = 2;
-                    arg181.dataSize = sizeof(nvMsg);
-                    arg181.recvID = 0;
-                    arg181.garant = 1;
-                    arg181.data = &nvMsg;
-                    _world->ypaworld_func181(&arg181);
+                    _world->NetBroadcastMessage(&nvMsg, sizeof(nvMsg), true);
                 }
 
                 if ( newbact->_bact_type == BACT_TYPES_UFO )
@@ -1512,13 +1492,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     nvMsg.kind = 2;
                     nvMsg.commandID = newbact2->_commandID;
 
-                    arg181.recvID = 0;
-                    arg181.recvFlags = 2;
-                    arg181.data = &nvMsg;
-                    arg181.dataSize = sizeof(nvMsg);
-                    arg181.garant = 1;
-
-                    _world->ypaworld_func181(&arg181);
+                    _world->NetBroadcastMessage(&nvMsg, sizeof(nvMsg), true);
                 }
 
                 int v67 = getBACT_bactCollisions();
@@ -1554,13 +1528,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                     sbMsg.sec_x = arg->target_Sect->CellId.x;
                     sbMsg.sec_y = arg->target_Sect->CellId.y;
 
-                    arg181.recvID = 0;
-                    arg181.recvFlags = 2;
-                    arg181.data = &sbMsg;
-                    arg181.garant = 1;
-                    arg181.dataSize = sizeof(sbMsg);
-
-                    _world->ypaworld_func181(&arg181);
+                    _world->NetBroadcastMessage(&sbMsg, sizeof(sbMsg), true);
                 }
             }
         }
@@ -1583,13 +1551,7 @@ void NC_STACK_yparobo::doUserCommands(update_msg *arg)
                 stbMsg.id = _gid;
                 stbMsg.pos = _roboBeamPos;
 
-                arg181.recvID = 0;
-                arg181.recvFlags = 2;
-                arg181.data = &stbMsg;
-                arg181.dataSize = sizeof(stbMsg);
-                arg181.garant = 1;
-
-                _world->ypaworld_func181(&arg181);
+                _world->NetBroadcastMessage(&stbMsg, sizeof(stbMsg), true);
             }
         }
         break;
@@ -2536,14 +2498,7 @@ NC_STACK_ypabact *NC_STACK_yparobo::AllocForce(robo_loct1 *arg)
             nvMsg.kind = 1;
             nvMsg.commandID = newUnit->_commandID;
 
-            yw_arg181 arg181;
-            arg181.recvID = 0;
-            arg181.recvFlags = 2;
-            arg181.data = &nvMsg;
-            arg181.dataSize = sizeof(nvMsg);
-            arg181.garant = 1;
-
-            _world->ypaworld_func181(&arg181);
+            _world->NetBroadcastMessage(&nvMsg, sizeof(nvMsg), true);
         }
 
         _roboState |= ROBOSTATE_DOCKINUSE;
@@ -3576,13 +3531,7 @@ void NC_STACK_yparobo::checkCommander()
                         logMsg.pri = 34;
                         logMsg.id = 19;
 
-                        yw_arg181 arg181;
-                        arg181.recvID = 0;
-                        arg181.recvFlags = 2;
-                        arg181.data = &logMsg;
-                        arg181.dataSize = sizeof(logMsg);
-                        arg181.garant = 1;
-                        _world->ypaworld_func181(&arg181);
+                        _world->NetBroadcastMessage(&logMsg, sizeof(logMsg), true);
                     }
                 }
             }
@@ -4962,13 +4911,7 @@ void NC_STACK_yparobo::Die()
         {
             if ( _owner )
             {
-                yw_arg181 arg181;
-                arg181.data = &hdMsg;
-                arg181.dataSize = sizeof(hdMsg);
-                arg181.recvFlags = 2;
-                arg181.recvID = 0;
-                arg181.garant = 1;
-                _world->ypaworld_func181(&arg181);
+                _world->NetBroadcastMessage(&hdMsg, sizeof(hdMsg), true);
 
                 if ( this == _world->_userRobo )
                 {
@@ -5396,13 +5339,7 @@ void NC_STACK_yparobo::DeadTimeUpdate(update_msg *arg)
             sbMsg.pos = _position;
             sbMsg.dir = _rotation;
 
-            yw_arg181 arg181;
-            arg181.data = &sbMsg;
-            arg181.garant = 1;
-            arg181.recvID = 0;
-            arg181.recvFlags = 2;
-            arg181.dataSize = sizeof(sbMsg);
-            _world->ypaworld_func181(&arg181);
+            _world->NetBroadcastMessage(&sbMsg, sizeof(sbMsg), true);
         }
     }
 }

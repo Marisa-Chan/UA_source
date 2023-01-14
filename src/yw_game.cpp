@@ -2129,16 +2129,7 @@ void NC_STACK_ypaworld::sb_0x456384(const Common::Point &cellId, int ownerid2, i
                     bvMsg.tstamp = _timeStamp;
                     bvMsg.owner = ownerid2;
 
-                    yw_arg181 v31;
-                    v31.recvFlags = 2;
-                    v31.recvID = 0;
-                    v31.senderID = _GameShell->netPlayerName.c_str();
-                    v31.senderFlags = 1;
-                    v31.data = &bvMsg;
-                    v31.dataSize = sizeof(bvMsg);
-                    v31.garant = 1;
-
-                    ypaworld_func181(&v31);
+                    NetBroadcastMessage(&bvMsg, sizeof(bvMsg), true);
                 }
             }
         }

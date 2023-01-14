@@ -53,9 +53,6 @@ void NC_STACK_windp::_clear()
 
     norm_size = 0;
 
-    sndBuff = NULL;
-    sndBuff_size = 0;
-    sndBuff_off = 0;
     guaranteed_md = 0;
 
     debug = 0;
@@ -78,15 +75,13 @@ bool NC_STACK_windp::init()
 
     norm_size = 0x10000;
 
-    sndBuff = (char *)malloc(0x400);
+    broadcastBuff.resize(CONF_SEND_SIZE);
 
-    if (!sndBuff)
+    if (broadcastBuff.empty())
     {
         deinit();
         return false;
     }
-
-    sndBuff_size = 0x400;
 
     return true;
 }
@@ -389,23 +384,58 @@ bool NC_STACK_windp::IsPlayer(const std::string &name) const
     return false;
 }
 
-bool NC_STACK_windp::Send(yw_arg181 *arg)
+
+bool NC_STACK_windp::Broadcast(void *data, size_t dataSize, bool garantee)
+{
+    return QueueBroadcast(data, dataSize, garantee);
+}
+
+bool NC_STACK_windp::Send(void *data, size_t dataSize, const std::string &recvID, bool garantee)
+{
+    FlushBroadcastBuffer();
+    
+    return SendLowLevel(data, dataSize, recvID, garantee);
+}
+
+size_t NC_STACK_windp::QueueBroadcast(void *data, size_t dataSize, bool garantee)
 {
     if (!zcon)
-        return false;
+        return 0;
     
-    if (arg->recvFlags == 2)
-        zcon->BroadcastData(arg->data, arg->dataSize, (arg->garant ? ZNDNet::PKT_FLAG_GARANT : 0));
-    else
-    {
-        uint64_t id = GetUserID(arg->recvID);
-        if (!id)
-            return false;
-        
-        zcon->SendData(id, arg->data, arg->dataSize, (arg->garant ? ZNDNet::PKT_FLAG_GARANT : 0));
-    }
+    if ( broadcastBuff_off + dataSize > broadcastBuff.size() )
+        FlushBroadcastBuffer();
+
+    if ( dataSize > broadcastBuff.size() )
+        return BroadcastLowLevel(data, dataSize, garantee);
+
+    std::memcpy( broadcastBuff.data() + broadcastBuff_off, data, dataSize );
+    broadcastBuff_off += dataSize;
+
+    return dataSize;
+}
+
+size_t NC_STACK_windp::BroadcastLowLevel(void *data, size_t dataSize, bool garantee)
+{
+    if (!zcon)
+        return 0;
     
-    return true;
+    zcon->BroadcastData(data, dataSize, (garantee ? ZNDNet::PKT_FLAG_GARANT : 0));
+    
+    return dataSize;
+}
+
+size_t NC_STACK_windp::SendLowLevel(void *data, size_t dataSize, const std::string &recvID, bool garantee)
+{
+    if (!zcon)
+        return 0;
+
+    uint64_t id = GetUserID(recvID);
+    if (!id)
+        return 0;
+
+    zcon->SendData(id, data, dataSize, (garantee ? ZNDNet::PKT_FLAG_GARANT : 0));
+ 
+    return dataSize;
 }
 
 bool NC_STACK_windp::Recv(windp_recvMsg *recv)
@@ -494,13 +524,18 @@ bool NC_STACK_windp::Recv(windp_recvMsg *recv)
     return continueRecv;
 }
 
-size_t NC_STACK_windp::FlushBuffer(windp_arg82 &stak)
+size_t NC_STACK_windp::FlushBroadcastBuffer()
 {
     // flush buffer
-    if (sndBuff_off == 0)
+    if (broadcastBuff_off == 0)
         return 0;
-    printf("%s\n", __PRETTY_FUNCTION__);
-    return 0;
+    
+    size_t ret = BroadcastLowLevel(broadcastBuff.data(), broadcastBuff_off, true);
+
+    if ( ret )
+        broadcastBuff_off = 0;
+
+    return ret;
 }
 
 size_t NC_STACK_windp::GetCaps(IDVPair *stak)
@@ -837,24 +872,11 @@ void UserData::AfterMapChoose()
         msg_slvl.msgID = UAMSG_SETLEVEL;
         msg_slvl.owner = 0;
 
-        yw_arg181 ywmsg;
-        ywmsg.data = &msg_slvl;
-        ywmsg.dataSize = sizeof(msg_slvl);
-        ywmsg.recvFlags = 2;
-        ywmsg.recvID = 0;
-        ywmsg.garant = 1;
-        p_YW->ypaworld_func181(&ywmsg);
+        p_YW->NetBroadcastMessage(&msg_slvl, sizeof(msg_slvl), true);
 
         p_YW->SendCRC(netLevelID);
 
-        windp_arg82 flushmsg;
-        flushmsg.senderID = netPlayerName.c_str();
-        flushmsg.senderFlags = 1;
-        flushmsg.receiverID = NULL;
-        flushmsg.receiverFlags = 2;
-        flushmsg.guarant = 1;
-
-        p_YW->_netDriver->FlushBuffer(flushmsg);
+        p_YW->_netDriver->FlushBroadcastBuffer();
 
         std::string bff = fmt::sprintf("%d%s%s%s%s", netLevelID, "|", netPlayerName, "|", p_YW->_buildDate);
 
@@ -955,22 +977,9 @@ void UserData::AfterMapChoose()
         limsg.msgID = UAMSG_LOBBYINIT;
         limsg.owner = 0;
 
-        yw_arg181 ywmsg;
-        ywmsg.data = &limsg;
-        ywmsg.dataSize = sizeof(limsg);
-        ywmsg.recvFlags = 2;
-        ywmsg.recvID = 0;
-        ywmsg.garant = 1;
-        p_YW->ypaworld_func181(&ywmsg);
+        p_YW->NetBroadcastMessage(&limsg, sizeof(limsg), true);
 
-        windp_arg82 flushmsg;
-        flushmsg.senderID = netPlayerName.c_str();
-        flushmsg.senderFlags = 1;
-        flushmsg.receiverID = NULL;
-        flushmsg.receiverFlags = 2;
-        flushmsg.guarant = 1;
-
-        p_YW->_netDriver->FlushBuffer(flushmsg);
+        p_YW->_netDriver->FlushBroadcastBuffer();
     }
     else
     {
@@ -1328,14 +1337,7 @@ int yw_DestroyPlayer(NC_STACK_ypaworld *yw, const char *playerName)
 
 void UserData::yw_netcleanup()
 {
-    windp_arg82 flushmsg;
-    flushmsg.senderID = netPlayerName.c_str();
-    flushmsg.senderFlags = 1;
-    flushmsg.receiverID = NULL;
-    flushmsg.receiverFlags = 2;
-    flushmsg.guarant = 1;
-
-    p_YW->_netDriver->FlushBuffer(flushmsg);
+    p_YW->_netDriver->FlushBroadcastBuffer();
 
     if( netSelMode ==NETSCREEN_INSESSION || p_YW->_isNetGameStarted )
         yw_DestroyPlayer( p_YW, netPlayerName.c_str() );

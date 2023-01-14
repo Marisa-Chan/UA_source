@@ -73,15 +73,6 @@ struct windp_recvMsg
     std::string senderName;
 };
 
-struct windp_arg82
-{
-    const char *senderID;
-    int senderFlags;
-    char *receiverID;
-    int receiverFlags;
-    int guarant;
-};
-
 struct windp_arg87
 {
     char callSIGN[64];
@@ -169,9 +160,16 @@ public:
     std::string GetPlayerName(uint32_t index) const;
     bool IsPlayer(const std::string &name) const;
 
-    bool Send(yw_arg181 *arg);
+    bool Send(void *data, size_t dataSize, const std::string &recvID, bool garantee);
+    bool Broadcast(void *data, size_t dataSize, bool garantee);
+    size_t QueueBroadcast(void *data, size_t dataSize, bool garantee);
+    
+    size_t BroadcastLowLevel(void *data, size_t dataSize, bool garantee);
+    size_t SendLowLevel(void *data, size_t dataSize, const std::string &recvID, bool garantee);
+    
     bool Recv(windp_recvMsg *recv);
-    virtual size_t FlushBuffer(windp_arg82 &stak);
+    
+    size_t FlushBroadcastBuffer();
 
     virtual size_t GetCaps(IDVPair *stak);
     virtual size_t LockSession(int *);
@@ -215,6 +213,8 @@ public:
         CONF_CONN_WAIT = 5000,
         CONF_USERS_GET_TIME = 1000,
         CONF_SESS_GET_TIME = 1000,
+        
+        CONF_SEND_SIZE = 1024,
     };
 
     bool init();
@@ -275,9 +275,9 @@ public:
     int norm_size;
     /*int big_size;
     int guaranteed;*/
-    char *sndBuff;
-    int sndBuff_size;
-    int sndBuff_off;
+    std::vector<uint8_t> broadcastBuff;
+    int broadcastBuff_off = 0;
+    
     int guaranteed_md;
     /*nlist recv_list;
     nlist send_list;
