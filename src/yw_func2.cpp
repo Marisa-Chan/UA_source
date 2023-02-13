@@ -4527,6 +4527,8 @@ void UserData::GameShellUiHandleInput()
                     }
 
                 }
+                
+                FractionErrorMask |= fraction;
             }
         }
 
