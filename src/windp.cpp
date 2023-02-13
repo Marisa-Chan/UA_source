@@ -697,7 +697,7 @@ std::string NC_STACK_windp::GetUserName(uint64_t id)
 
 void UserData::yw_FractionInit()
 {
-    TMapRegionInfo &lvl = p_YW->_globalMapRegions.MapRegions[ netLevelID ];
+    const TMapRegionInfo &lvl = p_YW->_globalMapRegions.MapRegions[ netLevelID ];
 
     FreeFraction = lvl.FractionsBits & ( World::OWNER_RESIST_BIT |   World::OWNER_GHOR_BIT
                                      |   World::OWNER_MYKO_BIT   |   World::OWNER_TAER_BIT );
