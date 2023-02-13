@@ -74,7 +74,6 @@
       <in>embed.cpp</in>
       <in>env.cpp</in>
       <in>font.cpp</in>
-      <in>glob_funcs.cpp</in>
       <in>idev.cpp</in>
       <in>ilbm.cpp</in>
       <in>image.cpp</in>

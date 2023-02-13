@@ -147,8 +147,6 @@
       <in>env.h</in>
       <in>font.cpp</in>
       <in>font.h</in>
-      <in>glob_funcs.cpp</in>
-      <in>glob_funcs.h</in>
       <in>global.h</in>
       <in>idev.cpp</in>
       <in>idev.h</in>

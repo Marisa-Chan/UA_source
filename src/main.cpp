@@ -55,8 +55,6 @@ int tform_inited = 0;
 int audio_inited = 0;
 int input_inited = 0;
 
-static bool fixWeaponRadius = false;
-
 enum GAME_SCREEN_MODE {
     GAME_SCREEN_MODE_UNKNOWN = 0,
     GAME_SCREEN_MODE_MENU = 1,
@@ -828,7 +826,7 @@ int main(int argc, char *argv[])
 
     System::IniConf::ReadFromNucleusIni();
 
-    fixWeaponRadius = System::IniConf::TuneWeaponRadius.Get<bool>();
+    ypaworld->SetFixWeaponRadius( System::IniConf::TuneWeaponRadius.Get<bool>() );
 
     uint32_t ticks = 0;
     
@@ -928,10 +926,4 @@ int main(int argc, char *argv[])
     System::Deinit();
 
     return 0;
-}
-
-
-bool tuneGetWeaponRadiusFix()
-{
-    return fixWeaponRadius;
 }

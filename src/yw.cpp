@@ -1525,7 +1525,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
     wobj->setMISS_powFlyer(wproto.energy_flyer * 1000.0);
     wobj->setMISS_powRobo(wproto.energy_robo * 1000.0);
 
-    if (tuneGetWeaponRadiusFix())
+    if (_fixWeaponRadius)
     {
         wobj->setMISS_radHeli(wproto.radius_heli);
         wobj->setMISS_radTank(wproto.radius_tank);

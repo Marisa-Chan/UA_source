@@ -64,7 +64,7 @@ char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, co
 
 int GuiList::initDialogStrings(NC_STACK_ypaworld *yw)
 {
-    char *draw_cmd = (char *)AllocVec(512, 1);
+    char *draw_cmd = (char *)calloc(1, 512);
 
     if ( !draw_cmd )
         return 0;
@@ -97,7 +97,7 @@ int GuiList::initDialogStrings(NC_STACK_ypaworld *yw)
 
 int GuiList::InitBuffers(NC_STACK_ypaworld *yw)
 {
-    char *p = (char *)AllocVec(32, 1);
+    char *p = (char *)calloc(1, 32);
 
     if ( !p )
         return 0;
@@ -109,7 +109,7 @@ int GuiList::InitBuffers(NC_STACK_ypaworld *yw)
         return 0;
 
 
-    p = (char *)AllocVec(0x2000, 1);
+    p = (char *)calloc(1, 0x2000);
 
     if ( !p )
         return 0;
@@ -117,7 +117,7 @@ int GuiList::InitBuffers(NC_STACK_ypaworld *yw)
     itemBlock = p;
     FontUA::set_end(&p);
 
-    p = (char *)AllocVec(256, 1);
+    p = (char *)calloc(1, 256);
 
     if ( !p )
         return 0;
@@ -125,7 +125,7 @@ int GuiList::InitBuffers(NC_STACK_ypaworld *yw)
     scrollbar = p;
     FontUA::set_end(&p);
 
-    char **z = (char **)AllocVec(sizeof(char *) * 2, 1);
+    char **z = (char **)calloc(1, sizeof(char *) * 2);
 
     if ( !z )
         return 0;
@@ -973,31 +973,31 @@ void GuiList::Free()
 {
     if ( cmdstrm.includ )
     {
-        nc_FreeMem(cmdstrm.includ);
+        free(cmdstrm.includ);
         cmdstrm.includ = NULL;
     }
 
     if ( itemBlock )
     {
-        nc_FreeMem(itemBlock);
+        free(itemBlock);
         itemBlock = NULL;
     }
 
     if ( scrollbar )
     {
-        nc_FreeMem(scrollbar);
+        free(scrollbar);
         scrollbar = NULL;
     }
 
     if ( cmdstrm.cmdbuf )
     {
-        nc_FreeMem(cmdstrm.cmdbuf);
+        free(cmdstrm.cmdbuf);
         cmdstrm.cmdbuf = NULL;
     }
 
     if ( iconString )
     {
-        nc_FreeMem(iconString);
+        free(iconString);
         iconString = NULL;
     }
 

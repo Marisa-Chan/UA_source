@@ -54,7 +54,6 @@ OBJS =  \
 	env.cpp\
 	fmtlib/format.cc\
 	font.cpp\
-	glob_funcs.cpp\
 	gui/root.cpp\
 	gui/uabutton.cpp\
 	gui/uacommon.cpp\

@@ -7,8 +7,6 @@
 #include "utils.h"
 #include "includes.h"
 
-#include "glob_funcs.h"
-
 
 NC_STACK_image::NC_STACK_image()
 {

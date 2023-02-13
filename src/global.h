@@ -1,6 +1,9 @@
 #ifndef GLOBAL_H_INCLUDED
 #define GLOBAL_H_INCLUDED
 
+// Should be deleted
+
+
 #ifdef GLOBAL
 
 #define EXTR
@@ -10,8 +13,6 @@
 #define EXTR extern
 
 #endif // GLOBAL
-
-#include "glob_funcs.h"
 
 extern int dword_514EFC;
 EXTR int dword_514F24;
