@@ -119,51 +119,10 @@ bool NC_STACK_ypaworld::ProtosInit()
     return true;
 }
 
-
-recorder *recorder_allocate()
-{
-    recorder *rcrd = (recorder *)AllocVec(sizeof(recorder), 65537);
-
-    if ( !rcrd )
-        return NULL;
-
-    rcrd->bacts = (NC_STACK_ypabact **)AllocVec(sizeof(NC_STACK_ypabact *) * 1024, 1);
-    rcrd->oinf = (trec_bct *)AllocVec(sizeof(trec_bct) * 1024, 1);
-    rcrd->sound_status = (uint16_t *)AllocVec(sizeof(uint16_t) * 2 * 1024, 1);
-    rcrd->field_20 = AllocVec(0x4000, 1);
-    rcrd->ainf = (uint8_t *)AllocVec(0x2000, 1);
-
-    if ( !rcrd->bacts || !rcrd->oinf || !rcrd->sound_status || !rcrd->field_20 || !rcrd->ainf )
-    {
-        if ( rcrd->bacts )
-            nc_FreeMem(rcrd->bacts);
-
-        if ( rcrd->oinf )
-            nc_FreeMem(rcrd->oinf);
-
-        if ( rcrd->sound_status )
-            nc_FreeMem(rcrd->sound_status);
-
-        if ( rcrd->field_20 )
-            nc_FreeMem(rcrd->field_20);
-
-        if ( rcrd->ainf )
-            nc_FreeMem(rcrd->ainf);
-
-        nc_FreeMem(rcrd);
-
-        return NULL;
-    }
-
-    rcrd->field_2C = 1024;
-    rcrd->max_bacts = 1024;
-    return rcrd;
-}
-
 int yw_InitSceneRecorder(NC_STACK_ypaworld *yw)
 {
-    yw->_replayRecorder = recorder_allocate();
-    return yw->_replayRecorder != 0;
+    yw->_replayRecorder = new TGameRecorder();
+    return yw->_replayRecorder != NULL;
 }
 
 void yw_setInitScriptLoc(NC_STACK_ypaworld *yw)
@@ -5606,12 +5565,12 @@ size_t NC_STACK_ypaworld::ypaworld_func161(yw_arg161 *arg)
 
 size_t NC_STACK_ypaworld::ypaworld_func162(const std::string &fname)
 {
-    _replayPlayer = recorder_allocate();
+    _replayPlayer = new TGameRecorder();
 
     if ( !_replayPlayer )
         return 0;
 
-    recorder *repl = _replayPlayer;
+    TGameRecorder *repl = _replayPlayer;
 
     repl->filename = fname;
     _timeStamp = 0;
@@ -5684,7 +5643,7 @@ size_t NC_STACK_ypaworld::ypaworld_func162(const std::string &fname)
 
 void NC_STACK_ypaworld::ypaworld_func163(base_64arg *arg)
 {
-    recorder *repl = _replayPlayer;
+    TGameRecorder *repl = _replayPlayer;
     uint32_t v33 = profiler_begin();
 
     _framesElapsed++;
@@ -5763,20 +5722,7 @@ void NC_STACK_ypaworld::ypaworld_func164()
 
         DeleteLevel();
 
-        if ( _replayPlayer->oinf )
-            nc_FreeMem(_replayPlayer->oinf);
-
-        if ( _replayPlayer->sound_status )
-            nc_FreeMem(_replayPlayer->sound_status);
-
-        if ( _replayPlayer->field_20 )
-            nc_FreeMem(_replayPlayer->field_20);
-
-        if ( _replayPlayer->ainf )
-            nc_FreeMem(_replayPlayer->ainf);
-
-        nc_FreeMem(_replayPlayer);
-
+        delete _replayPlayer;
         _replayPlayer = NULL;
     }
 }
@@ -5784,7 +5730,7 @@ void NC_STACK_ypaworld::ypaworld_func164()
 
 void NC_STACK_ypaworld::ypaworld_func165(yw_arg165 *arg)
 {
-    recorder *repl = _replayPlayer;
+    TGameRecorder *repl = _replayPlayer;
 
     if ( (repl->field_80 == 18 || repl->field_80 == 19 || repl->field_80 == 20) && (arg->field_0 == 16 || arg->field_0 == 17) )
     {

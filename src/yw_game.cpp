@@ -3576,7 +3576,7 @@ void NC_STACK_ypaworld::FFeedback_Update()
 
 int recorder_startrec(NC_STACK_ypaworld *yw)
 {
-    recorder *rcrd = yw->_replayRecorder;
+    TGameRecorder *rcrd = yw->_replayRecorder;
 
     rcrd->do_record = 0;
     rcrd->field_40 = 0;
@@ -3585,7 +3585,7 @@ int recorder_startrec(NC_STACK_ypaworld *yw)
     rcrd->frame_id = 0;
     rcrd->time = 0;
     rcrd->bacts_count = 0;
-    rcrd->field_34 = 0;
+    //rcrd->field_34 = 0;
     rcrd->ainf_size = 0;
 
     rcrd->mfile = IFFile::UAOpenIFFile(fmt::sprintf("env:snaps/m%02d%04d.raw", yw->_levelInfo.LevelID, rcrd->seqn), "wb");
@@ -3609,7 +3609,7 @@ int recorder_startrec(NC_STACK_ypaworld *yw)
 
 void recorder_stoprec(NC_STACK_ypaworld *yw)
 {
-    recorder *rcrd = yw->_replayRecorder;
+    TGameRecorder *rcrd = yw->_replayRecorder;
     rcrd->do_record = 0;
 
     rcrd->mfile.popChunk();
@@ -3707,13 +3707,13 @@ void recorder_update_time(NC_STACK_ypaworld *yw, int dtime)
 }
 
 
-void NC_STACK_ypaworld::recorder_store_bact( recorder *rcrd, World::MissileList &bct_lst)
+void NC_STACK_ypaworld::recorder_store_bact( TGameRecorder *rcrd, World::MissileList &bct_lst)
 {
     for( NC_STACK_ypamissile * &bact : bct_lst )
     {
         if ( bact->_gid >= 0xFFFF || bact == _userRobo )
         {
-            if ( rcrd->bacts_count < rcrd->max_bacts )
+            if ( rcrd->bacts_count < rcrd->bacts.size() )
             {
                 rcrd->bacts[ rcrd->bacts_count ] = bact;
                 rcrd->bacts_count++;
@@ -3725,13 +3725,13 @@ void NC_STACK_ypaworld::recorder_store_bact( recorder *rcrd, World::MissileList 
     }
 }
 
-void NC_STACK_ypaworld::recorder_store_bact( recorder *rcrd, World::RefBactList &bct_lst)
+void NC_STACK_ypaworld::recorder_store_bact( TGameRecorder *rcrd, World::RefBactList &bct_lst)
 {
     for( NC_STACK_ypabact * &bact : bct_lst )
     {
         if ( bact->_gid >= 0xFFFF || bact == _userRobo )
         {
-            if ( rcrd->bacts_count < rcrd->max_bacts )
+            if ( rcrd->bacts_count < rcrd->bacts.size() )
             {
                 rcrd->bacts[ rcrd->bacts_count ] = bact;
                 rcrd->bacts_count++;
@@ -3743,19 +3743,15 @@ void NC_STACK_ypaworld::recorder_store_bact( recorder *rcrd, World::RefBactList 
     }
 }
 
-int recorder_sort_bact(const void *a1, const void *a2)
-{
-    return (*(NC_STACK_ypabact **)a1)->_gid - (*(NC_STACK_ypabact **)a2)->_gid;
-}
 
-void NC_STACK_ypaworld::recorder_world_to_frame(recorder *rcrd)
+void NC_STACK_ypaworld::recorder_world_to_frame(TGameRecorder *rcrd)
 {
     rcrd->bacts_count = 0;
     recorder_store_bact(rcrd, _unitsList);
 
-    qsort(rcrd->bacts, rcrd->bacts_count, sizeof(NC_STACK_ypabact *), recorder_sort_bact);
+    std::sort(rcrd->bacts.begin(), rcrd->bacts.begin() + rcrd->bacts_count, TGameRecorder::BactSortCompare);
 
-    for (int i = 0; i < rcrd->bacts_count; i++)
+    for (uint32_t i = 0; i < rcrd->bacts_count; i++)
     {
         NC_STACK_ypabact *bact = rcrd->bacts[i];
 
@@ -3802,33 +3798,33 @@ void NC_STACK_ypaworld::recorder_world_to_frame(recorder *rcrd)
         }
 
         if (bact->_bact_type == BACT_TYPES_MISSLE)
-            oinf->objType = recorder::OBJ_TYPE_MISSILE;
+            oinf->objType = TGameRecorder::OBJ_TYPE_MISSILE;
         else
-            oinf->objType = recorder::OBJ_TYPE_VEHICLE;
+            oinf->objType = TGameRecorder::OBJ_TYPE_VEHICLE;
 
         oinf->vhcl_id = bact->_vehicleID;
 
-        uint16_t *ssnd = &rcrd->sound_status[i * 2];
-        ssnd[0] = 0;
+        TGameRecorder::TSndState &ssnd = rcrd->sound_status[i];
+        ssnd.active = 0;
 
         for (int j = 0; j < 16; j++)
         {
             if (bact->_soundcarrier.Sounds[j].IsEnabled() || 
                 bact->_soundcarrier.Sounds[j].IsPFxEnabled() || 
                 bact->_soundcarrier.Sounds[j].IsShkEnabled())
-                ssnd[0] |= 1 << j;
+                ssnd.active |= 1 << j;
         }
 
-        ssnd[1] = bact->_soundcarrier.Sounds[0].Pitch;
+        ssnd.pitch = bact->_soundcarrier.Sounds[0].Pitch;
     }
 }
 
-void recorder_pack_soundstates(recorder *rcrd)
+void recorder_pack_soundstates(TGameRecorder *rcrd)
 {
-    uint8_t *in = (uint8_t *)rcrd->sound_status;
+    uint8_t *in = (uint8_t *)rcrd->sound_status.data();
     int in_pos = 0;
 
-    uint8_t *output = (uint8_t *)rcrd->ainf;
+    uint8_t *output = (uint8_t *)rcrd->ainf.data();
     int out_pos = 0;
 
     int max_bytes_count = 4 * rcrd->bacts_count;
@@ -3881,11 +3877,11 @@ void recorder_pack_soundstates(recorder *rcrd)
     rcrd->ainf_size = out_pos;
 }
 
-void recorder_unpack_soundstates(recorder *rcrd)
+void recorder_unpack_soundstates(TGameRecorder *rcrd)
 {
-    uint8_t *out = (uint8_t *)rcrd->sound_status;
-    uint8_t *in = (uint8_t *)rcrd->ainf;
-    uint8_t *in_end = ((uint8_t *)rcrd->ainf) + rcrd->ainf_size;
+    uint8_t *out = (uint8_t *)rcrd->sound_status.data();
+    uint8_t *in = (uint8_t *)rcrd->ainf.data();
+    uint8_t *in_end = ((uint8_t *)rcrd->ainf.data()) + rcrd->ainf_size;
 
     while ( in < in_end )
     {
@@ -3916,7 +3912,7 @@ void recorder_unpack_soundstates(recorder *rcrd)
 
 void NC_STACK_ypaworld::recorder_write_frame()
 {
-    recorder *rcrd = _replayRecorder;
+    TGameRecorder *rcrd = _replayRecorder;
 
     if ( rcrd->field_40 < 0 )
     {
@@ -3927,7 +3923,7 @@ void NC_STACK_ypaworld::recorder_write_frame()
 
         int frame_size = 24;
         int oinf_size = 22 * rcrd->bacts_count;
-        int v5 = 16 * rcrd->field_34;
+        int v5 = 0;//16 * rcrd->field_34;
 
         if ( oinf_size )
         {
@@ -3965,7 +3961,7 @@ void NC_STACK_ypaworld::recorder_write_frame()
         {
             rcrd->mfile.pushChunk(0, TAG_OINF, oinf_size);
 
-            for (int i = 0; i < rcrd->bacts_count; i++)
+            for (uint32_t i = 0; i < rcrd->bacts_count; i++)
             {
                 trec_bct *oinf = &rcrd->oinf[i];
 
@@ -3985,27 +3981,27 @@ void NC_STACK_ypaworld::recorder_write_frame()
         if ( rcrd->ainf_size )
         {
             rcrd->mfile.pushChunk(0, TAG_AINF, rcrd->ainf_size);
-            rcrd->mfile.write(rcrd->ainf, rcrd->ainf_size);
+            rcrd->mfile.write(rcrd->ainf.data(), rcrd->ainf_size);
             rcrd->mfile.popChunk();
         }
 
         if ( v5 )
         {
-            rcrd->mfile.pushChunk(0, TAG_MODE, v5);
-            rcrd->mfile.write(rcrd->field_20, v5);
-            rcrd->mfile.popChunk();
+            //rcrd->mfile.pushChunk(0, TAG_MODE, v5);
+            //rcrd->mfile.write(rcrd->field_20, v5);
+            //rcrd->mfile.popChunk();
         }
 
         rcrd->mfile.popChunk();
 
-        rcrd->field_34 = 0;
+        //rcrd->field_34 = 0;
         rcrd->field_40 += 250;
         rcrd->frame_id += 1;
     }
 }
 
 
-int recorder_open_replay(recorder *rcrd)
+int recorder_open_replay(TGameRecorder *rcrd)
 {
     rcrd->mfile = IFFile( uaOpenFile(rcrd->filename, "rb") );
 
@@ -4057,7 +4053,7 @@ bool NC_STACK_ypaworld::recorder_create_camera()
 
 
 
-void recorder_read_framedata(recorder *rcrd)
+void recorder_read_framedata(TGameRecorder *rcrd)
 {
     while ( rcrd->mfile.parse() != IFFile::IFF_ERR_EOC )
     {
@@ -4081,7 +4077,7 @@ void recorder_read_framedata(recorder *rcrd)
         {
             rcrd->bacts_count = v3.TAG_SIZE / 22;
 
-            for (int i = 0; i < rcrd->bacts_count; i++)
+            for (uint32_t i = 0; i < rcrd->bacts_count; i++)
             {
                 trec_bct *oinf = &rcrd->oinf[i];
 
@@ -4101,7 +4097,7 @@ void recorder_read_framedata(recorder *rcrd)
         break;
 
         case TAG_AINF:
-            rcrd->mfile.read(rcrd->ainf, v3.TAG_SIZE);
+            rcrd->mfile.read(rcrd->ainf.data(), v3.TAG_SIZE);
             rcrd->ainf_size = v3.TAG_SIZE;
 
             recorder_unpack_soundstates(rcrd);
@@ -4110,10 +4106,11 @@ void recorder_read_framedata(recorder *rcrd)
             break;
 
         case TAG_MODE:
-            rcrd->mfile.read(rcrd->field_20, v3.TAG_SIZE);
-            rcrd->field_34 = v3.TAG_SIZE / 16;
+            //rcrd->mfile.read(rcrd->field_20, v3.TAG_SIZE);
+            //rcrd->field_34 = v3.TAG_SIZE / 16;
 
-            rcrd->mfile.parse();
+            //rcrd->mfile.parse();
+            rcrd->mfile.skipChunk();
             break;
 
         default:
@@ -4127,7 +4124,7 @@ NC_STACK_ypabact *NC_STACK_ypaworld::recorder_newObject(trec_bct *oinf)
 {
     NC_STACK_ypabact *bacto = NULL;
 
-    if ( oinf->objType == recorder::OBJ_TYPE_VEHICLE )
+    if ( oinf->objType == TGameRecorder::OBJ_TYPE_VEHICLE )
     {
         if ( oinf->vhcl_id )
         {
@@ -4201,7 +4198,7 @@ void NC_STACK_ypaworld::recorder_set_bact_pos(NC_STACK_ypabact *bact, const vec3
     }
 }
 
-void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6)
+void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *oinf, TGameRecorder::TSndState *ssnd, float a5, float a6)
 {
     vec3d bct_pos;
     bct_pos = (oinf->pos - bact->_position) * a5 + bact->_position;
@@ -4276,12 +4273,12 @@ void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *
         break;
     }
 
-    bact->_soundcarrier.Sounds[0].Pitch = ssnd[1];
+    bact->_soundcarrier.Sounds[0].Pitch = ssnd->pitch;
 
     for(int i = 0; i < 16; i++)
     {
         int v48 = 1 << i;
-        if ( v48 & ssnd[0] )
+        if ( v48 & ssnd->active )
         {
             if ( !(bact->_soundFlags & v48) )
             {
@@ -4303,17 +4300,17 @@ void NC_STACK_ypaworld::recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *
 }
 
 
-void NC_STACK_ypaworld::recorder_updateObjectList(recorder *rcrd, float a5, int period)
+void NC_STACK_ypaworld::recorder_updateObjectList(TGameRecorder *rcrd, float a5, int period)
 {
     float fperiod = period / 1000.0;
     World::RefBactList::iterator it = _userUnit->_kidList.begin();
 
-    int i = 0;
+    uint32_t i = 0;
 
     while ( i < rcrd->bacts_count )
     {
         trec_bct *oinf = &rcrd->oinf[i];
-        uint16_t *ssnd = &rcrd->sound_status[2 * i];
+        TGameRecorder::TSndState &ssnd = rcrd->sound_status[i];
 
         if ( it != _userUnit->_kidList.end() )
         {
@@ -4331,7 +4328,7 @@ void NC_STACK_ypaworld::recorder_updateObjectList(recorder *rcrd, float a5, int 
 
                 if ( v10 )
                 {
-                    recorder_updateObject(v10, oinf, ssnd, 1.0, fperiod);
+                    recorder_updateObject(v10, oinf, &ssnd, 1.0, fperiod);
                     
                     v10->_kidRef = _userUnit->_kidList.insert(it, v10);
 
@@ -4340,7 +4337,7 @@ void NC_STACK_ypaworld::recorder_updateObjectList(recorder *rcrd, float a5, int 
             }
             else // ==
             {
-                recorder_updateObject(bact, oinf, ssnd, a5, fperiod);
+                recorder_updateObject(bact, oinf, &ssnd, a5, fperiod);
                 it++;
 
                 i++;
@@ -4352,7 +4349,7 @@ void NC_STACK_ypaworld::recorder_updateObjectList(recorder *rcrd, float a5, int 
 
             if ( v13 )
             {
-                recorder_updateObject(v13, oinf, ssnd, 1.0, fperiod);
+                recorder_updateObject(v13, oinf, &ssnd, 1.0, fperiod);
 
                 v13->_kidRef = _userUnit->_kidList.push_back(v13);
                 it = v13->_kidRef;
@@ -4372,7 +4369,7 @@ void NC_STACK_ypaworld::recorder_updateObjectList(recorder *rcrd, float a5, int 
     }
 }
 
-int NC_STACK_ypaworld::recorder_go_to_frame(recorder *rcrd, int wanted_frame_id)
+int NC_STACK_ypaworld::recorder_go_to_frame(TGameRecorder *rcrd, int wanted_frame_id)
 {
     int frame_id = wanted_frame_id;
     int cur_frame_id = 0;
@@ -4418,7 +4415,7 @@ int NC_STACK_ypaworld::recorder_go_to_frame(recorder *rcrd, int wanted_frame_id)
 }
 
 
-void NC_STACK_ypaworld::ypaworld_func163__sub1(recorder *rcrd, int dTime)
+void NC_STACK_ypaworld::ypaworld_func163__sub1(TGameRecorder *rcrd, int dTime)
 {
     if ( dTime )
     {
@@ -4459,7 +4456,7 @@ void NC_STACK_ypaworld::ypaworld_func163__sub1(recorder *rcrd, int dTime)
 
 void ypaworld_func163__sub2__sub1(NC_STACK_ypaworld *yw, float fperiod, TInputState *inpt)
 {
-    recorder *rcrd = yw->_replayPlayer;
+    TGameRecorder *rcrd = yw->_replayPlayer;
 
     float v20 = rcrd->rotation_matrix.m20;
     float v18 = rcrd->rotation_matrix.m22;
@@ -4508,7 +4505,7 @@ void ypaworld_func163__sub2__sub0(NC_STACK_ypaworld *yw, float fperiod, TInputSt
     }
 }
 
-void NC_STACK_ypaworld::CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, TInputState *inpt)
+void NC_STACK_ypaworld::CameraPrepareRender(TGameRecorder *rcrd, NC_STACK_ypabact *bact, TInputState *inpt)
 {
     extern tehMap robo_map;
     extern squadMan squadron_manager;

@@ -827,43 +827,70 @@ struct trec_bct
     int vhcl_id;
 };
 
-struct recorder
+struct TGameRecorder
 {
+    enum
+    {
+        RESERVE_SIZE = 1024,
+    };
+    
     enum OBJ_TYPE
     {
         OBJ_TYPE_NONE = 0,
         OBJ_TYPE_MISSILE = 1,
         OBJ_TYPE_VEHICLE = 2
     };
+    
+    struct __attribute__((packed)) TSndState
+    {
+        uint16_t active = 0;
+        int16_t pitch = 0;
+    };
 
     IFFile mfile;
-    uint16_t seqn;
-    uint16_t level_id;
-    int32_t frame_id;
-    int32_t time;
-    uint32_t ctrl_bact_id;
+    uint16_t seqn = 0;
+    uint16_t level_id = 0;
+    int32_t frame_id = 0;
+    int32_t time = 0;
+    uint32_t ctrl_bact_id = 0;
 
-    NC_STACK_ypabact **bacts;
-    trec_bct *oinf;
-    uint16_t *sound_status;
-    void *field_20;
-    uint8_t *ainf;
+    std::vector<NC_STACK_ypabact *> bacts;
+    std::vector<trec_bct> oinf;
+    std::vector<TSndState> sound_status;
+    //std::vector<???> field_20;
+    std::vector<uint8_t> ainf;
 
-    int32_t max_bacts;
-    int32_t field_2C;
-    int32_t bacts_count;
-    int32_t field_34;
-    int32_t ainf_size;
-    int32_t do_record;
-    int32_t field_40;
+    const int32_t max_bacts = 1024;
+    //int32_t field_2C = 0;
+    uint32_t bacts_count = 0;
+    //int32_t field_34 = 0;
+    int32_t ainf_size = 0;
+    int32_t do_record = 0;
+    int32_t field_40 = 0;
     vec3d field_44;
     mat3x3 rotation_matrix;
-    int32_t field_74;
-    int32_t field_78;
-    int32_t field_7C;
-    int32_t field_80;
-    uint32_t field_84;
+    int32_t field_74 = 0;
+    int32_t field_78 = 0;
+    int32_t field_7C = 0;
+    int32_t field_80 = 0;
+    uint32_t field_84 = 0;
     std::string filename;
+    
+    
+    TGameRecorder()
+    {
+        bacts.resize(RESERVE_SIZE);
+        oinf.resize(RESERVE_SIZE);
+        sound_status.resize(RESERVE_SIZE);
+        ainf.resize(RESERVE_SIZE * 2 * sizeof(TSndState));
+    }
+    
+    static bool BactSortCompare(NC_STACK_ypabact * const &a, const NC_STACK_ypabact * const &b)
+    {
+        if (a->_gid < b->_gid)
+            return true;
+        return false;
+    }
 };
 
 enum CELL_PFLAGS
@@ -2039,7 +2066,7 @@ protected:
 
     void GUI_Close();
 
-    void CameraPrepareRender(recorder *rcrd, NC_STACK_ypabact *bact, TInputState *inpt);
+    void CameraPrepareRender(TGameRecorder *rcrd, NC_STACK_ypabact *bact, TInputState *inpt);
     bool IsAnyInput(TInputState *struc);
 
 
@@ -2221,16 +2248,16 @@ public:
     NC_STACK_ypabact * sub_4C7B0C(int sqid, int a3);
     
     bool recorder_create_camera();
-    void recorder_updateObjectList(recorder *rcrd, float a5, int period);
-    void recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *oinf, uint16_t *ssnd, float a5, float a6);
+    void recorder_updateObjectList(TGameRecorder *rcrd, float a5, int period);
+    void recorder_updateObject(NC_STACK_ypabact *bact, trec_bct *oinf, TGameRecorder::TSndState *ssnd, float a5, float a6);
     void recorder_set_bact_pos(NC_STACK_ypabact *bact, const vec3d &pos);
-    int recorder_go_to_frame(recorder *rcrd, int wanted_frame_id);
-    void recorder_store_bact(recorder *rcrd, World::RefBactList &bct_lst);
-    void recorder_store_bact( recorder *rcrd, World::MissileList &bct_lst);
-    void recorder_world_to_frame(recorder *rcrd);
+    int recorder_go_to_frame(TGameRecorder *rcrd, int wanted_frame_id);
+    void recorder_store_bact(TGameRecorder *rcrd, World::RefBactList &bct_lst);
+    void recorder_store_bact( TGameRecorder *rcrd, World::MissileList &bct_lst);
+    void recorder_world_to_frame(TGameRecorder *rcrd);
     void recorder_write_frame();
     NC_STACK_ypabact *recorder_newObject(trec_bct *oinf);
-    void ypaworld_func163__sub1(recorder *rcrd, int a3);
+    void ypaworld_func163__sub1(TGameRecorder *rcrd, int a3);
     
     void SetShowingTooltip(int32_t id)
     {
@@ -2571,8 +2598,8 @@ public:
     int32_t _screenShotSeqId = 0; //Screenshoting sequence id
     int32_t _screenShotSeqFrame = 0; //Screenshoting frame
     
-    recorder *_replayPlayer = NULL; // For play replay
-    recorder *_replayRecorder = NULL; // For record replay
+    TGameRecorder *_replayPlayer = NULL; // For play replay
+    TGameRecorder *_replayRecorder = NULL; // For record replay
     
     bact_hudi _guiVisor;
     

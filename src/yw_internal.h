@@ -346,11 +346,11 @@ int sub_4C885C();
 void sub_4476AC(NC_STACK_ypaworld *yw);
 
 int recorder_create_camera(NC_STACK_ypaworld *yw);
-int recorder_go_to_frame(NC_STACK_ypaworld *yw, recorder *rcrd, int wanted_frame_id);
-int recorder_open_replay(recorder *rcrd);
+int recorder_go_to_frame(NC_STACK_ypaworld *yw, TGameRecorder *rcrd, int wanted_frame_id);
+int recorder_open_replay(TGameRecorder *rcrd);
 void recorder_stoprec(NC_STACK_ypaworld *yw);
 
-void ypaworld_func163__sub1(NC_STACK_ypaworld *yw, recorder *rcrd, int a3);
+void ypaworld_func163__sub1(NC_STACK_ypaworld *yw, TGameRecorder *rcrd, int a3);
 
 char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const std::string &txt1, const std::string &txt2, int flag = 0);
 void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string &a2);
