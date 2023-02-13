@@ -2343,21 +2343,21 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         if ( yw->_GameShell->SelectedFraction == wmMsg->fraction )
         {
-            if ( yw->_GameShell->FreeFraction & NET_FRACTION_RESISTANCE )
+            if ( yw->_GameShell->FreeFraction & World::OWNER_RESIST_BIT )
             {
-                yw->_GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
+                yw->_GameShell->SelectedFraction = World::OWNER_RESIST_BIT;
             }
-            else if ( yw->_GameShell->FreeFraction & NET_FRACTION_GHORKOV )
+            else if ( yw->_GameShell->FreeFraction & World::OWNER_GHOR_BIT )
             {
-                yw->_GameShell->SelectedFraction = NET_FRACTION_GHORKOV;
+                yw->_GameShell->SelectedFraction = World::OWNER_GHOR_BIT;
             }
-            else if ( yw->_GameShell->FreeFraction & NET_FRACTION_MIKO )
+            else if ( yw->_GameShell->FreeFraction & World::OWNER_MYKO_BIT )
             {
-                yw->_GameShell->SelectedFraction = NET_FRACTION_MIKO;
+                yw->_GameShell->SelectedFraction = World::OWNER_MYKO_BIT;
             }
-            else if ( yw->_GameShell->FreeFraction & NET_FRACTION_TAER )
+            else if ( yw->_GameShell->FreeFraction & World::OWNER_TAER_BIT )
             {
-                yw->_GameShell->SelectedFraction = NET_FRACTION_TAER;
+                yw->_GameShell->SelectedFraction = World::OWNER_TAER_BIT;
             }
         }
 
@@ -2576,15 +2576,15 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         index = 0;
         
-        if ( minf.FractionsBits & 2 )
+        if ( minf.IsFraction(World::OWNER_RESIST) )
         {
             if ( plCount > 0 )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_RESISTANCE;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_RESIST_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_RESIST_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
+                    yw->_GameShell->SelectedFraction = World::OWNER_RESIST_BIT;
 
                 plCount--;
                 index++;
@@ -2592,18 +2592,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_RESIST_BIT;
         }
 
-        if ( minf.FractionsBits & 0x40 )
+        if ( minf.IsFraction(World::OWNER_GHOR) )
         {
             if ( plCount > 0 )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_GHORKOV;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_GHOR_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_GHOR_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_GHORKOV;
+                    yw->_GameShell->SelectedFraction = World::OWNER_GHOR_BIT;
 
                 plCount--;
                 index++;
@@ -2611,18 +2611,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_GHOR_BIT;
         }
 
-        if ( minf.FractionsBits & 8 )
+        if ( minf.IsFraction(World::OWNER_MYKO) )
         {
             if ( plCount > 0 )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_MIKO;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_MYKO_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_MYKO_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_MIKO;
+                    yw->_GameShell->SelectedFraction = World::OWNER_MYKO_BIT;
 
                 plCount--;
                 index++;
@@ -2630,18 +2630,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_MYKO_BIT;
         }
 
-        if ( minf.FractionsBits & 0x10 )
+        if ( minf.IsFraction(World::OWNER_TAER) )
         {
             if ( plCount > 0 )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_TAER;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_TAER_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_TAER_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_TAER;
+                    yw->_GameShell->SelectedFraction = World::OWNER_TAER_BIT;
 
                 plCount--;
                 index++;
@@ -2649,7 +2649,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_TAER_BIT;
         }
 
         yw->SendCRC(yw->_GameShell->netLevelID);
@@ -2675,15 +2675,15 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         int plCount = yw->_netDriver->GetPlayerCount();
         int32_t index = 0;
         
-        if ( minf.FractionsBits & 2 )
+        if ( minf.IsFraction(World::OWNER_RESIST) )
         {
             if ( plCount )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_RESISTANCE;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_RESIST_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_RESIST_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
+                    yw->_GameShell->SelectedFraction = World::OWNER_RESIST_BIT;
 
                 plCount--;
                 index++;
@@ -2691,18 +2691,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_RESIST_BIT;
         }
 
-        if ( minf.FractionsBits & 0x40 )
+        if ( minf.IsFraction(World::OWNER_GHOR) )
         {
             if ( plCount )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_GHORKOV;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_GHOR_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_GHOR_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_GHORKOV;
+                    yw->_GameShell->SelectedFraction = World::OWNER_GHOR_BIT;
 
                 plCount--;
                 index++;
@@ -2710,18 +2710,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_GHORKOV;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_GHOR_BIT;
         }
 
-        if ( minf.FractionsBits & 8 )
+        if ( minf.IsFraction(World::OWNER_MYKO) )
         {
             if ( plCount )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_MIKO;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_MYKO_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_MYKO_BIT;
 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_MIKO;
+                    yw->_GameShell->SelectedFraction = World::OWNER_MYKO_BIT;
 
                 plCount--;
                 index++;
@@ -2729,18 +2729,18 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_MIKO;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_MYKO_BIT;
         }
 
-        if ( minf.FractionsBits & 0x10 )
+        if ( minf.IsFraction(World::OWNER_TAER) )
         {
             if ( plCount )
             {
-                yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
-                yw->_GameShell->lobbyPlayers[index].NetFraction = NET_FRACTION_TAER;
+                yw->_GameShell->FreeFraction &= ~World::OWNER_TAER_BIT;
+                yw->_GameShell->lobbyPlayers[index].NetFraction = World::OWNER_TAER_BIT;
                 
                 if ( index == yw->_netDriver->GetMyIndex() )
-                    yw->_GameShell->SelectedFraction = NET_FRACTION_TAER;
+                    yw->_GameShell->SelectedFraction = World::OWNER_TAER_BIT;
 
                 plCount--;
                 index++;
@@ -2748,7 +2748,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         }
         else
         {
-            yw->_GameShell->FreeFraction &= ~NET_FRACTION_TAER;
+            yw->_GameShell->FreeFraction &= ~World::OWNER_TAER_BIT;
         }
 
         yw->SendCRC(yw->_GameShell->netLevelID);
@@ -3488,16 +3488,16 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
 
         switch ( selFraction )
         {
-        case NET_FRACTION_RESISTANCE:
+        case World::OWNER_RESIST_BIT:
             owner = 1;
             break;
-        case NET_FRACTION_GHORKOV:
+        case World::OWNER_GHOR_BIT:
             owner = 6;
             break;
-        case NET_FRACTION_MIKO:
+        case World::OWNER_MYKO_BIT:
             owner = 3;
             break;
-        case NET_FRACTION_TAER:
+        case World::OWNER_TAER_BIT:
             owner = 4;
             break;
         default:
@@ -3541,16 +3541,16 @@ bool NC_STACK_ypaworld::yw_NetSetHostStations(const std::vector<MapRobo> &Robos)
         ypaworld_arg146 arg146;
         switch ( selFraction )
         {
-        case NET_FRACTION_RESISTANCE:
+        case World::OWNER_RESIST_BIT:
             arg146.vehicle_id = 56;
             break;
-        case NET_FRACTION_GHORKOV:
+        case World::OWNER_GHOR_BIT:
             arg146.vehicle_id = 57;
             break;
-        case NET_FRACTION_MIKO:
+        case World::OWNER_MYKO_BIT:
             arg146.vehicle_id = 58;
             break;
-        case NET_FRACTION_TAER:
+        case World::OWNER_TAER_BIT:
             arg146.vehicle_id = 60;
             break;
         default:

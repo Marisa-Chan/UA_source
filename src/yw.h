@@ -114,17 +114,23 @@ enum OWNERID
     OWNER_UNKNOW    = 0,
     OWNER_0         = 0,
     OWNER_1         = 1,
-    OWNER_RESIST    = 1,
+    OWNER_RESIST    = OWNER_1,
+    OWNER_RESIST_BIT = (1 << OWNER_RESIST),
     OWNER_2         = 2,
-    OWNER_SULG      = 2,
+    OWNER_SULG      = OWNER_2,
+    OWNER_SULG_BIT  = (1 << OWNER_SULG),
     OWNER_3         = 3,
-    OWNER_MYKO      = 3,
+    OWNER_MYKO      = OWNER_3,
+    OWNER_MYKO_BIT  = (1 << OWNER_MYKO),
     OWNER_4         = 4,
-    OWNER_TAER      = 4,
+    OWNER_TAER      = OWNER_4,
+    OWNER_TAER_BIT  = (1 << OWNER_TAER),
     OWNER_5         = 5,
-    OWNER_BLACK     = 5,
+    OWNER_BLACK     = OWNER_5,
+    OWNER_BLACK_BIT  = (1 << OWNER_BLACK),
     OWNER_6         = 6,
-    OWNER_GHOR      = 6,
+    OWNER_GHOR      = OWNER_6,
+    OWNER_GHOR_BIT  = (1 << OWNER_GHOR),
     OWNER_7         = 7,
 };
 
@@ -1549,6 +1555,8 @@ struct TMapRegionInfo
     uint32_t FractionsBits = 0;
     Common::Point MapSize;
     bool SlowConnection = false;
+    
+    inline bool IsFraction(int32_t id) const { return (FractionsBits & (1 << id)) != 0;}
 };
 
 struct TMapRegionsNet

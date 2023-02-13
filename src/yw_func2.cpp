@@ -3580,9 +3580,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = NET_FRACTION_RESISTANCE;
-            SelectedFraction = NET_FRACTION_RESISTANCE;
-            FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            fracMsg.newfrac = World::OWNER_RESIST_BIT;
+            SelectedFraction = World::OWNER_RESIST_BIT;
+            FreeFraction &= ~World::OWNER_RESIST_BIT;
 
             p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
@@ -3590,9 +3590,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = NET_FRACTION_GHORKOV;
-            FreeFraction &= ~NET_FRACTION_GHORKOV;
-            SelectedFraction = NET_FRACTION_GHORKOV;
+            fracMsg.newfrac = World::OWNER_GHOR_BIT;
+            FreeFraction &= ~World::OWNER_GHOR_BIT;
+            SelectedFraction = World::OWNER_GHOR_BIT;
 
             p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
@@ -3600,9 +3600,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = NET_FRACTION_MIKO;
-            SelectedFraction = NET_FRACTION_MIKO;
-            FreeFraction &= ~NET_FRACTION_MIKO;
+            fracMsg.newfrac = World::OWNER_MYKO_BIT;
+            SelectedFraction = World::OWNER_MYKO_BIT;
+            FreeFraction &= ~World::OWNER_MYKO_BIT;
 
             p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
@@ -3610,9 +3610,9 @@ void UserData::GameShellUiHandleInput()
         {
             fracMsg.freefrac = SelectedFraction;
             FreeFraction |= SelectedFraction;
-            fracMsg.newfrac = NET_FRACTION_TAER;
-            SelectedFraction = NET_FRACTION_TAER;
-            FreeFraction &= ~NET_FRACTION_TAER;
+            fracMsg.newfrac = World::OWNER_TAER_BIT;
+            SelectedFraction = World::OWNER_TAER_BIT;
+            FreeFraction &= ~World::OWNER_TAER_BIT;
 
             p_YW->NetBroadcastMessage(&fracMsg, sizeof(fracMsg), true);
         }
@@ -4401,25 +4401,25 @@ void UserData::GameShellUiHandleInput()
             else
             {
                 v410.butID = 1206;
-                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 2 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].IsFraction(World::OWNER_RESIST) )
                     network_button->Enable(&v410);
                 else
                     network_button->Disable(&v410);
 
                 v410.butID = 1207;
-                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 0x40 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].IsFraction(World::OWNER_GHOR) )
                     network_button->Enable(&v410);
                 else
                     network_button->Disable(&v410);
 
                 v410.butID = 1208;
-                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 8 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].IsFraction(World::OWNER_MYKO) )
                     network_button->Enable(&v410);
                 else
                     network_button->Disable(&v410);
 
                 v410.butID = 1209;
-                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits & 0x10 )
+                if ( p_YW->_globalMapRegions.MapRegions[ netLevelID ].IsFraction(World::OWNER_TAER) )
                     network_button->Enable(&v410);
                 else
                     network_button->Disable(&v410);
@@ -4429,16 +4429,16 @@ void UserData::GameShellUiHandleInput()
 
             switch ( SelectedFraction )
             {
-            case NET_FRACTION_RESISTANCE:
+            case World::OWNER_RESIST_BIT:
                 v408.butID = 1206;
                 break;
-            case NET_FRACTION_GHORKOV:
+            case World::OWNER_GHOR_BIT:
                 v408.butID = 1207;
                 break;
-                case NET_FRACTION_MIKO:
+                case World::OWNER_MYKO_BIT:
                 v408.butID = 1208;
                 break;
-            case NET_FRACTION_TAER:
+            case World::OWNER_TAER_BIT:
                 v408.butID = 1209;
                 break;
                 
@@ -4452,52 +4452,53 @@ void UserData::GameShellUiHandleInput()
                 network_button->SetState(&v408);
             }
 
-            int v298 = 0;
+            int FractionErrorMask = 0;
 
             netGameCanStart = true;
             isWelcmd = true;
 
-            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 2) )
-                v298 = NET_FRACTION_RESISTANCE;
+            // First of all if fraction not allowed - fill 
+            if ( !p_YW->_globalMapRegions.MapRegions[netLevelID].IsFraction(World::OWNER_RESIST) )
+                FractionErrorMask |= World::OWNER_RESIST_BIT;
 
-            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 0x40) )
-                v298 |= NET_FRACTION_GHORKOV;
+            if ( !p_YW->_globalMapRegions.MapRegions[netLevelID].IsFraction(World::OWNER_GHOR) )
+                FractionErrorMask |= World::OWNER_GHOR_BIT;
 
-            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 8) )
-                v298 |= NET_FRACTION_MIKO;
+            if ( !p_YW->_globalMapRegions.MapRegions[netLevelID].IsFraction(World::OWNER_MYKO) )
+                FractionErrorMask |= World::OWNER_MYKO_BIT;
 
-            if ( !(p_YW->_globalMapRegions.MapRegions[netLevelID].FractionsBits & 0x10) )
-                v298 |= NET_FRACTION_TAER;
+            if ( !p_YW->_globalMapRegions.MapRegions[netLevelID].IsFraction(World::OWNER_TAER) )
+                FractionErrorMask |= World::OWNER_TAER_BIT;
 
-            int v373, v374, v375, v376;
+            int FractionPlID[World::CVFractionsCount];
 
             for ( TDPPlayerData &p : p_YW->_netDriver->GetPlayersData() )
             {
-                int v299;
+                int fraction;
 
                 if ( p.IsItMe() )
-                    v299 = SelectedFraction;
+                    fraction = SelectedFraction;
                 else
-                    v299 = lobbyPlayers[p.Index].NetFraction;
+                    fraction = lobbyPlayers[p.Index].NetFraction;
 
-                if ( v299 & v298 )
+                if ( fraction & FractionErrorMask )
                 {
                     lobbyPlayers[p.Index].IsTrouble = true;
                     netGameCanStart = false;
 
-                    switch ( v299 )
+                    switch ( fraction )
                     {
-                    case NET_FRACTION_RESISTANCE:
-                        lobbyPlayers[v375].IsTrouble = true;
+                    case World::OWNER_RESIST_BIT:
+                        lobbyPlayers[ FractionPlID[World::OWNER_RESIST] ].IsTrouble = true;
                         break;
-                    case NET_FRACTION_GHORKOV:
-                        lobbyPlayers[v373].IsTrouble = true;
+                    case World::OWNER_GHOR_BIT:
+                        lobbyPlayers[ FractionPlID[World::OWNER_GHOR] ].IsTrouble = true;
                         break;
-                    case NET_FRACTION_MIKO:
-                        lobbyPlayers[v376].IsTrouble = true;
+                    case World::OWNER_MYKO_BIT:
+                        lobbyPlayers[ FractionPlID[World::OWNER_MYKO] ].IsTrouble = true;
                         break;
-                    case NET_FRACTION_TAER:
-                        lobbyPlayers[v374].IsTrouble = true;
+                    case World::OWNER_TAER_BIT:
+                        lobbyPlayers[ FractionPlID[World::OWNER_TAER] ].IsTrouble = true;
                         break;
                     default:
                         break;
@@ -4507,19 +4508,19 @@ void UserData::GameShellUiHandleInput()
                 {
                     lobbyPlayers[p.Index].IsTrouble = false;
 
-                    switch ( v299 )
+                    switch ( fraction )
                     {
-                    case NET_FRACTION_RESISTANCE:
-                        v375 = p.Index;
+                    case World::OWNER_RESIST_BIT:
+                        FractionPlID[World::OWNER_RESIST] = p.Index;
                         break;
-                    case NET_FRACTION_GHORKOV:
-                        v373 = p.Index;
+                    case World::OWNER_GHOR_BIT:
+                        FractionPlID[World::OWNER_GHOR] = p.Index;
                         break;
-                    case NET_FRACTION_MIKO:
-                        v376 = p.Index;
+                    case World::OWNER_MYKO_BIT:
+                        FractionPlID[World::OWNER_MYKO] = p.Index;
                         break;
-                    case NET_FRACTION_TAER:
-                        v374 = p.Index;
+                    case World::OWNER_TAER_BIT:
+                        FractionPlID[World::OWNER_TAER] = p.Index;
                         break;
                     default:
                         break;
@@ -4664,16 +4665,16 @@ void UserData::GameShellUiHandleInput()
 
                 switch ( v305 )
                 {
-                case NET_FRACTION_RESISTANCE:
+                case World::OWNER_RESIST_BIT:
                     v339[0] = 'P';
                     break;
-                case NET_FRACTION_GHORKOV:
+                case World::OWNER_GHOR_BIT:
                     v339[0] = 'R';
                     break;
-                case NET_FRACTION_MIKO:
+                case World::OWNER_MYKO_BIT:
                     v339[0] = 'T';
                     break;
-                case NET_FRACTION_TAER:
+                case World::OWNER_TAER_BIT:
                     v339[0] = 'V';
                     break;
                 default:

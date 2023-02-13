@@ -7,14 +7,6 @@
 #include "lstvw.h"
 #include "netlib/zndNet.h"
 
-enum NET_FRACTION
-{
-    NET_FRACTION_RESISTANCE = (1 << 0),
-    NET_FRACTION_GHORKOV    = (1 << 1),
-    NET_FRACTION_MIKO       = (1 << 2),
-    NET_FRACTION_TAER       = (1 << 3)
-};
-
 
 struct ProviderStruct
 {

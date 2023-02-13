@@ -2243,16 +2243,16 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     slct = true;
 
-                    if ( lvl.FractionsBits & 2 )
+                    if ( lvl.IsFraction(World::OWNER_RESIST) )
                         str3 = "1";
 
-                    if ( lvl.FractionsBits & 0x40 )
+                    if ( lvl.IsFraction(World::OWNER_GHOR) )
                         str3 += "2";
 
-                    if ( lvl.FractionsBits & 8 )
+                    if ( lvl.IsFraction(World::OWNER_MYKO) )
                         str3 += "3";
 
-                    if ( lvl.FractionsBits & 0x10 )
+                    if ( lvl.IsFraction(World::OWNER_TAER) )
                         str3 += "4";
 
                     if ( lvl.SlowConnection )
@@ -2264,16 +2264,16 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 {
                     slct = false;
 
-                    if ( lvl.FractionsBits & 2 )
+                    if ( lvl.IsFraction(World::OWNER_RESIST) )
                         str3 = "5";
 
-                    if ( lvl.FractionsBits & 0x40 )
+                    if ( lvl.IsFraction(World::OWNER_GHOR) )
                         str3 += "6";
 
-                    if ( lvl.FractionsBits & 8 )
+                    if ( lvl.IsFraction(World::OWNER_MYKO) )
                         str3 += "7";
 
-                    if ( lvl.FractionsBits & 0x10 )
+                    if ( lvl.IsFraction(World::OWNER_TAER) )
                         str3 += "8";
 
                     if ( lvl.SlowConnection )

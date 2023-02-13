@@ -699,37 +699,25 @@ void UserData::yw_FractionInit()
 {
     TMapRegionInfo &lvl = p_YW->_globalMapRegions.MapRegions[ netLevelID ];
 
-    FreeFraction = 0;
-
-    if ( lvl.FractionsBits & 2 )
-        FreeFraction |= NET_FRACTION_RESISTANCE;
-
-    if ( lvl.FractionsBits & 0x40 )
-        FreeFraction |= NET_FRACTION_GHORKOV;
-
-    if ( lvl.FractionsBits & 8 )
-        FreeFraction |= NET_FRACTION_MIKO;
-
-    if ( lvl.FractionsBits & 0x10 )
-        FreeFraction |= NET_FRACTION_TAER;
+    FreeFraction = lvl.FractionsBits & ( World::OWNER_RESIST_BIT |   World::OWNER_GHOR_BIT
+                                     |   World::OWNER_MYKO_BIT   |   World::OWNER_TAER_BIT );
 
     uint32_t frkt = 0;
-    uint32_t msk = p_YW->_globalMapRegions.MapRegions[ netLevelID ].FractionsBits;
-    if ( msk & 2 )
+    if ( FreeFraction & World::OWNER_RESIST_BIT )
     {
-        frkt = NET_FRACTION_RESISTANCE;
+        frkt = World::OWNER_RESIST_BIT;
     }
-    else if ( msk & 0x40 )
+    else if ( FreeFraction & World::OWNER_GHOR_BIT )
     {
-        frkt = NET_FRACTION_GHORKOV;
+        frkt =  World::OWNER_GHOR_BIT;
     }
-    else if ( msk & 8 )
+    else if ( FreeFraction & World::OWNER_MYKO_BIT )
     {
-        frkt = NET_FRACTION_MIKO;
+        frkt = World::OWNER_MYKO_BIT;
     }
-    else if ( msk & 0x10 )
+    else if ( FreeFraction & World::OWNER_TAER_BIT )
     {
-        frkt = NET_FRACTION_TAER;
+        frkt = World::OWNER_TAER_BIT;
     }
 
     SelectedFraction = frkt;
@@ -790,78 +778,78 @@ void UserData::AfterMapChoose()
         bool selected = false;
         int plid = 0;
 
-        if ( lvl.FractionsBits & 2 )
+        if ( lvl.IsFraction(World::OWNER_RESIST) )
         {
-            SelectedFraction = NET_FRACTION_RESISTANCE;
-            FreeFraction &= ~NET_FRACTION_RESISTANCE;
-            lobbyPlayers[ plid ].NetFraction = NET_FRACTION_RESISTANCE;
+            SelectedFraction = World::OWNER_RESIST_BIT;
+            FreeFraction &= ~World::OWNER_RESIST_BIT;
+            lobbyPlayers[ plid ].NetFraction = World::OWNER_RESIST_BIT;
             numpl--;
             plid++;
             selected = true;
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            FreeFraction &= ~World::OWNER_RESIST_BIT;
         }
 
-        if ( lvl.FractionsBits & 0x40 )
+        if ( lvl.IsFraction(World::OWNER_GHOR) )
         {
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~NET_FRACTION_GHORKOV;
-                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_GHORKOV;
+                FreeFraction &= ~World::OWNER_GHOR_BIT;
+                lobbyPlayers[ plid ].NetFraction = World::OWNER_GHOR_BIT;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = NET_FRACTION_GHORKOV;
+                    SelectedFraction = World::OWNER_GHOR_BIT;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_GHORKOV;
+            FreeFraction &= ~World::OWNER_GHOR_BIT;
         }
 
-        if ( lvl.FractionsBits & 8 )
+        if ( lvl.IsFraction(World::OWNER_MYKO) )
         {
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~NET_FRACTION_MIKO;
-                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_MIKO;
+                FreeFraction &= ~World::OWNER_MYKO_BIT;
+                lobbyPlayers[ plid ].NetFraction = World::OWNER_MYKO_BIT;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = NET_FRACTION_MIKO;
+                    SelectedFraction = World::OWNER_MYKO_BIT;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_MIKO;
+            FreeFraction &= ~World::OWNER_MYKO_BIT;
         }
 
-        if ( lvl.FractionsBits & 0x10 )
+        if ( lvl.IsFraction(World::OWNER_TAER) )
         {
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~NET_FRACTION_TAER;
-                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_TAER;
+                FreeFraction &= ~World::OWNER_TAER_BIT;
+                lobbyPlayers[ plid ].NetFraction = World::OWNER_TAER_BIT;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = NET_FRACTION_TAER;
+                    SelectedFraction = World::OWNER_TAER_BIT;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_TAER;
+            FreeFraction &= ~World::OWNER_TAER_BIT;
         }
 
         for(TNetPlayerLobbyData &pl : lobbyPlayers)
@@ -898,78 +886,78 @@ void UserData::AfterMapChoose()
         bool selected = false;
         int plid = 0;
 
-        if ( lvl.FractionsBits & 2 )
+        if ( lvl.IsFraction(World::OWNER_RESIST) )
         {
-            SelectedFraction = NET_FRACTION_RESISTANCE;
-            FreeFraction &= ~NET_FRACTION_RESISTANCE;
-            lobbyPlayers[ plid ].NetFraction = NET_FRACTION_RESISTANCE;
+            SelectedFraction = World::OWNER_RESIST_BIT;
+            FreeFraction &= ~World::OWNER_RESIST_BIT;
+            lobbyPlayers[ plid ].NetFraction = World::OWNER_RESIST_BIT;
             numpl--;
             plid++;
             selected = true;
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_RESISTANCE;
+            FreeFraction &= ~World::OWNER_RESIST_BIT;
         }
 
-        if ( lvl.FractionsBits & 0x40 )
+        if ( lvl.IsFraction(World::OWNER_GHOR) )
         {
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~NET_FRACTION_GHORKOV;
-                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_GHORKOV;
+                FreeFraction &= ~World::OWNER_GHOR_BIT;
+                lobbyPlayers[ plid ].NetFraction = World::OWNER_GHOR_BIT;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = NET_FRACTION_GHORKOV;
+                    SelectedFraction = World::OWNER_GHOR_BIT;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_GHORKOV;
+            FreeFraction &= ~World::OWNER_GHOR_BIT;
         }
 
-        if ( lvl.FractionsBits & 8 )
+        if ( lvl.IsFraction(World::OWNER_MYKO) )
         {
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~NET_FRACTION_MIKO;
-                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_MIKO;
+                FreeFraction &= ~World::OWNER_MYKO_BIT;
+                lobbyPlayers[ plid ].NetFraction = World::OWNER_MYKO_BIT;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = NET_FRACTION_MIKO;
+                    SelectedFraction = World::OWNER_MYKO_BIT;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_MIKO;
+            FreeFraction &= ~World::OWNER_MYKO_BIT;
         }
 
-        if ( lvl.FractionsBits & 0x10 )
+        if ( lvl.IsFraction(World::OWNER_TAER) )
         {
             if (numpl > 0)
             {
                 numpl--;
-                FreeFraction &= ~NET_FRACTION_TAER;
-                lobbyPlayers[ plid ].NetFraction = NET_FRACTION_TAER;
+                FreeFraction &= ~World::OWNER_TAER_BIT;
+                lobbyPlayers[ plid ].NetFraction = World::OWNER_TAER_BIT;
                 plid++;
                 if (!selected)
                 {
                     selected = true;
-                    SelectedFraction = NET_FRACTION_TAER;
+                    SelectedFraction = World::OWNER_TAER_BIT;
                 }
             }
         }
         else
         {
-            FreeFraction &= ~NET_FRACTION_TAER;
+            FreeFraction &= ~World::OWNER_TAER_BIT;
         }
 
         uamessage_lobbyInit limsg;
@@ -1379,8 +1367,8 @@ void UserData::yw_netcleanup()
     netProblemCountDown = 0;
     takTime = 0;
     noSent = false;
-    FreeFraction = (NET_FRACTION_GHORKOV | NET_FRACTION_MIKO | NET_FRACTION_TAER);
-    SelectedFraction = NET_FRACTION_RESISTANCE;
+    FreeFraction = (World::OWNER_GHOR_BIT | World::OWNER_MYKO_BIT | World::OWNER_TAER_BIT);
+    SelectedFraction = World::OWNER_RESIST_BIT;
     remoteMode = false;
 
     log_netlog("netcleanup:      ende\n");
@@ -1449,19 +1437,19 @@ void UserData::yw_NetPrintStartInfo()
 
             switch ( id )
             {
-            case NET_FRACTION_RESISTANCE:
+            case World::OWNER_RESIST_BIT:
                 log_netlog("    %s and plays Resistance\n", name.c_str());
                 break;
 
-            case NET_FRACTION_MIKO:
+            case World::OWNER_MYKO_BIT:
                 log_netlog("    %s and plays Mykonier\n", name.c_str());
                 break;
 
-            case NET_FRACTION_TAER:
+            case World::OWNER_TAER_BIT:
                 log_netlog("    %s and plays Taerkasten\n", name.c_str());
                 break;
 
-            case NET_FRACTION_GHORKOV:
+            case World::OWNER_GHOR_BIT:
                 log_netlog("    %s and plays Ghorkov\n", name.c_str());
                 break;
 

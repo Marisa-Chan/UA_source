@@ -5072,8 +5072,8 @@ bool NC_STACK_ypaworld::OpenGameShell()
     {
         _GameShell->GameShellUiOpenNetwork();
         _GameShell->p_YW->_isNetGame = true;
-        _GameShell->FreeFraction = (NET_FRACTION_GHORKOV | NET_FRACTION_MIKO | NET_FRACTION_TAER);
-        _GameShell->SelectedFraction = NET_FRACTION_RESISTANCE;
+        _GameShell->FreeFraction = (World::OWNER_GHOR_BIT | World::OWNER_MYKO_BIT | World::OWNER_TAER_BIT);
+        _GameShell->SelectedFraction = World::OWNER_RESIST_BIT;
     }
     else
     {
