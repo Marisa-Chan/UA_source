@@ -3,6 +3,7 @@ CFLAGS = -std=c++14 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I. 
 TARGET = UA_source
 LDFLAGS = 
 OBJDIR := obj
+WINDRES = 
 
 nix: CXX = g++
 nix: CC = gcc
@@ -16,6 +17,7 @@ win32: TARGET := $(TARGET).exe
 win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3
 win32: LDFLAGS = -L$(MINGW)/lib/
 win32: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
+win32: WINDRES = i686-w64-mingw32-windres
 
 msys: MINGW = /usr/i686-w64-mingw32
 msys: CXX = i686-w64-mingw32-g++
@@ -30,10 +32,12 @@ msys_xp: MINGW = /usr/i686-w64-mingw32
 msys_xp: CXX = clang++
 msys_xp: CC = clang
 msys_xp: CDEFS = -DWIN32 -DNOLUAVERSION
-msys_xp: TARGET := $(TARGET)_O3.exe
+msys_xp: TARGET := $(TARGET).exe
 msys_xp: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
 msys_xp: LDFLAGS = -L$(MINGW)/lib/
 msys_xp: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
+
+msys msys_xp:  WINDRES = windres
 
 mac: CXX = clang++
 mac: CC = clang
@@ -160,8 +164,11 @@ ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPFILES)
 endif
 
+win32 msys msys_xp: $(OBJFILES)	
+	$(WINDRES) ../svg/icon/icon.rc -O coff -o $(OBJDIR)/icon.res
+	$(CXX) $(OBJFILES) $(OBJDIR)/icon.res $(LDFLAGS) $(LIBS) -o $(TARGET)
 
-win32 nix mac msys msys_xp: $(OBJFILES)
+nix mac: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 clean:
