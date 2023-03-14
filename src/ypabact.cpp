@@ -1132,32 +1132,26 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
         {
             _search_time1 = _clock;
 
-            bact_arg90 arg90;
-            arg90.field_8 = 1;
-            arg90.unit = this;
-            arg90.ret_unit = NULL;
-
-            GetSectorTarget(&arg90);
-
-            if ( arg90.ret_unit )
+            NC_STACK_ypabact *enemy = GetSectorTarget(_cellId);
+            if ( enemy )
             {
-                if ( arg90.ret_unit->_bact_type != BACT_TYPES_ROBO && IsParentMyRobo() && _host_station == wee && arg90.ret_unit->_commandID != _fe_cmdID && _clock - _fe_time > 45000 )
+                if ( enemy->_bact_type != BACT_TYPES_ROBO && IsParentMyRobo() && _host_station == wee && enemy->_commandID != _fe_cmdID && _clock - _fe_time > 45000 )
                 {
                     bool isRoboGun = false;
-                    if ( arg90.ret_unit->_bact_type == BACT_TYPES_GUN )
+                    if ( enemy->_bact_type == BACT_TYPES_GUN )
                     {
-                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( arg90.ret_unit );
+                        NC_STACK_ypagun *gun = dynamic_cast<NC_STACK_ypagun *>( enemy );
                         isRoboGun = gun->IsRoboGun();
                     }
 
                     if ( !isRoboGun )
                     {
-                        _fe_cmdID = arg90.ret_unit->_commandID;
+                        _fe_cmdID = enemy->_commandID;
                         _fe_time = _clock;
 
                         robo_arg134 arg134;
                         arg134.field_4 = 7;
-                        arg134.field_8 = arg90.ret_unit->_commandID;
+                        arg134.field_8 = enemy->_commandID;
                         arg134.field_C = 0;
                         arg134.field_10 = 0;
                         arg134.unit = this;
@@ -1175,14 +1169,14 @@ void NC_STACK_ypabact::AI_layer2(update_msg *arg)
                       _secndTtype == BACT_TGT_TYPE_CELL || 
                       _secndTtype == BACT_TGT_TYPE_FRMT) ) )
             {
-                if ( arg90.ret_unit )
+                if ( enemy )
                 {
-                    _secndT_cmdID = arg90.ret_unit->_commandID;
+                    _secndT_cmdID = enemy->_commandID;
 
                     setTarget_msg arg67;
                     arg67.tgt_type = BACT_TGT_TYPE_UNIT;
                     arg67.priority = 1;
-                    arg67.tgt.pbact = arg90.ret_unit;
+                    arg67.tgt.pbact = enemy;
 
                     SetTarget(&arg67);
                 }
@@ -4296,9 +4290,9 @@ void NC_STACK_ypabact::ypabact_func89(IDVPair *arg)
 }
 
 
-bool GetSectorTarget__sub0__sub0(NC_STACK_ypabact *unit)
+bool NC_STACK_ypabact::IsAnyKidWithoutSecondUnitTarget() const
 {
-    for ( NC_STACK_ypabact* &node : unit->_kidList )
+    for ( NC_STACK_ypabact* node : _kidList )
     {
         if ( node->_secndTtype != BACT_TGT_TYPE_UNIT )
             return true;
@@ -4306,183 +4300,164 @@ bool GetSectorTarget__sub0__sub0(NC_STACK_ypabact *unit)
     return false;
 }
 
-NC_STACK_ypabact * GetSectorTarget__sub0(const cellArea &cell, NC_STACK_ypabact *unit, float *radius, char *job)
+NC_STACK_ypabact * NC_STACK_ypabact::GetEnemyCandidateInSector(const cellArea &cell, float *radius, char *job) const
 {
-    NC_STACK_ypaworld *wrld = unit->getBACT_pWorld();
+    NC_STACK_ypabact *lastSelectedUnit = NULL;
 
-    NC_STACK_ypabact *v40 = NULL;
-
-    const World::TVhclProto &proto = wrld->GetVhclProtos().at( unit->_vehicleID );
+    const World::TVhclProto &proto = _world->GetVhclProtos().at( _vehicleID );
 
     for( NC_STACK_ypabact* cel_unit : cell.unitsList )
     {
-        if ( cel_unit->_bact_type != BACT_TYPES_MISSLE && cel_unit->_status != BACT_STATUS_DEAD )
+        // Do not target missile or dead
+        if ( cel_unit->_bact_type == BACT_TYPES_MISSLE ||
+             cel_unit->_status == BACT_STATUS_DEAD )
+            continue;
+        
+        // Do not target same fraction unit or owner == 0
+        if ( cel_unit->_owner == _owner || cel_unit->_owner == World::OWNER_0 )
+            continue;
+            
+        int jobLevel;
+        
+        switch ( cel_unit->_bact_type )
         {
-            if ( cel_unit->_owner != unit->_owner && cel_unit->_owner )
+        case BACT_TYPES_BACT:
+            jobLevel = proto.job_fighthelicopter;
+            break;
+
+        case BACT_TYPES_TANK:
+        case BACT_TYPES_CAR:
+            jobLevel = proto.job_fighttank;
+            break;
+
+        case BACT_TYPES_FLYER:
+        case BACT_TYPES_UFO:
+            jobLevel = proto.job_fightflyer;
+            break;
+
+        case BACT_TYPES_ROBO:
+            jobLevel = proto.job_fightrobo;
+            break;
+
+        default:
+            jobLevel = 5;
+            break;
+        }
+
+        // do not target if job for this unit is less of previous
+        if ( jobLevel < *job )
+            continue;
+        
+        float radivs = (_position - cel_unit->_position).length();
+        
+        // do not target if distance more than for old selected unit
+        if ( radivs > *radius && !cel_unit->getBACT_viewer() )
+            continue;
+
+        // If own unit is not gun or robo do additional checks for distance
+        if ( _bact_type != BACT_TYPES_GUN && _bact_type != BACT_TYPES_ROBO )
+        {
+            vec3d ownTargetPos;
+            bool isLeader;
+
+            if ( IsParentMyRobo() )
             {
-                int jobLevel;
-
-                switch ( cel_unit->_bact_type )
+                if ( _primTtype == BACT_TGT_TYPE_CELL )
                 {
-                case BACT_TYPES_BACT:
-                    jobLevel = proto.job_fighthelicopter;
-                    break;
+                    ownTargetPos = _primTpos;
 
-                case BACT_TYPES_TANK:
-                case BACT_TYPES_CAR:
-                    jobLevel = proto.job_fighttank;
-                    break;
-
-                case BACT_TYPES_FLYER:
-                case BACT_TYPES_UFO:
-                    jobLevel = proto.job_fightflyer;
-                    break;
-
-                case BACT_TYPES_ROBO:
-                    jobLevel = proto.job_fightrobo;
-                    break;
-
-                default:
-                    jobLevel = 5;
-                    break;
+                }
+                else if ( _primTtype == BACT_TGT_TYPE_UNIT )
+                {
+                    ownTargetPos = _primT.pbact->_position;
+                }
+                else
+                {
+                    ownTargetPos = _position;
                 }
 
-                if ( *job <= jobLevel )
-                {
-                    float radivs = (unit->_position - cel_unit->_position).length();
-
-                    if ( *radius >= radivs || cel_unit->getBACT_viewer() )
-                    {
-                        if ( unit->_bact_type == BACT_TYPES_GUN || unit->_bact_type == BACT_TYPES_ROBO )
-                        {
-                            if ( unit->TestTargetSector(cel_unit) )
-                            {
-                                *radius = radivs;
-                                *job = jobLevel;
-                                v40 = cel_unit;
-                            }
-                        }
-                        else
-                        {
-                            vec3d tmp;
-
-                            int v20;
-
-                            if ( unit->IsParentMyRobo() )
-                            {
-                                if ( unit->_primTtype == BACT_TGT_TYPE_CELL )
-                                {
-                                    tmp = unit->_primTpos;
-
-                                }
-                                else if ( unit->_primTtype == BACT_TGT_TYPE_UNIT )
-                                {
-                                    tmp = unit->_primT.pbact->_position;
-                                }
-                                else
-                                {
-                                    tmp = unit->_position;
-                                }
-
-                                v20 = 1;
-                            }
-                            else
-                            {
-                                NC_STACK_ypabact *prnt_bct = unit->_parent;
-
-                                if ( prnt_bct->_primTtype == BACT_TGT_TYPE_CELL )
-                                {
-                                    tmp = prnt_bct->_primTpos;
-                                }
-                                else if ( prnt_bct->_primTtype == BACT_TGT_TYPE_UNIT )
-                                {
-                                    tmp = prnt_bct->_primT.pbact->_position;
-                                }
-                                else
-                                {
-                                    tmp = unit->_position;
-                                }
-
-                                v20 = 0;
-                            }
-
-                            if ( (tmp.XZ() - unit->_position.XZ()).length() <= 3600.0 )
-                            {
-                                if ( unit->TestTargetSector(cel_unit) )
-                                {
-                                    *radius = radivs;
-                                    *job = jobLevel;
-                                    v40 = cel_unit;
-                                }
-                            }
-                            else
-                            {
-                                int v29 = 0;
-
-                                for ( NC_STACK_ypabact *bct_nd : cel_unit->_attackersList )
-                                {
-                                    if ( bct_nd->_secndTtype == BACT_TGT_TYPE_UNIT &&
-                                         bct_nd->_secndT.pbact == cel_unit && 
-                                         bct_nd->_owner == unit->_owner )
-                                        v29++;
-
-                                    if ( v29 > 1 ) // Looks like hack
-                                        break;
-                                }
-
-                                if ( v29 <= 1 && (!v20 || !GetSectorTarget__sub0__sub0(unit)) )
-                                {
-                                    if ( unit->TestTargetSector(cel_unit) )
-                                    {
-                                        *radius = radivs;
-                                        *job = jobLevel;
-                                        v40 = cel_unit;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                isLeader = true;
             }
+            else
+            {
+                if ( _parent->_primTtype == BACT_TGT_TYPE_CELL )
+                {
+                    ownTargetPos = _parent->_primTpos;
+                }
+                else if ( _parent->_primTtype == BACT_TGT_TYPE_UNIT )
+                {
+                    ownTargetPos = _parent->_primT.pbact->_position;
+                }
+                else
+                {
+                    ownTargetPos = _position;
+                }
+
+                isLeader = false;
+            }
+
+            // if primary/secondary squad target distance is more than 3 sector length
+            // do additional check
+            if ( (ownTargetPos.XZ() - _position.XZ()).length() > World::CVUnitFarSecDist )
+            {
+                int countOwnAttackers = 0;
+
+                for ( NC_STACK_ypabact *attackerUnit : cel_unit->_attackersList )
+                {
+                    if ( attackerUnit->_secndTtype == BACT_TGT_TYPE_UNIT &&
+                         attackerUnit->_secndT.pbact == cel_unit && 
+                         attackerUnit->_owner == _owner )
+                        countOwnAttackers++;
+
+                    if ( countOwnAttackers > 1 ) // if more than 1 do break already
+                        break;
+                }
+
+                // If current unit already attacked by more than 1 another units - skip it
+                if ( countOwnAttackers > 1 )
+                    continue;
+                
+                // If we is leader and if some of us kids do not has second target unit
+                // let's skip this unit and leave it for targeting by kid
+                if (isLeader && IsAnyKidWithoutSecondUnitTarget() )
+                    continue;
+            }
+        }
+        
+        // If test of sector below of unit is OK then make it current candidate
+        // and do tests for next units in this sector
+        if ( TestTargetSector(cel_unit) )
+        {
+            *radius = radivs;
+            *job = jobLevel;
+            lastSelectedUnit = cel_unit;
         }
     }
 
-    return v40;
+    return lastSelectedUnit;
 }
 
-void NC_STACK_ypabact::GetSectorTarget(bact_arg90 *arg)
+NC_STACK_ypabact * NC_STACK_ypabact::GetSectorTarget(Common::Point CellId) const
 {
-    yw_130arg arg130;
-    if ( arg->field_8 & 1 )
-    {
-        arg130.pos_x = arg->unit->_position.x;
-        arg130.pos_z = arg->unit->_position.z;
-    }
-    else
-    {
-        arg130.pos_x = arg->pos_x;
-        arg130.pos_z = arg->pos_z;
-    }
+    NC_STACK_ypabact *enemy = NULL;
 
-    if ( _world->GetSectorInfo(&arg130) )
+    if ( _world->IsSector(CellId) )
     {
         float rad = 1800.0;
         char job = 0;
-
-        arg->ret_unit = NULL;
 
         for (int x = -1; x < 2; x++)
         {
             for (int y = -1; y < 2; y++)
             {
-                Common::Point pt = arg130.pcell->CellId + Common::Point(x, y);
-                NC_STACK_ypabact *v7 = GetSectorTarget__sub0( _world->SectorAt(pt), arg->unit, &rad, &job);
+                Common::Point pt = CellId + Common::Point(x, y);
+                NC_STACK_ypabact *unit = GetEnemyCandidateInSector( _world->SectorAt(pt), &rad, &job);
 
-                if ( v7 )
-                    arg->ret_unit = v7;
+                if ( unit ) enemy = unit;
             }
         }
     }
+    return enemy;
 }
 
 void NC_STACK_ypabact::GetBestSectorPart(vec3d *arg)
@@ -6397,11 +6372,6 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
     }
 
     return TA_IGNORE;
-}
-
-size_t NC_STACK_ypabact::TestTargetSector(NC_STACK_ypabact *)
-{
-    return 1;
 }
 
 void NC_STACK_ypabact::BeamingTimeUpdate(update_msg *arg)

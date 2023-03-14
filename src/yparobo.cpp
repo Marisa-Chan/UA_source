@@ -3512,19 +3512,14 @@ void NC_STACK_yparobo::checkCommander()
 
                 if ( _world->_isNetGame  )
                 {
-                    bact_arg90 arg90;
-                    arg90.unit = commander;
-                    arg90.field_8 = 1;
-                    arg90.ret_unit = NULL;
-                    GetSectorTarget(&arg90);
-
-                    if ( arg90.ret_unit )
+                    NC_STACK_ypabact *enemy = commander->GetSectorTarget(commander->_cellId);
+                    if ( enemy )
                     {
                         uamessage_logmsg logMsg;
                         logMsg.msgID = UAMSG_LOGMSG;
                         logMsg.owner = _owner;
-                        logMsg.sender = arg90.ret_unit->_gid;
-                        logMsg.senderOwner = arg90.ret_unit->_owner;
+                        logMsg.sender = enemy->_gid;
+                        logMsg.senderOwner = enemy->_owner;
                         logMsg.pr1 = 0;
                         logMsg.pr2 = 0;
                         logMsg.pr3 = 0;

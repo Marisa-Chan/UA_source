@@ -242,15 +242,6 @@ struct bact_arg81
     int enrg_sum;
 };
 
-struct bact_arg90
-{
-    NC_STACK_ypabact *unit;
-    NC_STACK_ypabact *ret_unit;
-    int field_8;
-    float pos_x;
-    float pos_z;
-};
-
 struct bact_arg109
 {
     int field_0;
@@ -390,7 +381,7 @@ public:
     virtual size_t CollisionWithBact(int arg);
     virtual void Recoil(bact_arg88 *arg);
     virtual void ypabact_func89(IDVPair *arg);
-    virtual void GetSectorTarget(bact_arg90 *arg);
+    virtual NC_STACK_ypabact *GetSectorTarget(Common::Point CellId) const;
     virtual void GetBestSectorPart(vec3d *arg);
     virtual void GetForcesRatio(bact_arg92 *arg);
     virtual void ypabact_func93(IDVPair *arg);
@@ -411,7 +402,7 @@ public:
     virtual bool GetFightMotivation(float *arg);
     virtual void ReorganizeGroup(bact_arg109 *arg);
     virtual size_t TargetAssess(bact_arg110 *arg);
-    virtual size_t TestTargetSector(NC_STACK_ypabact *);
+    virtual bool TestTargetSector(const NC_STACK_ypabact *) const { return true; };
     virtual void BeamingTimeUpdate(update_msg *arg);
     virtual void StartDestFXByType(uint8_t arg);
     virtual void CorrectPositionOnLand();
@@ -468,6 +459,7 @@ public:
     virtual void setBACT_extraViewer(bool);
     virtual void setBACT_alwaysRender(bool);
 
+    NC_STACK_ypabact * GetEnemyCandidateInSector(const cellArea &cell, float *radius, char *job) const;
 
     virtual NC_STACK_ypaworld *getBACT_pWorld()
     { return _world; }
@@ -519,6 +511,7 @@ public:
     virtual bool IsGroundUnit() const { return false; };
     
     bool IsNeedsWaypoints() const;
+    bool IsAnyKidWithoutSecondUnitTarget() const;
     
     void sub_4843BC(NC_STACK_ypabact *bact2, int a3);
     void sub_493480(NC_STACK_ypabact *bact2, int mode);

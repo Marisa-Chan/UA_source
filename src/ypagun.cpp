@@ -629,7 +629,7 @@ void NC_STACK_ypagun::Renew()
     _viewer_rotation = _rotation;
 }
 
-size_t NC_STACK_ypagun::TestTargetSector(NC_STACK_ypabact *cel_unit)
+bool NC_STACK_ypagun::TestTargetSector(const NC_STACK_ypabact * cel_unit) const
 {
     vec3d vTgt = cel_unit->_position - _position;
 
