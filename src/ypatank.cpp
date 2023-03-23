@@ -1762,7 +1762,7 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
     return 0;
 }
 
-size_t NC_STACK_ypatank::TestTargetSector(NC_STACK_ypabact *tgt)
+bool NC_STACK_ypatank::TestTargetSector(const NC_STACK_ypabact * tgt) const
 {
     if ( tgt->_cellId.x == _cellId.x || tgt->_cellId.y == _cellId.y )
     {

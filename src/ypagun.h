@@ -17,7 +17,7 @@ public:
     virtual size_t SetPosition(bact_arg80 *arg);
     virtual void EnergyInteract(update_msg *arg);
     virtual void Renew();
-    virtual size_t TestTargetSector(NC_STACK_ypabact *cel_unit);
+    virtual bool TestTargetSector(const NC_STACK_ypabact *) const override;
     virtual void ypagun_func128(const vec3d &basis, bool directDown);
     virtual vec3d ypagun_func129(const vec3d &axis, float angle);
 

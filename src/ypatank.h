@@ -40,7 +40,7 @@ public:
     virtual void Recoil(bact_arg88 *arg);
     virtual void Renew();
     virtual size_t CheckFireAI(bact_arg101 *arg);
-    virtual size_t TestTargetSector(NC_STACK_ypabact *cel_unit);
+    virtual bool TestTargetSector(const NC_STACK_ypabact * cel_unit) const override;
     virtual void CorrectPositionOnLand();
     virtual int AlignVehicleAI(float dtime, vec3d *pNormal);
     virtual int AlignVehicleUser(float dtime, const vec3d &oldDir);

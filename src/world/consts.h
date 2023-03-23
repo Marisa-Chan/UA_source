@@ -15,6 +15,9 @@ constexpr size_t CVDemoWait = 200 * 1000;
 
 /* How long will construct buildings */
 constexpr size_t CVBuildConstructTime = 3000;
+
+/* Target unit too far from sector target distance*/
+constexpr float CVUnitFarSecDist = 3600.0;
 }
 
 #endif
