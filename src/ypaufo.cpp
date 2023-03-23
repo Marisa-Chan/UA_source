@@ -234,19 +234,18 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                         vec2d polv = arg136_2.skel->polygons[arg136_2.polyID].Normal().XZ();
                         vec2d axsz = _rotation.AxisZ().XZ();
 
-                        float v104 = axsz.dot( polv );
-
                         float tmpsq = axsz.length();
-
-                        NDIV_CARRY(tmpsq);
-
-                        v104 /= tmpsq;
+                        float v104 = 0.0;
+                        
+                        if (isnormal(tmpsq))  // Not NULL, NAN, INF
+                            v104 = axsz.dot( polv ) / tmpsq;
 
                         tmpsq = polv.length();
 
-                        NDIV_CARRY(tmpsq);
-
-                        v104 /= tmpsq;
+                        if (isnormal(tmpsq))  // Not NULL, NAN, INF
+                            v104 /= tmpsq;
+                        else
+                            v104 = 0.0;
 
                         _ufoProcAngle = C_PI_2 - clp_acos(v104);
                     }
@@ -258,19 +257,18 @@ void NC_STACK_ypaufo::AI_layer3(update_msg *arg)
                         vec2d tgt2d = _target_dir.XZ();
                         vec2d axsz = _rotation.AxisZ().XZ();
 
-                        float v104 = tgt2d.dot( axsz );
-
                         float tmpsq = axsz.length();
-
-                        NDIV_CARRY(tmpsq);
-
-                        v104 /= tmpsq;
+                        float v104 = 0.0;
+                        
+                        if (isnormal(tmpsq))  // Not NULL, NAN, INF
+                            v104 = tgt2d.dot( axsz ) / tmpsq;
 
                         tmpsq = tgt2d.length();
 
-                        NDIV_CARRY(tmpsq);
-
-                        v104 /= tmpsq;
+                        if (isnormal(tmpsq))  // Not NULL, NAN, INF
+                            v104 /= tmpsq;
+                        else
+                            v104 = 0.0;
 
                         float v121 = clp_acos(v104);
 

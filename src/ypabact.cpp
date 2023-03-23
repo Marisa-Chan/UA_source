@@ -1349,17 +1349,20 @@ void AI_layer3__sub0(NC_STACK_ypabact *bact, int a2)
         vec2d flydir = bact->_fly_dir.XZ();
         vec2d axisZ = bact->_rotation.AxisZ().XZ();
 
-        float tmpsq = flydir.length();
-
-        NDIV_CARRY(tmpsq);
-
-        float v18 = flydir.dot(axisZ) / tmpsq;
+        float tmpsq = flydir.length();        
+        float v18 = 0.0;
+        
+        if ( isnormal(tmpsq) ) // Not NULL, NAN, INF
+            v18 = flydir.dot(axisZ) / tmpsq;
 
         tmpsq = axisZ.length();
+        
+        if ( isnormal(tmpsq) ) // Not NULL, NAN, INF
+            v18 /= tmpsq;
+        else
+            v18 = 0.0;
 
-        NDIV_CARRY(tmpsq);
-
-        float v20 = clp_acos( v18 / tmpsq );
+        float v20 = clp_acos( v18 );
 
         float v13 = bact->_maxrot * v11 * (fabs(v20) * 0.8 + 0.2);
 
@@ -1614,18 +1617,26 @@ void NC_STACK_ypabact::AI_layer3(update_msg *arg)
             _target_dir.normalise();
 
         float tmpsq = arg136.vect.XZ().length();
-
-        NDIV_CARRY(tmpsq);
-
-        if ( _status_flg & BACT_STFLAG_DODGE_LEFT )
+        if (isnormal(tmpsq)) // not NULL, NAN, INF
         {
-            _target_dir.x = -arg136.vect.z / tmpsq;
-            _target_dir.z = arg136.vect.x / tmpsq;
+            if ( _status_flg & BACT_STFLAG_DODGE_LEFT )
+            {
+                _target_dir.x = -arg136.vect.z / tmpsq;
+                _target_dir.z = arg136.vect.x / tmpsq;
+            }
+            else if ( _status_flg & BACT_STFLAG_DODGE_RIGHT )
+            {
+                _target_dir.x = arg136.vect.z / tmpsq;
+                _target_dir.z = -arg136.vect.x / tmpsq;
+            }
         }
-        else if ( _status_flg & BACT_STFLAG_DODGE_RIGHT )
+        else // emulate watcom div 0.0
         {
-            _target_dir.x = arg136.vect.z / tmpsq;
-            _target_dir.z = -arg136.vect.x / tmpsq;
+            if ( _status_flg & (BACT_STFLAG_DODGE_LEFT | BACT_STFLAG_DODGE_RIGHT) )
+            {
+                _target_dir.x = 0.0;
+                _target_dir.z = 0.0;
+            }
         }
 
         AI_layer3__sub1(this, arg);
@@ -5474,14 +5485,13 @@ size_t NC_STACK_ypabact::FireMinigun(bact_arg105 *arg)
 
             if ( v108 )
             {
-                float v50 = v121 * 0.7;
-
-                NDIV_CARRY(v123);
-
                 v55 = 1;
                 v96 = 0;
 
-                v80 = v66 - (v66 - _position) * v50 / v123;
+                if (isnormal(v123)) // Not NULL, NAN, INF
+                    v80 = v66 - (v66 - _position) * (v121 * 0.7) / v123;
+                else
+                    v80 = v66;
             }
             else
             {

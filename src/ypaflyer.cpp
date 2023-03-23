@@ -149,11 +149,10 @@ void NC_STACK_ypaflyer::sb_0x4b255c(float a2, vec3d v, int a4)
 
                 if ( _fly_dir_length >= 0.1 )
                 {
-                    float aa2 = a2;
-
-                    NDIV_CARRY(aa2);
-
-                    v58 = fabs(_fly_dir_length) * _airconst / _force * (v57 * 1.45 / (aa2 * _maxrot));
+                    if (isnormal(a2)) // Not NULL, NAN, INF
+                        v58 = fabs(_fly_dir_length) * _airconst / _force * (v57 * 1.45 / (a2 * _maxrot));
+                    else
+                        v58 = 0.0;
                 }
 
 
@@ -519,18 +518,26 @@ void NC_STACK_ypaflyer::AI_layer3(update_msg *arg)
             _target_dir.normalise();
 
         float v92 = arg136.vect.XZ().length();
-
-        NDIV_CARRY(v92);
-
-        if ( _status_flg & BACT_STFLAG_DODGE_LEFT )
+        if (isnormal(v92)) // Not NULL, NAN, INF
         {
-            _target_dir.x = -arg136.vect.z / v92;
-            _target_dir.z = arg136.vect.x / v92;
+            if ( _status_flg & BACT_STFLAG_DODGE_LEFT )
+            {
+                _target_dir.x = -arg136.vect.z / v92;
+                _target_dir.z = arg136.vect.x / v92;
+            }
+            else if ( _status_flg & BACT_STFLAG_DODGE_RIGHT )
+            {
+                _target_dir.x = arg136.vect.z  / v92;
+                _target_dir.z = -arg136.vect.x  / v92;
+            }
         }
-        else if ( _status_flg & BACT_STFLAG_DODGE_RIGHT )
+        else // emulate watcom div 0.0
         {
-            _target_dir.x = arg136.vect.z  / v92;
-            _target_dir.z = -arg136.vect.x  / v92;
+            if ( _status_flg & (BACT_STFLAG_DODGE_LEFT | BACT_STFLAG_DODGE_RIGHT) )
+            {
+                _target_dir.x = 0.0;
+                _target_dir.z = 0.0;
+            }
         }
 
         ypaflyer_func70__sub0(a2a);

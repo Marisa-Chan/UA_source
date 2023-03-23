@@ -138,20 +138,17 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
         }
         else
         {
-
-            float v206 = _target_dir.XZ().dot( _rotation.AxisZ().XZ() );
-
             float tmpsq = _rotation.AxisZ().XZ().length();
-
-            NDIV_CARRY(tmpsq);
-
-            v206 /= tmpsq;
+            float v206 = 0.0;
+            
+            if (isnormal(tmpsq))  // Not NULL, NAN, INF
+                v206 = _target_dir.XZ().dot( _rotation.AxisZ().XZ() ) / tmpsq;
 
             tmpsq = _target_dir.XZ().length();
-
-            NDIV_CARRY(tmpsq);
-
-            v206 /= tmpsq;
+            if (isnormal(tmpsq))  // Not NULL, NAN, INF
+                v206 /= tmpsq;
+            else
+                v206 = 0.0;
 
             float v240 = clp_acos(v206);
 
@@ -390,20 +387,23 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                         float tmpLn = _tankCollisionVector.XZ().length();
 
-                        NDIV_CARRY(tmpLn);
+                        if (isnormal(tmpLn))  // Not NULL, NAN, INF
+                            tmpLn = 1.0 / tmpLn;
+                        else
+                            tmpLn = 0.0;
 
                         ypaworld_arg136 arg136_1;
                         ypaworld_arg136 arg136_3;
 
-                        arg136_1.vect.x = _tankCollisionVector.z * 150.0 / tmpLn;
+                        arg136_1.vect.x = _tankCollisionVector.z * 150.0 * tmpLn;
                         arg136_1.vect.y = 0;
-                        arg136_1.vect.z = -_tankCollisionVector.x * 150.0 / tmpLn;
+                        arg136_1.vect.z = -_tankCollisionVector.x * 150.0 * tmpLn;
                         arg136_1.stPos = _old_pos;
                         arg136_1.flags = 1;
 
-                        arg136_3.vect.x = -_tankCollisionVector.z * 150.0 / tmpLn;
+                        arg136_3.vect.x = -_tankCollisionVector.z * 150.0 * tmpLn;
                         arg136_3.vect.y = 0;
-                        arg136_3.vect.z = _tankCollisionVector.x * 150.0 / tmpLn;
+                        arg136_3.vect.z = _tankCollisionVector.x * 150.0 * tmpLn;
                         arg136_3.stPos = _old_pos;
                         arg136_3.flags = 1;
 
@@ -421,46 +421,41 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
                         {
                             if ( v87 )
                             {
-                                float dotLen = arg136_1.vect.XZ().dot( az2d );
-
+                                float dotLen = 0.0;
                                 tmpLn = az2d.length();
-
-                                NDIV_CARRY(tmpLn);
-
-                                dotLen = dotLen / tmpLn / 150.0;
-
+                                
+                                if (isnormal(tmpLn))  // Not NULL, NAN, INF
+                                    dotLen = arg136_1.vect.XZ().dot( az2d ) / tmpLn / 150.0;
+                                
                                 _tankCollisionAngle = clp_acos(dotLen);
                                 wallLeft = true;
                             }
                             else
                             {
-                                float dotLen = az2d.dot( arg136_3.vect.XZ() );
-
+                                float dotLen = 0.0;
                                 tmpLn = az2d.length();
-
-                                NDIV_CARRY(tmpLn);
-
-                                dotLen = dotLen / tmpLn / 150.0;
-
+                                
+                                if (isnormal(tmpLn))  // Not NULL, NAN, INF
+                                    dotLen = az2d.dot( arg136_3.vect.XZ() ) / tmpLn / 150.0;
+                                
                                 _tankCollisionAngle = clp_acos(dotLen);
                                 wallLeft = false;
                             }
                         }
                         else
                         {
-                            float dotLen = az2d.dot( _tankCollisionVector.XZ() );
-
+                            float dotLen = 0.0; 
                             tmpLn = az2d.length();
-
-                            NDIV_CARRY(tmpLn);
-
-                            dotLen = dotLen / tmpLn;
-
+                            
+                            if (isnormal(tmpLn))  // Not NULL, NAN, INF
+                                dotLen = az2d.dot( _tankCollisionVector.XZ() ) / tmpLn;
+                            
                             tmpLn = _tankCollisionVector.XZ().length();
-
-                            NDIV_CARRY(tmpLn);
-
-                            dotLen = dotLen / tmpLn;
+                            
+                            if (isnormal(tmpLn))  // Not NULL, NAN, INF
+                                dotLen = dotLen / tmpLn;
+                            else
+                                dotLen = 0.0;
 
                             _tankCollisionAngle = C_PI_2 - clp_acos(dotLen) + 0.01;
 
@@ -555,19 +550,20 @@ void NC_STACK_ypatank::AI_layer3(update_msg *arg)
 
                     vec2d axsZ = _rotation.AxisZ().XZ();
 
-                    float dotLen = axsZ.dot( _tankCollisionVector.XZ() );
-
                     float ln = axsZ.length();
-
-                    NDIV_CARRY(ln);
-
-                    dotLen = dotLen / ln;
+                    float dotLen = 0.0;
+                    
+                    if (isnormal(ln))  // Not NULL, NAN, INF
+                        dotLen = axsZ.dot( _tankCollisionVector.XZ() ) / ln;
+                    else
+                        dotLen = 0.0;
 
                     ln = _tankCollisionVector.XZ().length();
 
-                    NDIV_CARRY(ln);
-
-                    dotLen = dotLen / ln;
+                    if (isnormal(ln))  // Not NULL, NAN, INF
+                        dotLen /= ln;
+                    else
+                        dotLen = 0.0;
 
                     _tankCollisionAngle = C_PI_2 - clp_acos(dotLen);
 
@@ -1716,19 +1712,17 @@ size_t NC_STACK_ypatank::CheckFireAI(bact_arg101 *arg)
 
     if ( v34.XZ() != vec2d(0.0, 0.0) )
     {
-        v38 = v34.XZ().dot( _rotation.AxisZ().XZ() );
-
         float tmpsq = v34.XZ().length();
 
-        NDIV_CARRY(tmpsq);
-
-        v38 = v38 / tmpsq;
+        if (isnormal(tmpsq))  // Not NULL, NAN, INF
+            v38 = v34.XZ().dot( _rotation.AxisZ().XZ() ) / tmpsq;
 
         tmpsq = _rotation.AxisZ().XZ().length();
 
-        NDIV_CARRY(tmpsq);
-
-        v38 = v38 / tmpsq;
+        if (isnormal(tmpsq))  // Not NULL, NAN, INF
+            v38 /= tmpsq;
+        else
+            v38 = 0.0;
     }
     else
     {

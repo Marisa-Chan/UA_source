@@ -132,6 +132,8 @@ bool uaFileExist(const std::string &path);
 
 inline double clp_asin(double x)
 {
+    if (!isfinite(x))
+        return 0.0;
     if (x > 1.0)
         x = 1.0;
     else if (x < -1.0)
@@ -141,6 +143,8 @@ inline double clp_asin(double x)
 
 inline double clp_acos(double x)
 {
+    if (!isfinite(x))
+        return 0.0;
     if (x > 1.0)
         x = 1.0;
     else if (x < -1.0)

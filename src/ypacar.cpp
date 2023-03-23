@@ -231,19 +231,31 @@ void NC_STACK_ypacar::DoKamikaze()
     {
         float m20 = _rotation.m20;
 
-        NDIV_CARRY(m20);
-
-        _rotation.m02 = sqrt( 1.0 / (POW2(_rotation.m22) / (POW2(m20)) + 1.0) );
-        _rotation.m00 = -_rotation.m22 * _rotation.m02 / m20;
+        if (isnormal(m20)) // not NULL, NAN, INF
+        {
+            _rotation.m02 = sqrt( 1.0 / (POW2(_rotation.m22) / (POW2(m20)) + 1.0) );
+            _rotation.m00 = -_rotation.m22 * _rotation.m02 / m20;
+        }
+        else // emulate watcom div 0.0
+        {
+            _rotation.m02 = sqrt( 1.0 );
+            _rotation.m00 = 0.0;
+        }
+        
     }
     else
     {
         float m22 = _rotation.m22;
-
-        NDIV_CARRY(m22);
-
-        _rotation.m00 = sqrt( 1.0 / (POW2(_rotation.m20) / (POW2(m22)) + 1.0) );
-        _rotation.m02 = -_rotation.m20 * _rotation.m00 / m22;
+        if (isnormal(m22)) // not NULL, NAN, INF
+        {
+            _rotation.m00 = sqrt( 1.0 / (POW2(_rotation.m20) / (POW2(m22)) + 1.0) );
+            _rotation.m02 = -_rotation.m20 * _rotation.m00 / m22;
+        }
+        else // emulate watcom div 0.0
+        {
+            _rotation.m00 = sqrt( 1.0 );
+            _rotation.m02 = 0.0;
+        }
     }
 
     _rotation.m01 = 0.0;
@@ -615,24 +627,19 @@ vec3d NC_STACK_ypacar::CarTip(float dtime, const vec3d &oldDir, vec3d rot)
 
         rot = mat3x3::AxisAngle(_rotation.AxisX(), v8).Transform(rot);
     }
-
-    float v76 = tmp.dot( varg );
-
-    float tmpsq = tmp.length();
-
-    NDIV_CARRY(tmpsq);
-
-    v76 = v76 / tmpsq;
-
-    tmpsq = varg.length();
-
-    NDIV_CARRY(tmpsq);
-
-    v76 = v76 / tmpsq;
-
-
+    
     if (dtime != 0.0)
     {
+        float tmpsq = tmp.length();
+        float v76 = 0.0;        
+        
+        if (isnormal(tmpsq)) // Not NULL, NAN, INF
+            v76 = tmp.dot( varg ) / tmpsq;
+
+        tmpsq = varg.length();
+        if (isnormal(tmpsq)) // Not NULL, NAN, INF
+            v76 /= tmpsq;
+    
         float v77 = clp_acos(v76) * (fabs(_fly_dir_length) * 0.002 / dtime);
 
         if ( v77 > 0.001 )
