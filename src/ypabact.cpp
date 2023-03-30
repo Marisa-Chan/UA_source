@@ -236,7 +236,7 @@ size_t NC_STACK_ypabact::Init(IDVList &stak)
                         if ( viewMsg.classID == BACT_TYPES_MISSLE )
                         {
                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
-                            viewMsg.launcher = miss->getMISS_launcher()->_gid;
+                            viewMsg.launcher = miss->GetLauncherBact()->_gid;
                         }
 
                         _world->NetBroadcastMessage(&viewMsg, sizeof(viewMsg), true);
@@ -437,7 +437,7 @@ void NC_STACK_ypabact::CopyTargetOf(NC_STACK_ypabact *unit)
     }
 }
 
-size_t NC_STACK_ypabact::func2(IDVList &stak)
+size_t NC_STACK_ypabact::SetParameters(IDVList &stak)
 {
     for( auto& it : stak )
     {
@@ -3108,7 +3108,7 @@ void NC_STACK_ypabact::Die()
             NC_STACK_ypamissile *miss = *it;
 
             _parent->_missiles_list.push_back(miss);
-            miss->setMISS_launcher( _parent );
+            miss->SetLauncherBact( _parent );
         }
     }
     else
@@ -3305,9 +3305,9 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
         if ( !wobj )
             return 0;
 
-        wobj->setMISS_launcher(this);
+        wobj->SetLauncherBact(this);
 
-        wobj->setMISS_startHeight(arg147.pos.y);
+        wobj->SetStartHeight(arg147.pos.y);
 
         wobj->_owner = _owner;
 
@@ -3350,7 +3350,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
 
         _missiles_list.push_back(wobj);
 
-        int v42 = wobj->getMISS_type();
+        int v42 = wobj->GetMissileType();
 
         if ( v42 == 3 )
         {
@@ -3420,7 +3420,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
         }
         
         if ( arg->flags & 4 )
-            wobj->setMISS_ignoreBuilds(1);
+            wobj->SetIgnoreBuilds(1);
             
 
         if ( arg->tgType != BACT_TGT_TYPE_UNIT )
@@ -3428,7 +3428,7 @@ size_t NC_STACK_ypabact::LaunchMissile(bact_arg79 *arg)
             int life_time_nt = wproto.life_time_nt;
 
             if ( life_time_nt )
-                wobj->setMISS_lifeTime(life_time_nt);
+                wobj->SetLifeTime(life_time_nt);
         }
     }
 
@@ -6756,7 +6756,7 @@ void NC_STACK_ypabact::NetUpdate(update_msg *upd)
 
     for ( NC_STACK_ypamissile* misl : Utils::IterateListCopy<NC_STACK_ypamissile *>(_missiles_list) )
     {
-        misl->setMISS_launcher(this);
+        misl->SetLauncherBact(this);
         misl->Update(upd);
     }
 
@@ -7748,7 +7748,7 @@ void NC_STACK_ypabact::setBACT_viewer(bool vwr)
         if ( viewMsg.classID == BACT_TYPES_MISSLE )
         {
             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(this);
-            viewMsg.launcher = miss->getMISS_launcher()->_gid;
+            viewMsg.launcher = miss->GetLauncherBact()->_gid;
         }
 
         _world->NetBroadcastMessage(&viewMsg, sizeof(viewMsg), true);

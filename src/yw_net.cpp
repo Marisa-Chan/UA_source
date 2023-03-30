@@ -985,7 +985,7 @@ bool yw_netRecvUpdate(NC_STACK_ypaworld *yw, uamessage_update *msg, int owner)
 
                 lastBct->_missiles_list.push_back(tmp);
 
-                tmp->setMISS_launcher(lastBct);
+                tmp->SetLauncherBact(lastBct);
             }
             break;
 
@@ -1367,7 +1367,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         weapLauncher->_missiles_list.push_back(weapo);
 
-        weapo->setMISS_launcher(weapLauncher);
+        weapo->SetLauncherBact(weapLauncher);
 
         weapo->_owner = nwMsg->owner;
         weapo->_gid = nwMsg->id;
@@ -1385,7 +1385,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
 
         weapo->AlignMissile();
 
-        int wpnType = weapo->getMISS_type();
+        int wpnType = weapo->GetMissileType();
 
         if ( wpnType == 3 )
         {
@@ -1431,7 +1431,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
         int weapLifeTime = yw->GetWeaponsProtos().at(nwMsg->type).life_time_nt;
 
         if ( weapLifeTime )
-            weapo->setMISS_lifeTime(weapLifeTime);
+            weapo->SetLifeTime(weapLifeTime);
 
     }
     break;
@@ -1632,7 +1632,7 @@ size_t yw_handleNormMsg(NC_STACK_ypaworld *yw, windp_recvMsg *msg, std::string *
                 fndBact->_missiles_list.pop_front();
                 
                 fndBact->_parent->_missiles_list.push_back(miss);
-                miss->setMISS_launcher(fndBact->_parent);
+                miss->SetLauncherBact(fndBact->_parent);
             }
         }
         else

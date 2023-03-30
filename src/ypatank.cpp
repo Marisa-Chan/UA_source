@@ -56,9 +56,9 @@ size_t NC_STACK_ypatank::Deinit()
 }
 
 
-size_t NC_STACK_ypatank::func2(IDVList &stak)
+size_t NC_STACK_ypatank::SetParameters(IDVList &stak)
 {
-    NC_STACK_ypabact::func2(stak);
+    NC_STACK_ypabact::SetParameters(stak);
 
     for( auto& it : stak )
     {

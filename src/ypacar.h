@@ -9,7 +9,7 @@ class NC_STACK_ypacar: public NC_STACK_ypatank
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t func2(IDVList &stak);
+    virtual size_t SetParameters(IDVList &stak) override;
     virtual void User_layer(update_msg *arg);
     virtual int AlignVehicleAI(float dtime, vec3d *pNormal);
     virtual int AlignVehicleUser(float dtime, const vec3d &oldDir);

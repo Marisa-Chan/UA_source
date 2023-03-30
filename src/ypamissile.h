@@ -30,18 +30,19 @@ public:
     };
     
 public:
-    virtual size_t Init(IDVList &stak);
-    virtual size_t Deinit();
-    virtual size_t func2(IDVList &stak);
-    virtual void AI_layer1(update_msg *arg);
-    virtual void AI_layer2(update_msg *arg);
-    virtual void AI_layer3(update_msg *arg);
-    virtual void User_layer(update_msg *arg);
-    virtual void Move(move_msg *arg);
-    virtual void SetState(setState_msg *arg);
-    virtual void Renew();
-    virtual size_t SetStateInternal(setState_msg *arg);
-    virtual void ResetViewing();
+    virtual size_t Init(IDVList &stak) override;
+    virtual size_t Deinit() override;
+    virtual size_t SetParameters(IDVList &stak) override;
+    virtual void AI_layer1(update_msg *arg) override;
+    virtual void AI_layer2(update_msg *arg) override;
+    virtual void AI_layer3(update_msg *arg) override;
+    virtual void User_layer(update_msg *arg) override;
+    virtual void Move(move_msg *arg) override;
+    virtual void SetState(setState_msg *arg) override;
+    virtual void Renew() override;
+    virtual size_t SetStateInternal(setState_msg *arg) override;
+    
+    virtual void ResetViewing(); // Detach camera
     virtual void Impact(); // Apply impulse to all in sector
     virtual void AlignMissile(float dtime = 0.0);
     virtual void AlignMissileByNormal(const vec3d &normal);
@@ -73,37 +74,38 @@ public:
     };
 
     virtual void setBACT_viewer(bool) override;
-    virtual void setMISS_launcher(NC_STACK_ypabact *);
-    virtual void setMISS_type(int);
-    virtual void setMISS_lifeTime(int);
-    virtual void setMISS_delay(int);
-    virtual void setMISS_driveTime(int);
-    virtual void setMISS_ignoreBuilds(int);
-    virtual void setMISS_powHeli(int);
-    virtual void setMISS_powTank(int);
-    virtual void setMISS_powFlyer(int);
-    virtual void setMISS_powRobo(int);
-    virtual void setMISS_radHeli(int);
-    virtual void setMISS_radTank(int);
-    virtual void setMISS_radFlyer(int);
-    virtual void setMISS_radRobo(int);
-    virtual void setMISS_startHeight(int);
+    
+    virtual void SetLauncherBact(NC_STACK_ypabact *);
+    virtual void SetMissileType(int);
+    virtual void SetLifeTime(int);
+    virtual void SetDelay(int);
+    virtual void SetDriveTime(int);
+    virtual void SetIgnoreBuilds(int);
+    virtual void SetPowerHeli(int);
+    virtual void SetPowerTank(int);
+    virtual void SetPowerFlyer(int);
+    virtual void SetPowerRobo(int);
+    virtual void SetRadiusHeli(float);
+    virtual void SetRadiusTank(float);
+    virtual void SetRadiusFlyer(float);
+    virtual void SetRadiusRobo(float);
+    virtual void SetStartHeight(float);
 
-    virtual NC_STACK_ypabact *getMISS_launcher();
-    virtual int getMISS_type();
-    virtual int getMISS_lifeTime();
-    virtual int getMISS_delay();
-    virtual int getMISS_driveTime();
-    virtual int getMISS_ignoreBuilds();
-    virtual int getMISS_powHeli();
-    virtual int getMISS_powTank();
-    virtual int getMISS_powFlyer();
-    virtual int getMISS_powRobo();
-    virtual int getMISS_radHeli();
-    virtual int getMISS_radTank();
-    virtual int getMISS_radFlyer();
-    virtual int getMISS_radRobo();
-    virtual int getMISS_startHeight();
+    virtual NC_STACK_ypabact *GetLauncherBact();
+    virtual int GetMissileType();
+    virtual int GetLifeTime();
+    virtual int GetDelay();
+    virtual int GetDriveTime();
+    virtual int GetIgnoreBuilds();
+    virtual int GetPowerHeli();
+    virtual int GetPowerTank();
+    virtual int GetPowerFlyer();
+    virtual int GetPowerRobo();
+    virtual float GetRadiusHeli();
+    virtual float GetRadiusTank();
+    virtual float GetRadiusFlyer();
+    virtual float GetRadiusRobo();
+    virtual float GetStartHeight();
     
     vec3d CalcForceVector();
     bool TubeCollisionTest();

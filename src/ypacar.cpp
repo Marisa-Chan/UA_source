@@ -55,9 +55,9 @@ size_t NC_STACK_ypacar::Deinit()
     return NC_STACK_ypatank::Deinit();
 }
 
-size_t NC_STACK_ypacar::func2(IDVList &stak)
+size_t NC_STACK_ypacar::SetParameters(IDVList &stak)
 {
-    NC_STACK_ypatank::func2(stak);
+    NC_STACK_ypatank::SetParameters(stak);
 
     for( auto& it : stak )
     {

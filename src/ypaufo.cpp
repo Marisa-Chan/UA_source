@@ -48,9 +48,9 @@ size_t NC_STACK_ypaufo::Deinit()
     return NC_STACK_ypabact::Deinit();
 }
 
-size_t NC_STACK_ypaufo::func2(IDVList &stak)
+size_t NC_STACK_ypaufo::SetParameters(IDVList &stak)
 {
-    NC_STACK_ypabact::func2(stak);
+    NC_STACK_ypabact::SetParameters(stak);
 
     for( auto& it : stak )
     {

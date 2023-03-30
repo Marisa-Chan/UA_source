@@ -355,7 +355,7 @@ public:
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t func2(IDVList &stak);
+    virtual size_t SetParameters(IDVList &stak);
     virtual void Update(update_msg *arg);
     virtual void Render(baseRender_msg *arg);
     virtual void SetTarget(setTarget_msg *arg);

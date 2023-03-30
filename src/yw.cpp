@@ -1430,7 +1430,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bacto->_pitch = bacto->_soundcarrier.Sounds[0].Pitch;
         bacto->_volume = bacto->_soundcarrier.Sounds[0].Volume;
 
-        bacto->func2(vhcl.initParams);
+        bacto->SetParameters(vhcl.initParams);
 
         bact_arg80 arg80;
         arg80.pos = vhcl_id->pos;
@@ -1516,28 +1516,33 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         break;
     }
 
-    wobj->setMISS_lifeTime(wproto.life_time);
-    wobj->setMISS_delay(wproto.delay_time);
-    wobj->setMISS_driveTime(wproto.drive_time);
-    wobj->setMISS_type(missileType);
-    wobj->setMISS_powHeli(wproto.energy_heli * 1000.0);
-    wobj->setMISS_powTank(wproto.energy_tank * 1000.0);
-    wobj->setMISS_powFlyer(wproto.energy_flyer * 1000.0);
-    wobj->setMISS_powRobo(wproto.energy_robo * 1000.0);
+    wobj->SetLifeTime(wproto.life_time);
+    wobj->SetDelay(wproto.delay_time);
+    wobj->SetDriveTime(wproto.drive_time);
+    wobj->SetMissileType(missileType);
+    wobj->SetPowerHeli(wproto.energy_heli * 1000.0);
+    wobj->SetPowerTank(wproto.energy_tank * 1000.0);
+    wobj->SetPowerFlyer(wproto.energy_flyer * 1000.0);
+    wobj->SetPowerRobo(wproto.energy_robo * 1000.0);
 
+    /* Original bug caused by mixing vararg and float values
+       that does not passed as 32-bit float value and
+       instead it was passed as 64-bit floats, so it's
+       break TAG-Val array alignment.*/
+    
     if (_fixWeaponRadius)
     {
-        wobj->setMISS_radHeli(wproto.radius_heli);
-        wobj->setMISS_radTank(wproto.radius_tank);
-        wobj->setMISS_radFlyer(wproto.radius_flyer);
-        wobj->setMISS_radRobo(wproto.radius_robo);
+        wobj->SetRadiusHeli(wproto.radius_heli);
+        wobj->SetRadiusTank(wproto.radius_tank);
+        wobj->SetRadiusFlyer(wproto.radius_flyer);
+        wobj->SetRadiusRobo(wproto.radius_robo);
     }
     else
     {
-        wobj->setMISS_radHeli(0.0);
-        wobj->setMISS_radTank(0.0);
-        wobj->setMISS_radFlyer(0.0);
-        wobj->setMISS_radRobo(0.0);
+        wobj->SetRadiusHeli(0.0);
+        wobj->SetRadiusTank(0.0);
+        wobj->SetRadiusFlyer(0.0);
+        wobj->SetRadiusRobo(0.0);
     }
 
     wobj->_soundcarrier.Resize(wproto.sndFXes.size());
@@ -1591,7 +1596,7 @@ NC_STACK_ypamissile * NC_STACK_ypaworld::ypaworld_func147(ypaworld_arg146 *arg)
         }
     }
 
-    wobj->func2(wproto.initParams);
+    wobj->SetParameters(wproto.initParams);
 
     bact_arg80 arg80;
 

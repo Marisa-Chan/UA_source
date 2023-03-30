@@ -69,7 +69,7 @@ class NC_STACK_yparobo: public NC_STACK_ypabact
 public:
     virtual size_t Init(IDVList &stak);
     virtual size_t Deinit();
-    virtual size_t func2(IDVList &stak);
+    virtual size_t SetParameters(IDVList &stak) override;
     virtual void AI_layer1(update_msg *arg);
     virtual void AI_layer3(update_msg *arg);
     virtual void User_layer(update_msg *arg);

@@ -157,9 +157,9 @@ size_t NC_STACK_yparobo::Deinit()
     return NC_STACK_ypabact::Deinit();
 }
 
-size_t NC_STACK_yparobo::func2(IDVList &stak)
+size_t NC_STACK_yparobo::SetParameters(IDVList &stak)
 {
-    NC_STACK_ypabact::func2(stak);
+    NC_STACK_ypabact::SetParameters(stak);
 
     for( auto& it : stak )
     {
@@ -3539,7 +3539,7 @@ void NC_STACK_yparobo::checkCommander()
                         if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
                         {
                             NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
-                            v33 = miss->getMISS_launcher(); //Get emitter bact
+                            v33 = miss->GetLauncherBact(); //Get emitter bact
                         }
 
                         if ( v33->_host_station != v33->_parent &&

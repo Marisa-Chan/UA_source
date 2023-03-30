@@ -42,9 +42,9 @@ size_t NC_STACK_ypaflyer::Deinit()
     return NC_STACK_ypabact::Deinit();
 }
 
-size_t NC_STACK_ypaflyer::func2(IDVList &stak)
+size_t NC_STACK_ypaflyer::SetParameters(IDVList &stak)
 {
-    NC_STACK_ypabact::func2(stak);
+    NC_STACK_ypabact::SetParameters(stak);
 
     for( auto& it : stak )
     {

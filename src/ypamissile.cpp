@@ -36,27 +36,27 @@ size_t NC_STACK_ypamissile::Init(IDVList &stak)
                 break;
 
             case MISS_ATT_LAUNCHER:
-                setMISS_launcher(val.Get<NC_STACK_ypabact *>());
+                SetLauncherBact(val.Get<NC_STACK_ypabact *>());
                 break;
 
             case MISS_ATT_TYPE:
-                setMISS_type(val.Get<int32_t>());
+                SetMissileType(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_LIFETIME:
-                setMISS_lifeTime(val.Get<int32_t>());
+                SetLifeTime(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_DELAY:
-                setMISS_delay(val.Get<int32_t>());
+                SetDelay(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_DRIVETIME:
-                setMISS_driveTime(val.Get<int32_t>());
+                SetDriveTime(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_IGNOREBUILDS:
-                setMISS_ignoreBuilds ( val.Get<int32_t>() );
+                SetIgnoreBuilds ( val.Get<int32_t>() );
                 break;
 
             default:
@@ -73,9 +73,9 @@ size_t NC_STACK_ypamissile::Deinit()
     return NC_STACK_ypabact::Deinit();
 }
 
-size_t NC_STACK_ypamissile::func2(IDVList &stak)
+size_t NC_STACK_ypamissile::SetParameters(IDVList &stak)
 {
-    NC_STACK_ypabact::func2(stak);
+    NC_STACK_ypabact::SetParameters(stak);
 
     for( auto& it : stak )
     {
@@ -90,63 +90,63 @@ size_t NC_STACK_ypamissile::func2(IDVList &stak)
                 break;
 
             case MISS_ATT_LAUNCHER:
-                setMISS_launcher(val.Get<NC_STACK_ypabact *>());
+                SetLauncherBact(val.Get<NC_STACK_ypabact *>());
                 break;
 
             case MISS_ATT_TYPE:
-                setMISS_type(val.Get<int32_t>());
+                SetMissileType(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_LIFETIME:
-                setMISS_lifeTime(val.Get<int32_t>());
+                SetLifeTime(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_DELAY:
-                setMISS_delay(val.Get<int32_t>());
+                SetDelay(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_DRIVETIME:
-                setMISS_driveTime(val.Get<int32_t>());
+                SetDriveTime(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_IGNOREBUILDS:
-                setMISS_ignoreBuilds ( val.Get<int32_t>() );
+                SetIgnoreBuilds ( val.Get<int32_t>() );
                 break;
 
             case MISS_ATT_POW_HELI:
-                setMISS_powHeli(val.Get<int32_t>());
+                SetPowerHeli(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_POW_TANK:
-                setMISS_powTank(val.Get<int32_t>());
+                SetPowerTank(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_POW_FLYER:
-                setMISS_powFlyer(val.Get<int32_t>());
+                SetPowerFlyer(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_POW_ROBO:
-                setMISS_powRobo(val.Get<int32_t>());
+                SetPowerRobo(val.Get<int32_t>());
                 break;
 
             case MISS_ATT_RAD_HELI:
-                setMISS_radHeli(val.Get<int32_t>());
+                SetRadiusHeli(val.Get<float>());
                 break;
 
             case MISS_ATT_RAD_TANK:
-                setMISS_radTank(val.Get<int32_t>());
+                SetRadiusTank(val.Get<float>());
                 break;
 
             case MISS_ATT_RAD_FLYER:
-                setMISS_radFlyer(val.Get<int32_t>());
+                SetRadiusFlyer(val.Get<float>());
                 break;
 
             case MISS_ATT_RAD_ROBO:
-                setMISS_radRobo(val.Get<int32_t>());
+                SetRadiusRobo(val.Get<float>());
                 break;
 
             case MISS_ATT_STHEIGHT:
-                setMISS_startHeight(val.Get<int32_t>());
+                SetStartHeight(val.Get<float>());
                 break;
 
             default:
@@ -814,6 +814,9 @@ void NC_STACK_ypamissile::Impact()
         arg83.force *= v7;
         arg83.mass *= v7;
     }
+    
+    /* FIXME:
+       Needs to check all near sectors too if effective radius affect it*/
 
     for( NC_STACK_ypabact* &bct : _pSector->unitsList )
     {
@@ -941,32 +944,32 @@ void NC_STACK_ypamissile::setBACT_viewer(bool vwr)
         _mislFlags &= ~FLAG_MISL_VIEW;
 }
 
-void NC_STACK_ypamissile::setMISS_launcher(NC_STACK_ypabact *bact)
+void NC_STACK_ypamissile::SetLauncherBact(NC_STACK_ypabact *bact)
 {
     _mislEmitter = bact;
 }
 
-void NC_STACK_ypamissile::setMISS_type(int tp)
+void NC_STACK_ypamissile::SetMissileType(int tp)
 {
     _mislType = tp;
 }
 
-void NC_STACK_ypamissile::setMISS_lifeTime(int time)
+void NC_STACK_ypamissile::SetLifeTime(int time)
 {
     _mislLifeTime = time;
 }
 
-void NC_STACK_ypamissile::setMISS_delay(int delay)
+void NC_STACK_ypamissile::SetDelay(int delay)
 {
     _mislDelayTime = delay;
 }
 
-void NC_STACK_ypamissile::setMISS_driveTime(int time)
+void NC_STACK_ypamissile::SetDriveTime(int time)
 {
     _mislDriveTime = time;
 }
 
-void NC_STACK_ypamissile::setMISS_ignoreBuilds(int ign)
+void NC_STACK_ypamissile::SetIgnoreBuilds(int ign)
 {
     if ( ign )
         _mislFlags |= FLAG_MISL_IGNOREBUILDS;
@@ -974,124 +977,124 @@ void NC_STACK_ypamissile::setMISS_ignoreBuilds(int ign)
         _mislFlags &= ~FLAG_MISL_IGNOREBUILDS;
 }
 
-void NC_STACK_ypamissile::setMISS_powHeli(int po)
+void NC_STACK_ypamissile::SetPowerHeli(int po)
 {
     _mislEnergyHeli = po * 0.001;
 }
 
-void NC_STACK_ypamissile::setMISS_powTank(int po)
+void NC_STACK_ypamissile::SetPowerTank(int po)
 {
     _mislEnergyTank = po * 0.001;
 }
 
-void NC_STACK_ypamissile::setMISS_powFlyer(int po)
+void NC_STACK_ypamissile::SetPowerFlyer(int po)
 {
     _mislEnergyFlyer = po * 0.001;
 }
 
-void NC_STACK_ypamissile::setMISS_powRobo(int po)
+void NC_STACK_ypamissile::SetPowerRobo(int po)
 {
     _mislEnergyRobo = po * 0.001;
 }
 
-void NC_STACK_ypamissile::setMISS_radHeli(int rad)
+void NC_STACK_ypamissile::SetRadiusHeli(float rad)
 {
     _mislRadiusHeli = rad;
 }
 
-void NC_STACK_ypamissile::setMISS_radTank(int rad)
+void NC_STACK_ypamissile::SetRadiusTank(float rad)
 {
     _mislRadiusTank = rad;
 }
 
-void NC_STACK_ypamissile::setMISS_radFlyer(int rad)
+void NC_STACK_ypamissile::SetRadiusFlyer(float rad)
 {
     _mislRadiusFlyer = rad;
 }
 
-void NC_STACK_ypamissile::setMISS_radRobo(int rad)
+void NC_STACK_ypamissile::SetRadiusRobo(float rad)
 {
     _mislRadiusRobo = rad;
 }
 
-void NC_STACK_ypamissile::setMISS_startHeight(int posy)
+void NC_STACK_ypamissile::SetStartHeight(float posy)
 {
     _mislStartHeight = posy;
 }
 
 
 
-NC_STACK_ypabact *NC_STACK_ypamissile::getMISS_launcher()
+NC_STACK_ypabact *NC_STACK_ypamissile::GetLauncherBact()
 {
     return _mislEmitter;
 }
 
-int NC_STACK_ypamissile::getMISS_type()
+int NC_STACK_ypamissile::GetMissileType()
 {
     return _mislType;
 }
 
-int NC_STACK_ypamissile::getMISS_lifeTime()
+int NC_STACK_ypamissile::GetLifeTime()
 {
     return _mislLifeTime;
 }
 
-int NC_STACK_ypamissile::getMISS_delay()
+int NC_STACK_ypamissile::GetDelay()
 {
     return _mislDelayTime;
 }
 
-int NC_STACK_ypamissile::getMISS_driveTime()
+int NC_STACK_ypamissile::GetDriveTime()
 {
     return _mislDriveTime;
 }
 
-int NC_STACK_ypamissile::getMISS_ignoreBuilds()
+int NC_STACK_ypamissile::GetIgnoreBuilds()
 {
     return (_mislFlags & FLAG_MISL_IGNOREBUILDS) != 0;
 }
 
-int NC_STACK_ypamissile::getMISS_powHeli()
+int NC_STACK_ypamissile::GetPowerHeli()
 {
     return _mislEnergyHeli * 1000.0;
 }
 
-int NC_STACK_ypamissile::getMISS_powTank()
+int NC_STACK_ypamissile::GetPowerTank()
 {
     return _mislEnergyTank * 1000.0;
 }
 
-int NC_STACK_ypamissile::getMISS_powFlyer()
+int NC_STACK_ypamissile::GetPowerFlyer()
 {
     return _mislEnergyFlyer * 1000.0;
 }
 
-int NC_STACK_ypamissile::getMISS_powRobo()
+int NC_STACK_ypamissile::GetPowerRobo()
 {
     return _mislEnergyRobo * 1000.0;
 }
 
-int NC_STACK_ypamissile::getMISS_radHeli()
+float NC_STACK_ypamissile::GetRadiusHeli()
 {
     return _mislRadiusHeli;
 }
 
-int NC_STACK_ypamissile::getMISS_radTank()
+float NC_STACK_ypamissile::GetRadiusTank()
 {
     return _mislRadiusTank;
 }
 
-int NC_STACK_ypamissile::getMISS_radFlyer()
+float NC_STACK_ypamissile::GetRadiusFlyer()
 {
     return _mislRadiusFlyer;
 }
 
-int NC_STACK_ypamissile::getMISS_radRobo()
+float NC_STACK_ypamissile::GetRadiusRobo()
 {
     return _mislRadiusRobo;
 }
 
-int NC_STACK_ypamissile::getMISS_startHeight()
+float NC_STACK_ypamissile::GetStartHeight()
 {
     return _mislStartHeight;
 }
