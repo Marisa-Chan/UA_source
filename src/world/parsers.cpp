@@ -1051,6 +1051,10 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     {
         _vhcl->initParams.Add(NC_STACK_yparobo::ROBO_ATT_WAIT_SWAY, (int32_t)1);
     }
+    else if ( !StriCmp(p1, "hidden") )
+    {
+        _vhcl->hidden = StrGetBool(p2);
+    }
     else
         return ParseSndFX(parser, p1, p2);
 
@@ -2024,6 +2028,10 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     {
         _o._allowMultiBuildWorld = StrGetBool(p2);
     }
+    else if ( !StriCmp(p1, "hidden_fractions") )
+    {
+        _o._worldHiddenFractions = parser.stol(p2, NULL, 0);
+    }
     else
         return ScriptParser::RESULT_UNKNOWN;
 
@@ -2271,6 +2279,10 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     else if ( !StriCmp(p1, "multi_building") )
     {
         _o._allowMultiBuildLevel = StrGetBool(p2);
+    }
+    else if ( !StriCmp(p1, "hidden_fractions") )
+    {
+        _o._hiddenFractions = parser.stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;

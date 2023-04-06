@@ -196,6 +196,8 @@ struct TVhclProto
     NC_STACK_skeleton *wpn_wireframe_2 = NULL;
     IDVList initParams;
     
+    bool hidden = false;
+    
     TRoboProto *RoboProto = NULL;
 
     ~TVhclProto();

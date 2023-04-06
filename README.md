@@ -56,3 +56,7 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 - menu.windowed on/off(default) - always open game menu in windowed mode
 - gfx.vbo on(default)/off - disable modern VBO(upload vertex data into video card)
 
+- world.ini : begin_misc : hidden_fractions - mask for hidden fractions for whole world
+- levelfile : begin_level : hidden_fractions - mask for hidden fractions for this level
+- vehicle : hidden (yes/no) - hide this unit type
+

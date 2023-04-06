@@ -349,6 +349,8 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
             fil->printf("    fire_x         = %4.2f\n", proto.fire_x);
             fil->printf("    fire_y         = %4.2f\n", proto.fire_y);
             fil->printf("    fire_z         = %4.2f\n", proto.fire_z);
+            if (proto.hidden)
+                fil->printf("    ;#!hidden      = %s\n", (proto.hidden ? "yes" : "no") );
             fil->printf("end\n\n");
         }
         i++;

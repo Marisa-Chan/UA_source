@@ -1368,6 +1368,8 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bacto->_scale_accel = vhcl.scale_fx_p2;
         bacto->_scale_duration = vhcl.scale_fx_p3;
         bacto->_scale_pos = 0;
+        
+        bacto->_hidden = vhcl.hidden;
 
         for (int i = 0; vhcl.scale_fx_pXX[ i ]; i++ )
         {
@@ -2142,8 +2144,6 @@ bool NC_STACK_ypaworld::InitGameShell(UserData *usr)
     usr->InputConfig[World::INPUT_BIND_LAST_SEAT]   = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 44, Input::KC_NONE);
     usr->InputConfig[World::INPUT_BIND_SET_COMM]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 45, Input::KC_NONE);
     usr->InputConfig[World::INPUT_BIND_ANALYZER]    = UserData::TInputConf(World::INPUT_BIND_TYPE_HOTKEY, 46, Input::KC_NONE);
-    
-    usr->HideBlackSect = System::IniConf::GameHideBlacksect.Get<bool>();
 
     usr->sub_46D2B4();
 

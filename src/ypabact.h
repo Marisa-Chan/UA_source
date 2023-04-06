@@ -417,6 +417,8 @@ public:
     virtual void ypabact_func123(update_msg *arg);
     virtual size_t PathFinder(bact_arg124 *arg);
     virtual size_t SetPath(bact_arg124 *arg);
+    
+    virtual bool IsHidden() const;
 
     NC_STACK_ypabact();
     virtual ~NC_STACK_ypabact();
@@ -711,6 +713,8 @@ public:
     NC_STACK_base::Instance *_current_vp = NULL;
     World::BactList _attackersList;
     int _yls_time;  
+    
+    bool _hidden = false;
     
 protected:
     NC_STACK_ypaworld *_world;

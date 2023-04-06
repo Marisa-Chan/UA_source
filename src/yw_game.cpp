@@ -205,6 +205,9 @@ int NC_STACK_ypaworld::LevelCommonLoader(TLevelDescription *mapp, int levelID, i
     _dbgTotalRoboCountMax = 0;
     
     _playerOwner = 0;
+    
+    /* Set hidden fractions to default world's*/
+    _hiddenFractions = _worldHiddenFractions;
 
     if ( _gfxMode != GFX::Engine.GetGfxMode() || _GameShell->IsWindowedFlag() != GFX::Engine.GetGfxMode().windowed )
     {

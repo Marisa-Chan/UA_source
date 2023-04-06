@@ -751,8 +751,6 @@ public:
     uint32_t net_packet_max;
     uint32_t net_packet_cnt;
     uint32_t net_packet_avr;
-    
-    bool HideBlackSect = true;
 
 public:
     void clear();
@@ -2413,6 +2411,12 @@ public:
     {
         return Locale::Text::LevelName(lvl.LevelID, lvl.MapName);
     }
+    
+    bool IsHidden(uint32_t owner) const
+    {
+        return (_hiddenFractions & (1 << owner)) != 0;
+    }
+    
 
 public:
     //Data
@@ -2787,6 +2791,10 @@ public:
     
     /* Fix original bug */
     bool _fixWeaponRadius = false;
+    
+    /* */
+    uint32_t _worldHiddenFractions = World::OWNER_BLACK_BIT;
+    uint32_t _hiddenFractions = World::OWNER_BLACK_BIT;
 
 protected:
 

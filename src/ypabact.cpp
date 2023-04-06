@@ -7902,3 +7902,10 @@ void NC_STACK_ypabact::ChangeEscapeFlag(bool escape)
             node->_status_flg &= ~BACT_STFLAG_ESCAPE;
     }
 }
+
+bool NC_STACK_ypabact::IsHidden() const 
+{
+    if (_world && _world->IsHidden(_owner))
+        return true;
+    return _hidden;
+}

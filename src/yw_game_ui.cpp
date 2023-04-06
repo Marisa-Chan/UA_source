@@ -909,8 +909,7 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
 {
     char *pcur = cur;
 
-    if ( bact->_status != BACT_STATUS_DEAD && 
-         (!yw->_GameShell->HideBlackSect || bact->_owner != 5) )
+    if ( bact->_status != BACT_STATUS_DEAD && !bact->IsHidden() )
     {
         int v8;
 
