@@ -412,7 +412,10 @@ size_t NC_STACK_ypaworld::Process(base_64arg *arg)
             uint32_t v23 = profiler_begin();
 
             for (cellArea &cell : _cells)
+            {
                 cell.view_mask = cellArea::ViewMask(cell.owner);
+                cell.UnhideMask = 0;
+            }
 
             for (NC_STACK_ypabact* &unit : _unitsList)
                 unit->MarkSectorsForView();
@@ -1370,6 +1373,7 @@ NC_STACK_ypabact * NC_STACK_ypaworld::ypaworld_func146(ypaworld_arg146 *vhcl_id)
         bacto->_scale_pos = 0;
         
         bacto->_hidden = vhcl.hidden;
+        bacto->_unhideRadar = vhcl.unhideRadar;
 
         for (int i = 0; vhcl.scale_fx_pXX[ i ]; i++ )
         {

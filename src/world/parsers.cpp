@@ -1055,6 +1055,24 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     {
         _vhcl->hidden = StrGetBool(p2);
     }
+    else if ( !StriCmp(p1, "unhide_radar") )
+    {
+        _vhcl->unhideRadar = parser.stol(p2, NULL, 0);
+        
+        if (_vhcl->unhideRadar < 0)
+            _vhcl->unhideRadar = 0;
+        else if (_vhcl->unhideRadar > _vhcl->radar)
+            _vhcl->unhideRadar = _vhcl->radar + 1;
+    }
+    else if ( !StriCmp(p1, "add_unhide_radar") )
+    {
+        _vhcl->unhideRadar += parser.stol(p2, NULL, 0);
+        
+        if (_vhcl->unhideRadar < 0)
+            _vhcl->unhideRadar = 0;
+        else if (_vhcl->unhideRadar > _vhcl->radar)
+            _vhcl->unhideRadar = _vhcl->radar + 1;
+    }
     else
         return ParseSndFX(parser, p1, p2);
 

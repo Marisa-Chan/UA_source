@@ -5123,56 +5123,96 @@ size_t NC_STACK_ypabact::CheckFireAI(bact_arg101 *arg)
 
 void NC_STACK_ypabact::MarkSectorsForView()
 {
-    if ( _bact_type != BACT_TYPES_MISSLE )
+    /* Missle does not have kids, if else it's a BUG or must be another missle */
+    if ( _bact_type == BACT_TYPES_MISSLE )
+        return;
+ 
+    /* Unit already dead also must do not have any kids */
+    if ( _status == BACT_STATUS_DEAD || _status == BACT_STATUS_CREATE )
+        return;
+    
+    if ( !_parent || _cellId != _parent->_cellId || 
+        (_radar > _parent->_radar || _unhideRadar > _parent->_unhideRadar) )
     {
-        if ( _status != BACT_STATUS_DEAD && _status != BACT_STATUS_CREATE )
+        if ( _owner < 8 )
         {
-            if ( !_parent || _cellId != _parent->_cellId || _radar > _parent->_radar )
+            for (int i = -_radar; i <= _radar; i++)
             {
-                if ( _owner < 8 )
+                int yy = _cellId.y + i;
+
+                if ( _radar == 1 )
                 {
-                    for (int i = -_radar; i <= _radar; i++)
+                    if ( yy > 0 && yy < _wrldSectors.y - 1 )
                     {
-                        int yy = _cellId.y + i;
-
-                        if ( _radar == 1 )
+                        if (_unhideRadar > 0)
                         {
-                            if ( yy > 0 && yy < _wrldSectors.y - 1 )
+                            if ( _cellId.x > 1 )
                             {
-                                if ( _cellId.x > 1 )
-                                    _world->SectorAt(_cellId.x - 1, _cellId.y).AddToViewMask(_owner);
+                                _world->SectorAt(_cellId.x - 1, _cellId.y).AddToViewMask(_owner);
+                                _world->SectorAt(_cellId.x - 1, _cellId.y).AddUnhideMask(_owner);
+                            }
 
-                                _world->SectorAt(_cellId.x, yy).AddToViewMask(_owner);
+                            _world->SectorAt(_cellId.x, yy).AddToViewMask(_owner);
+                            _world->SectorAt(_cellId.x, yy).AddUnhideMask(_owner);
 
-                                if ( _cellId.x + 1 < _wrldSectors.x - 1 )
-                                    _world->SectorAt(_cellId.x + 1, yy).AddToViewMask(_owner);
+                            if ( _cellId.x + 1 < _wrldSectors.x - 1 )
+                            {
+                                _world->SectorAt(_cellId.x + 1, yy).AddToViewMask(_owner);
+                                _world->SectorAt(_cellId.x + 1, yy).AddUnhideMask(_owner);
                             }
                         }
                         else
                         {
-                            float vtmp = POW2((float)_radar) - POW2((float)i);
+                            if ( _cellId.x > 1 )
+                                _world->SectorAt(_cellId.x - 1, _cellId.y).AddToViewMask(_owner);
 
-                            if (vtmp < 0.0)
-                                vtmp = 0.0;
+                            _world->SectorAt(_cellId.x, yy).AddToViewMask(_owner);
 
-                            int tmp = dround( sqrt(vtmp) );
+                            if ( _cellId.x + 1 < _wrldSectors.x - 1 )
+                                _world->SectorAt(_cellId.x + 1, yy).AddToViewMask(_owner);
+                        }
+                    }
+                }
+                else
+                {
+                    float vtmp = POW2((float)_radar) - POW2((float)i);
 
-                            for (int j = -tmp; j <= tmp; j++)
+                    if (vtmp < 0.0)
+                        vtmp = 0.0;
+
+                    int tmp = dround( sqrt(vtmp) );
+
+                    if (_unhideRadar > 0 && Common::ABS(i) < _unhideRadar)
+                    {
+                        for (int j = -tmp; j <= tmp; j++)
+                        {
+                            Common::Point d(_cellId.x + j, yy);
+
+                            if ( _world->IsGamePlaySector(d) )
                             {
-                                Common::Point d(_cellId.x + j, yy);
-
-                                if ( _world->IsGamePlaySector(d) )
-                                    _world->SectorAt(d).AddToViewMask(_owner);
+                                _world->SectorAt(d).AddToViewMask(_owner);
+                                if (Common::ABS(j) < _unhideRadar)
+                                    _world->SectorAt(d).AddUnhideMask(_owner);
                             }
+                        }
+                    }
+                    else
+                    {
+                        for (int j = -tmp; j <= tmp; j++)
+                        {
+                            Common::Point d(_cellId.x + j, yy);
+
+                            if ( _world->IsGamePlaySector(d) )
+                                _world->SectorAt(d).AddToViewMask(_owner);
                         }
                     }
                 }
             }
-
-            for( NC_STACK_ypabact* &kid : _kidList )
-                kid->MarkSectorsForView();
         }
     }
+
+    for( NC_STACK_ypabact* &kid : _kidList )
+        kid->MarkSectorsForView();
 }
 
 void NC_STACK_ypabact::ypabact_func103(IDVPair *arg)
@@ -7905,7 +7945,28 @@ void NC_STACK_ypabact::ChangeEscapeFlag(bool escape)
 
 bool NC_STACK_ypabact::IsHidden() const 
 {
+    if (_hidden)
+        return true;
+    
     if (_world && _world->IsHidden(_owner))
         return true;
-    return _hidden;
+    
+    return false;
+}
+
+bool NC_STACK_ypabact::IsHiddenFor(uint8_t owner) const
+{
+    if (owner == _owner) // Own unit can be seen
+        return false;
+    
+    if (_pSector && _pSector->IsUnhideFor(owner))
+        return false;
+    
+    if (_hidden)
+        return true;
+    
+    if (_world && _world->IsHidden(_owner))
+        return true;
+    
+    return false;
 }

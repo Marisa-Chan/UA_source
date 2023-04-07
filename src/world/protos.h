@@ -197,6 +197,7 @@ struct TVhclProto
     IDVList initParams;
     
     bool hidden = false;
+    int8_t unhideRadar = 0;
     
     TRoboProto *RoboProto = NULL;
 

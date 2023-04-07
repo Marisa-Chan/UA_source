@@ -419,6 +419,7 @@ public:
     virtual size_t SetPath(bact_arg124 *arg);
     
     virtual bool IsHidden() const;
+    virtual bool IsHiddenFor(uint8_t owner) const;
 
     NC_STACK_ypabact();
     virtual ~NC_STACK_ypabact();
@@ -552,7 +553,7 @@ public:
     static constexpr const char * __ClassName = "ypabact.class";
 public:    
     
-    World::RefBactList::Node _cellRef;
+    World::RefBactList::Node _cellRef; 
     
     Common::Point _cellId;
     cellArea *_pSector = NULL;
@@ -715,6 +716,7 @@ public:
     int _yls_time;  
     
     bool _hidden = false;
+    int8_t _unhideRadar = 0;
     
 protected:
     NC_STACK_ypaworld *_world;

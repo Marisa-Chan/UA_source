@@ -909,7 +909,7 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
 {
     char *pcur = cur;
 
-    if ( bact->_status != BACT_STATUS_DEAD && !bact->IsHidden() )
+    if ( bact->_status != BACT_STATUS_DEAD && !bact->IsHiddenFor( yw->GetPlayerOwner() ) )
     {
         int v8;
 

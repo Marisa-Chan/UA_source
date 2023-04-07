@@ -906,11 +906,11 @@ struct cellArea
     int32_t Id = 0;
     Common::Point CellId;
 
-    float addit_cost; // Additional cost for ground units
-    uint8_t pf_flags; // Pathfind flags
-    float cost_to_this;
-    float cost_to_target;
-    cellArea *pf_treeup;
+    float addit_cost = 0.0; // Additional cost for ground units
+    uint8_t pf_flags = 0; // Pathfind flags
+    float cost_to_this = 0.0;
+    float cost_to_target = 0.0;
+    cellArea *pf_treeup = NULL;
  
     enum CF
     {
@@ -920,13 +920,14 @@ struct cellArea
     
     uint8_t Flags = 0;
 
-    uint8_t owner;
-    int32_t type_id; // Index in array
-    uint8_t SectorType; // Complex (3x3) or simple
-    int32_t energy_power; // Cell electric power
+    uint8_t owner = 0;
+    int32_t type_id = 0; // Index in array
+    uint8_t SectorType = 0; // Complex (3x3) or simple
+    int32_t energy_power = 0; // Cell electric power
     Common::PlaneArray<int16_t, 3, 3> buildings_health = Common::PlaneArray<int16_t, 3, 3>::ArrayInit(0);
     Common::PlaneArray<NC_STACK_base::Instance *, 3, 3> BldVPOpts = Common::PlaneArray<NC_STACK_base::Instance *, 3, 3>::ArrayInit(NULL);
-    uint8_t view_mask; // Who can view this sector (mask)
+    uint8_t view_mask = 0; // Who can view this sector (mask)
+    uint8_t UnhideMask = 0; // Who can unhide other fractions (mask)
     
     enum PTYPE
     {
@@ -945,15 +946,12 @@ struct cellArea
     
     World::RefBactList unitsList; // Units in this sector
     vec3d CenterPos;
-    float height;
-    float averg_height;
+    float height = 0.0;
+    float averg_height = 0.0;
     
     cellArea() : unitsList(this, NC_STACK_ypabact::GetCellRefNode) 
-    { 
-        BldVPOpts.fill(NULL);
-        
-        clear();
-    };
+    { BldVPOpts.fill(NULL); };
+    
     ~cellArea()
     {
         for (NC_STACK_base::Instance* opts : BldVPOpts)
@@ -978,10 +976,14 @@ struct cellArea
         view_mask &= ~ViewMask(ownr);
     }
     
-    inline static int32_t ViewMask(int ownr)
-    {
-        return (1 << ownr);
-    }
+    inline static int32_t ViewMask(int ownr) { return (1 << ownr); }
+    
+    bool IsUnhideFor(int owant) const { return (ViewMask(owant) & UnhideMask) != 0; }
+    
+    void AddUnhideMask(int ownr) { UnhideMask |= ViewMask(ownr); }
+    
+    void DelUnhideMask(int ownr) { UnhideMask &= ~ViewMask(ownr); }
+    
     
     int GetEnergy()
     {
@@ -1003,35 +1005,6 @@ struct cellArea
     inline bool IsGamePlaySector() const
     {
         return (Flags & CF_BORDER) == 0;
-    }
-    
-    void clear()
-    {
-        addit_cost = 0;
-        pf_flags = 0;
-        cost_to_this = 0.0;
-        cost_to_target = 0.0;
-        //nlist pf_treelist;
-        //nnode pf_treenode;
-        pf_treeup = NULL;
-        
-        Flags = 0;
-
-        owner = 0;
-        type_id = 0;
-        SectorType = 0;
-        energy_power = 0;
-        
-        buildings_health.fill(0);
-                
-        view_mask = 0;
-        PurposeType = PT_NONE;
-        PurposeIndex = 0;
-        
-        unitsList.clear();
-        
-        height = 0.0;
-        averg_height = 0.0;
     }
 };
 
@@ -2417,6 +2390,7 @@ public:
         return (_hiddenFractions & (1 << owner)) != 0;
     }
     
+    int8_t GetPlayerOwner() const { return _playerOwner; }
 
 public:
     //Data
