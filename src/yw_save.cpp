@@ -351,6 +351,8 @@ int yw_write_item_modifers(NC_STACK_ypaworld *yw, FSMgr::FileHandle *fil)
             fil->printf("    fire_z         = %4.2f\n", proto.fire_z);
             if (proto.hidden)
                 fil->printf("    ;#!hidden      = %s\n", (proto.hidden ? "yes" : "no") );
+            if (proto.unhideRadar > 0)
+                fil->printf("    ;#!unhide_radar      = %d\n", proto.unhideRadar);
             fil->printf("end\n\n");
         }
         i++;
