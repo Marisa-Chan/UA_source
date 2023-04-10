@@ -60,6 +60,8 @@ namespace System
     Common::Point GetResolution();
     
     std::vector<std::string>& GetCmdLineArray();
+    void AddCmdLine(const std::string &);
+    int32_t FindCmdLineArg(const std::string &);
 
 }
 #endif

@@ -38,6 +38,10 @@ inline vec2d SectorIDToCenterPos2(const Common::Point &sec)
 Common::PlaneBytes GetPlaneBytesFromBitmap(NC_STACK_bitmap *bitmap);
 Common::PlaneBytes LoadMapDataFromImage(const std::string &fileName);
 
+
+bool IsModsAllow(bool warning = false);
+bool AllowMods(bool allow = true);
+
 }
 
 #endif

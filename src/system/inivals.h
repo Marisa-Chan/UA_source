@@ -202,6 +202,8 @@ public:
     
     static Common::Ini::Key GfxVBO;
     
+    static Common::Ini::Key DevMode;
+    
 private:
     static Common::Ini::PKeyList _varList;    
 };

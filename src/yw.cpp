@@ -5986,8 +5986,10 @@ int NC_STACK_ypaworld::LoadingParseSaveFile(const std::string &filename)
         new World::Parsers::SaveHistoryParser(this),
         new World::Parsers::SaveMasksParser(this),
         new World::Parsers::SaveSuperBombParser(this),
-        new World::Parsers::SaveLuaScriptParser(this),
     };
+    
+    if (World::IsModsAllow(false))
+        parsers.push_back( new World::Parsers::SaveLuaScriptParser(this) );
 
     return ScriptParser::ParseFile(filename, parsers, ScriptParser::FLAG_NO_SCOPE_SKIP);
 }

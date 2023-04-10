@@ -419,4 +419,20 @@ std::vector<std::string>& GetCmdLineArray()
     return CommandLine;
 }
 
+void AddCmdLine(const std::string &arg)
+{
+    CommandLine.push_back(arg);
+}
+
+int32_t FindCmdLineArg(const std::string &arg)
+{
+    for (size_t i = 0; i < CommandLine.size(); i++)
+    {
+        if (StriCmp(CommandLine[i], arg) == 0)
+            return i;
+    }
+    return -1;
+}
+
+
 }

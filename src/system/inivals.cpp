@@ -201,6 +201,9 @@ Common::Ini::Key IniConf::ParticlesLimit("particles.limit", Common::Ini::KT_DIGI
 
 Common::Ini::Key IniConf::MenuWindowed("menu.windowed", Common::Ini::KT_BOOL, false);
 
+// AllowMods
+Common::Ini::Key IniConf::DevMode("devmode", Common::Ini::KT_BOOL, false);
+
 void IniConf::Init()
 {
     _varList = {
@@ -388,6 +391,8 @@ void IniConf::Init()
                   
         , &GfxAdditionalModes
         , &GfxVBO
+                  
+        , &DevMode
     };
 }
     

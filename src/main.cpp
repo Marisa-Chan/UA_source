@@ -732,11 +732,9 @@ void HandleMods()
     std::string modname;
     
     std::vector<std::string> &cmdl = System::GetCmdLineArray();
-    for (size_t i = 1; i < cmdl.size(); i++)
-    {
-        if (StriCmp(cmdl[i], "-mod") == 0 && i + 1 < cmdl.size())
-            modname = cmdl[i + 1];
-    }
+    int i = System::FindCmdLineArg("-mod");
+    if (i >= 0 && i + 1 < cmdl.size())
+        modname = cmdl[i + 1];
     
     if (modname.empty())
         return;
@@ -777,6 +775,8 @@ void HandleMods()
     FSMgr::iDir::GetRoot()->Override( mod );
     
     delete mod;
+    
+    World::AllowMods(true);
 }
 
 int WinMain__sub0()
@@ -784,12 +784,9 @@ int WinMain__sub0()
     if ( WinMain__sub0__sub0() )
     {
         std::vector<std::string> &cmdl = System::GetCmdLineArray();
-        for (size_t i = 1; i < cmdl.size(); i++)
-        {
-            if (StriCmp(cmdl[i], "-env") == 0 && i + 1 < cmdl.size())
-                Common::Env.SetPrefix("env", cmdl[i + 1]);
-        }
-
+        int i = System::FindCmdLineArg("-env");
+        if (i >= 0 && i + 1 < cmdl.size())
+            Common::Env.SetPrefix("env", cmdl[i + 1]);
 
         if ( WinMain__sub0__sub1() )
             return 1;
@@ -804,7 +801,7 @@ uint32_t maxTicks = 1000/60; // init on 60FPS
 int main(int argc, char *argv[])
 {
     for(int i = 0; i < argc; ++i)
-        System::GetCmdLineArray().push_back( std::string(argv[i]) );
+        System::AddCmdLine( std::string(argv[i]) );
     
     System::IniConf::Init();
     FSMgr::iDir::setBaseDir("");
@@ -813,6 +810,9 @@ int main(int argc, char *argv[])
     
     System::IniConf::ReadFromNucleusIni();
     bool gfxVbo = System::IniConf::GfxVBO.Get<bool>();
+    
+    if (System::IniConf::DevMode.Get<bool>() || System::FindCmdLineArg("-devmode") >= 0)
+        World::AllowMods(true);        
     
     System::Init(!gfxVbo);
     

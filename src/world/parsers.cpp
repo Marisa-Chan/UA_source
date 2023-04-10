@@ -1053,25 +1053,32 @@ int VhclProtoParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "hidden") )
     {
-        _vhcl->hidden = StrGetBool(p2);
+        if (IsModsAllow(true))
+            _vhcl->hidden = StrGetBool(p2);
     }
     else if ( !StriCmp(p1, "unhide_radar") )
     {
-        _vhcl->unhideRadar = parser.stol(p2, NULL, 0);
-        
-        if (_vhcl->unhideRadar < 0)
-            _vhcl->unhideRadar = 0;
-        else if (_vhcl->unhideRadar > _vhcl->radar)
-            _vhcl->unhideRadar = _vhcl->radar + 1;
+        if (IsModsAllow(true))
+        {
+            _vhcl->unhideRadar = parser.stol(p2, NULL, 0);
+
+            if (_vhcl->unhideRadar < 0)
+                _vhcl->unhideRadar = 0;
+            else if (_vhcl->unhideRadar > _vhcl->radar)
+                _vhcl->unhideRadar = _vhcl->radar + 1;
+        }
     }
     else if ( !StriCmp(p1, "add_unhide_radar") )
     {
-        _vhcl->unhideRadar += parser.stol(p2, NULL, 0);
-        
-        if (_vhcl->unhideRadar < 0)
-            _vhcl->unhideRadar = 0;
-        else if (_vhcl->unhideRadar > _vhcl->radar)
-            _vhcl->unhideRadar = _vhcl->radar + 1;
+        if (IsModsAllow(true))
+        {
+            _vhcl->unhideRadar += parser.stol(p2, NULL, 0);
+
+            if (_vhcl->unhideRadar < 0)
+                _vhcl->unhideRadar = 0;
+            else if (_vhcl->unhideRadar > _vhcl->radar)
+                _vhcl->unhideRadar = _vhcl->radar + 1;
+        }
     }
     else
         return ParseSndFX(parser, p1, p2);
@@ -2044,11 +2051,13 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
     }
     else if ( !StriCmp(p1, "multi_building") )
     {
-        _o._allowMultiBuildWorld = StrGetBool(p2);
+        if (IsModsAllow(true))
+            _o._allowMultiBuildWorld = StrGetBool(p2);
     }
     else if ( !StriCmp(p1, "hidden_fractions") )
     {
-        _o._worldHiddenFractions = parser.stol(p2, NULL, 0);
+        if (IsModsAllow(true))
+            _o._worldHiddenFractions = parser.stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
@@ -2292,15 +2301,18 @@ int LevelDataParser::Handle(ScriptParser::Parser &parser, const std::string &p1,
     }
     else if ( !StriCmp(p1, "lua_script") )
     {
-        _o._luaScriptName = p2;
+        if (IsModsAllow(true))
+            _o._luaScriptName = p2;
     }
     else if ( !StriCmp(p1, "multi_building") )
     {
-        _o._allowMultiBuildLevel = StrGetBool(p2);
+        if (IsModsAllow(true))
+            _o._allowMultiBuildLevel = StrGetBool(p2);
     }
     else if ( !StriCmp(p1, "hidden_fractions") )
     {
-        _o._hiddenFractions = parser.stol(p2, NULL, 0);
+        if (IsModsAllow(true))
+            _o._hiddenFractions = parser.stol(p2, NULL, 0);
     }
     else
         return ScriptParser::RESULT_UNKNOWN;
