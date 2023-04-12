@@ -33,6 +33,10 @@ extern "C" {
 #define OLDPTS 
 #endif
 
+#if (LIBAVUTIL_VERSION_INT < AV_VERSION_INT(57, 24, 100))
+#define OLDCHANNEL
+#endif
+
 namespace System
 {
 
@@ -251,7 +255,10 @@ void TMovie::Close()
         glDeleteTextures(1, &_ctx->screenTex);
     
     if (_ctx->swr_ctx)
+    {
         swr_free(&_ctx->swr_ctx);
+        _ctx->swr_ctx = NULL;
+    }
     
     if (_ctx->adst_data)
     {
@@ -484,20 +491,35 @@ void TMovie::ProcessAudio()
 #else
         uint32_t ts = 1000 * av_frame_get_best_effort_timestamp(frm) * s->time_base.num / s->time_base.den;
 #endif
+        
+#ifndef OLDCHANNEL
+        int32_t channels = frm->ch_layout.nb_channels;
+#else
+        int32_t channels = frm->channels;
+#endif
 
         if (!_ctx->AudioSetted)
         {
             switch(_ctx->AudCodecCtx->sample_fmt)
             {
                 case AV_SAMPLE_FMT_U8P:
+#ifndef OLDCHANNEL                    
+                    swr_alloc_set_opts2(&_ctx->swr_ctx, &frm->ch_layout, AV_SAMPLE_FMT_U8, _ctx->AudCodecCtx->sample_rate, 
+                                                &_ctx->AudCodecCtx->ch_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
+                                          0, NULL);
+                    swr_init(_ctx->swr_ctx);
+                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
+                    _ctx->adst_nb_samples = frm->nb_samples;
+#else
                     _ctx->swr_ctx = swr_alloc_set_opts(NULL, (frm->channels > 1 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO), AV_SAMPLE_FMT_U8, _ctx->AudCodecCtx->sample_rate, 
                                                              _ctx->AudCodecCtx->channel_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
                                                        0, NULL);
                     swr_init(_ctx->swr_ctx);
-                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
+                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
                     _ctx->adst_nb_samples = frm->nb_samples;
+#endif
                 case AV_SAMPLE_FMT_U8:
-                    if (_ctx->AudCodecCtx->channels > 1)
+                    if (channels > 1)
                         SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_STEREO8, _ctx->AudCodecCtx->sample_rate);
                     else
                         SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_MONO8, _ctx->AudCodecCtx->sample_rate);
@@ -506,14 +528,23 @@ void TMovie::ProcessAudio()
 
                 case AV_SAMPLE_FMT_S16P:
                 default:
+#ifndef OLDCHANNEL 
+                    swr_alloc_set_opts2(&_ctx->swr_ctx, &frm->ch_layout, AV_SAMPLE_FMT_S16, _ctx->AudCodecCtx->sample_rate, 
+                                              &_ctx->AudCodecCtx->ch_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
+                                          0, NULL);
+                    swr_init(_ctx->swr_ctx);
+                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
+                    _ctx->adst_nb_samples = frm->nb_samples;
+#else
                     _ctx->swr_ctx = swr_alloc_set_opts(NULL, (frm->channels > 1 ? AV_CH_LAYOUT_STEREO : AV_CH_LAYOUT_MONO), AV_SAMPLE_FMT_S16, _ctx->AudCodecCtx->sample_rate, 
                                                              _ctx->AudCodecCtx->channel_layout, _ctx->AudCodecCtx->sample_fmt, _ctx->AudCodecCtx->sample_rate, 
                                                        0, NULL);
                     swr_init(_ctx->swr_ctx);
-                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
+                    av_samples_alloc_array_and_samples(&_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
                     _ctx->adst_nb_samples = frm->nb_samples;
+#endif
                 case AV_SAMPLE_FMT_S16:
-                    if (_ctx->AudCodecCtx->channels > 1)
+                    if (channels > 1)
                         SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_STEREO16, _ctx->AudCodecCtx->sample_rate);
                     else
                         SFXEngine::SFXe.AudioStream->SetFormat(AL_FORMAT_MONO16, _ctx->AudCodecCtx->sample_rate);
@@ -523,16 +554,14 @@ void TMovie::ProcessAudio()
             _ctx->AudioSetted = true;
         }
 
-
-
         switch(_ctx->AudCodecCtx->sample_fmt)
         {
             case AV_SAMPLE_FMT_U8:
-                SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * frm->channels, ts);
+                SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * channels, ts);
                 break;
 
             case AV_SAMPLE_FMT_S16:
-                SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * frm->channels * 2, ts);
+                SFXEngine::SFXe.AudioStream->Feed(frm->data[0], frm->nb_samples * channels * 2, ts);
                 break;
 
 
@@ -540,12 +569,12 @@ void TMovie::ProcessAudio()
                 if (frm->nb_samples > _ctx->adst_nb_samples)
                 {
                     av_freep(&_ctx->adst_data[0]);
-                    av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
+                    av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, channels), frm->nb_samples, AV_SAMPLE_FMT_U8, 0);
                     _ctx->adst_nb_samples = frm->nb_samples;
                 }
                 swr_convert(_ctx->swr_ctx, _ctx->adst_data, frm->nb_samples, (const uint8_t **)frm->data, frm->nb_samples);
 
-                SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * Common::MIN(2, frm->channels), ts);
+                SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * Common::MIN(2, channels), ts);
                 break;
 
             case AV_SAMPLE_FMT_S16P:
@@ -553,12 +582,12 @@ void TMovie::ProcessAudio()
                 if (frm->nb_samples > _ctx->adst_nb_samples)
                 {
                     av_freep(&_ctx->adst_data[0]);
-                    av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, frm->channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
+                    av_samples_alloc(_ctx->adst_data, &_ctx->adst_linesize, Common::MIN(2, channels), frm->nb_samples, AV_SAMPLE_FMT_S16, 0);
                     _ctx->adst_nb_samples = frm->nb_samples;
                 }
                 swr_convert(_ctx->swr_ctx, _ctx->adst_data, frm->nb_samples, (const uint8_t **)frm->data, frm->nb_samples);
 
-                SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * 2 * Common::MIN(2, frm->channels), ts);
+                SFXEngine::SFXe.AudioStream->Feed(_ctx->adst_data[0], frm->nb_samples * 2 * Common::MIN(2, channels), ts);
                 break;
         }
 
