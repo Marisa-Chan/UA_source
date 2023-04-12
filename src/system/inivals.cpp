@@ -193,9 +193,6 @@ Common::Ini::Key IniConf::NetGameExclusiveGem("netgame.exclusivegem", Common::In
 Common::Ini::Key IniConf::NetWaitStart("net.waitstart", Common::Ini::KT_DIGIT, (int32_t)150000);
 Common::Ini::Key IniConf::NetKickoff("net.kickoff", Common::Ini::KT_DIGIT, (int32_t)20000);
 
-// Tune
-Common::Ini::Key IniConf::TuneWeaponRadius("tune.weapon_radius", Common::Ini::KT_BOOL);
-
 // Particles
 Common::Ini::Key IniConf::ParticlesLimit("particles.limit", Common::Ini::KT_DIGIT, (int32_t)5000);
 
@@ -375,7 +372,6 @@ void IniConf::Init()
         , &NetWaitStart
         , &NetKickoff
 
-        , &TuneWeaponRadius
         , &GfxColorEffects
         , &GfxColorEffPower1
         , &GfxColorEffPower2

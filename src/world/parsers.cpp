@@ -2059,6 +2059,11 @@ int MiscParser::Handle(ScriptParser::Parser &parser, const std::string &p1, cons
         if (IsModsAllow(true))
             _o._worldHiddenFractions = parser.stol(p2, NULL, 0);
     }
+    else if ( !StriCmp(p1, "fix_weapon_radius") )
+    {
+        if (IsModsAllow(true))
+            _o._fixWeaponRadius = StrGetBool(p2);
+    }
     else
         return ScriptParser::RESULT_UNKNOWN;
 

@@ -2316,10 +2316,7 @@ public:
     TSectorCollision sub_44DBF8(int _dx, int _dz, int _dxx, int _dzz, int flags);
     void sub_44E07C(TSectorCollision &arg);
     void sub_44D8B8(ypaworld_arg136 *arg, const TSectorCollision &loc);
-    void ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2);
-    
-    void SetFixWeaponRadius( bool fix ) { _fixWeaponRadius = fix; };
-    
+    void ypaworld_func137__sub0(ypaworld_arg137 *arg, const TSectorCollision &a2);    
     
     void VoiceMessageUpdate();
     void VoiceMessagePlayFile(const std::string &flname, NC_STACK_ypabact *unit, int a5);

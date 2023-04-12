@@ -36,7 +36,6 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 
 
 **Additional keys (nucleus.ini)**:
-- tune.weapon_radius   on/off(default) - enable(on) fix of original bug that prevent working of different weapon radius
 - gfx.blending   0(default)/1/2 - blending mode for transparent things. 0 - default multiply, 1 - additive, 2 - sharp edged
 - gfx.solidfont   on/off(default) - enable(on) pointy font rasterizing without of pixel blending
 - gfx.vsync 0/1(default)/2 - vertical sync type. 0 - disable, 1 - default sync, 2 - adaptive(if you've already missed the vertical retrace for a given frame, it swaps buffers immediately)
@@ -56,6 +55,9 @@ Opensource reimplementation of **UrbanAssault** engine. You needed copy of origi
 - menu.windowed on/off(default) - always open game menu in windowed mode
 - gfx.vbo on(default)/off - disable modern VBO(upload vertex data into video card)
 
+
+
+- world.ini : begin_misc : fix_weapon_radius - on/off(default) - enable(on) fix of original bug that prevent working of different weapon radius
 - world.ini : begin_misc : hidden_fractions - mask for hidden fractions for whole world
 - levelfile : begin_level : hidden_fractions - mask for hidden fractions for this level
 - vehicle : hidden (yes/no) - hide this unit type

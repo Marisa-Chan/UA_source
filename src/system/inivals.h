@@ -193,8 +193,6 @@ public:
     static Common::Ini::Key NetWaitStart;
     static Common::Ini::Key NetKickoff;
     
-    static Common::Ini::Key TuneWeaponRadius;
-    
     static Common::Ini::Key ParticlesLimit;
     static Common::Ini::Key MenuWindowed;
     

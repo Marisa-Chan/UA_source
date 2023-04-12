@@ -826,8 +826,6 @@ int main(int argc, char *argv[])
 
     System::IniConf::ReadFromNucleusIni();
 
-    ypaworld->SetFixWeaponRadius( System::IniConf::TuneWeaponRadius.Get<bool>() );
-
     uint32_t ticks = 0;
     
     Gui::Root::Instance.SetHwCompose(true);
