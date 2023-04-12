@@ -732,8 +732,8 @@ void HandleMods()
     std::string modname;
     
     std::vector<std::string> &cmdl = System::GetCmdLineArray();
-    int i = System::FindCmdLineArg("-mod");
-    if (i >= 0 && i + 1 < cmdl.size())
+    int32_t i = System::FindCmdLineArg("-mod");
+    if (i >= 0 && i + 1 < (int32_t)cmdl.size())
         modname = cmdl[i + 1];
     
     if (modname.empty())
@@ -784,8 +784,8 @@ int WinMain__sub0()
     if ( WinMain__sub0__sub0() )
     {
         std::vector<std::string> &cmdl = System::GetCmdLineArray();
-        int i = System::FindCmdLineArg("-env");
-        if (i >= 0 && i + 1 < cmdl.size())
+        int32_t i = System::FindCmdLineArg("-env");
+        if (i >= 0 && i + 1 < (int32_t)cmdl.size())
             Common::Env.SetPrefix("env", cmdl[i + 1]);
 
         if ( WinMain__sub0__sub1() )
