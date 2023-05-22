@@ -2830,23 +2830,19 @@ int ypaworld_func64__sub4(NC_STACK_ypaworld *yw, base_64arg *arg)
         {
             const std::string v6 = Locale::Text::Common(Locale::CMN_PAUSED);
 
-            char v10[256];
-            char *pcur = v10;
+            CmdStream v10;
+            v10.reserve(256);
 
-            FontUA::select_tileset(&pcur, 15);
+            FontUA::select_tileset(&v10, 15);
 
-            FontUA::set_xpos(&pcur, 0);
-            FontUA::set_center_ypos(&pcur, -yw->_fontH / 2);
+            FontUA::set_xpos(&v10, 0);
+            FontUA::set_center_ypos(&v10, -yw->_fontH / 2);
 
-            pcur = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pcur, v6, yw->_screenSize.x);
+            FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], &v10, v6, yw->_screenSize.x);
 
-            FontUA::set_end(&pcur);
+            FontUA::set_end(&v10);
 
-            w3d_a209 arg209;
-            arg209.includ = 0;
-            arg209.cmdbuf = v10;
-
-            GFX::Engine.raster_func209(&arg209);
+            GFX::Engine.ProcessDrawSeq(v10);
         }
 
         SFXEngine::SFXe.sb_0x424c74();
@@ -4588,11 +4584,9 @@ void NC_STACK_ypaworld::CameraPrepareRender(TGameRecorder *rcrd, NC_STACK_ypabac
     bact->_tForm.SclRot = bact->_rotation;
 }
 
-char *sub_445654(NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ...)
+void sub_445654(NC_STACK_ypaworld *yw, CmdStream *in, char *buf, const char *fmt, ...)
 {
-    char *cur = in;
-
-    FontUA::copy_position(&cur);
+    FontUA::copy_position(in);
 
     va_list va;
     va_start(va, fmt);
@@ -4601,9 +4595,7 @@ char *sub_445654(NC_STACK_ypaworld *yw, char *in, char *buf, const char *fmt, ..
 
     va_end(va);
 
-    FontUA::add_txt(&cur, yw->_screenSize.x, 1, buf);
-
-    return cur;
+    FontUA::add_txt(in, yw->_screenSize.x, 1, buf);
 }
 
 void NC_STACK_ypaworld::debug_count_units()
@@ -4695,14 +4687,13 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
     else
     {
 
-        char dbg_txt[4096];
+        CmdStream dbg_txt;
+        dbg_txt.reserve(4096);
         char buf_sprintf[2048];
 
-        char *cmd = dbg_txt;
-
-        FontUA::select_tileset(&cmd, 15);
-        FontUA::set_xpos(&cmd, 8);
-        FontUA::set_ypos(&cmd, 16);
+        FontUA::select_tileset(&dbg_txt, 15);
+        FontUA::set_xpos(&dbg_txt, 8);
+        FontUA::set_ypos(&dbg_txt, 16);
 
         int v104 = 0;
 
@@ -4712,9 +4703,9 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
 
             if ( !_buildDate.empty() )
             {
-                cmd = sub_445654(this, cmd, buf_sprintf, "build id: %s", _buildDate.c_str());
+                sub_445654(this, &dbg_txt, buf_sprintf, "build id: %s", _buildDate.c_str());
 
-                FontUA::next_line(&cmd);
+                FontUA::next_line(&dbg_txt);
             }
 
             int this_time = _timeStamp / 1024;
@@ -4725,9 +4716,9 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
             else
                 all_time = (_timeStamp + _playersStats[1].ElapsedTime) / 1024;
 
-            cmd = sub_445654(
+            sub_445654(
                       this,
-                      cmd,
+                      &dbg_txt,
                       buf_sprintf,
                       "time: (this: %02d:%02d:%02d) (all: %02d:%02d:%02d)",
                       this_time / 60 / 60,
@@ -4737,56 +4728,56 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
                       all_time / 60 % 60,
                       all_time % 60 );
 
-            FontUA::next_line(&cmd);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof all: %d", _profileVals[PFID_FRAMETIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof all: %d", _profileVals[PFID_FRAMETIME]);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof fprint: %d", _profileVals[PFID_MARKTIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof fprint: %d", _profileVals[PFID_MARKTIME]);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof gui: %d", _profileVals[PFID_GUITIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof gui: %d", _profileVals[PFID_GUITIME]);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof ai: %d", _profileVals[PFID_UPDATETIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof ai: %d", _profileVals[PFID_UPDATETIME]);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof rend: %d", _profileVals[PFID_RENDERTIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof rend: %d", _profileVals[PFID_RENDERTIME]);
+            FontUA::next_line(&dbg_txt);
             
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof 2d rend: %d", _profileVals[PFID_NEWGUITIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof 2d rend: %d", _profileVals[PFID_NEWGUITIME]);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "prof net: %d", _profileVals[PFID_NETTIME]);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "prof net: %d", _profileVals[PFID_NETTIME]);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "sec type/wtype: %d/%d", _userUnit->_pSector->type_id, _userUnit->_pSector->PurposeType);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "sec type/wtype: %d/%d", _userUnit->_pSector->type_id, _userUnit->_pSector->PurposeType);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "beam energy: %d", _beamEnergyCapacity);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "beam energy: %d", _beamEnergyCapacity);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "num sqd: %d,%d", _dbgTotalSquadCount, _dbgTotalSquadCountMax);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "num sqd: %d,%d", _dbgTotalSquadCount, _dbgTotalSquadCountMax);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "num vhcl: %d,%d", _dbgTotalVehicleCount, _dbgTotalVehicleCountMax);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "num vhcl: %d,%d", _dbgTotalVehicleCount, _dbgTotalVehicleCountMax);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "num flk: %d,%d", _dbgTotalFlakCount, _dbgTotalFlakCountMax);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "num flk: %d,%d", _dbgTotalFlakCount, _dbgTotalFlakCountMax);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "num robo: %d,%d", _dbgTotalRoboCount, _dbgTotalRoboCountMax);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "num robo: %d,%d", _dbgTotalRoboCount, _dbgTotalRoboCountMax);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "num wpn: %d,%d", _dbgTotalWeaponCount, _dbgTotalWeaponCountMax);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "num wpn: %d,%d", _dbgTotalWeaponCount, _dbgTotalWeaponCountMax);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "reload const: %d", _userRobo->_reload_const);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "reload const: %d", _userRobo->_reload_const);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(
+            sub_445654(
                       this,
-                      cmd,
+                      &dbg_txt,
                       buf_sprintf,
                       "num all vhcl: %d,%d,%d,%d,%d,%d,%d,%d",
                       _countUnitsPerOwner[0],
@@ -4797,11 +4788,11 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
                       _countUnitsPerOwner[5],
                       _countUnitsPerOwner[6],
                       _countUnitsPerOwner[7]);
-            FontUA::next_line(&cmd);
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(
+            sub_445654(
                       this,
-                      cmd,
+                      &dbg_txt,
                       buf_sprintf,
                       "rld ratio: %8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f,%8.2f",
                       _reloadRatioPositive[0],
@@ -4812,20 +4803,20 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
                       _reloadRatioPositive[5],
                       _reloadRatioPositive[6],
                       _reloadRatioPositive[7]);
-            FontUA::next_line(&cmd);
+            FontUA::next_line(&dbg_txt);
 
             if ( _invulnerable )
-                cmd = sub_445654(this, cmd, buf_sprintf, "invulnerable: %s", "YES");
+                sub_445654(this, &dbg_txt, buf_sprintf, "invulnerable: %s", "YES");
             else
-                cmd = sub_445654(this, cmd, buf_sprintf, "invulnerable: %s", "NO");
-            FontUA::next_line(&cmd);
+                sub_445654(this, &dbg_txt, buf_sprintf, "invulnerable: %s", "NO");
+            FontUA::next_line(&dbg_txt);
         }
         else if ( _showDebugMode == 2 )
         {
             if ( _GameShell && _isNetGame )
             {
-                FontUA::next_line(&cmd);
-                FontUA::next_line(&cmd);
+                FontUA::next_line(&dbg_txt);
+                FontUA::next_line(&dbg_txt);
 
                 for (UserData::TNetPlayerData &pl : _GameShell->netPlayers)
                 {
@@ -4880,69 +4871,69 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
                             break;
                         }
 
-                        cmd = sub_445654(this, cmd, buf_sprintf, "%s status: %s latency: %d", v35, v36, pl.Latency);
+                        sub_445654(this, &dbg_txt, buf_sprintf, "%s status: %s latency: %d", v35, v36, pl.Latency);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
                     }
                 }
 
-                FontUA::next_line(&cmd);
+                FontUA::next_line(&dbg_txt);
 
-                cmd = sub_445654(this, cmd, buf_sprintf, "net send: %d bytes/sec", _GameShell->netsend_speed);
-                FontUA::next_line(&cmd);
+                sub_445654(this, &dbg_txt, buf_sprintf, "net send: %d bytes/sec", _GameShell->netsend_speed);
+                FontUA::next_line(&dbg_txt);
 
-                cmd = sub_445654(this, cmd, buf_sprintf, "net rcv: %d bytes/sec", _GameShell->netrecv_speed);
-                FontUA::next_line(&cmd);
+                sub_445654(this, &dbg_txt, buf_sprintf, "net rcv: %d bytes/sec", _GameShell->netrecv_speed);
+                FontUA::next_line(&dbg_txt);
 
-                cmd = sub_445654(this, cmd, buf_sprintf, "packet: %d bytes", _GameShell->net_packet_size);
-                FontUA::next_line(&cmd);
+                sub_445654(this, &dbg_txt, buf_sprintf, "packet: %d bytes", _GameShell->net_packet_size);
+                FontUA::next_line(&dbg_txt);
 
                 if ( _netInfoOverkill )
-                    cmd = sub_445654(this, cmd, buf_sprintf, "WARNING: INFO OVERKILL");
+                    sub_445654(this, &dbg_txt, buf_sprintf, "WARNING: INFO OVERKILL");
 
-                FontUA::next_line(&cmd);
+                FontUA::next_line(&dbg_txt);
 
                 if ( _netDriver )
                 {
                     int v100[7];
                     _netDriver->GetStats(v100);
 
-                    FontUA::next_line(&cmd);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "thread send list now: %d", v100[0]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "thread send list now: %d", v100[0]);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "thread recv list now: %d", v100[1]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "thread recv list now: %d", v100[1]);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "thread send list max: %d", v100[3]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "thread send list max: %d", v100[3]);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "thread recv list max: %d", v100[2]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "thread recv list max: %d", v100[2]);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "send call now: %d", v100[4]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "send call now: %d", v100[4]);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "send call max: %d", v100[5]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "send call max: %d", v100[5]);
+                    FontUA::next_line(&dbg_txt);
 
-                    cmd = sub_445654(this, cmd, buf_sprintf, "send bugs: %d", v100[6]);
-                    FontUA::next_line(&cmd);
+                    sub_445654(this, &dbg_txt, buf_sprintf, "send bugs: %d", v100[6]);
+                    FontUA::next_line(&dbg_txt);
                 }
             }
             else
             {
-                cmd = sub_445654(this, cmd, buf_sprintf, "not a network game");
-                FontUA::next_line(&cmd);
+                sub_445654(this, &dbg_txt, buf_sprintf, "not a network game");
+                FontUA::next_line(&dbg_txt);
             }
         }
         else if ( _showDebugMode == 3 )
         {
             for (int i = 0; i < 17; i++)
             {
-                cmd = sub_445654(this, cmd, buf_sprintf, "slider[%d] = %f", i, inpt->Sliders[i]);
-                FontUA::next_line(&cmd);
+                sub_445654(this, &dbg_txt, buf_sprintf, "slider[%d] = %f", i, inpt->Sliders[i]);
+                FontUA::next_line(&dbg_txt);
             }
 
             std::string buf;
@@ -4955,11 +4946,11 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
                     buf += '_';
             }
 
-            cmd = sub_445654(this, cmd, buf_sprintf, buf.c_str());
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, buf.c_str());
+            FontUA::next_line(&dbg_txt);
 
-            cmd = sub_445654(this, cmd, buf_sprintf, "keycode = %d", inpt->KbdLastDown);
-            FontUA::next_line(&cmd);
+            sub_445654(this, &dbg_txt, buf_sprintf, "keycode = %d", inpt->KbdLastDown);
+            FontUA::next_line(&dbg_txt);
         }
         else
         {
@@ -4981,8 +4972,8 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
 
                         v109 = 1;
 
-                        cmd = sub_445654(this, cmd, buf_sprintf, "robo owner %d with energy %d / %d / %d / %d", robo->_owner, robo->_energy, robo->_roboBuildSpare, robo->_roboVehicleSpare, robo->_energy_max);
-                        FontUA::next_line(&cmd);
+                        sub_445654(this, &dbg_txt, buf_sprintf, "robo owner %d with energy %d / %d / %d / %d", robo->_owner, robo->_energy, robo->_roboBuildSpare, robo->_roboVehicleSpare, robo->_energy_max);
+                        FontUA::next_line(&dbg_txt);
 
                         const char *v71;
                         const char *v73;
@@ -5037,85 +5028,85 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
                             break;
                         }
 
-                        cmd = sub_445654(this, cmd, buf_sprintf, "    do build job   >%s<   and vhcl job   >%s<", v71, v73);
-                        FontUA::next_line(&cmd);
+                        sub_445654(this, &dbg_txt, buf_sprintf, "    do build job   >%s<   and vhcl job   >%s<", v71, v73);
+                        FontUA::next_line(&dbg_txt);
 
-                        cmd = sub_445654(this, cmd, buf_sprintf, "    wait power %d, radar %d, flak %d, location %d",
+                        sub_445654(this, &dbg_txt, buf_sprintf, "    wait power %d, radar %d, flak %d, location %d",
                                          robo->_roboPowerDelay / 1000,
                                          robo->_roboRadarDelay / 1000,
                                          robo->_roboSafetyDelay / 1000,
                                          robo->_roboPositionDelay / 1000);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
-                        cmd = sub_445654(this, cmd, buf_sprintf, "    wait conquer %d, defense %d, recon %d, robo %d",
+                        sub_445654(this, &dbg_txt, buf_sprintf, "    wait conquer %d, defense %d, recon %d, robo %d",
                                          robo->_roboConqDelay / 1000,
                                          robo->_roboEnemyDelay / 1000,
                                          robo->_roboExploreDelay / 1000,
                                          robo->_roboDangerDelay / 1000);
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
-                        cmd = sub_445654(this, cmd, buf_sprintf, "    values  ");
-                        FontUA::next_line(&cmd);
+                        sub_445654(this, &dbg_txt, buf_sprintf, "    values  ");
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboPowerDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "power -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "power -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "power %d, ", robo->_roboPowerValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "power %d, ", robo->_roboPowerValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboRadarDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "radar -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "radar -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "radar %d, ", robo->_roboRadarValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "radar %d, ", robo->_roboRadarValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboSafetyDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "flak -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "flak -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "flak %d, ", robo->_roboSafetyValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "flak %d, ", robo->_roboSafetyValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboPositionDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "power -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "power -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "power %d, ", robo->_roboPositionValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "power %d, ", robo->_roboPositionValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboEnemyDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "defense -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "defense -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "defense %d, ", robo->_roboEnemyValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "defense %d, ", robo->_roboEnemyValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboConqDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "conquer -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "conquer -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "conquer %d, ", robo->_roboConqValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "conquer %d, ", robo->_roboConqValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboExploreDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "recon -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "recon -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "recon %d, ", robo->_roboExploreValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "recon %d, ", robo->_roboExploreValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboDangerDelay > 0 )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "robo -1, ");
+                            sub_445654(this, &dbg_txt, buf_sprintf, "robo -1, ");
                         else
-                            cmd = sub_445654(this, cmd, buf_sprintf, "robo %d, ", robo->_roboDangerValue);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "robo %d, ", robo->_roboDangerValue);
 
-                        FontUA::next_line(&cmd);
+                        FontUA::next_line(&dbg_txt);
 
                         if ( robo->_roboState & NC_STACK_yparobo::ROBOSTATE_DOCKINUSE )
-                            cmd = sub_445654(this, cmd, buf_sprintf, "dock energy %d time %d", robo->_roboDockEnerg, robo->_roboDockTime);
+                            sub_445654(this, &dbg_txt, buf_sprintf, "dock energy %d time %d", robo->_roboDockEnerg, robo->_roboDockTime);
                     }
                 }
             }
@@ -5125,21 +5116,17 @@ void NC_STACK_ypaworld::debug_info_draw(TInputState *inpt)
         }
 
 
-        FontUA::next_line(&cmd);
+        FontUA::next_line(&dbg_txt);
 
-        cmd = sub_445654(this, cmd, buf_sprintf, "fps: %d", _FPS);
-        FontUA::next_line(&cmd);
+        sub_445654(this, &dbg_txt, buf_sprintf, "fps: %d", _FPS);
+        FontUA::next_line(&dbg_txt);
 
-        cmd = sub_445654(this, cmd, buf_sprintf, "polys: %d,%d", _polysCount, _polysDraw);
-        FontUA::next_line(&cmd);
+        sub_445654(this, &dbg_txt, buf_sprintf, "polys: %d,%d", _polysCount, _polysDraw);
+        FontUA::next_line(&dbg_txt);
 
-        FontUA::set_end(&cmd);
+        FontUA::set_end(&dbg_txt);
 
-        w3d_a209 arg209;
-        arg209.cmdbuf = dbg_txt;
-        arg209.includ = 0;
-
-        GFX::Engine.raster_func209(&arg209);
+        GFX::Engine.ProcessDrawSeq(dbg_txt);
 
 
         if ( v104 )

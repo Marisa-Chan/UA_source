@@ -5260,35 +5260,29 @@ void draw_tooltip(NC_STACK_ypaworld *yw)
             }
         }
 
-        char buf[1024];
+        CmdStream buf;
+        buf.reserve(1024);
 
-        char *pos = buf;
-
-        FontUA::select_tileset(&pos, 15);
-        FontUA::set_xpos(&pos, 0);
-        FontUA::set_ypos(&pos, v15);
+        FontUA::select_tileset(&buf, 15);
+        FontUA::set_xpos(&buf, 0);
+        FontUA::set_ypos(&buf, v15);
 
         if ( !v2.empty() )
         {
-            FontUA::set_txtColor(&pos, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
+            FontUA::set_txtColor(&buf, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
 
-            pos = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pos, v2.c_str(), yw->_screenSize.x);
+            FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], &buf, v2.c_str(), yw->_screenSize.x);
 
-            FontUA::next_line(&pos);
+            FontUA::next_line(&buf);
         }
 
-        FontUA::set_txtColor(&pos, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
+        FontUA::set_txtColor(&buf, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
-        pos = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pos,  yw->GetTooltipString() , yw->_screenSize.x);
+        FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], &buf,  yw->GetTooltipString() , yw->_screenSize.x);
 
-        FontUA::set_end(&pos);
+        FontUA::set_end(&buf);
 
-        w3d_a209 v10;
-
-        v10.cmdbuf = buf;
-        v10.includ = 0;
-
-        GFX::Engine.raster_func209(&v10);
+        GFX::Engine.ProcessDrawSeq(buf);
     }
     
     yw->_toolTipHotKeyId = -1;

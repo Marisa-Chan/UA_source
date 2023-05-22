@@ -3963,24 +3963,24 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
     TInputState inpt;
     Input::Engine.QueryInput(&inpt);
 
-    char buf[1024];
-    char *cur = buf;
+    CmdStream buf;
+    buf.reserve(1024);
 
-    FontUA::select_tileset(&cur, 0);
-    FontUA::set_xpos(&cur, 0);
-    FontUA::set_ypos(&cur, 0);
-    FontUA::copy_position(&cur);
-    FontUA::add_txt(&cur, 2 * yw->_screenSize.x / 3 - 1, 1,  Locale::Text::Get(Locale::LBL_WAITINGFOR, Locale::DefaultStrings::WaitingForPlayers) );
-    FontUA::next_line(&cur);
+    FontUA::select_tileset(&buf, 0);
+    FontUA::set_xpos(&buf, 0);
+    FontUA::set_ypos(&buf, 0);
+    FontUA::copy_position(&buf);
+    FontUA::add_txt(&buf, 2 * yw->_screenSize.x / 3 - 1, 1,  Locale::Text::Get(Locale::LBL_WAITINGFOR, Locale::DefaultStrings::WaitingForPlayers) );
+    FontUA::next_line(&buf);
 
     yw->_netStartTimer -= inpt.Period;
     if ( yw->_netStartTimer > 0 )
     {
         std::string timeStr = fmt::sprintf("(%d)", yw->_netStartTimer / 1000);
 
-        FontUA::copy_position(&cur);
-        FontUA::add_txt(&cur, yw->_screenSize.x / 3 - 1, 1, timeStr);
-        FontUA::next_line(&cur);
+        FontUA::copy_position(&buf);
+        FontUA::add_txt(&buf, yw->_screenSize.x / 3 - 1, 1, timeStr);
+        FontUA::next_line(&buf);
     }
 
     for(UserData::TNetPlayerData *pl : wting)
@@ -4013,9 +4013,9 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
             std::string tmpstr = "   ";
             tmpstr += pl->Name;
 
-            FontUA::copy_position(&cur);
-            FontUA::add_txt(&cur, yw->_screenSize.x - 1, 1, tmpstr);
-            FontUA::next_line(&cur);
+            FontUA::copy_position(&buf);
+            FontUA::add_txt(&buf, yw->_screenSize.x - 1, 1, tmpstr);
+            FontUA::next_line(&buf);
         }
     }
 
@@ -4024,19 +4024,16 @@ int yw_NetCheckPlayersInGame(NC_STACK_ypaworld *yw)
         if ( yw->_GameShell->isHost )
             return 1;
 
-        FontUA::copy_position(&cur);
-        FontUA::add_txt(&cur, yw->_screenSize.x - 1, 1, "WAITING FOR HOST");
-        FontUA::next_line(&cur);
+        FontUA::copy_position(&buf);
+        FontUA::add_txt(&buf, yw->_screenSize.x - 1, 1, "WAITING FOR HOST");
+        FontUA::next_line(&buf);
     }
 
-    FontUA::set_end(&cur);
+    FontUA::set_end(&buf);
 
     GFX::Engine.BeginFrame();
 
-    w3d_a209 arg209;
-    arg209.cmdbuf = buf;
-    arg209.includ = NULL;
-    GFX::Engine.raster_func209(&arg209);
+    GFX::Engine.ProcessDrawSeq(buf);
 
     GFX::Engine.EndFrame();
 
@@ -4111,28 +4108,24 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
     UserData *usr = yw->_GameShell;
 
     TileMap *font29 = yw->_guiTiles[29];
-    char drawbuf[2000];
-    char *cur = drawbuf;
+    CmdStream drawbuf;
+    drawbuf.reserve(2000);
 
-    FontUA::select_tileset(&cur, 29);
-    FontUA::set_center_xpos(&cur, font29->h - (yw->_screenSize.x / 2) );
-    FontUA::set_center_ypos(&cur, font29->h - (yw->_screenSize.y / 2) );
+    FontUA::select_tileset(&drawbuf, 29);
+    FontUA::set_center_xpos(&drawbuf, font29->h - (yw->_screenSize.x / 2) );
+    FontUA::set_center_ypos(&drawbuf, font29->h - (yw->_screenSize.y / 2) );
 
     if ( usr->disconnected == false && usr->problemTimer > 0 )
     {
         if ( (yw->_updateMessage.gTime / 300) & 1 )
         {
-            FontUA::store_u8(&cur, 65);
+            FontUA::store_u8(&drawbuf, 65);
         }
     }
 
-    FontUA::set_end(&cur);
+    FontUA::set_end(&drawbuf);
 
-    w3d_a209 v77;
-    v77.cmdbuf = drawbuf;
-    v77.includ = NULL;
-
-    GFX::Engine.raster_func209(&v77);
+    GFX::Engine.ProcessDrawSeq(drawbuf);
 
     int numelm = 0;
 
@@ -4233,50 +4226,46 @@ void yw_NetDrawStats(NC_STACK_ypaworld *yw)
     if ( toDraw )
     {
         TileMap *font0 = yw->_guiTiles[0];
-        cur = drawbuf;
+        drawbuf.clear();
 
-        FontUA::select_tileset(&cur, 0);
-        FontUA::set_center_xpos(&cur, yw->_screenSize.x / 4 - yw->_screenSize.x / 2);
-        FontUA::set_center_ypos(&cur, 12 - yw->_screenSize.y / 2);
+        FontUA::select_tileset(&drawbuf, 0);
+        FontUA::set_center_xpos(&drawbuf, yw->_screenSize.x / 4 - yw->_screenSize.x / 2);
+        FontUA::set_center_ypos(&drawbuf, 12 - yw->_screenSize.y / 2);
 
-        cur = GuiBase::FormateTitle(yw, yw->_screenSize.x / 4 - yw->_screenSize.x / 2,
+        GuiBase::FormateTitle(yw, yw->_screenSize.x / 4 - yw->_screenSize.x / 2,
                                     12 - yw->_screenSize.y / 2,
                                     yw->_screenSize.x / 2,
                                     Locale::Text::Advanced(Locale::ADV_NETSTATUS),
-                                    cur, 0, 0);
+                                    &drawbuf, 0, 0);
 
-        FontUA::next_line(&cur);
+        FontUA::next_line(&drawbuf);
 
-        FontUA::select_tileset(&cur, 0);
+        FontUA::select_tileset(&drawbuf, 0);
 
         for(int i = 0; i < numelm; i++)
         {
-            FontUA::store_u8(&cur, '{');
+            FontUA::store_u8(&drawbuf, '{');
 
-            FontUA::copy_position(&cur);
-            FontUA::op17(&cur, yw->_screenSize.x / 2 - font0->map['}'].w);
+            FontUA::copy_position(&drawbuf);
+            FontUA::op17(&drawbuf, yw->_screenSize.x / 2 - font0->map['}'].w);
 
-            FontUA::store_u8(&cur, ' ');
-            FontUA::store_u8(&cur, '}');
+            FontUA::store_u8(&drawbuf, ' ');
+            FontUA::store_u8(&drawbuf, '}');
 
-            FontUA::add_txt(&cur, yw->_screenSize.x / 2 - 2 * font0->map['W'].w, 4, t[i] );
+            FontUA::add_txt(&drawbuf, yw->_screenSize.x / 2 - 2 * font0->map['W'].w, 4, t[i] );
 
-            FontUA::next_line(&cur);
+            FontUA::next_line(&drawbuf);
         }
 
-        FontUA::set_yoff(&cur, font0->h - 1);
+        FontUA::set_yoff(&drawbuf, font0->h - 1);
 
-        FontUA::store_u8(&cur, 'x');
-        FontUA::op17(&cur, yw->_screenSize.y / 2 - font0->map['z'].w);
-        FontUA::store_u8(&cur, 'y');
-        FontUA::store_u8(&cur, 'z');
+        FontUA::store_u8(&drawbuf, 'x');
+        FontUA::op17(&drawbuf, yw->_screenSize.y / 2 - font0->map['z'].w);
+        FontUA::store_u8(&drawbuf, 'y');
+        FontUA::store_u8(&drawbuf, 'z');
 
-        FontUA::set_end(&cur);
+        FontUA::set_end(&drawbuf);
 
-        w3d_a209 v77_1;
-        v77_1.cmdbuf = drawbuf;
-        v77_1.includ = NULL;
-
-        GFX::Engine.raster_func209(&v77_1);
+        GFX::Engine.ProcessDrawSeq(drawbuf);
     }
 }

@@ -1337,34 +1337,29 @@ void ypaworld_func158__sub4__sub1__sub0(NC_STACK_ypaworld *yw, TInputState *inpt
 
 void splashScreen_OutText(NC_STACK_ypaworld *yw, const std::string &txt, int x, int y)
 {
-    char cmdbuf[2048];
-
-    char *cur = cmdbuf;
+    CmdStream cmdbuf;
+    cmdbuf.reserve(2048);
 
     if ( !txt.empty() )
     {
-        FontUA::select_tileset(&cur, 15);
-        FontUA::set_xpos(&cur, x);
-        FontUA::set_ypos(&cur, y);
+        FontUA::select_tileset(&cmdbuf, 15);
+        FontUA::set_xpos(&cmdbuf, x);
+        FontUA::set_ypos(&cmdbuf, y);
 
-        FontUA::set_txtColor(&cur, yw->_iniColors[13].r, yw->_iniColors[13].g, yw->_iniColors[13].b);
+        FontUA::set_txtColor(&cmdbuf, yw->_iniColors[13].r, yw->_iniColors[13].g, yw->_iniColors[13].b);
 
         Stok parse(txt, "\n\r");
         std::string line;
         while( parse.GetNext( &line ) )
         {
-            cur = FontUA::FormateClippedText(yw->_guiTiles[15], cur, line, yw->_screenSize.x - x, ' ');
+            FontUA::FormateClippedText(yw->_guiTiles[15], &cmdbuf, line, yw->_screenSize.x - x, ' ');
 
-            FontUA::next_line(&cur);
+            FontUA::next_line(&cmdbuf);
         }
 
-        FontUA::set_end(&cur);
+        FontUA::set_end(&cmdbuf);
 
-        w3d_a209 v15;
-        v15.cmdbuf = cmdbuf;
-        v15.includ = NULL;
-
-        GFX::Engine.raster_func209(&v15);
+        GFX::Engine.ProcessDrawSeq(cmdbuf);
     }
 }
 
@@ -1413,8 +1408,8 @@ void NC_STACK_ypaworld::DrawMapRegionsTutorial()
 
         if ( _globalMapRegions.SelectedRegion )
         {
-            char cmdBuff[256];
-            char *v11 = cmdBuff;
+            CmdStream cmdBuff;
+            cmdBuff.reserve(256);
 
             if ( _globalMapRegions.MapRegions[ _globalMapRegions.SelectedRegion ].Status != TMapRegionInfo::STATUS_NONE )
             {
@@ -1422,22 +1417,17 @@ void NC_STACK_ypaworld::DrawMapRegionsTutorial()
                 {
                     const std::string v12 = GetLevelName(_globalMapRegions.SelectedRegion);
 
-                    FontUA::select_tileset(&v11, 15);
-                    FontUA::set_xpos(&v11, 0);
-                    FontUA::set_ypos(&v11, -(_fontH + _iconOrderH + 4) );
-                    FontUA::set_txtColor(&v11, _iniColors[63].r, _iniColors[63].g, _iniColors[63].b);
+                    FontUA::select_tileset(&cmdBuff, 15);
+                    FontUA::set_xpos(&cmdBuff, 0);
+                    FontUA::set_ypos(&cmdBuff, -(_fontH + _iconOrderH + 4) );
+                    FontUA::set_txtColor(&cmdBuff, _iniColors[63].r, _iniColors[63].g, _iniColors[63].b);
 
-                    v11 = FontUA::FormateCenteredSkipableItem(_guiTiles[15], v11, v12, _screenSize.x);
+                    FontUA::FormateCenteredSkipableItem(_guiTiles[15], &cmdBuff, v12, _screenSize.x);
                 }
             }
-            FontUA::set_end(&v11);
+            FontUA::set_end(&cmdBuff);
 
-            w3d_a209 v19;
-
-            v19.cmdbuf = cmdBuff;
-            v19.includ = NULL;
-
-            GFX::Engine.raster_func209(&v19);
+            GFX::Engine.ProcessDrawSeq(cmdBuff);
         }
     }
 
@@ -1497,8 +1487,8 @@ void NC_STACK_ypaworld::DrawMapRegions()
 
         if ( _globalMapRegions.SelectedRegion )
         {
-            char cmdBuff[256];
-            char *v11 = cmdBuff;
+            CmdStream cmdBuff;
+            cmdBuff.reserve(256);
 
             if ( _globalMapRegions.MapRegions[ _globalMapRegions.SelectedRegion ].Status != TMapRegionInfo::STATUS_NONE )
             {
@@ -1506,22 +1496,17 @@ void NC_STACK_ypaworld::DrawMapRegions()
                 {
                     const std::string v12 = GetLevelName(_globalMapRegions.SelectedRegion);
 
-                    FontUA::select_tileset(&v11, 15);
-                    FontUA::set_xpos(&v11, 0);
-                    FontUA::set_ypos(&v11, -(_fontH + _iconOrderH + 4) );
-                    FontUA::set_txtColor(&v11, _iniColors[63].r, _iniColors[63].g, _iniColors[63].b);
+                    FontUA::select_tileset(&cmdBuff, 15);
+                    FontUA::set_xpos(&cmdBuff, 0);
+                    FontUA::set_ypos(&cmdBuff, -(_fontH + _iconOrderH + 4) );
+                    FontUA::set_txtColor(&cmdBuff, _iniColors[63].r, _iniColors[63].g, _iniColors[63].b);
 
-                    v11 = FontUA::FormateCenteredSkipableItem(_guiTiles[15], v11, v12, _screenSize.x);
+                    FontUA::FormateCenteredSkipableItem(_guiTiles[15], &cmdBuff, v12, _screenSize.x);
                 }
             }
-            FontUA::set_end(&v11);
+            FontUA::set_end(&cmdBuff);
 
-            w3d_a209 v19;
-
-            v19.cmdbuf = cmdBuff;
-            v19.includ = NULL;
-
-            GFX::Engine.raster_func209(&v19);
+            GFX::Engine.ProcessDrawSeq(cmdBuff);
         }
         const std::string &v13 = Locale::Text::ToD(_tipOfDayId, " ");
         splashScreen_OutText(this, v13, _screenSize.x / 20, _screenSize.x / 20);
@@ -1993,53 +1978,44 @@ int NC_STACK_ypaworld::sub_4DA41C(TLevelDescription *mapp, const std::string &fn
 }
 
 
-char * sub_4C4284(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const std::string &txt)
+void sub_4C4284(NC_STACK_ypaworld *yw, GuiList *lstvw, CmdStream *out, const std::string &txt)
 {
-    char * tmp = out;
+    FontUA::store_u8(out, 123);
+    FontUA::select_tileset(out, 9);
 
-    FontUA::store_u8(&tmp, 123);
-    FontUA::select_tileset(&tmp, 9);
+    FontUA::store_u8(out, 98);
 
-    FontUA::store_u8(&tmp, 98);
+    FontUA::set_txtColor(out, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
 
-    FontUA::set_txtColor(&tmp, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
+    FontUA::FormateClippedText(yw->_guiTiles[9], out, txt, lstvw->entryWidth - 4 * yw->_fontBorderW, 99);
 
-    tmp = FontUA::FormateClippedText(yw->_guiTiles[9], tmp, txt, lstvw->entryWidth - 4 * yw->_fontBorderW, 99);
+    FontUA::store_u8(out, 100);
 
-    FontUA::store_u8(&tmp, 100);
+    FontUA::select_tileset(out, 0);
 
-    FontUA::select_tileset(&tmp, 0);
-
-    FontUA::store_u8(&tmp, 125);
-    FontUA::next_line(&tmp);
-
-    return tmp;
+    FontUA::store_u8(out, 125);
+    FontUA::next_line(out);
 }
 
-char * sub_4C41DC(NC_STACK_ypaworld *yw, GuiList *lstvw, char *out, const std::string &txt)
+void sub_4C41DC(NC_STACK_ypaworld *yw, GuiList *lstvw, CmdStream *out, const std::string &txt)
 {
+    FontUA::store_u8(out, 123);
 
-    char * tmp = out;
+    FontUA::set_txtColor(out, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
 
-    FontUA::store_u8(&tmp, 123);
+    FontUA::FormateClippedText(yw->_guiTiles[0], out, txt, lstvw->entryWidth - 2 * yw->_fontBorderW, 32);
 
-    FontUA::set_txtColor(&tmp, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
-
-    tmp = FontUA::FormateClippedText(yw->_guiTiles[0], tmp, txt, lstvw->entryWidth - 2 * yw->_fontBorderW, 32);
-
-    FontUA::store_u8(&tmp, 125);
-    FontUA::next_line(&tmp);
-
-    return tmp;
+    FontUA::store_u8(out, 125);
+    FontUA::next_line(out);
 }
 
 void ypaworld_func158__video_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
-    char *v3 = usr->video_listvw.itemBlock;
+    usr->video_listvw.itemBlock.clear();
 
     usr->video_listvw.SetRect(yw, -2, -2);
 
-    v3 = usr->video_listvw.ItemsPreLayout(yw, v3, 0, "uvw");
+    usr->video_listvw.ItemsPreLayout(yw, &usr->video_listvw.itemBlock, 0, "uvw");
 
     int index = 0;
     for (const GFX::GfxMode &nod : GFX::GFXEngine::Instance.GetAvailableModes())
@@ -2047,9 +2023,9 @@ void ypaworld_func158__video_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         if ( index >= usr->video_listvw.firstShownEntries && index < usr->video_listvw.firstShownEntries + usr->video_listvw.shownEntries)
         {
             if ( usr->video_listvw.selectedEntry == index )
-                v3 = sub_4C4284(yw, &usr->video_listvw, v3, nod.name);
+                sub_4C4284(yw, &usr->video_listvw, &usr->video_listvw.itemBlock, nod.name);
             else
-                v3 = sub_4C41DC(yw, &usr->video_listvw, v3, nod.name);
+                sub_4C41DC(yw, &usr->video_listvw, &usr->video_listvw.itemBlock, nod.name);
         }
         index++;
     }
@@ -2058,22 +2034,19 @@ void ypaworld_func158__video_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         index = 4;
 
     usr->video_listvw.shownEntries = index;
-    v3 = usr->video_listvw.ItemsPostLayout(yw, v3, 0, "xyz");
-    FontUA::set_end(&v3);
+    usr->video_listvw.ItemsPostLayout(yw, &usr->video_listvw.itemBlock, 0, "xyz");
+    FontUA::set_end(&usr->video_listvw.itemBlock);
 
-    w3d_a209 v16;
-    v16 = usr->video_listvw.cmdstrm;
-
-    GFX::Engine.DrawText(&v16);
+    GFX::Engine.ProcessDrawSeq(usr->video_listvw.cmdCommands, &usr->video_listvw.cmdInclude);
 }
 
 void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
-    char *v3 = usr->d3d_listvw.itemBlock;
+    usr->d3d_listvw.itemBlock.clear();
 
     usr->d3d_listvw.SetRect(yw, -2, -2);
 
-    v3 = usr->d3d_listvw.ItemsPreLayout(yw, v3, 0, "uvw");
+    usr->d3d_listvw.ItemsPreLayout(yw, &usr->d3d_listvw.itemBlock, 0, "uvw");
 
     const std::vector<GFX::TGFXDeviceInfo> &devices = GFX::Engine.GetDevices();
     
@@ -2093,30 +2066,23 @@ void ypaworld_func158__d3d_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             name = dev.name;
 
         if ( usr->d3d_listvw.selectedEntry == i )
-            v3 = sub_4C4284(yw, &usr->d3d_listvw, v3, name);
+            sub_4C4284(yw, &usr->d3d_listvw, &usr->d3d_listvw.itemBlock, name);
         else
-            v3 = sub_4C41DC(yw, &usr->d3d_listvw, v3, name);
+            sub_4C41DC(yw, &usr->d3d_listvw, &usr->d3d_listvw.itemBlock, name);
     }
 
     
-    v3 = usr->d3d_listvw.ItemsPostLayout(yw, v3, 0, "xyz");
+    usr->d3d_listvw.ItemsPostLayout(yw, &usr->d3d_listvw.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&v3);
+    FontUA::set_end(&usr->d3d_listvw.itemBlock);
 
-    w3d_a209 v16;
-    v16 = usr->d3d_listvw.cmdstrm;
-
-    GFX::Engine.DrawText(&v16);
+    GFX::Engine.ProcessDrawSeq(usr->d3d_listvw.cmdCommands, &usr->d3d_listvw.cmdInclude);
 }
 
-char * sub_4DDF78(NC_STACK_ypaworld *yw, GuiList *lstvw, char *pos, int a3)
+void sub_4DDF78(NC_STACK_ypaworld *yw, GuiList *lstvw, CmdStream *pos, int a3)
 {
-    char *v3 = pos;
-
     for ( int i = 0; i < a3; i++ )
-        v3 = sub_4C41DC(yw, lstvw, v3, " ");
-
-    return v3;
+        sub_4C41DC(yw, lstvw, pos, " ");
 }
 
 void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
@@ -2127,10 +2093,11 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     
     bool slct = false;
 
-    char *cmd = usr->network_listvw.itemBlock;
+    usr->network_listvw.itemBlock.clear();
+    
     usr->network_listvw.SetRect(yw, -2, -2);
 
-    cmd = usr->network_listvw.ItemsPreLayout(yw, cmd, 0, "uvw");
+    usr->network_listvw.ItemsPreLayout(yw, &usr->network_listvw.itemBlock, 0, "uvw");
 
     int cnt = -1;
 
@@ -2455,19 +2422,19 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
                 break;
             }
 
-            FontUA::select_tileset(&cmd, 0);
-            FontUA::store_u8(&cmd, 123);
+            FontUA::select_tileset(&usr->network_listvw.itemBlock, 0);
+            FontUA::store_u8(&usr->network_listvw.itemBlock, 123);
 
             if ( usr->netSel != i || usr->netSelMode == UserData::NETSCREEN_INSESSION || usr->netSelMode == UserData::NETSCREEN_ENTER_NAME )
-                FontUA::set_txtColor(&cmd, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b );
+                FontUA::set_txtColor(&usr->network_listvw.itemBlock, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b );
             else
-                FontUA::set_txtColor(&cmd, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b );
+                FontUA::set_txtColor(&usr->network_listvw.itemBlock, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b );
 
-            cmd = FontUA::FormateColumnItem(yw, cmd, itemsCount, items);
+            FontUA::FormateColumnItem(yw, &usr->network_listvw.itemBlock, itemsCount, items);
 
-            FontUA::select_tileset(&cmd, 0);
-            FontUA::store_u8(&cmd, 125);
-            FontUA::next_line(&cmd);
+            FontUA::select_tileset(&usr->network_listvw.itemBlock, 0);
+            FontUA::store_u8(&usr->network_listvw.itemBlock, 125);
+            FontUA::next_line(&usr->network_listvw.itemBlock);
         }
 
         if (usr->netSelMode == UserData::NETSCREEN_CHOOSE_MAP)
@@ -2487,24 +2454,23 @@ void ypaworld_func158__network_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         usr->network_listvw.shownEntries = i;
 
     if ( usr->network_listvw.maxShownEntries > usr->network_listvw.shownEntries )
-        cmd = sub_4DDF78(yw, &usr->network_listvw, cmd, usr->network_listvw.maxShownEntries - usr->network_listvw.shownEntries);
+        sub_4DDF78(yw, &usr->network_listvw, &usr->network_listvw.itemBlock, usr->network_listvw.maxShownEntries - usr->network_listvw.shownEntries);
 
     usr->network_listvw.numEntries = i;
 
-    cmd = usr->network_listvw.ItemsPostLayout(yw, cmd, 0, "xyz");
-    FontUA::set_end(&cmd);
+    usr->network_listvw.ItemsPostLayout(yw, &usr->network_listvw.itemBlock, 0, "xyz");
+    FontUA::set_end(&usr->network_listvw.itemBlock);
 
-    w3d_a209 txt = usr->network_listvw.cmdstrm;
-    GFX::Engine.DrawText(&txt);
+    GFX::Engine.ProcessDrawSeq(usr->network_listvw.cmdCommands, &usr->network_listvw.cmdInclude);
 }
 
 void ypaworld_func158__locale_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
-    char *v3 = usr->local_listvw.itemBlock;
+    usr->local_listvw.itemBlock.clear();
 
     usr->local_listvw.SetRect(yw, -2, -2);
 
-    v3 = usr->local_listvw.ItemsPreLayout(yw, v3, 0, "uvw");
+    usr->local_listvw.ItemsPreLayout(yw, &usr->local_listvw.itemBlock, 0, "uvw");
 
     int v5 = 0;
     for( const auto &x : usr->lang_dlls )
@@ -2512,9 +2478,9 @@ void ypaworld_func158__locale_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
         if ( v5 >= usr->local_listvw.firstShownEntries && v5 < usr->local_listvw.shownEntries + usr->local_listvw.firstShownEntries)
         {
             if ( v5 == usr->local_listvw.selectedEntry )
-                v3 = sub_4C4284(yw, &usr->local_listvw, v3, x);
+                sub_4C4284(yw, &usr->local_listvw, &usr->local_listvw.itemBlock, x);
             else
-                v3 = sub_4C41DC(yw, &usr->local_listvw, v3, x);
+                sub_4C41DC(yw, &usr->local_listvw, &usr->local_listvw.itemBlock, x);
         }
 
         v5++;
@@ -2528,25 +2494,22 @@ void ypaworld_func158__locale_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
     usr->local_listvw.numEntries = usr->local_listvw.shownEntries;
 
     if ( usr->local_listvw.shownEntries < 10 )
-        v3 = sub_4DDF78(yw, &usr->local_listvw, v3, 10 - usr->local_listvw.shownEntries);
+        sub_4DDF78(yw, &usr->local_listvw, &usr->local_listvw.itemBlock, 10 - usr->local_listvw.shownEntries);
 
-    v3 = usr->local_listvw.ItemsPostLayout(yw, v3, 0, "xyz");
+    usr->local_listvw.ItemsPostLayout(yw, &usr->local_listvw.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&v3);
+    FontUA::set_end(&usr->local_listvw.itemBlock);
 
-    w3d_a209 v13;
-    v13 = usr->local_listvw.cmdstrm;
-
-    GFX::Engine.DrawText(&v13);
+    GFX::Engine.ProcessDrawSeq(usr->local_listvw.cmdCommands, &usr->local_listvw.cmdInclude);
 }
 
 void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 {
-    char *v4 = usr->disk_listvw.itemBlock;
+    usr->disk_listvw.itemBlock.clear();
 
     usr->disk_listvw.SetRect(yw, -2, -2);
 
-    v4 = usr->disk_listvw.ItemsPreLayout(yw, v4, 0, "uvw");
+    usr->disk_listvw.ItemsPreLayout(yw, &usr->disk_listvw.itemBlock, 0, "uvw");
 
     int v54 = 0;
 
@@ -2591,33 +2554,33 @@ void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
             v31[1].flags = 38;
             v31[1].postfixChar = v44;
 
-            FontUA::select_tileset(&v4, 0);
+            FontUA::select_tileset(&usr->disk_listvw.itemBlock, 0);
 
-            FontUA::store_u8(&v4, 123);
+            FontUA::store_u8(&usr->disk_listvw.itemBlock, 123);
 
             if ( !StriCmp(it->name, usr->UserName) )
             {
-                FontUA::set_txtColor(&v4, yw->_iniColors[2].r, yw->_iniColors[2].g, yw->_iniColors[2].b);
+                FontUA::set_txtColor(&usr->disk_listvw.itemBlock, yw->_iniColors[2].r, yw->_iniColors[2].g, yw->_iniColors[2].b);
             }
             else
             {
                 if ( v54 + 1 == usr->diskListActiveElement )
                 {
-                    FontUA::set_txtColor(&v4, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
+                    FontUA::set_txtColor(&usr->disk_listvw.itemBlock, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
                 }
                 else
                 {
-                    FontUA::set_txtColor(&v4, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
+                    FontUA::set_txtColor(&usr->disk_listvw.itemBlock, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
                 }
             }
 
-            v4 = FormateColumnItem(yw, v4, 2, v31);
+            FormateColumnItem(yw, &usr->disk_listvw.itemBlock, 2, v31);
 
-            FontUA::select_tileset(&v4, 0);
+            FontUA::select_tileset(&usr->disk_listvw.itemBlock, 0);
 
-            FontUA::store_u8(&v4, 125);
+            FontUA::store_u8(&usr->disk_listvw.itemBlock, 125);
 
-            FontUA::next_line(&v4);
+            FontUA::next_line(&usr->disk_listvw.itemBlock);
         }
 
         v54++;
@@ -2629,31 +2592,27 @@ void ypaworld_func158__saveload_list_draw(NC_STACK_ypaworld *yw, UserData *usr)
 
         for (int i = 0; i < 10 - v54; i++)
         {
-            v4 = sub_4C41DC(yw, &usr->disk_listvw, v4, " ");
+            sub_4C41DC(yw, &usr->disk_listvw, &usr->disk_listvw.itemBlock, " ");
         }
     }
 
     usr->disk_listvw.numEntries = v54;
-    v4 = usr->disk_listvw.ItemsPostLayout(yw, v4, 0, "xyz");
+    usr->disk_listvw.ItemsPostLayout(yw, &usr->disk_listvw.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&v4);
+    FontUA::set_end(&usr->disk_listvw.itemBlock);
 
-    w3d_a209 arg;
-    arg = usr->disk_listvw.cmdstrm;
-
-    GFX::Engine.DrawText(&arg);
+    GFX::Engine.ProcessDrawSeq(usr->disk_listvw.cmdCommands, &usr->disk_listvw.cmdInclude);
 }
 
 void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
 {
-    char buf[300];
+    CmdStream buf;
+    buf.reserve(300);
 
-    char *tmp = buf;
+    FontUA::select_tileset(&buf, 0);
 
-    FontUA::select_tileset(&tmp, 0);
-
-    FontUA::set_center_xpos(&tmp, x1 - usr->p_YW->_screenSize.x / 2);
-    FontUA::set_center_ypos(&tmp, y1 - usr->p_YW->_screenSize.y / 2);
+    FontUA::set_center_xpos(&buf, x1 - usr->p_YW->_screenSize.x / 2);
+    FontUA::set_center_ypos(&buf, y1 - usr->p_YW->_screenSize.y / 2);
 
     int v9 = 1;
 
@@ -2664,45 +2623,41 @@ void sb_0x4dee74__sub0(UserData *usr, int x1, int y1, int w, int h)
     while ( v6 > v7->h )
     {
         if ( v9 )
-            FontUA::store_u8(&tmp, 117);
+            FontUA::store_u8(&buf, 117);
         else
-            FontUA::store_u8(&tmp, 123);
+            FontUA::store_u8(&buf, 123);
 
-        FontUA::op17(&tmp, w);
+        FontUA::op17(&buf, w);
 
         if ( v9 )
-            FontUA::store_u8(&tmp, 118);
+            FontUA::store_u8(&buf, 118);
         else
-            FontUA::store_u8(&tmp, 123);
+            FontUA::store_u8(&buf, 123);
 
         if ( v9 )
-            FontUA::store_u8(&tmp, 119);
+            FontUA::store_u8(&buf, 119);
         else
-            FontUA::store_u8(&tmp, 125);
+            FontUA::store_u8(&buf, 125);
 
-        FontUA::next_line(&tmp);
+        FontUA::next_line(&buf);
 
         v9 = 0;
 
         v6 -= v7->h;
     }
 
-    FontUA::set_yoff(&tmp, v7->h - 1);
+    FontUA::set_yoff(&buf, v7->h - 1);
 
-    FontUA::store_u8(&tmp, 120);
+    FontUA::store_u8(&buf, 120);
 
-    FontUA::op17(&tmp, w);
+    FontUA::op17(&buf, w);
 
-    FontUA::store_u8(&tmp, 121);
-    FontUA::store_u8(&tmp, 122);
+    FontUA::store_u8(&buf, 121);
+    FontUA::store_u8(&buf, 122);
 
-    FontUA::set_end(&tmp);
+    FontUA::set_end(&buf);
 
-    w3d_a209 a1a;
-    a1a.cmdbuf = buf;
-    a1a.includ = NULL;
-
-    GFX::Engine.DrawText(&a1a);
+    GFX::Engine.ProcessDrawSeq(buf);
 }
 
 void ypaworld_func158__confirm_draw(UserData *usr)

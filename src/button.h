@@ -4,6 +4,7 @@
 #include "nucleas.h"
 #include "inttypes.h"
 #include "utils.h"
+#include "system/gfx.h"
 #include <vector>
 
 class NC_STACK_button: public NC_STACK_nucleus, public ClickBox
@@ -180,9 +181,9 @@ public:
     virtual int getBTN_h();
 
 protected:
-    void UpdateSlider(NC_STACK_button *btn, button_str2 *sbt);
-    void button_func70__sub1(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
-    void button_func70__sub0(NC_STACK_button *btn, button_str2 *sbt, char **pbuf);
+    void UpdateSlider(button_str2 *sbt);
+    void button_func70__sub1(button_str2 *sbt, CmdStream *pbuf);
+    void button_func70__sub0(button_str2 *sbt, CmdStream *pbuf);
 
     void UnsetRadioButtons();
 

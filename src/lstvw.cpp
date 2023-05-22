@@ -8,7 +8,7 @@
 
 
 
-char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, char *in, uint8_t postf_char, int flag)
+void GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, CmdStream *in, uint8_t postf_char, int flag)
 {
     int v27 = 0;
     if ( flag & FLAG_WITH_CLOSE )
@@ -25,115 +25,81 @@ char *GuiBase::FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, co
     std::string buf = " ";
     buf += title;
 
-    char *tmp = in;
+    FontUA::select_tileset(in, 6);
+    FontUA::set_center_xpos(in, xpos);
+    FontUA::set_center_ypos(in, ypos);
 
-    FontUA::select_tileset(&tmp, 6);
-    FontUA::set_center_xpos(&tmp, xpos);
-    FontUA::set_center_ypos(&tmp, ypos);
+    FontUA::store_s8(in, 98);
 
-    FontUA::store_s8(&tmp, 98);
+    FontUA::set_txtColor(in, yw->_iniColors[60].r, yw->_iniColors[60].g, yw->_iniColors[60].b);
 
-    FontUA::set_txtColor(&tmp, yw->_iniColors[60].r, yw->_iniColors[60].g, yw->_iniColors[60].b);
-
-    tmp = FontUA::FormateClippedText(yw->_guiTiles[6], tmp, buf, w - v27 - v26 - v29 - yw->_fontBorderW, 99);
+    FontUA::FormateClippedText(yw->_guiTiles[6], in, buf, w - v27 - v26 - v29 - yw->_fontBorderW, 99);
 
     if ( postf_char )
     {
-        FontUA::select_tileset(&tmp, 0);
-        FontUA::store_u8(&tmp, postf_char);
+        FontUA::select_tileset(in, 0);
+        FontUA::store_u8(in, postf_char);
     }
 
     if ( flag & FLAG_WITH_HELP )
     {
         int ts = ((flag & FLAG_HELP_DOWN) != 0) + 24;
 
-        FontUA::select_tileset(&tmp, ts);
-        FontUA::store_s8(&tmp, 65);
+        FontUA::select_tileset(in, ts);
+        FontUA::store_s8(in, 65);
     }
 
     if ( flag & FLAG_WITH_CLOSE )
     {
         int ts = ((flag & FLAG_CLOSE_DOWN) != 0) + 24;
 
-        FontUA::select_tileset(&tmp, ts);
-        FontUA::store_s8(&tmp, 85);
+        FontUA::select_tileset(in, ts);
+        FontUA::store_s8(in, 85);
     }
-    return tmp;
 }
 
 
 int GuiList::initDialogStrings(NC_STACK_ypaworld *yw)
 {
-    char *draw_cmd = (char *)calloc(1, 512);
-
-    if ( !draw_cmd )
-        return 0;
-
     int xpos = x - (yw->_screenSize.x / 2);
     int ypos = y - (yw->_screenSize.y / 2);
 
-    cmdstrm.cmdbuf = draw_cmd;
-
-    char *v7 = draw_cmd;
+    cmdCommands.reserve(512);
 
     if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
     {
-        v7 = GuiBase::FormateTitle(yw, xpos, ypos, w, title, draw_cmd, 0, flags);
+        GuiBase::FormateTitle(yw, xpos, ypos, w, title, &cmdCommands, 0, flags);
 
-        FontUA::next_line(&v7);
+        FontUA::next_line(&cmdCommands);
     }
     else
     {
-        FontUA::select_tileset(&v7, 0);
-        FontUA::set_center_xpos(&v7, xpos);
-        FontUA::set_center_ypos(&v7, ypos);
+        FontUA::select_tileset(&cmdCommands, 0);
+        FontUA::set_center_xpos(&cmdCommands, xpos);
+        FontUA::set_center_ypos(&cmdCommands, ypos);
     }
-    FontUA::include(&v7, 1); // Include data part
-    FontUA::include(&v7, 0); // Include slider
-    FontUA::set_end(&v7);
+    FontUA::include(&cmdCommands, 1); // Include data part
+    FontUA::include(&cmdCommands, 0); // Include slider
+    FontUA::set_end(&cmdCommands);
 
     return 1;
 }
 
 int GuiList::InitBuffers(NC_STACK_ypaworld *yw)
 {
-    char *p = (char *)calloc(1, 32);
-
-    if ( !p )
-        return 0;
-
-    iconString = p;
-    FontUA::set_end(&p);
+    iconString.reserve(32);
+    FontUA::set_end(&iconString);
 
     if ( !initDialogStrings(yw) )
         return 0;
 
+    itemBlock.reserve(0x2000);
+    FontUA::set_end(&itemBlock);
 
-    p = (char *)calloc(1, 0x2000);
+    scrollbar.reserve(256);
+    FontUA::set_end(&scrollbar);
 
-    if ( !p )
-        return 0;
-
-    itemBlock = p;
-    FontUA::set_end(&p);
-
-    p = (char *)calloc(1, 256);
-
-    if ( !p )
-        return 0;
-
-    scrollbar = p;
-    FontUA::set_end(&p);
-
-    char **z = (char **)calloc(1, sizeof(char *) * 2);
-
-    if ( !z )
-        return 0;
-
-    cmdstrm.includ = z;
-
-    z[0] = scrollbar; // Slider
-    z[1] = itemBlock; // Data
+    cmdInclude.assign( {&scrollbar, &itemBlock} );
 
     return 1;
 }
@@ -219,7 +185,7 @@ void GuiList::FormateTitle(NC_STACK_ypaworld *yw)
 {
     if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
     {
-        char *v5 = cmdstrm.cmdbuf;
+        cmdCommands.clear();
 
         int v6 = x - (yw->_screenSize.x / 2);
         int v9 = y - (yw->_screenSize.y / 2);
@@ -237,19 +203,19 @@ void GuiList::FormateTitle(NC_STACK_ypaworld *yw)
 
         if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
         {
-            v5 = GuiBase::FormateTitle(yw, v6, v9, w, title, v5, 0, flags);
-            FontUA::next_line(&v5);
+            GuiBase::FormateTitle(yw, v6, v9, w, title, &cmdCommands, 0, flags);
+            FontUA::next_line(&cmdCommands);
         }
         else
         {
-            FontUA::select_tileset(&v5, 0);
-            FontUA::set_center_xpos(&v5, v6);
-            FontUA::set_center_ypos(&v5, v9);
+            FontUA::select_tileset(&cmdCommands, 0);
+            FontUA::set_center_xpos(&cmdCommands, v6);
+            FontUA::set_center_ypos(&cmdCommands, v9);
         }
 
-        FontUA::include(&v5, 1); // Data
-        FontUA::include(&v5, 0); // Slider
-        FontUA::set_end(&v5);
+        FontUA::include(&cmdCommands, 1); // Data
+        FontUA::include(&cmdCommands, 0); // Slider
+        FontUA::set_end(&cmdCommands);
 
         int v14 = w - v17 - v16;
 
@@ -313,7 +279,7 @@ void GuiList::ScrollParamsFromEntries(NC_STACK_ypaworld *yw)
 
 void GuiList::FormateScrollbar(NC_STACK_ypaworld *yw)
 {
-    char *v5 = scrollbar;
+    scrollbar.clear();
 
     if ( listFlags & GLIST_FLAG_RESIZEABLE || numEntries > maxShownEntries )
     {
@@ -354,94 +320,94 @@ void GuiList::FormateScrollbar(NC_STACK_ypaworld *yw)
         int v7 = x + v34 - (yw->_screenSize.x / 2);
         int v11 = y + v35 - (yw->_screenSize.y / 2);
 
-        FontUA::set_center_xpos(&v5, v7);
-        FontUA::set_center_ypos(&v5, v11);
+        FontUA::set_center_xpos(&scrollbar, v7);
+        FontUA::set_center_ypos(&scrollbar, v11);
 
         if ( btnStart > 0 )
         {
-            FontUA::reset_tileset(&v5, 13);
-            FontUA::store_u8(&v5, 67);
-            FontUA::next_line(&v5);
-            FontUA::reset_tileset(&v5, 12);
+            FontUA::reset_tileset(&scrollbar, 13);
+            FontUA::store_u8(&scrollbar, 67);
+            FontUA::next_line(&scrollbar);
+            FontUA::reset_tileset(&scrollbar, 12);
 
             int v15 = btnStart - 1;
 
             while (v15 >= yw->_fontVScrollH)
             {
-                FontUA::store_u8(&v5, 66);
-                FontUA::next_line(&v5);
+                FontUA::store_u8(&scrollbar, 66);
+                FontUA::next_line(&scrollbar);
                 v15 -= yw->_fontVScrollH;
             }
 
             if ( v15 > 0 )
             {
-                FontUA::set_yheight(&v5, v15);
+                FontUA::set_yheight(&scrollbar, v15);
 
-                FontUA::store_u8(&v5, 66);
-                FontUA::next_line(&v5);
+                FontUA::store_u8(&scrollbar, 66);
+                FontUA::next_line(&scrollbar);
             }
         }
 
 
         if ( btnSize > 0 )
         {
-            FontUA::reset_tileset(&v5, 13);
-            FontUA::store_u8(&v5, 69);
-            FontUA::next_line(&v5);
-            FontUA::reset_tileset(&v5, 12);
+            FontUA::reset_tileset(&scrollbar, 13);
+            FontUA::store_u8(&scrollbar, 69);
+            FontUA::next_line(&scrollbar);
+            FontUA::reset_tileset(&scrollbar, 12);
 
             int v15 = btnSize - 1;
 
             while (v15 > yw->_fontVScrollH)
             {
-                FontUA::store_u8(&v5, 67);
-                FontUA::next_line(&v5);
+                FontUA::store_u8(&scrollbar, 67);
+                FontUA::next_line(&scrollbar);
                 v15 -= yw->_fontVScrollH;
             }
 
             if ( v15 > 1 )
             {
-                FontUA::set_yheight(&v5, v15 - 1);
+                FontUA::set_yheight(&scrollbar, v15 - 1);
 
-                FontUA::store_u8(&v5, 67);
-                FontUA::next_line(&v5);
+                FontUA::store_u8(&scrollbar, 67);
+                FontUA::next_line(&scrollbar);
             }
         }
 
-        FontUA::reset_tileset(&v5, 13);
-        FontUA::store_u8(&v5, 70);
-        FontUA::next_line(&v5);
+        FontUA::reset_tileset(&scrollbar, 13);
+        FontUA::store_u8(&scrollbar, 70);
+        FontUA::next_line(&scrollbar);
 
         int v26 = scrlSize - (btnStart  + btnSize);
 
         if ( v26 > 0 )
         {
-            FontUA::reset_tileset(&v5, 12);
+            FontUA::reset_tileset(&scrollbar, 12);
 
             while (v26 > yw->_fontVScrollH)
             {
-                FontUA::store_u8(&v5, 66);
-                FontUA::next_line(&v5);
+                FontUA::store_u8(&scrollbar, 66);
+                FontUA::next_line(&scrollbar);
                 v26 -= yw->_fontVScrollH;
             }
 
             if ( v26 > 1 )
             {
-                FontUA::set_yheight(&v5, v26 - 1);
+                FontUA::set_yheight(&scrollbar, v26 - 1);
 
-                FontUA::store_u8(&v5, 66);
-                FontUA::next_line(&v5);
+                FontUA::store_u8(&scrollbar, 66);
+                FontUA::next_line(&scrollbar);
             }
 
-            FontUA::reset_tileset(&v5, 13);
-            FontUA::store_u8(&v5, 68);
-            FontUA::next_line(&v5);
+            FontUA::reset_tileset(&scrollbar, 13);
+            FontUA::store_u8(&scrollbar, 68);
+            FontUA::next_line(&scrollbar);
         }
 
         if ( listFlags & GLIST_FLAG_RESIZEABLE )
         {
-            FontUA::reset_tileset(&v5, 11);
-            FontUA::store_u8(&v5, 71);
+            FontUA::reset_tileset(&scrollbar, 11);
+            FontUA::store_u8(&scrollbar, 71);
         }
     }
     else
@@ -452,7 +418,7 @@ void GuiList::FormateScrollbar(NC_STACK_ypaworld *yw)
         buttons[5] = ButtonBox();
         buttons[6] = ButtonBox();
     }
-    FontUA::set_end(&v5);
+    FontUA::set_end(&scrollbar);
 }
 
 void GuiList::FormateItemBlock(NC_STACK_ypaworld *yw)
@@ -580,7 +546,7 @@ int GuiList::Init(NC_STACK_ypaworld *yw, tInit &in)
 }
 
 
-char *GuiList::ItemsPreLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
+void GuiList::ItemsPreLayout(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int tileset, const char *a5)
 {
     int v14 = x - (yw->_screenSize.x / 2);
     int v12 = y - (yw->_screenSize.y / 2);
@@ -588,34 +554,29 @@ char *GuiList::ItemsPreLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, 
     if ( listFlags & GLIST_FLAG_WITH_TITLEBAR )
         v12 += yw->_fontH;
 
-    char *tmp = cmdbuf;
-    FontUA::reset_tileset(&tmp, tileset);
-    FontUA::set_center_xpos(&tmp, v14);
-    FontUA::set_center_ypos(&tmp, v12);
+    FontUA::reset_tileset(cmdbuf, tileset);
+    FontUA::set_center_xpos(cmdbuf, v14);
+    FontUA::set_center_ypos(cmdbuf, v12);
 
-    FontUA::set_yheight(&tmp, upperVborder);
+    FontUA::set_yheight(cmdbuf, upperVborder);
 
-    FontUA::store_s8(&tmp, a5[0]);
+    FontUA::store_s8(cmdbuf, a5[0]);
 
-    FontUA::op17(&tmp, entryWidth - yw->_fontBorderW);
+    FontUA::op17(cmdbuf, entryWidth - yw->_fontBorderW);
 
-    FontUA::store_s8(&tmp, a5[1]);
-    FontUA::store_s8(&tmp, a5[2]);
-    FontUA::next_line(&tmp);
-
-    return tmp;
+    FontUA::store_s8(cmdbuf, a5[1]);
+    FontUA::store_s8(cmdbuf, a5[2]);
+    FontUA::next_line(cmdbuf);
 }
 
-char *GuiList::ItemsPostLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5)
+void GuiList::ItemsPostLayout(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int tileset, const char *a5)
 {
-    char *tmp = cmdbuf;
-    FontUA::reset_tileset(&tmp, tileset);
-    FontUA::set_yoff(&tmp, yw->_guiTiles[tileset]->h - lowerVborder);
-    FontUA::store_s8(&tmp, a5[0]);
-    FontUA::op17(&tmp, entryWidth - yw->_fontBorderW);
-    FontUA::store_s8(&tmp, a5[1]);
-    FontUA::store_s8(&tmp, a5[2]);
-    return tmp;
+    FontUA::reset_tileset(cmdbuf, tileset);
+    FontUA::set_yoff(cmdbuf, yw->_guiTiles[tileset]->h - lowerVborder);
+    FontUA::store_s8(cmdbuf, a5[0]);
+    FontUA::op17(cmdbuf, entryWidth - yw->_fontBorderW);
+    FontUA::store_s8(cmdbuf, a5[1]);
+    FontUA::store_s8(cmdbuf, a5[2]);
 }
 
 
@@ -971,35 +932,11 @@ void GuiList::PosOnSelected(int a2)
 
 void GuiList::Free()
 {
-    if ( cmdstrm.includ )
-    {
-        free(cmdstrm.includ);
-        cmdstrm.includ = NULL;
-    }
-
-    if ( itemBlock )
-    {
-        free(itemBlock);
-        itemBlock = NULL;
-    }
-
-    if ( scrollbar )
-    {
-        free(scrollbar);
-        scrollbar = NULL;
-    }
-
-    if ( cmdstrm.cmdbuf )
-    {
-        free(cmdstrm.cmdbuf);
-        cmdstrm.cmdbuf = NULL;
-    }
-
-    if ( iconString )
-    {
-        free(iconString);
-        iconString = NULL;
-    }
-
+    cmdCommands.clear();
+    itemBlock.clear();
+    scrollbar.clear();
+    cmdInclude.clear();
+    iconString.clear();
+    
     buttons.clear();
 }

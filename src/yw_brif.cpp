@@ -622,7 +622,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub21(NC_STACK_ypaworld *yw, TInputStat
 
 void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 {
-    char *v3 = stru_5C91D0.itemBlock;
+    stru_5C91D0.itemBlock.clear();
 
     if ( brf->TextTime > 0 )
     {
@@ -639,7 +639,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 
         stru_5C91D0.numEntries = numLines;
 
-        v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
+        stru_5C91D0.ItemsPreLayout(yw, &stru_5C91D0.itemBlock, 16, "   ");
 
         int v37 = 0;
 
@@ -690,18 +690,18 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 
             if ( stru_5C91D0.firstShownEntries <= v37 && stru_5C91D0.firstShownEntries + stru_5C91D0.shownEntries > v37	&& v12 > 0 )
             {
-                FontUA::set_txtColor(&v3, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
+                FontUA::set_txtColor(&stru_5C91D0.itemBlock, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
-                v3 = FontUA::TextRelWidthItem(yw->_guiTiles[16], v3, line.c_str(), v12, 4);
+                FontUA::TextRelWidthItem(yw->_guiTiles[16], &stru_5C91D0.itemBlock, line.c_str(), v12, 4);
 
-                FontUA::next_line(&v3);
+                FontUA::next_line(&stru_5C91D0.itemBlock);
             }
 
             v37++;
 
             if ( endline )
             {
-                v3 = stru_5C91D0.ItemsPostLayout(yw, v3, 16, "   ");
+                stru_5C91D0.ItemsPostLayout(yw, &stru_5C91D0.itemBlock, 16, "   ");
                 break;
             }
         }
@@ -728,23 +728,23 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 
         if ( v24 > 0 )
         {
-            v3 = stru_5C91D0.ItemsPreLayout(yw, v3, 16, "   ");
+            stru_5C91D0.ItemsPreLayout(yw, &stru_5C91D0.itemBlock, 16, "   ");
 
-            FontUA::set_txtColor(&v3, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
+            FontUA::set_txtColor(&stru_5C91D0.itemBlock, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
-            v3 = FontUA::TextRelWidthItem(yw->_guiTiles[16], v3, v21, v24, 4);
+            FontUA::TextRelWidthItem(yw->_guiTiles[16], &stru_5C91D0.itemBlock, v21, v24, 4);
 
-            v3 = stru_5C91D0.ItemsPostLayout(yw, v3, 16, "   ");
+            stru_5C91D0.ItemsPostLayout(yw, &stru_5C91D0.itemBlock, 16, "   ");
         }
     }
 
-    FontUA::set_end(&v3);
+    FontUA::set_end(&stru_5C91D0.itemBlock);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
 {
-    char v27[1024];
-    char *pos = v27;
+    CmdStream cmdStream;
+    cmdStream.reserve(1024);
 
     int v39 = -1;
 
@@ -765,7 +765,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, TBriefengSc
             if ( v39 != obj.TileSet)
             {
                 v39 = obj.TileSet;
-                FontUA::select_tileset(&pos, obj.TileSet);
+                FontUA::select_tileset(&cmdStream, obj.TileSet);
             }
 
             int v38 = yw->_guiTiles[(int)obj.TileSet]->h / 2;
@@ -773,21 +773,16 @@ void ypaworld_func158__sub4__sub1__sub4__sub1(NC_STACK_ypaworld *yw, TBriefengSc
             float v15 = brf->MapBlitEnd.Width() * (obj.Pos.x / yw->_mapLength.x) + brf->MapBlitEnd.left;
             float v14 = brf->MapBlitEnd.Height() * (-obj.Pos.y / yw->_mapLength.y) + brf->MapBlitEnd.top;
 
-            FontUA::set_center_xpos(&pos, (v15 * (yw->_screenSize.x / 2)) - v38);
-            FontUA::set_center_ypos(&pos, (v14 * (yw->_screenSize.y / 2)) - v38);
+            FontUA::set_center_xpos(&cmdStream, (v15 * (yw->_screenSize.x / 2)) - v38);
+            FontUA::set_center_ypos(&cmdStream, (v14 * (yw->_screenSize.y / 2)) - v38);
 
-            FontUA::store_u8(&pos, obj.TileID);
+            FontUA::store_u8(&cmdStream, obj.TileID);
         }
     }
 
-    FontUA::set_end(&pos);
+    FontUA::set_end(&cmdStream);
 
-    w3d_a209 v28;
-
-    v28.cmdbuf = v27;
-    v28.includ = NULL;
-
-    GFX::Engine.raster_func209(&v28);
+    GFX::Engine.ProcessDrawSeq(cmdStream);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
@@ -799,25 +794,20 @@ void ypaworld_func158__sub4__sub1__sub4__sub0(NC_STACK_ypaworld *yw)
     int v35 = w * -0.934375;
     int v37 = h * -0.9333333333333333;
 
-    char buf[260];
+    CmdStream buf;
+    buf.reserve(260);
 
-    char *pos = buf;
-
-    FontUA::select_tileset(&pos, 16);
-    FontUA::set_center_xpos(&pos, v35);
-    FontUA::set_center_ypos(&pos, 4 + v37);
-    FontUA::set_txtColor(&pos, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
+    FontUA::select_tileset(&buf, 16);
+    FontUA::set_center_xpos(&buf, v35);
+    FontUA::set_center_ypos(&buf, 4 + v37);
+    FontUA::set_txtColor(&buf, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
     const std::string v7 = yw->GetLevelName(yw->_levelInfo);
 
-    pos = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[16], pos, v7, v34 - v35);
-    FontUA::set_end(&pos);
+    FontUA::FormateCenteredSkipableItem(yw->_guiTiles[16], &buf, v7, v34 - v35);
+    FontUA::set_end(&buf);
 
-    w3d_a209 v32;
-    v32.cmdbuf = buf;
-    v32.includ = NULL;
-
-    GFX::Engine.raster_func209(&v32);
+    GFX::Engine.ProcessDrawSeq(buf);
 }
 
 void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, TBriefengScreen *brf, TInputState *inpt, int obj_id, char a4)
@@ -877,23 +867,19 @@ void ypaworld_func158__sub4__sub1__sub4__sub2(NC_STACK_ypaworld *yw, TBriefengSc
                 int xpos = ((brf->ViewingObjectRect.left + brf->ViewingObjectRect.right) / 2.0) * (yw->_screenSize.x / 2);
                 int ypos = ((yw->_screenSize.y / 2) * brf->ViewingObjectRect.bottom - yw->_guiTiles[16]->h + -1.0);
 
-                char cmdbuf[128];
-                char *pos = cmdbuf;
+                CmdStream cmdbuf;
+                cmdbuf.reserve(128);
 
-                FontUA::select_tileset(&pos, 16);
-                FontUA::set_center_xpos(&pos, xpos);
-                FontUA::set_center_ypos(&pos, ypos);
-                FontUA::set_txtColor(&pos, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
+                FontUA::select_tileset(&cmdbuf, 16);
+                FontUA::set_center_xpos(&cmdbuf, xpos);
+                FontUA::set_center_ypos(&cmdbuf, ypos);
+                FontUA::set_txtColor(&cmdbuf, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
-                pos = FontUA::TextRelWidthItem(yw->_guiTiles[16], pos, brf->ViewingObject.Title.c_str(), v13, 16);
+                FontUA::TextRelWidthItem(yw->_guiTiles[16], &cmdbuf, brf->ViewingObject.Title.c_str(), v13, 16);
 
-                FontUA::set_end(&pos);
+                FontUA::set_end(&cmdbuf);
 
-                w3d_a209 v23;
-                v23.cmdbuf = cmdbuf;
-                v23.includ = NULL;
-
-                GFX::Engine.raster_func209(&v23);
+                GFX::Engine.ProcessDrawSeq(cmdbuf);
             }
         }
     }
@@ -1078,10 +1064,7 @@ void ypaworld_func158__sub4__sub1__sub4(NC_STACK_ypaworld *yw, UserData *usr, TI
         ypaworld_func158__sub4__sub1__sub4__sub1(yw, brf);
         ypaworld_func158__sub4__sub1__sub4__sub0(yw);
 
-        w3d_a209 v10;
-        v10 = stru_5C91D0.cmdstrm;
-
-        GFX::Engine.raster_func209(&v10);
+        GFX::Engine.ProcessDrawSeq(stru_5C91D0.cmdCommands, &stru_5C91D0.cmdInclude);
 
         ypaworld_func158__sub4__sub1__sub4__sub2(yw, brf, inpt, 0, 2);
     }
@@ -1409,31 +1392,25 @@ void ypaworld_func158__sub4__sub1__sub6__sub3__sub6(NC_STACK_ypaworld *yw, TBrie
 
     const std::string v7 = yw->GetLevelName(yw->_levelInfo);
 
-    char cmdBuff[264];
-    char *cur = cmdBuff;
+    CmdStream cmdBuff;
+    cmdBuff.reserve(264);
 
-    FontUA::select_tileset(&cur, 16);
-    FontUA::set_center_xpos(&cur, v14);
-    FontUA::set_center_ypos(&cur, v16);
+    FontUA::select_tileset(&cmdBuff, 16);
+    FontUA::set_center_xpos(&cmdBuff, v14);
+    FontUA::set_center_ypos(&cmdBuff, v16);
 
-    FontUA::set_txtColor(&cur, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
+    FontUA::set_txtColor(&cmdBuff, yw->_iniColors[66].r, yw->_iniColors[66].g, yw->_iniColors[66].b);
 
-    cur = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[16], cur, v7, v13 - v14);
+    FontUA::FormateCenteredSkipableItem(yw->_guiTiles[16], &cmdBuff, v7, v13 - v14);
 
-    FontUA::set_end(&cur);
+    FontUA::set_end(&cmdBuff);
 
-    w3d_a209 arg209;
-    arg209.cmdbuf = cmdBuff;
-    arg209.includ = 0;
-
-    GFX::Engine.raster_func209(&arg209);
+    GFX::Engine.ProcessDrawSeq(cmdBuff);
 }
 
-char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
+void yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, CmdStream *in, int a4)
 {
-    char *cur = in;
-
-    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
+    FontUA::set_txtColor(in, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
     FontUA::ColumnItem elms[3];
 
     elms[0].txt = Locale::Text::Advanced(Locale::ADV_KILLSFACTION);
@@ -1460,7 +1437,7 @@ char * yw_DebriefKillsTitleLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, cha
     elms[2].prefixChar = 0;
     elms[2].postfixChar = 0;
 
-    return FormateColumnItem(yw, cur, 3, elms);
+    FormateColumnItem(yw, in, 3, elms);
 }
 
 int sub_4EF2A8(const void *a1, const void *a2)
@@ -1468,9 +1445,8 @@ int sub_4EF2A8(const void *a1, const void *a2)
     return ((debrif_t1 *)a2)->status - ((debrif_t1 *)a1)->status;
 }
 
-char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
+void yw_DebriefKillsScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, CmdStream *in, int a4)
 {
-    char *cur = in;
     int a2 = 0;
 
     debrif_t1 v28[8];
@@ -1533,7 +1509,7 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
 
         FontUA::ColumnItem elms[3];
 
-        FontUA::set_txtColor(&cur, yw->_iniColors[clr_id].r, yw->_iniColors[clr_id].g, yw->_iniColors[clr_id].b);
+        FontUA::set_txtColor(in, yw->_iniColors[clr_id].r, yw->_iniColors[clr_id].g, yw->_iniColors[clr_id].b);
 
         elms[0].txt = who;
         elms[0].spaceChar = 32;
@@ -1562,19 +1538,15 @@ char * yw_DebriefKillsScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
         elms[2].prefixChar = 0;
         elms[2].postfixChar = 0;
 
-        cur = FormateColumnItem(yw, cur, 3, elms);
+        FormateColumnItem(yw, in, 3, elms);
 
-        FontUA::next_line(&cur);
+        FontUA::next_line(in);
     }
-
-    return cur;
 }
 
-char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
+void yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, CmdStream *in, int a4)
 {
-    char *cur = in;
-
-    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
+    FontUA::set_txtColor(in, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
     FontUA::ColumnItem elm;
 
@@ -1586,18 +1558,16 @@ char * yw_DebriefMPlayScoreTitle(NC_STACK_ypaworld *yw, char *in, int a4)
     elm.postfixChar = 0;
     elm.flags = 36;
 
-    return FormateColumnItem(yw, cur, 1, &elm);
+    FormateColumnItem(yw, in, 1, &elm);
 }
 
-char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
+void yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, CmdStream *in, int a4)
 {
-    char *cur = in;
-
     if ( yw->_gameWasNetGame )
     {
-        cur = yw_DebriefMPlayScoreTitle(yw, cur, a4);
+        yw_DebriefMPlayScoreTitle(yw, in, a4);
 
-        FontUA::next_line(&cur);
+        FontUA::next_line(in);
 
         debrif_t1 v32[8];
         int a2 = 0;
@@ -1657,7 +1627,7 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
                 break;
             }
 
-            FontUA::set_txtColor(&cur, yw->_iniColors[clr_id].r, yw->_iniColors[clr_id].g, yw->_iniColors[clr_id].b);
+            FontUA::set_txtColor(in, yw->_iniColors[clr_id].r, yw->_iniColors[clr_id].g, yw->_iniColors[clr_id].b);
 
             FontUA::ColumnItem a4a[2];
 
@@ -1677,14 +1647,14 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
             a4a[1].prefixChar = 0;
             a4a[1].postfixChar = 0;
 
-            cur = FormateColumnItem(yw, cur, 2, a4a);
+            FormateColumnItem(yw, in, 2, a4a);
 
-            FontUA::next_line(&cur);
+            FontUA::next_line(in);
         }
     }
     else
     {
-        FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
+        FontUA::set_txtColor(in, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
         FontUA::ColumnItem v35[2];
 
@@ -1704,9 +1674,9 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
         v35[1].postfixChar = 0;
         v35[1].flags = 36;
 
-        cur = FormateColumnItem(yw, cur, 2, v35);
+        FormateColumnItem(yw, in, 2, v35);
 
-        FontUA::next_line(&cur);
+        FontUA::next_line(in);
 
         v35[0].txt = Locale::Text::Advanced(Locale::ADV_SCOREOVERALL);
         v35[0].flags = 36;
@@ -1726,17 +1696,15 @@ char *yw_DebriefMPlayScore(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in
         v35[1].prefixChar = 0;
         v35[1].flags = 36;
 
-        cur = FormateColumnItem(yw, cur, 2, v35);
+        FormateColumnItem(yw, in, 2, v35);
 
-        FontUA::next_line(&cur);
+        FontUA::next_line(in);
     }
-    return cur;
 }
 
-char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in, int a4)
+void yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, CmdStream *in, int a4)
 {
-    char *cur = in;
-    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
+    FontUA::set_txtColor(in, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
     if ( yw->_gameWasNetGame )
     {
@@ -1759,7 +1727,7 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
         v30[1].flags = 36;
         v30[1].width = a4 * 0.3;
 
-        cur = FormateColumnItem(yw, cur, 2, v30);
+        FormateColumnItem(yw, in, 2, v30);
     }
     else
     {
@@ -1783,9 +1751,9 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
         a4a[1].postfixChar = 0;
         a4a[1].flags = 36;
 
-        cur = FormateColumnItem(yw, cur, 2, a4a);
+        FormateColumnItem(yw, in, 2, a4a);
 
-        FontUA::next_line(&cur);
+        FontUA::next_line(in);
 
         a4a[0].txt = Locale::Text::Advanced(Locale::ADV_OVERALLTIME);
         a4a[0].flags = 36;
@@ -1805,43 +1773,37 @@ char * yw_DebriefRenderTime(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *i
         a4a[1].postfixChar = 0;
         a4a[1].flags = 36;
 
-        cur = FormateColumnItem(yw, cur, 2, a4a);
+        FormateColumnItem(yw, in, 2, a4a);
     }
 
-    FontUA::next_line(&cur);
-
-    return cur;
+    FontUA::next_line(in);
 }
 
-char * yw_DebriefScoreTable(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in)
+void yw_DebriefScoreTable(NC_STACK_ypaworld *yw, TBriefengScreen *brf, CmdStream *in)
 {
-    char *cur = in;
-
-    FontUA::select_tileset(&cur, 15);
-    FontUA::set_center_xpos(&cur, ((yw->_screenSize.x / 2) * 0.15) );
-    FontUA::set_center_ypos(&cur, ((yw->_screenSize.y / 2) * -0.821) );
+    FontUA::select_tileset(in, 15);
+    FontUA::set_center_xpos(in, ((yw->_screenSize.x / 2) * 0.15) );
+    FontUA::set_center_ypos(in, ((yw->_screenSize.y / 2) * -0.821) );
 
     int v14 = (yw->_screenSize.x / 2) * 0.796875;
 
-    cur = yw_DebriefKillsTitleLine(yw, brf, cur, v14);
+    yw_DebriefKillsTitleLine(yw, brf, in, v14);
 
-    FontUA::next_line(&cur);
+    FontUA::next_line(in);
 
-    cur = yw_DebriefKillsScore(yw, brf, cur, v14);
+    yw_DebriefKillsScore(yw, brf, in, v14);
 
-    FontUA::next_line(&cur);
+    FontUA::next_line(in);
 
-    cur = yw_DebriefMPlayScore(yw, brf, cur, v14);
+    yw_DebriefMPlayScore(yw, brf, in, v14);
 
-    FontUA::next_line(&cur);
+    FontUA::next_line(in);
 
-    return yw_DebriefRenderTime(yw, brf, cur, v14);
+    yw_DebriefRenderTime(yw, brf, in, v14);
 }
 
-char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, const World::History::Upgrade &upg, char *in, int a5)
+void yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, const World::History::Upgrade &upg, CmdStream *in, int a5)
 {
-    char *cur = in;
-
     int lastWeapon = upg.lastWeapon;
     int lastVhcl   = upg.lastVhcl;
     int lastBuild  = upg.lastBuild;
@@ -1861,7 +1823,7 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
         }
 
         if ( !lastVhcl )
-            return cur;
+            return;
     }
 
     if ( lastWeapon == 0 && lastVhcl != 0 )
@@ -1997,50 +1959,40 @@ char * yw_DebriefTechUpgradeLine(NC_STACK_ypaworld *yw, TBriefengScreen *brf, co
     elm[2].width = a5 * 0.22;
     elm[2].txt = v14;
 
-    cur = FontUA::FormateColumnItem(yw, cur, 3, elm);
+    FontUA::FormateColumnItem(yw, in, 3, elm);
 
-    FontUA::next_line(&cur);
-
-    return cur;
+    FontUA::next_line(in);
 }
 
-char * yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, TBriefengScreen *brf, char *in)
+void yw_DebriefTechUpgradesTable(NC_STACK_ypaworld *yw, TBriefengScreen *brf, CmdStream *in)
 {
-    char *cur = in;
+    FontUA::select_tileset(in, 15);
+    FontUA::set_center_xpos(in, ((yw->_screenSize.x / 2) * -0.9875) );
+    FontUA::set_center_ypos(in, ((yw->_screenSize.y / 2) * 0.35) );
 
-    FontUA::select_tileset(&cur, 15);
-    FontUA::set_center_xpos(&cur, ((yw->_screenSize.x / 2) * -0.9875) );
-    FontUA::set_center_ypos(&cur, ((yw->_screenSize.y / 2) * 0.35) );
-
-    FontUA::set_txtColor(&cur, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
+    FontUA::set_txtColor(in, yw->_iniColors[67].r, yw->_iniColors[67].g, yw->_iniColors[67].b);
 
     for ( const auto &upg : brf->Upgrades )
-        cur = yw_DebriefTechUpgradeLine(yw, brf, upg, cur,  (yw->_screenSize.x / 2) * 0.984375 );
-
-    return cur;
+        yw_DebriefTechUpgradeLine(yw, brf, upg, in,  (yw->_screenSize.x / 2) * 0.984375 );
 }
 
 void yw_DebriefRunDebrief(NC_STACK_ypaworld *yw, TInputState *struc, TBriefengScreen *brf)
 {
-    char cmdbuf[2048];
-    char *cur = cmdbuf;
-
+    CmdStream cmdbuf;
+    cmdbuf.reserve(2048);
+    
     uint32_t dtime = brf->CurrTime - brf->StartTime;
 
     yw_DebriefRenderSectorsOwners(yw, brf);
 
-    cur = yw_DebriefScoreTable(yw, brf, cur);
-    cur = yw_DebriefTechUpgradesTable(yw, brf, cur);
+    yw_DebriefScoreTable(yw, brf, &cmdbuf);
+    yw_DebriefTechUpgradesTable(yw, brf, &cmdbuf);
 
-    FontUA::set_end(&cur);
+    FontUA::set_end(&cmdbuf);
 
     uint32_t lastFrameTimeStamp = 0;
 
-    w3d_a209 v24;
-    v24.includ = 0;
-    v24.cmdbuf = cmdbuf;
-
-    GFX::Engine.raster_func209(&v24);
+    GFX::Engine.ProcessDrawSeq(cmdbuf);
 
     int v26 = 0;
     

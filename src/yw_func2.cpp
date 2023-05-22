@@ -218,8 +218,10 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
 {
     usr->input_listview.SetRect(yw, -2, -2);
     GFX::Engine.GetTileset(0);
+    
+    usr->input_listview.itemBlock.clear();
 
-    char *v4 = usr->input_listview.ItemsPreLayout(yw, usr->input_listview.itemBlock, 0, "uvw");
+    usr->input_listview.ItemsPreLayout(yw, &usr->input_listview.itemBlock, 0, "uvw");
 
     for (int i = 1; i <= usr->input_listview.shownEntries; i++ )
     {
@@ -300,32 +302,29 @@ void yw_draw_input_list(NC_STACK_ypaworld *yw, UserData *usr)
             a1a[1].postfixChar = v31;
             a1a[1].flags = 38;
 
-            FontUA::select_tileset(&v4, 0);
-            FontUA::store_s8(&v4, '{'); // Left wnd border
+            FontUA::select_tileset(&usr->input_listview.itemBlock, 0);
+            FontUA::store_s8(&usr->input_listview.itemBlock, '{'); // Left wnd border
 
             if ( v24 == usr->inpListActiveElement )
             {
-                FontUA::set_txtColor(&v4, usr->p_YW->_iniColors[62].r, usr->p_YW->_iniColors[62].g, usr->p_YW->_iniColors[62].b);
+                FontUA::set_txtColor(&usr->input_listview.itemBlock, usr->p_YW->_iniColors[62].r, usr->p_YW->_iniColors[62].g, usr->p_YW->_iniColors[62].b);
             }
             else
             {
-                FontUA::set_txtColor(&v4, usr->p_YW->_iniColors[61].r, usr->p_YW->_iniColors[61].g, usr->p_YW->_iniColors[61].b);
+                FontUA::set_txtColor(&usr->input_listview.itemBlock, usr->p_YW->_iniColors[61].r, usr->p_YW->_iniColors[61].g, usr->p_YW->_iniColors[61].b);
             }
 
-            v4 = FormateColumnItem(yw, v4, 2, a1a);
+            FormateColumnItem(yw, &usr->input_listview.itemBlock, 2, a1a);
 
-            FontUA::select_tileset(&v4, 0);
-            FontUA::store_s8(&v4, '}'); // Right wnd border
-            FontUA::next_line(&v4);
+            FontUA::select_tileset(&usr->input_listview.itemBlock, 0);
+            FontUA::store_s8(&usr->input_listview.itemBlock, '}'); // Right wnd border
+            FontUA::next_line(&usr->input_listview.itemBlock);
         }
     }
-    v4 = usr->input_listview.ItemsPostLayout(yw, v4, 0, "xyz");
-    FontUA::set_end(&v4);
+    usr->input_listview.ItemsPostLayout(yw, &usr->input_listview.itemBlock, 0, "xyz");
+    FontUA::set_end(&usr->input_listview.itemBlock);
 
-    w3d_a209 v21;
-    v21 = usr->input_listview.cmdstrm;
-
-    GFX::Engine.DrawText(&v21);
+    GFX::Engine.ProcessDrawSeq(usr->input_listview.cmdCommands, &usr->input_listview.cmdInclude);
 }
 
 

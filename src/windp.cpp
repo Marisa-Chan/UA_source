@@ -1505,7 +1505,6 @@ void UserData::ypaworld_func151__sub7()
 
 //////////////multiplayer wnd///////////
 netgamelst netgame_wnd;
-char b_stru_5C85C0__cmdbuf[1024];
 
 void sb_0x451034__sub6(NC_STACK_ypaworld *yw)
 {
@@ -1528,8 +1527,7 @@ void sb_0x451034__sub6(NC_STACK_ypaworld *yw)
     netgame_wnd.field_1DC[0] = 0;
     netgame_wnd.field_21C = 0;
 
-    netgame_wnd.cmdstrm.includ = NULL;
-    netgame_wnd.cmdstrm.cmdbuf = b_stru_5C85C0__cmdbuf;
+    netgame_wnd.cmdCommands.reserve(1024);
 
 }
 

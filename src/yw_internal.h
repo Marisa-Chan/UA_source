@@ -262,6 +262,10 @@ public:
     float field_25C;
     float field_260;
     float field_264;
+    
+    CmdStream t1_cmdbuf_1;
+    CmdStream t1_cmdbuf_2;
+    CmdStream t1_cmdbuf_3;
 };
 
 struct debrif_t1
@@ -292,8 +296,6 @@ void yw_RenderHUDTarget(NC_STACK_ypaworld *yw, sklt_wis *wis);
 
 void yw_RenderCursorOverUnit(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact);
 
-char * yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, char *cur);
-char *yw_RenderUnitLifeBar(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact);
 
 void yw_RenderHUDRadare(NC_STACK_ypaworld *yw);
 void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw);
@@ -352,7 +354,6 @@ void recorder_stoprec(NC_STACK_ypaworld *yw);
 
 void ypaworld_func163__sub1(NC_STACK_ypaworld *yw, TGameRecorder *rcrd, int a3);
 
-char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const std::string &txt1, const std::string &txt2, int flag = 0);
 void sub_4D0C24(NC_STACK_ypaworld *yw, const std::string &a1, const std::string &a2);
 
 

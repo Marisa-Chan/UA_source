@@ -19,12 +19,6 @@
 extern uint32_t bact_id;
 
 
-////////////// Draw wireframe
-char byte_5C8DB0[1024];
-
-////////////// Draw
-char byte_5FFF80[8192];
-
 
 ////////////////////////////////////////
 GuiBase *dword_5BAFAC = NULL;
@@ -67,7 +61,6 @@ squadMan squadron_manager;
 
 yw_infolog info_log;
 
-char byte_5A7650[1024];
 
 
 
@@ -90,12 +83,6 @@ float flt_516530;
 
 tehMap robo_map;
 
-char byte_5BA6E8[512];
-char t1_cmdbuf_1[256];
-char t1_cmdbuf_2[256];
-char t1_cmdbuf_3[32768];
-char *t1_cmdbufs[3] = {t1_cmdbuf_1, t1_cmdbuf_2, t1_cmdbuf_3};
-
 typedef int (*mapFunc)(NC_STACK_ypaworld *yw, int x, int y);
 
 NC_STACK_ypaworld *dword_5BAA60; // For sort func
@@ -104,15 +91,11 @@ NC_STACK_ypaworld *dword_5BAA60; // For sort func
 ///////// up panel ///////////
 energPanel up_panel;
 
-char byte_51805C[512];
-
 
 
 
 ///////// down panel /////////
 GuiList gui_lstvw;
-
-char byte_516534[1088];
 
 bzd bzda;
 
@@ -265,7 +248,7 @@ void sb_0x451034__sub8(NC_STACK_ypaworld *yw)
         up_panel.buttons[i] = ButtonBox(up_panel.field_1D4 + (up_panel.field_1D0 + up_panel.field_1D8) * i,    0,
                                         up_panel.field_1D0,   up_panel.field_1CC);
 
-    up_panel.cmdstrm.cmdbuf = byte_51805C;
+    up_panel.cmdCommands.reserve(512);
 
     Input::Engine.AddClickBoxFront(&up_panel);
 }
@@ -293,10 +276,8 @@ void sub_4F68FC(float a3, float a4, float a5, float a6, SDL_Color a7)
 }
 
 
-char * sub_4F6980(char *cur, float a1, float a2, char a3, int a4, int a5)
+void sub_4F6980(CmdStream *cur, float a1, float a2, char a3, int a4, int a5)
 {
-    char *pcur = cur;
-
     Common::Point tmp = sub_4F681C( {a1, a2} );
 
     int v7 = tmp.x - a4 / 2 - robo_map.field_200;
@@ -344,31 +325,29 @@ char * sub_4F6980(char *cur, float a1, float a2, char a3, int a4, int a5)
         else
             v35 = robo_map.field_1FC - v8;
 
-        FontUA::set_center_xpos(&pcur, robo_map.field_200 + v7);
-        FontUA::set_center_ypos(&pcur, robo_map.field_204 + v8);
+        FontUA::set_center_xpos(cur, robo_map.field_200 + v7);
+        FontUA::set_center_ypos(cur, robo_map.field_204 + v8);
 
         if ( v33 )
         {
-            FontUA::set_yoff(&pcur, v33);
+            FontUA::set_yoff(cur, v33);
         }
         else if ( v35 )
         {
-            FontUA::set_yheight(&pcur, v35);
+            FontUA::set_yheight(cur, v35);
         }
 
         if ( v11 )
         {
-            FontUA::set_xoff(&pcur, v11);
+            FontUA::set_xoff(cur, v11);
         }
         else if ( v34 )
         {
-            FontUA::set_xwidth(&pcur, v34);
+            FontUA::set_xwidth(cur, v34);
         }
 
-        FontUA::store_u8(&pcur, a3);
+        FontUA::store_u8(cur, a3);
     }
-
-    return pcur;
 }
 
 void sub_4F72E8(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
@@ -624,10 +603,8 @@ void sb_0x4f8f64__sub1(NC_STACK_ypaworld *yw)
 }
 
 
-char * sb_0x4f8f64__sub2__sub0(char *cur, float a1, float a2, char a3, int a4, int a5)
+void sb_0x4f8f64__sub2__sub0(CmdStream *cur, float a1, float a2, char a3, int a4, int a5)
 {
-    char *pcur = cur;
-
     Common::Point tmp = sub_4F681C( {a1, a2} );
 
     int v8 = tmp.x - a4 / 2 - robo_map.field_200;
@@ -671,35 +648,32 @@ char * sb_0x4f8f64__sub2__sub0(char *cur, float a1, float a2, char a3, int a4, i
         else
             v32 = robo_map.field_1FC - v9;
 
-        FontUA::set_center_xpos(&pcur, robo_map.field_200 + v8);
-        FontUA::set_center_ypos(&pcur, robo_map.field_204 + v9);
+        FontUA::set_center_xpos(cur, robo_map.field_200 + v8);
+        FontUA::set_center_ypos(cur, robo_map.field_204 + v9);
 
 
         if ( v12 )
-            FontUA::set_yoff(&pcur, v12);
+            FontUA::set_yoff(cur, v12);
 
         if ( v32 )
-            FontUA::set_yheight(&pcur, v32);
+            FontUA::set_yheight(cur, v32);
 
         if ( v31 )
         {
-            FontUA::set_xoff(&pcur, v31);
+            FontUA::set_xoff(cur, v31);
         }
         else if ( v30 )
         {
-            FontUA::set_xwidth(&pcur, v30);
+            FontUA::set_xwidth(cur, v30);
         }
 
-        FontUA::store_u8(&pcur, a3);
+        FontUA::store_u8(cur, a3);
     }
-    return pcur;
 }
 
 
-char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
+void sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     int a4, v4;
 
     switch ( robo_map.field_1EE )
@@ -737,7 +711,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
     {
         if ( robo_map.field_1EC & 1 )
         {
-            FontUA::select_tileset(&pcur, v4);
+            FontUA::select_tileset(cur, v4);
 
             for ( const auto &ps : yw->_powerStations )
             {
@@ -768,8 +742,8 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                             else if ( ps.second.EffectivePower <= 256)
                                 v9 = 0x87;
 
-                            pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x89, a4, a4);
-                            pcur = sb_0x4f8f64__sub2__sub0(pcur, tmp.x, tmp.y, v9, a4, a4 / 8);
+                            sub_4F6980(cur, tmp.x, tmp.y, 0x89, a4, a4);
+                            sb_0x4f8f64__sub2__sub0(cur, tmp.x, tmp.y, v9, a4, a4 / 8);
                         }
                     }
                 }
@@ -791,7 +765,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                     if ( v13 )
                     {
                         vec2d tmp = World::SectorIDToCenterPos2( gem.CellId );
-                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x88, a4, a4);
+                        sub_4F6980(cur, tmp.x, tmp.y, 0x88, a4, a4);
                     }
                 }
             }
@@ -803,7 +777,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                     if ( gate.PCell->IsCanSee(yw->_userRobo->_owner) )
                     {
                         vec2d tmp = World::SectorIDToCenterPos2( gate.CellId );
-                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x93, a4, a4);
+                        sub_4F6980(cur, tmp.x, tmp.y, 0x93, a4, a4);
                     }
 
                     for ( const TMapKeySector &ks : gate.KeySectors )
@@ -815,7 +789,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                                 if ( ks.PCell->owner == yw->_userRobo->_owner || yw->_timeStamp / 300 & 1 )
                                 {
                                     vec2d tmp = World::SectorIDToCenterPos2( ks.CellId );
-                                    pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x8A, a4, a4);
+                                    sub_4F6980(cur, tmp.x, tmp.y, 0x8A, a4, a4);
                                 }
                             }
                         }
@@ -828,7 +802,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                         if ( yw->_timeStamp / 300 & 1 )
                         {
                             vec2d tmp = World::SectorIDToCenterPos2( gate.CellId );
-                            pcur = sub_4F6980(pcur, tmp.x, tmp.y, 0x94, a4, a4);
+                            sub_4F6980(cur, tmp.x, tmp.y, 0x94, a4, a4);
                         }
                     }
                 }
@@ -877,7 +851,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                     if ( v34 )
                     {
                         vec2d tmp = World::SectorIDToCenterPos2( sitem.CellId );
-                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, v61, a4, a4);
+                        sub_4F6980(cur, tmp.x, tmp.y, v61, a4, a4);
                     }
 
                     if ( v29 )
@@ -891,7 +865,7 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
                                     if ( ks.PCell->owner == yw->_userRobo->_owner || yw->_timeStamp / 500 & 1 )
                                     {
                                         vec2d tmp = World::SectorIDToCenterPos2( ks.CellId );
-                                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, v61, a4, a4);
+                                        sub_4F6980(cur, tmp.x, tmp.y, v61, a4, a4);
                                     }
                                 }
                             }
@@ -901,14 +875,10 @@ char * sb_0x4f8f64__sub2(NC_STACK_ypaworld *yw, char *cur)
             }
         }
     }
-
-    return pcur;
 }
 
-char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_STACK_ypabact *bact, int a6)
+void sub_4F6DFC(NC_STACK_ypaworld *yw, CmdStream *cur, int height, int width, NC_STACK_ypabact *bact, int a6)
 {
-    char *pcur = cur;
-
     if ( bact->_status != BACT_STATUS_DEAD && !bact->IsHiddenFor( yw->GetPlayerOwner() ) )
     {
         int v8;
@@ -977,7 +947,7 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
             }
         }
 
-        pcur = sub_4F6980(pcur, bact->_position.x, bact->_position.z, v8, height, width);
+        sub_4F6980(cur, bact->_position.x, bact->_position.z, v8, height, width);
 
         if ( bact->_bact_type != BACT_TYPES_MISSLE && robo_map.field_1EE > 2 )
         {
@@ -1107,11 +1077,10 @@ char * sub_4F6DFC(NC_STACK_ypaworld *yw, char *cur, int height, int width, NC_ST
                     v19 = 0x80;
                 }
 
-                pcur = sub_4F6980(pcur, bact->_position.x, bact->_position.z, v19, height, width);
+                sub_4F6980(cur, bact->_position.x, bact->_position.z, v19, height, width);
             }
         }
     }
-    return pcur;
 }
 
 NC_STACK_ypabact * sub_4D3C3C(NC_STACK_ypabact *bact)
@@ -1128,23 +1097,20 @@ NC_STACK_ypabact * sub_4D3C3C(NC_STACK_ypabact *bact)
     return bact;
 }
 
-char * sub_4F7BE8(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact, int a2, int a4, int a5, int a6)
+void sub_4F7BE8(NC_STACK_ypaworld *yw, CmdStream *cur, NC_STACK_ypabact *bact, int a2, int a4, int a5, int a6)
 {
-    char *pcur = cur;
-
     if ( bact )
     {
-        FontUA::select_tileset(&pcur, a2);
+        FontUA::select_tileset(cur, a2);
 
-        pcur = sub_4F6980(pcur, bact->_position.x, bact->_position.z, a4, a5, a6);
+        sub_4F6980(cur, bact->_position.x, bact->_position.z, a4, a5, a6);
 
         for( NC_STACK_ypabact* &kid : bact->_kidList )
         {
             if ( kid->_status != BACT_STATUS_DEAD )
-                pcur = sub_4F6980(pcur, kid->_position.x, kid->_position.z, a4, a5, a6);
+                sub_4F6980(cur, kid->_position.x, kid->_position.z, a4, a5, a6);
         }
     }
-    return pcur;
 }
 
 int NC_STACK_ypaworld::sb_0x4f8f64__sub3__sub0(const Common::Point &sector)
@@ -1163,7 +1129,7 @@ int NC_STACK_ypaworld::sb_0x4f8f64__sub3__sub0(const Common::Point &sector)
     return enrg;
 }
 
-char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const std::string &labl, int tileset_id, char *cur, int a4, int a5)
+void sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const std::string &labl, int tileset_id, CmdStream *cur, int a4, int a5)
 {
     int v8 = yw->_guiTiles[tileset_id]->GetWidth(labl);
 
@@ -1172,25 +1138,19 @@ char * sb_0x4f8f64__sub3__sub1(NC_STACK_ypaworld *yw, const std::string &labl, i
     int v9 = tmp.x - robo_map.field_200;
     int v10 = tmp.y - robo_map.field_204;
 
-    char *pcur = cur;
-
     if ( tmp.x - robo_map.field_200 > 0 && v10 > 0 && tmp.x - robo_map.field_200 + v8 < robo_map.field_1F8 && tmp.y - robo_map.field_204 + yw->_guiTiles[tileset_id]->h < robo_map.field_1FC )
     {
-        FontUA::select_tileset(&pcur, tileset_id);
-        FontUA::set_center_xpos(&pcur, robo_map.field_200 + v9);
-        FontUA::set_center_ypos(&pcur, robo_map.field_204 + v10);
+        FontUA::select_tileset(cur, tileset_id);
+        FontUA::set_center_xpos(cur, robo_map.field_200 + v9);
+        FontUA::set_center_ypos(cur, robo_map.field_204 + v10);
 
         for ( uint8_t c : labl )
-            FontUA::store_s8(&pcur, c);
+            FontUA::store_s8(cur, c);
     }
-
-    return pcur;
 }
 
-char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
+void sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     int v111;
     int a5;
     int a4;
@@ -1260,38 +1220,38 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         {
             if ( yw->_guiActFlags & 0x20 )
             {
-                FontUA::select_tileset(&pcur, v114);
+                FontUA::select_tileset(cur, v114);
 
-                pcur = sub_4F6980(pcur, yw->_bactOnMouse->_position.x, yw->_bactOnMouse->_position.z, 0x86, a4, a5);
+                sub_4F6980(cur, yw->_bactOnMouse->_position.x, yw->_bactOnMouse->_position.z, 0x86, a4, a5);
             }
             else if ( yw->_guiActFlags & 0x10 && yw->_mouseGrabbed == false)
             {
                 if ( yw->_cellOnMouse->owner == yw->_userRobo->_owner && yw->_cellOnMouse->IsCanSee(yw->_userRobo->_owner) )
                 {
-                    FontUA::select_tileset(&pcur, v114);
+                    FontUA::select_tileset(cur, v114);
 
-                    pcur = sub_4F6980(pcur, yw->_cellMouseIsectPos.x, yw->_cellMouseIsectPos.z, 0x88, a4, a5);
+                    sub_4F6980(cur, yw->_cellMouseIsectPos.x, yw->_cellMouseIsectPos.z, 0x88, a4, a5);
                 }
                 else
                 {
-                    FontUA::select_tileset(&pcur, v110);
+                    FontUA::select_tileset(cur, v110);
 
-                    pcur = sub_4F6980(pcur, yw->_cellOnMouse->CenterPos.x, yw->_cellOnMouse->CenterPos.z, 66, v111, v111);
+                    sub_4F6980(cur, yw->_cellOnMouse->CenterPos.x, yw->_cellOnMouse->CenterPos.z, 66, v111, v111);
                 }
             }
         }
         break;
 
     case World::DOACTION_5:
-        FontUA::select_tileset(&pcur, v114);
+        FontUA::select_tileset(cur, v114);
 
-        pcur = sub_4F6980(pcur, yw->_bactOnMouse->_position.x, yw->_bactOnMouse->_position.z, 0x85, a4, a5);
+        sub_4F6980(cur, yw->_bactOnMouse->_position.x, yw->_bactOnMouse->_position.z, 0x85, a4, a5);
         break;
 
     case World::DOACTION_6:
-        FontUA::select_tileset(&pcur, v110);
+        FontUA::select_tileset(cur, v110);
 
-        pcur = sub_4F6980(pcur, yw->_cellOnMouse->CenterPos.x, yw->_cellOnMouse->CenterPos.z, 65, v111, v111);
+        sub_4F6980(cur, yw->_cellOnMouse->CenterPos.x, yw->_cellOnMouse->CenterPos.z, 65, v111, v111);
         break;
 
     case World::DOACTION_8:
@@ -1303,9 +1263,9 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
                 {
                     int v22 = yw->_guiTiles[1]->h;
 
-                    FontUA::select_tileset(&pcur, 1);
+                    FontUA::select_tileset(cur, 1);
 
-                    pcur = sub_4F6980(pcur, yw->_bactOnMouse->_position.x, yw->_bactOnMouse->_position.z, v7, v22, v22);
+                    sub_4F6980(cur, yw->_bactOnMouse->_position.x, yw->_bactOnMouse->_position.z, v7, v22, v22);
                 }
                 else
                 {
@@ -1313,7 +1273,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
                     if ( v25 )
                     {
-                        pcur = sub_4F7BE8(yw, pcur, v25, v114, 0x85, a4, a5);
+                        sub_4F7BE8(yw, cur, v25, v114, 0x85, a4, a5);
                     }
 
                 }
@@ -1322,9 +1282,9 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
         break;
 
     case World::DOACTION_10:
-        FontUA::select_tileset(&pcur, v114);
+        FontUA::select_tileset(cur, v114);
 
-        pcur = sub_4F6980(pcur, yw->_cellMouseIsectPos.x, yw->_cellMouseIsectPos.z, 0x88, a4, a5);
+        sub_4F6980(cur, yw->_cellMouseIsectPos.x, yw->_cellMouseIsectPos.z, 0x88, a4, a5);
         break;
 
     default:
@@ -1333,11 +1293,11 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
     if ( bzda.field_1D0 & 0x20 )
     {
-        FontUA::select_tileset(&pcur, 1);
+        FontUA::select_tileset(cur, 1);
 
         int v44 = yw->_guiTiles[1]->h;
 
-        pcur = sub_4F6980(pcur, yw->_userRobo->_position.x, yw->_userRobo->_position.z, v99, v44, v44);
+        sub_4F6980(cur, yw->_userRobo->_position.x, yw->_userRobo->_position.z, v99, v44, v44);
     }
     else
     {
@@ -1347,7 +1307,7 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
             if ( v47 )
             {
-                pcur = sub_4F7BE8(yw, pcur, v47, v114, 0x84, a4, a5);
+                sub_4F7BE8(yw, cur, v47, v114, 0x84, a4, a5);
 
                 if ( v47->_primTtype == BACT_TGT_TYPE_CELL )
                 {
@@ -1355,26 +1315,26 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
                     {
                         vec2d tmp = World::SectorIDToCenterPos2( World::PositionToSectorID(v47->_primTpos) );
 
-                        FontUA::select_tileset(&pcur, v110);
+                        FontUA::select_tileset(cur, v110);
 
-                        pcur = sub_4F6980(pcur, tmp.x, tmp.y, 66, v111, v111);
+                        sub_4F6980(cur, tmp.x, tmp.y, 66, v111, v111);
 
-                        FontUA::select_tileset(&pcur, v114);
+                        FontUA::select_tileset(cur, v114);
 
-                        pcur = sub_4F6980(pcur, v47->_primTpos.x, v47->_primTpos.z, 0x88, a4, a5);
+                        sub_4F6980(cur, v47->_primTpos.x, v47->_primTpos.z, 0x88, a4, a5);
                     }
                     else
                     {
-                        FontUA::select_tileset(&pcur, v114);
+                        FontUA::select_tileset(cur, v114);
 
-                        pcur = sub_4F6980(pcur, v47->_primTpos.x, v47->_primTpos.z, 0x88, a4, a5);
+                        sub_4F6980(cur, v47->_primTpos.x, v47->_primTpos.z, 0x88, a4, a5);
                     }
                 }
                 else if ( v47->_primTtype == BACT_TGT_TYPE_UNIT )
                 {
-                    FontUA::select_tileset(&pcur, v114);
+                    FontUA::select_tileset(cur, v114);
 
-                    pcur = sub_4F6980(pcur, v47->_primT.pbact->_position.x, v47->_primT.pbact->_position.z, 0x86, a4, a5);
+                    sub_4F6980(cur, v47->_primT.pbact->_position.x, v47->_primT.pbact->_position.z, 0x86, a4, a5);
                 }
 
                 if ( v47->_status_flg & BACT_STFLAG_WAYPOINT )
@@ -1390,9 +1350,9 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
 
                         for (int i = v68; i < v47->_waypoints_count; i++)
                         {
-                            FontUA::select_tileset(&pcur, v114);
+                            FontUA::select_tileset(cur, v114);
 
-                            pcur = sub_4F6980(pcur, v47->_waypoints[i].x, v47->_waypoints[i].z, 0x88, a4, a5);
+                            sub_4F6980(cur, v47->_waypoints[i].x, v47->_waypoints[i].z, 0x88, a4, a5);
                         }
                     }
                 }
@@ -1404,9 +1364,9 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
     {
         if ( yw->_timeStamp / 300 & 1 )
         {
-            FontUA::select_tileset(&pcur, v114);
+            FontUA::select_tileset(cur, v114);
 
-            pcur = sub_4F6980(pcur, yw->_userUnit->_position.x, yw->_userUnit->_position.z, 0x89, a4, a5);
+            sub_4F6980(cur, yw->_userUnit->_position.x, yw->_userUnit->_position.z, 0x89, a4, a5);
         }
     }
 
@@ -1414,9 +1374,9 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
     {
         if ( yw->_timeStamp / 300 & 1 )
         {
-            FontUA::select_tileset(&pcur, v114);
+            FontUA::select_tileset(cur, v114);
 
-            pcur = sub_4F6980(pcur, yw->_lastMsgSender->_position.x, yw->_lastMsgSender->_position.z, 0x8A, a4, a5);
+            sub_4F6980(cur, yw->_lastMsgSender->_position.x, yw->_lastMsgSender->_position.z, 0x8A, a4, a5);
         }
     }
 
@@ -1434,59 +1394,50 @@ char * sb_0x4f8f64__sub3(NC_STACK_ypaworld *yw, char *cur)
             }
 
             if ( v85 )
-                pcur = sb_0x4f8f64__sub3__sub1(yw,  fmt::sprintf("%d / %d", 2 * v81, 2 * yw->_beamEnergyCapacity), 0x1F, pcur, gate.CellId.x, gate.CellId.y);
+                sb_0x4f8f64__sub3__sub1(yw,  fmt::sprintf("%d / %d", 2 * v81, 2 * yw->_beamEnergyCapacity), 0x1F, cur, gate.CellId.x, gate.CellId.y);
         }
     }
-    return pcur;
 }
 
-char * sb_0x4f8f64__sub0(NC_STACK_ypaworld *yw, char *cur)
+void sb_0x4f8f64__sub0(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
-    FontUA::select_tileset(&pcur, 10);
-    FontUA::set_center_xpos(&pcur, robo_map.x + robo_map.field_234 + robo_map.field_244 - (yw->_screenSize.x / 2));
-    FontUA::set_center_ypos(&pcur, robo_map.y + robo_map.h - (robo_map.field_230 + robo_map.field_240) - (yw->_screenSize.y / 2));
+    FontUA::select_tileset(cur, 10);
+    FontUA::set_center_xpos(cur, robo_map.x + robo_map.field_234 + robo_map.field_244 - (yw->_screenSize.x / 2));
+    FontUA::set_center_ypos(cur, robo_map.y + robo_map.h - (robo_map.field_230 + robo_map.field_240) - (yw->_screenSize.y / 2));
 
     if ( robo_map.field_1EC & 1 )
-        FontUA::store_u8(&pcur, 97);
+        FontUA::store_u8(cur, 97);
     else
-        FontUA::store_u8(&pcur, 65);
+        FontUA::store_u8(cur, 65);
 
     if ( robo_map.field_1EC & 2 )
-        FontUA::store_u8(&pcur, 98);
+        FontUA::store_u8(cur, 98);
     else
-        FontUA::store_u8(&pcur, 66);
+        FontUA::store_u8(cur, 66);
 
     if ( robo_map.field_1EC & 4 )
-        FontUA::store_u8(&pcur, 100);
+        FontUA::store_u8(cur, 100);
     else
-        FontUA::store_u8(&pcur, 68);
+        FontUA::store_u8(cur, 68);
 
     if ( robo_map.field_1ED == 1 )
-        FontUA::store_u8(&pcur, 102);
+        FontUA::store_u8(cur, 102);
     else
-        FontUA::store_u8(&pcur, 70);
+        FontUA::store_u8(cur, 70);
 
     if ( robo_map.field_1E8 & 0x40 )
-        FontUA::store_u8(&pcur, 106);
+        FontUA::store_u8(cur, 106);
     else
-        FontUA::store_u8(&pcur, 74);
+        FontUA::store_u8(cur, 74);
 
     if ( robo_map.field_1E8 & 0x80 )
-        FontUA::store_u8(&pcur, 107);
+        FontUA::store_u8(cur, 107);
     else
-        FontUA::store_u8(&pcur, 75);
-
-    return pcur;
+        FontUA::store_u8(cur, 75);
 }
 
 void sb_0x4f8f64(NC_STACK_ypaworld *yw)
 {
-    w3d_a209 arg;
-    arg.cmdbuf = t1_cmdbuf_3;
-    arg.includ = NULL;
-
     int v41 = 0;
 
     int v39 = robo_map.field_1EE + 2;
@@ -1551,9 +1502,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
     if ( vii >= yw->_mapSize.y )
         vii = yw->_mapSize.y - 1;
 
-    char *pcur = sb_0x4f8f64__sub2(yw, t1_cmdbuf_3);
+    robo_map.t1_cmdbuf_3.clear();
+    
+    sb_0x4f8f64__sub2(yw, &robo_map.t1_cmdbuf_3);
 
-    FontUA::select_tileset(&pcur, setid);
+    FontUA::select_tileset(&robo_map.t1_cmdbuf_3, setid);
 
     sb_0x4f8f64__sub1(yw);
 
@@ -1571,11 +1524,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
                     {
                         if ( bct->_bact_type == BACT_TYPES_ROBO )
                         {
-                            FontUA::select_tileset(&pcur, 1);
+                            FontUA::select_tileset(&robo_map.t1_cmdbuf_3, 1);
 
-                            pcur = sub_4F6DFC(yw, pcur, yw->_guiTiles[1]->h, yw->_guiTiles[1]->map[24].w, bct, 0);
+                            sub_4F6DFC(yw, &robo_map.t1_cmdbuf_3, yw->_guiTiles[1]->h, yw->_guiTiles[1]->map[24].w, bct, 0);
 
-                            FontUA::select_tileset(&pcur, setid);
+                            FontUA::select_tileset(&robo_map.t1_cmdbuf_3, setid);
 
                             v41++;
                         }
@@ -1585,13 +1538,13 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
 
                             if ( !gn->IsRoboGun() || bct == yw->_userUnit )
                             {
-                                pcur = sub_4F6DFC(yw, pcur, height, width, bct, a6);
+                                sub_4F6DFC(yw, &robo_map.t1_cmdbuf_3, height, width, bct, a6);
                                 v41++;
                             }
                         }
                         else
                         {
-                            pcur = sub_4F6DFC(yw, pcur, height, width, bct, a6);
+                            sub_4F6DFC(yw, &robo_map.t1_cmdbuf_3, height, width, bct, a6);
                             v41++;
                         }
                     }
@@ -1625,7 +1578,7 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
                                 {
                                     if ( bct->_status != BACT_STATUS_CREATE && bct->_status != BACT_STATUS_BEAM && bct->_status != BACT_STATUS_DEAD )
                                     {
-                                        pcur = sub_4F6980(pcur, bct->_position.x, bct->_position.z, 0x85, height, width);
+                                        sub_4F6980(&robo_map.t1_cmdbuf_3, bct->_position.x, bct->_position.z, 0x85, height, width);
                                         v41++;
                                     }
                                 }
@@ -1636,11 +1589,11 @@ void sb_0x4f8f64(NC_STACK_ypaworld *yw)
             }
         }
     }
-    pcur = sb_0x4f8f64__sub3(yw, pcur);
-    pcur = sb_0x4f8f64__sub0(yw, pcur);
-    FontUA::set_end(&pcur);
+    sb_0x4f8f64__sub3(yw, &robo_map.t1_cmdbuf_3);
+    sb_0x4f8f64__sub0(yw, &robo_map.t1_cmdbuf_3);
+    FontUA::set_end(&robo_map.t1_cmdbuf_3);
 
-    GFX::Engine.DrawText(&arg);
+    GFX::Engine.ProcessDrawSeq(robo_map.t1_cmdbuf_3);
 }
 
 void sub_4C157C(NC_STACK_ypaworld *yw)
@@ -1746,41 +1699,43 @@ void sub_4C0C00(NC_STACK_ypaworld *yw)
         v7 = 's'; //default fon
     else
         v7 = 'q'; //default fon (
+    
+    robo_map.cmdCommands.clear();
 
-    char *pcur = GuiBase::FormateTitle(yw, v20, v21, v22, Locale::Text::WinName(Locale::WINNAME_MAP), robo_map.cmdstrm.cmdbuf, v7, robo_map.flags);
+    GuiBase::FormateTitle(yw, v20, v21, v22, Locale::Text::WinName(Locale::WINNAME_MAP), &robo_map.cmdCommands, v7, robo_map.flags);
 
-    FontUA::next_line(&pcur);
-    FontUA::reset_tileset(&pcur, 13);
+    FontUA::next_line(&robo_map.cmdCommands);
+    FontUA::reset_tileset(&robo_map.cmdCommands, 13);
 
-    FontUA::store_u8(&pcur, 65);
+    FontUA::store_u8(&robo_map.cmdCommands, 65);
 
-    FontUA::next_line(&pcur);
-    FontUA::reset_tileset(&pcur, 12);
+    FontUA::next_line(&robo_map.cmdCommands);
+    FontUA::reset_tileset(&robo_map.cmdCommands, 12);
 
     int v13 = v23 - robo_map.field_250 - 1;
     while (v13 > yw->_fontVScrollH)
     {
-        FontUA::store_u8(&pcur, 65);
-        FontUA::next_line(&pcur);
+        FontUA::store_u8(&robo_map.cmdCommands, 65);
+        FontUA::next_line(&robo_map.cmdCommands);
 
         v13 -= yw->_fontVScrollH;
     }
 
     if ( v13 > 1 )
     {
-        FontUA::set_yheight(&pcur, v13 - 1);
-        FontUA::store_u8(&pcur, 65);
-        FontUA::next_line(&pcur);
+        FontUA::set_yheight(&robo_map.cmdCommands, v13 - 1);
+        FontUA::store_u8(&robo_map.cmdCommands, 65);
+        FontUA::next_line(&robo_map.cmdCommands);
     }
 
-    FontUA::reset_tileset(&pcur, 13);
-    FontUA::store_u8(&pcur, 66);
-    FontUA::next_line(&pcur);
+    FontUA::reset_tileset(&robo_map.cmdCommands, 13);
+    FontUA::store_u8(&robo_map.cmdCommands, 66);
+    FontUA::next_line(&robo_map.cmdCommands);
 
-    FontUA::include(&pcur, 0);
-    FontUA::include(&pcur, 1);
-    FontUA::include(&pcur, 2);
-    FontUA::set_end(&pcur);
+    FontUA::include(&robo_map.cmdCommands, 0);
+    FontUA::include(&robo_map.cmdCommands, 1);
+    FontUA::include(&robo_map.cmdCommands, 2);
+    FontUA::set_end(&robo_map.cmdCommands);
 }
 
 void sub_4C0FEC(NC_STACK_ypaworld *yw)
@@ -1800,30 +1755,30 @@ void sub_4C0FEC(NC_STACK_ypaworld *yw)
     robo_map.buttons[15] = ButtonBox(robo_map.field_1D0 + robo_map.field_1CE,   robo_map.h - robo_map.field_240,
                                      robo_map.field_1CC - robo_map.field_1CE - robo_map.field_1D0,   robo_map.field_240);
 
-    char *pcur = t1_cmdbuf_2;
+    robo_map.t1_cmdbuf_2.clear();
 
-    FontUA::select_tileset(&pcur, 11);
-    FontUA::set_center_xpos(&pcur, v1);
-    FontUA::set_center_ypos(&pcur, v3);
+    FontUA::select_tileset(&robo_map.t1_cmdbuf_2, 11);
+    FontUA::set_center_xpos(&robo_map.t1_cmdbuf_2, v1);
+    FontUA::set_center_ypos(&robo_map.t1_cmdbuf_2, v3);
 
     int v4 = robo_map.field_1CE;
 
     if ( v4 > 0 )
     {
-        FontUA::store_u8(&pcur, 65);
+        FontUA::store_u8(&robo_map.t1_cmdbuf_2, 65);
         if ( v4 > 1 )
         {
-            FontUA::op17(&pcur, v4);
-            FontUA::store_u8(&pcur, 66);
+            FontUA::op17(&robo_map.t1_cmdbuf_2, v4);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_2, 66);
         }
     }
 
-    FontUA::store_u8(&pcur, 68);
+    FontUA::store_u8(&robo_map.t1_cmdbuf_2, 68);
 
-    FontUA::op17(&pcur, robo_map.field_1D0 + v4 - 1);
+    FontUA::op17(&robo_map.t1_cmdbuf_2, robo_map.field_1D0 + v4 - 1);
 
-    FontUA::store_u8(&pcur, 69);
-    FontUA::store_u8(&pcur, 70);
+    FontUA::store_u8(&robo_map.t1_cmdbuf_2, 69);
+    FontUA::store_u8(&robo_map.t1_cmdbuf_2, 70);
 
 
     int v11 = v4 + robo_map.field_1D0;
@@ -1831,16 +1786,16 @@ void sub_4C0FEC(NC_STACK_ypaworld *yw)
     {
         if ( v11 < robo_map.field_1CC - 1 )
         {
-            FontUA::op17(&pcur, robo_map.field_1CC - 1);
+            FontUA::op17(&robo_map.t1_cmdbuf_2, robo_map.field_1CC - 1);
 
-            FontUA::store_u8(&pcur, 66);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_2, 66);
         }
-        FontUA::store_u8(&pcur, 67);
+        FontUA::store_u8(&robo_map.t1_cmdbuf_2, 67);
     }
 
-    FontUA::store_u8(&pcur, 71);
+    FontUA::store_u8(&robo_map.t1_cmdbuf_2, 71);
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&robo_map.t1_cmdbuf_2);
 }
 
 void sub_4C1214(NC_STACK_ypaworld *yw)
@@ -1857,107 +1812,105 @@ void sub_4C1214(NC_STACK_ypaworld *yw)
     robo_map.buttons[12] = ButtonBox(robo_map.w - robo_map.field_248,    robo_map.field_1D6 + robo_map.field_1D4 + robo_map.field_23C,
                                      robo_map.field_248,   robo_map.field_1D2 - robo_map.field_1D4 - robo_map.field_1D6);
 
-    char *pcur = t1_cmdbuf_1;
+    robo_map.t1_cmdbuf_1.clear();
 
-    FontUA::set_center_xpos(&pcur, v2);
-    FontUA::set_center_ypos(&pcur, v3);
+    FontUA::set_center_xpos(&robo_map.t1_cmdbuf_1, v2);
+    FontUA::set_center_ypos(&robo_map.t1_cmdbuf_1, v3);
 
 
     if ( robo_map.field_1D4 > 0 )
     {
-        FontUA::reset_tileset(&pcur, 13);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 13);
 
-        FontUA::store_u8(&pcur, 67);
-        FontUA::next_line(&pcur);
+        FontUA::store_u8(&robo_map.t1_cmdbuf_1, 67);
+        FontUA::next_line(&robo_map.t1_cmdbuf_1);
 
-        FontUA::reset_tileset(&pcur, 12);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 12);
 
         int v9 = robo_map.field_1D4 - 1;
 
         while (v9 >= yw->_fontVScrollH )
         {
-            FontUA::store_u8(&pcur, 66);
-            FontUA::next_line(&pcur);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_1, 66);
+            FontUA::next_line(&robo_map.t1_cmdbuf_1);
 
             v9 -= yw->_fontVScrollH;
         }
 
         if ( v9 > 0 )
         {
-            FontUA::set_yheight(&pcur, v9);
-            FontUA::store_u8(&pcur, 66);
-            FontUA::next_line(&pcur);
+            FontUA::set_yheight(&robo_map.t1_cmdbuf_1, v9);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_1, 66);
+            FontUA::next_line(&robo_map.t1_cmdbuf_1);
         }
     }
 
     if ( robo_map.field_1D6 > 0 )
     {
-        FontUA::reset_tileset(&pcur, 13);
-        FontUA::store_u8(&pcur, 69);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 13);
+        FontUA::store_u8(&robo_map.t1_cmdbuf_1, 69);
 
-        FontUA::next_line(&pcur);
+        FontUA::next_line(&robo_map.t1_cmdbuf_1);
 
-        FontUA::reset_tileset(&pcur, 12);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 12);
 
 
         int v14 = robo_map.field_1D6 - 1;
 
         while ( v14 > yw->_fontVScrollH )
         {
-            FontUA::store_u8(&pcur, 67);
-            FontUA::next_line(&pcur);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_1, 67);
+            FontUA::next_line(&robo_map.t1_cmdbuf_1);
 
             v14 -= yw->_fontVScrollH;
         }
 
         if ( v14 > 1 )
         {
-            FontUA::set_yheight(&pcur, v14 - 1);
-            FontUA::store_u8(&pcur, 67);
-            FontUA::next_line(&pcur);
+            FontUA::set_yheight(&robo_map.t1_cmdbuf_1, v14 - 1);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_1, 67);
+            FontUA::next_line(&robo_map.t1_cmdbuf_1);
         }
 
-        FontUA::reset_tileset(&pcur, 13);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 13);
 
-        FontUA::store_u8(&pcur, 70);
-        FontUA::next_line(&pcur);
+        FontUA::store_u8(&robo_map.t1_cmdbuf_1, 70);
+        FontUA::next_line(&robo_map.t1_cmdbuf_1);
     }
 
     int v21 = robo_map.field_1D2 - robo_map.field_1D4 - robo_map.field_1D6;
 
     if ( v21 > 0 )
     {
-        FontUA::reset_tileset(&pcur, 12);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 12);
 
         while ( v21 > yw->_fontVScrollH )
         {
-            FontUA::store_u8(&pcur, 66);
-            FontUA::next_line(&pcur);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_1, 66);
+            FontUA::next_line(&robo_map.t1_cmdbuf_1);
 
             v21 -= yw->_fontVScrollH;
         }
 
         if ( v21 > 1 )
         {
-            FontUA::set_yheight(&pcur, v21 - 1);
+            FontUA::set_yheight(&robo_map.t1_cmdbuf_1, v21 - 1);
 
-            FontUA::store_u8(&pcur, 66);
-            FontUA::next_line(&pcur);
+            FontUA::store_u8(&robo_map.t1_cmdbuf_1, 66);
+            FontUA::next_line(&robo_map.t1_cmdbuf_1);
         }
-        FontUA::reset_tileset(&pcur, 13);
+        FontUA::reset_tileset(&robo_map.t1_cmdbuf_1, 13);
 
-        FontUA::store_u8(&pcur, 68);
-        FontUA::next_line(&pcur);
+        FontUA::store_u8(&robo_map.t1_cmdbuf_1, 68);
+        FontUA::next_line(&robo_map.t1_cmdbuf_1);
     }
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&robo_map.t1_cmdbuf_1);
 }
 
 
 
-char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, int a5, int a6, int a7, mapFunc ffunc, int xpos, int ypos)
+void sub_4F6114(NC_STACK_ypaworld *yw, int a2, CmdStream *cmdbuf, int a3, int a4, int a5, int a6, int a7, mapFunc ffunc, int xpos, int ypos)
 {
-    char *pcur = cmdbuf;
-
     int v33;
 
     if ( a2 == 4)
@@ -1974,16 +1927,16 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
     {
         ypa_log_out("yw_maprnd.c/yw_RMapLego(): wrong size\n");
 
-        FontUA::set_end(&pcur);
-        return pcur;
+        FontUA::set_end(cmdbuf);
+        return ;
     }
 
-    FontUA::set_center_xpos(&pcur, xpos);
-    FontUA::set_center_ypos(&pcur, ypos);
+    FontUA::set_center_xpos(cmdbuf, xpos);
+    FontUA::set_center_ypos(cmdbuf, ypos);
 
     int msk = a2 - 1;
 
-    FontUA::reset_tileset(&pcur, a7);
+    FontUA::reset_tileset(cmdbuf, a7);
 
     int row = a4;
 
@@ -1995,7 +1948,7 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
 
         if ( msk & row )
         {
-            FontUA::set_yoff(&pcur, row & msk);
+            FontUA::set_yoff(cmdbuf, row & msk);
 
             row += a2 - (msk & row);
         }
@@ -2007,7 +1960,7 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
             }
             else
             {
-                FontUA::set_yheight(&pcur, a6 - row);
+                FontUA::set_yheight(cmdbuf, a6 - row);
 
                 row = a6;
             }
@@ -2021,8 +1974,8 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
 
             if ( v21 )
             {
-                FontUA::set_xoff(&pcur, v37_4);
-                FontUA::store_u8(&pcur, v21);
+                FontUA::set_xoff(cmdbuf, v37_4);
+                FontUA::store_u8(cmdbuf, v21);
 
                 v37 = 0;
             }
@@ -2030,7 +1983,7 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
             {
                 v37 = a2 - v37_4;
 
-                FontUA::add_xpos(&pcur, v37);
+                FontUA::add_xpos(cmdbuf, v37);
             }
 
             col += a2 - v37_4;
@@ -2042,7 +1995,7 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
 
             if ( v24 )
             {
-                FontUA::store_u8(&pcur, v24);
+                FontUA::store_u8(cmdbuf, v24);
 
                 v37 = 0;
             }
@@ -2052,14 +2005,16 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
                 {
                     v37 = a2;
 
-                    FontUA::add_xpos(&pcur, v37);
+                    FontUA::add_xpos(cmdbuf, v37);
                 }
                 else
                 {
                     v37 += a2;
 
-                    pcur -= 2; //HACKY rewrite
-                    FontUA::store_s16(&pcur, v37);
+                    //pcur -= 2; //HACKY rewrite
+                    cmdbuf->pop_back();
+                    cmdbuf->pop_back();
+                    FontUA::store_s16(cmdbuf, v37);
                 }
             }
 
@@ -2071,15 +2026,13 @@ char * sub_4F6114(NC_STACK_ypaworld *yw, int a2, char *cmdbuf, int a3, int a4, i
             int v28 = ffunc(yw, col >> v33, v17) & 0xFF;
             if ( v28 )
             {
-                FontUA::set_xwidth(&pcur, a5 - col);
-                FontUA::store_u8(&pcur, v28);
+                FontUA::set_xwidth(cmdbuf, a5 - col);
+                FontUA::store_u8(cmdbuf, v28);
             }
         }
-        FontUA::next_line(&pcur);
+        FontUA::next_line(cmdbuf);
 
     }
-
-    return pcur;
 }
 
 
@@ -2220,7 +2173,7 @@ int sub_4F5CEC(NC_STACK_ypaworld *yw, int x, int y)
     }
 }
 
-char * sb_0x4f6650__sub0(NC_STACK_ypaworld *yw, char *cmdbuf, int xpos, int ypos, int w, int h)
+void sb_0x4f6650__sub0(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int xpos, int ypos, int w, int h)
 {
     float v7 = robo_map.field_1D8 / robo_map.field_1E0;
     float v8 = -robo_map.field_1DC / robo_map.field_1E4;
@@ -2229,44 +2182,42 @@ char * sb_0x4f6650__sub0(NC_STACK_ypaworld *yw, char *cmdbuf, int xpos, int ypos
     int v10 = v8 - (h / 2);
     int v22 = h + v10;
 
-    char *pcur = sub_4F6114(yw, 4 << robo_map.field_1EE, cmdbuf, v9, v10, v23, v22, robo_map.field_1EE + 50, sub_4F60A4, xpos, ypos);
+    sub_4F6114(yw, 4 << robo_map.field_1EE, cmdbuf, v9, v10, v23, v22, robo_map.field_1EE + 50, sub_4F60A4, xpos, ypos);
 
     if ( robo_map.field_1EC & 2 )
-        pcur = sub_4F6114(yw, 4 << robo_map.field_1EE, pcur, v9, v10, v23, v22, robo_map.field_1EE + 50, sub_4F6048, xpos, ypos);
+        sub_4F6114(yw, 4 << robo_map.field_1EE, cmdbuf, v9, v10, v23, v22, robo_map.field_1EE + 50, sub_4F6048, xpos, ypos);
 
     if ( robo_map.field_1EC & 1 )
     {
         switch ( robo_map.field_1EE )
         {
         case 0:
-            pcur = sub_4F6114(yw, 4, pcur, v9, v10, v23, v22, 43, sub_4F5FE0, xpos, ypos);
+            sub_4F6114(yw, 4, cmdbuf, v9, v10, v23, v22, 43, sub_4F5FE0, xpos, ypos);
             break;
 
         case 1:
-            pcur = sub_4F6114(yw, 8, pcur, v9, v10, v23, v22, 44, sub_4F5FE0, xpos, ypos);
+            sub_4F6114(yw, 8, cmdbuf, v9, v10, v23, v22, 44, sub_4F5FE0, xpos, ypos);
             break;
 
         case 2:
-            pcur = sub_4F6114(yw, 4, pcur, v9 + 2, v10 + 2, v23 + 2, v22 + 2, 42, sub_4F5CEC, xpos, ypos);
+            sub_4F6114(yw, 4, cmdbuf, v9 + 2, v10 + 2, v23 + 2, v22 + 2, 42, sub_4F5CEC, xpos, ypos);
             break;
 
         case 3:
-            pcur = sub_4F6114(yw, 8, pcur, v9 + 4, v10 + 4, v23 + 4, v22 + 4, 41, sub_4F5CEC, xpos, ypos);
+            sub_4F6114(yw, 8, cmdbuf, v9 + 4, v10 + 4, v23 + 4, v22 + 4, 41, sub_4F5CEC, xpos, ypos);
             break;
 
         case 4:
-            pcur = sub_4F6114(yw, 16, pcur, v9 + 8, v10 + 8, v23 + 8, v22 + 8, 40, sub_4F5CEC, xpos, ypos);
+            sub_4F6114(yw, 16, cmdbuf, v9 + 8, v10 + 8, v23 + 8, v22 + 8, 40, sub_4F5CEC, xpos, ypos);
             break;
         }
     }
-    return pcur;
 }
 
-char *sb_0x4f6650(NC_STACK_ypaworld *yw, char *cmdbuf, int x, int y)
+void sb_0x4f6650(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int x, int y)
 {
-    char *pcur = sb_0x4f6650__sub0(yw, cmdbuf, x, y, robo_map.w - robo_map.field_24C, robo_map.h - robo_map.field_250);
-    FontUA::set_end(&pcur);
-    return pcur;
+    sb_0x4f6650__sub0(yw, cmdbuf, x, y, robo_map.w - robo_map.field_24C, robo_map.h - robo_map.field_250);
+    FontUA::set_end(cmdbuf);
 }
 
 void sub_4C1814(NC_STACK_ypaworld *yw, int a2, int a3)
@@ -2325,15 +2276,15 @@ void MapRoboUpdateMapInt(NC_STACK_ypaworld *yw)
     int v15 = robo_map.x + robo_map.field_244 - (yw->_screenSize.x / 2);
     int v14 = robo_map.y + robo_map.field_23C - (yw->_screenSize.y / 2);
 
-    sb_0x4f6650(yw, t1_cmdbuf_3, v15, v14);
+    robo_map.t1_cmdbuf_3.clear();
+    sb_0x4f6650(yw, &robo_map.t1_cmdbuf_3, v15, v14);
 }
 
 void  sb_0x451034__sub2(NC_STACK_ypaworld *yw)
 {
-    memset(byte_5BA6E8, 0, sizeof(byte_5BA6E8));
-    memset(t1_cmdbuf_1, 0, sizeof(t1_cmdbuf_1));
-    memset(t1_cmdbuf_2, 0, sizeof(t1_cmdbuf_2));
-    memset(t1_cmdbuf_3, 0, sizeof(t1_cmdbuf_3));
+    robo_map.t1_cmdbuf_1.reserve(256);
+    robo_map.t1_cmdbuf_2.reserve(256);
+    robo_map.t1_cmdbuf_3.reserve(32768);
 
     robo_map.flags = (GuiBase::FLAG_WITH_HELP | GuiBase::FLAG_CLOSED | GuiBase::FLAG_WITH_CLOSE | GuiBase::FLAG_WITH_DRAGBAR);
     robo_map.field_228 = 8;
@@ -2359,8 +2310,8 @@ void  sb_0x451034__sub2(NC_STACK_ypaworld *yw)
     robo_map.field_1EC = 7;
     robo_map.buttons.resize(18);
 
-    robo_map.cmdstrm.cmdbuf = byte_5BA6E8;
-    robo_map.cmdstrm.includ = t1_cmdbufs;
+    robo_map.cmdCommands.reserve(512);
+    robo_map.cmdInclude = {&robo_map.t1_cmdbuf_1, &robo_map.t1_cmdbuf_2, &robo_map.t1_cmdbuf_3};
 
     robo_map.postDraw = sb_0x4f8f64;
 
@@ -2520,7 +2471,7 @@ int sb_0x451034__sub3(NC_STACK_ypaworld *yw)
     for (int i = 0; i < 11; i++)
         bzda.buttons[i] = ButtonBox();
 
-    bzda.cmdstrm.cmdbuf = byte_516534;
+    bzda.cmdCommands.reserve(1088); 
     bzda.field_1D8 = 0;
 
     sub_4C3A54(yw);
@@ -2953,25 +2904,13 @@ void sb_0x4d7c08__sub0__sub1()
 {
     if ( bzda.IsOpen() )
     {
-        w3d_a209 v0;
-        v0 = bzda.cmdstrm;
-
-        GFX::Engine.DrawText(&v0);
+        GFX::Engine.ProcessDrawSeq(bzda.cmdCommands, &bzda.cmdInclude);
 
         if ( gui_lstvw.IsOpen() )
-        {
-            v0 = gui_lstvw.cmdstrm;
-
-            GFX::Engine.DrawText(&v0);
-        }
+            GFX::Engine.ProcessDrawSeq(gui_lstvw.cmdCommands, &gui_lstvw.cmdInclude);
     }
 }
 
-void sb_0x4d7c08__sub0__sub3(NC_STACK_ypaworld *yw)
-{
-    w3d_a209 v4 = up_panel.cmdstrm;
-    GFX::Engine.raster_func209(&v4);
-}
 
 void sb_0x4d7c08__sub0(NC_STACK_ypaworld *yw)
 {
@@ -2984,26 +2923,17 @@ void sb_0x4d7c08__sub0(NC_STACK_ypaworld *yw)
             GuiBase *lstnode = *it;
             if ( !(lstnode->flags & 0x20) )
             {
-                int v6 = 0;
-                w3d_a209 v8;
-
                 if ( lstnode->flags & GuiBase::FLAG_ICONIFED )
                 {
-                    v8.includ = NULL;
-                    v8.cmdbuf = lstnode->iconString;
+                    GFX::Engine.ProcessDrawSeq(lstnode->iconString);
                 }
                 else
                 {
-                    v8 = lstnode->cmdstrm;
+                    GFX::Engine.ProcessDrawSeq(lstnode->cmdCommands, &lstnode->cmdInclude);
 
                     if ( lstnode->postDraw )
-                        v6 = 1;
+                        lstnode->postDraw(yw);
                 }
-
-                GFX::Engine.DrawText(&v8);
-
-                if ( v6 )
-                    lstnode->postDraw(yw);
             }
         }
 
@@ -3013,19 +2943,17 @@ void sb_0x4d7c08__sub0(NC_STACK_ypaworld *yw)
             sb_0x4d7c08__sub0__sub2(yw);
         }
         draw_tooltip(yw);
-        sb_0x4d7c08__sub0__sub3(yw);
+        GFX::Engine.ProcessDrawSeq(up_panel.cmdCommands, &up_panel.cmdInclude);
         sb_0x4d7c08__sub0__sub1();
     }
 }
 
 
-char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *cur, char a5, const std::string &a6, int a7)
+void buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, CmdStream *cur, char a5, const std::string &a6, int a7)
 {
     int v33 = lstvw->entryWidth - 2 * yw->_fontBorderW;
 
     FontUA::ColumnItem v24[3];
-
-    char *pcur = cur;
 
     int v14;
     int v15;
@@ -3034,7 +2962,7 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
 
     if ( a2 )
     {
-        FontUA::set_txtColor(&pcur, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
+        FontUA::set_txtColor(cur, yw->_iniColors[62].r, yw->_iniColors[62].g, yw->_iniColors[62].b);
 
         v14 = 9;
         v15 = 98;
@@ -3043,7 +2971,7 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
     }
     else
     {
-        FontUA::set_txtColor(&pcur, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
+        FontUA::set_txtColor(cur, yw->_iniColors[61].r, yw->_iniColors[61].g, yw->_iniColors[61].b);
 
         v14 = 0;
         v16 = 102;
@@ -3077,27 +3005,25 @@ char * buy_list_update_sub(NC_STACK_ypaworld *yw, int a2, GuiList *lstvw, char *
     v24[2].flags = 42;
     v24[2].prefixChar = 0;
 
-    FontUA::select_tileset(&pcur, 0);
+    FontUA::select_tileset(cur, 0);
 
-    FontUA::store_u8(&pcur, 123);
+    FontUA::store_u8(cur, 123);
 
-    FontUA::select_tileset(&pcur, v14);
+    FontUA::select_tileset(cur, v14);
 
-    FontUA::op10(&pcur, squadron_manager.field_2CC);
+    FontUA::op10(cur, squadron_manager.field_2CC);
 
-    FontUA::store_u8(&pcur, v16);
+    FontUA::store_u8(cur, v16);
 
-    FontUA::add_xpos(&pcur, -squadron_manager.field_2CC);
+    FontUA::add_xpos(cur, -squadron_manager.field_2CC);
 
-    pcur = FormateColumnItem(yw, pcur, 3, v24);
+    FormateColumnItem(yw, cur, 3, v24);
 
-    FontUA::select_tileset(&pcur, 0);
+    FontUA::select_tileset(cur, 0);
 
-    FontUA::store_u8(&pcur, 125);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::next_line(cur);
 }
 
 float NC_STACK_ypaworld::sub_4498F4()
@@ -3117,10 +3043,9 @@ float NC_STACK_ypaworld::sub_4498F4()
     return v3;
 }
 
-char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
+void gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
 {
-    char *pcur = gui_lstvw.itemBlock;
-
+    gui_lstvw.itemBlock.clear();
     Input::Engine.RemClickBox(&gui_lstvw);
     Input::Engine.AddClickBoxFront(&gui_lstvw);
 
@@ -3140,7 +3065,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
     gui_lstvw.x = bzda.field_904 + bzda.x;
     gui_lstvw.y = bzda.field_918 + bzda.y - gui_lstvw.h;
 
-    pcur = gui_lstvw.ItemsPreLayout(yw, pcur, 0, "uvw");
+    gui_lstvw.ItemsPreLayout(yw, &gui_lstvw.itemBlock, 0, "uvw");
 
     for (int i = 0; i < gui_lstvw.shownEntries; i++ )
     {
@@ -3160,7 +3085,7 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
-            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, proto.type_icon, v8, v17);
+            buy_list_update_sub(yw, v21, &gui_lstvw, &gui_lstvw.itemBlock, proto.type_icon, v8, v17);
         }
         else if ( bzda.field_4DC[ v3 ].i == 2 )
         {
@@ -3178,28 +3103,24 @@ char * gui_update_create_btn__sub0(NC_STACK_ypaworld *yw)
             if ( v3 == gui_lstvw.selectedEntry )
                 v21 = 1;
 
-            pcur = buy_list_update_sub(yw, v21, &gui_lstvw, pcur, v10.TypeIcon, v13, v18);
+            buy_list_update_sub(yw, v21, &gui_lstvw, &gui_lstvw.itemBlock, v10.TypeIcon, v13, v18);
         }
     }
 
-    pcur = gui_lstvw.ItemsPostLayout(yw, pcur, 0, "xyz");
+    gui_lstvw.ItemsPostLayout(yw, &gui_lstvw.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&pcur);
-
-    return pcur;
+    FontUA::set_end(&gui_lstvw.itemBlock);
 }
 
 
-char * gui_update_create_btn(NC_STACK_ypaworld *yw, char *cur)
+void gui_update_create_btn(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     if ( yw->_userUnit->_status == BACT_STATUS_DEAD )
     {
         bzda.buttons[0] = ButtonBox(); //create_btn
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 67);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 67);
 
         yw->GuiWinClose( &gui_lstvw );
     }
@@ -3211,8 +3132,8 @@ char * gui_update_create_btn(NC_STACK_ypaworld *yw, char *cur)
         {
             bzda.buttons[0] = ButtonBox(); //create_btn
 
-            FontUA::select_tileset(&pcur, 23);
-            FontUA::store_u8(&pcur, 67);
+            FontUA::select_tileset(cur, 23);
+            FontUA::store_u8(cur, 67);
         }
         else
         {
@@ -3221,38 +3142,35 @@ char * gui_update_create_btn(NC_STACK_ypaworld *yw, char *cur)
                 if ( gui_lstvw.IsOpen() )
                     gui_update_create_btn__sub0(yw);
 
-                FontUA::select_tileset(&pcur, 22);
+                FontUA::select_tileset(cur, 22);
             }
             else
             {
-                FontUA::select_tileset(&pcur, 21);
+                FontUA::select_tileset(cur, 21);
             }
 
             int v9 = bzda.field_1D0 & 0x16;
 
             if (v9 == 0x10)
-                FontUA::store_u8(&pcur, 70);
+                FontUA::store_u8(cur, 70);
             else if (v9 == 4)
-                FontUA::store_u8(&pcur, 68);
+                FontUA::store_u8(cur, 68);
             else if (v9 == 2)
-                FontUA::store_u8(&pcur, 67);
+                FontUA::store_u8(cur, 67);
             else
-                FontUA::store_u8(&pcur, 67);
+                FontUA::store_u8(cur, 67);
         }
     }
-    return pcur;
 }
 
-char *gui_update_map_squad_btn(NC_STACK_ypaworld *yw, char *cur)
+void gui_update_map_squad_btn(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     if ( yw->_userUnit->_status == BACT_STATUS_DEAD )
     {
-        FontUA::select_tileset(&pcur, 23);
+        FontUA::select_tileset(cur, 23);
 
-        FontUA::store_u8(&pcur, 72);
-        FontUA::store_u8(&pcur, 73);
+        FontUA::store_u8(cur, 72);
+        FontUA::store_u8(cur, 73);
 
         bzda.buttons[2] = ButtonBox(); //map_btn
         bzda.buttons[3] = ButtonBox(); //squad_btn
@@ -3273,26 +3191,23 @@ char *gui_update_map_squad_btn(NC_STACK_ypaworld *yw, char *cur)
         }
 
         if ( robo_map.IsClosed() )
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
         else
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
 
-        FontUA::store_u8(&pcur, 72);
+        FontUA::store_u8(cur, 72);
 
         if ( squadron_manager.IsClosed() )
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
         else
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
 
-        FontUA::store_u8(&pcur, 73);
+        FontUA::store_u8(cur, 73);
     }
-    return pcur;
 }
 
-char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
+void gui_update_player_panel(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     int v35 = 0;
 
     if ( yw->_userRobo == yw->_userUnit )
@@ -3350,18 +3265,18 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
         bzda.buttons[1] = ButtonBox(bzda.field_90C, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); //into_vhcl_btn
 
         if ( bzda.field_1D0 & 8 )
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
         else
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
 
-        FontUA::store_u8(&pcur, 69);
+        FontUA::store_u8(cur, 69);
     }
     else
     {
         bzda.buttons[1] = ButtonBox();
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 69);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 69);
     }
 
 
@@ -3370,18 +3285,18 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
         bzda.buttons[4] = ButtonBox(yw->_iconOrderW + bzda.field_90C, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); //to_host_btn
 
         if ( bzda.field_91C & 0x10 )
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
         else
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
 
-        FontUA::store_u8(&pcur, 81);
+        FontUA::store_u8(cur, 81);
     }
     else
     {
         bzda.buttons[4] = ButtonBox(); //to_host_btn
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 81);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 81);
     }
 
     if ( v35 & 0x20 )
@@ -3389,18 +3304,18 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
         bzda.buttons[5] = ButtonBox(bzda.field_90C + 2 * yw->_iconOrderW, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); //to_leader_btn
 
         if ( bzda.field_91C & 0x20 )
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
         else
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
 
-        FontUA::store_u8(&pcur, 82);
+        FontUA::store_u8(cur, 82);
     }
     else
     {
         bzda.buttons[5] = ButtonBox(); // to_leader_btn
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 82);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 82);
     }
 
     if ( v35 & 0x40 )
@@ -3410,30 +3325,30 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
             bzda.buttons[6] = ButtonBox(bzda.field_90C + 3 * yw->_iconOrderW, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); //turrets_btn
 
             if ( bzda.field_91C & 0x40 )
-                FontUA::select_tileset(&pcur, 22);
+                FontUA::select_tileset(cur, 22);
             else
-                FontUA::select_tileset(&pcur, 21);
+                FontUA::select_tileset(cur, 21);
 
-            FontUA::store_u8(&pcur, 83);
+            FontUA::store_u8(cur, 83);
         }
         else
         {
             bzda.buttons[6] = ButtonBox(bzda.field_90C + 3 * yw->_iconOrderW, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); //turrets_btn
 
             if ( bzda.field_91C & 0x40 )
-                FontUA::select_tileset(&pcur, 22);
+                FontUA::select_tileset(cur, 22);
             else
-                FontUA::select_tileset(&pcur, 21);
+                FontUA::select_tileset(cur, 21);
 
-            FontUA::store_u8(&pcur, 66);
+            FontUA::store_u8(cur, 66);
         }
     }
     else
     {
         bzda.buttons[6] = ButtonBox(); // turrets_btn
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 83);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 83);
     }
 
     if ( v35 & 0x80 )
@@ -3441,70 +3356,63 @@ char *gui_update_player_panel(NC_STACK_ypaworld *yw, char *cur)
         bzda.buttons[7] = ButtonBox(4 * yw->_iconOrderW + bzda.field_90C, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); //next_squad_btn
 
         if ( bzda.field_91C & 0x80 )
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
         else
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
 
-        FontUA::store_u8(&pcur, 84);
+        FontUA::store_u8(cur, 84);
     }
     else
     {
         bzda.buttons[7] = ButtonBox(); //next_squad_btn
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 84);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 84);
     }
-    return pcur;
 }
 
-char *gui_update_tools(NC_STACK_ypaworld *yw, char *cur)
+void gui_update_tools(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     if ( yw->_userUnit->_status == BACT_STATUS_DEAD )
     {
         bzda.buttons[8] = ButtonBox(); // analyzer_btn
 
-        FontUA::select_tileset(&pcur, 23);
-        FontUA::store_u8(&pcur, 63);
+        FontUA::select_tileset(cur, 23);
+        FontUA::store_u8(cur, 63);
     }
     else
     {
         bzda.buttons[8] = ButtonBox(bzda.field_910, bzda.field_918, yw->_iconOrderW, yw->_iconOrderH); // analyzer_btn
 
         if ( bzda.field_91C & 0x100 )
-            FontUA::select_tileset(&pcur, 22);
+            FontUA::select_tileset(cur, 22);
         else
-            FontUA::select_tileset(&pcur, 21);
+            FontUA::select_tileset(cur, 21);
 
-        FontUA::store_u8(&pcur, 63);
+        FontUA::store_u8(cur, 63);
     }
 
     bzda.buttons[9] = ButtonBox(yw->_iconOrderW + bzda.field_910, bzda.field_918, yw->_iconOrderH, yw->_iconOrderW); // help_btn
 
     if ( bzda.field_91C & 0x200 )
-        FontUA::select_tileset(&pcur, 22);
+        FontUA::select_tileset(cur, 22);
     else
-        FontUA::select_tileset(&pcur, 21);
+        FontUA::select_tileset(cur, 21);
 
-    FontUA::store_u8(&pcur, 76);
+    FontUA::store_u8(cur, 76);
 
     bzda.buttons[10] = ButtonBox(bzda.field_910 + 2 * yw->_iconOrderW,  bzda.field_918,  yw->_iconOrderW,  yw->_iconOrderH); // menu_btn
 
     if ( bzda.field_91C & 0x400 )
-        FontUA::select_tileset(&pcur, 22);
+        FontUA::select_tileset(cur, 22);
     else
-        FontUA::select_tileset(&pcur, 21);
+        FontUA::select_tileset(cur, 21);
 
-    FontUA::store_u8(&pcur, 85);
-
-    return pcur;
+    FontUA::store_u8(cur, 85);
 }
 
-char * sub_449970(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::string &a5, int a6, int a7)
+void sub_449970(NC_STACK_ypaworld *yw, CmdStream *cur, int a4, int a3, const std::string &a5, int a6, int a7)
 {
-    char *pcur = cur;
-
     int v10, v22;
 
     if ( yw->_screenSize.x >= 512 )
@@ -3518,10 +3426,10 @@ char * sub_449970(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::s
         v10 = a4 + a7 - 56 + 8;
     }
 
-    FontUA::select_tileset(&pcur, 15);
+    FontUA::select_tileset(cur, 15);
 
-    FontUA::set_xpos(&pcur, a4);
-    FontUA::set_ypos(&pcur, a3);
+    FontUA::set_xpos(cur, a4);
+    FontUA::set_ypos(cur, a3);
 
     int v14 = yw->_fontH - yw->_guiTiles[51]->h;
 
@@ -3534,23 +3442,19 @@ char * sub_449970(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::s
     arg.postfixChar = 0;
     arg.flags = 40;
 
-    pcur = FormateTextAlignedClippedString(yw, pcur, &arg);
+    FormateTextAlignedClippedString(yw, cur, &arg);
 
-    FontUA::select_tileset(&pcur, 51);
+    FontUA::select_tileset(cur, 51);
 
-    FontUA::set_xpos(&pcur, v10);
-    FontUA::set_ypos(&pcur, (v14 / 2) + a3);
+    FontUA::set_xpos(cur, v10);
+    FontUA::set_ypos(cur, (v14 / 2) + a3);
 
     for (int i = 0; i < a6; i++)
-        FontUA::store_u8(&pcur, yw->_userRobo->_owner);
-
-    return pcur;
+        FontUA::store_u8(cur, yw->_userRobo->_owner);
 }
 
-char *ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, char *cur)
+void ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
-
     if ( bzda.field_1D0 & 6 )
     {
         if ( bzda.field_8EC != -1 && !yw->_playerInHSGun )
@@ -3586,32 +3490,31 @@ char *ypaworld_func64__sub7__sub2__sub1__sub0(NC_STACK_ypaworld *yw, char *cur)
 
             int v30 = -(yw->_downScreenBorder + 7 * yw->_fontH);
 
-            FontUA::set_txtColor(&pcur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
+            FontUA::set_txtColor(cur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSROBO), v5, v6);
-
-            v30 += yw->_fontH;
-
-            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSTANK), a6, v6);
+            sub_449970(yw, cur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSROBO), v5, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSPLANE), v26, v6);
+            sub_449970(yw, cur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSTANK), a6, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSHELI), v25, v6);
+            sub_449970(yw, cur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSPLANE), v26, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_CAPTURE), v28, v6);
+            sub_449970(yw, cur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_VSHELI), v25, v6);
 
             v30 += yw->_fontH;
 
-            pcur = sub_449970(yw, pcur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_RECON), v29, v6);
+            sub_449970(yw, cur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_CAPTURE), v28, v6);
+
+            v30 += yw->_fontH;
+
+            sub_449970(yw, cur, v29_4, v30,  Locale::Text::Advanced(Locale::ADV_RECON), v29, v6);
         }
     }
-    return pcur;
 }
 
 
@@ -3619,7 +3522,7 @@ void ypaworld_func64__sub7__sub2__sub1(NC_STACK_ypaworld *yw)
 {
     sub_4C3A54(yw);
 
-    char *pcur = byte_516534;
+    bzda.cmdCommands.clear();
 
     if ( bzda.field_1D4 & 1 )
     {
@@ -3635,36 +3538,36 @@ void ypaworld_func64__sub7__sub2__sub1(NC_STACK_ypaworld *yw)
         Input::Engine.RemClickBox(&bzda);
         Input::Engine.AddClickBoxFront(&bzda);
 
-        FontUA::select_tileset(&pcur, 21);
-        FontUA::set_center_xpos(&pcur, v20);
-        FontUA::set_center_ypos(&pcur, v21);
+        FontUA::select_tileset(&bzda.cmdCommands, 21);
+        FontUA::set_center_xpos(&bzda.cmdCommands, v20);
+        FontUA::set_center_ypos(&bzda.cmdCommands, v21);
 
 
         if ( bzda.field_904 > 0 )
-            FontUA::add_xpos(&pcur, bzda.field_904);
+            FontUA::add_xpos(&bzda.cmdCommands, bzda.field_904);
 
-        pcur = gui_update_create_btn(yw, pcur);
-
-        if ( bzda.field_8FC > 0 )
-            FontUA::add_xpos(&pcur, bzda.field_8FC);
-
-        pcur = gui_update_map_squad_btn(yw, pcur);
+        gui_update_create_btn(yw, &bzda.cmdCommands);
 
         if ( bzda.field_8FC > 0 )
-            FontUA::add_xpos(&pcur, bzda.field_8FC);
+            FontUA::add_xpos(&bzda.cmdCommands, bzda.field_8FC);
 
-        pcur = gui_update_player_panel(yw, pcur);
+        gui_update_map_squad_btn(yw, &bzda.cmdCommands);
 
         if ( bzda.field_8FC > 0 )
-            FontUA::add_xpos(&pcur, bzda.field_8FC);
+            FontUA::add_xpos(&bzda.cmdCommands, bzda.field_8FC);
 
-        pcur = gui_update_tools(yw, pcur);
+        gui_update_player_panel(yw, &bzda.cmdCommands);
+
+        if ( bzda.field_8FC > 0 )
+            FontUA::add_xpos(&bzda.cmdCommands, bzda.field_8FC);
+
+        gui_update_tools(yw, &bzda.cmdCommands);
 
         if ( gui_lstvw.IsOpen() )
-            pcur = ypaworld_func64__sub7__sub2__sub1__sub0(yw, pcur);
+            ypaworld_func64__sub7__sub2__sub1__sub0(yw, &bzda.cmdCommands);
     }
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&bzda.cmdCommands);
 
     if ( gui_lstvw.IsOpen() )
         gui_lstvw.Formate(yw);
@@ -4652,10 +4555,8 @@ void  ypaworld_func64__sub7__sub2(NC_STACK_ypaworld *yw, TInputState *inpt)
 
 
 
-char * sub_4E1D6C(NC_STACK_ypaworld *yw, char *cur, int x, int y, uint8_t icon, uint8_t icon2, uint8_t icon3, float a6, float a7, const std::string &a8)
+void sub_4E1D6C(NC_STACK_ypaworld *yw, CmdStream *cur, int x, int y, uint8_t icon, uint8_t icon2, uint8_t icon3, float a6, float a7, const std::string &a8)
 {
-    char *pcur = cur;
-
     int v26 = (a6 * up_panel.field_1E4);
     int v25 = (a7 * up_panel.field_1E4);
 
@@ -4665,52 +4566,51 @@ char * sub_4E1D6C(NC_STACK_ypaworld *yw, char *cur, int x, int y, uint8_t icon, 
     if ( !v25 && a7 > 0.0 )
         v25 = 1;
 
-    FontUA::select_tileset(&pcur, 30);
-    FontUA::set_center_xpos(&pcur, x);
-    FontUA::set_center_ypos(&pcur, y);
+    FontUA::select_tileset(cur, 30);
+    FontUA::set_center_xpos(cur, x);
+    FontUA::set_center_ypos(cur, y);
 
-    FontUA::store_u8(&pcur, icon);
+    FontUA::store_u8(cur, icon);
 
-    FontUA::store_u8(&pcur, 84);
+    FontUA::store_u8(cur, 84);
 
     if ( v26 > 0 || v25 > 0 )
     {
         int v13 = up_panel.field_1E0 + up_panel.field_1DC + x;
 
-        FontUA::set_center_xpos(&pcur, v13);
+        FontUA::set_center_xpos(cur, v13);
 
         if ( v26 > 0 )
         {
             if ( v26 > 1 )
-                FontUA::op11(&pcur, v26);
+                FontUA::op11(cur, v26);
 
-            FontUA::store_u8(&pcur, icon2);
+            FontUA::store_u8(cur, icon2);
         }
 
         if ( v25 > v26 )
         {
             if ( v25 > 1 )
-                FontUA::op11(&pcur, v25);
+                FontUA::op11(cur, v25);
 
-            FontUA::store_u8(&pcur, icon3);
+            FontUA::store_u8(cur, icon3);
         }
     }
 
     if ( !a8.empty() )
     {
-        FontUA::select_tileset(&pcur, 31);
+        FontUA::select_tileset(cur, 31);
 
-        FontUA::set_center_xpos(&pcur, x + up_panel.field_1DC + 4);
-        FontUA::set_ypos(&pcur, 0);
+        FontUA::set_center_xpos(cur, x + up_panel.field_1DC + 4);
+        FontUA::set_ypos(cur, 0);
 
-        memcpy(pcur, a8.data(), a8.size());
+        cur->insert(cur->end(), a8.begin(), a8.end());
 
-        pcur += a8.size();
+        //pcur += a8.size();
     }
-    return pcur;
 }
 
-char * ypaworld_func64__sub7__sub7__sub0__sub0(NC_STACK_ypaworld *yw, char *cur, int x, int y, int a3, int a4, int a5, int a6, float a7)
+void ypaworld_func64__sub7__sub7__sub0__sub0(NC_STACK_ypaworld *yw, CmdStream *cur, int x, int y, int a3, int a4, int a5, int a6, float a7)
 {
     int icon;
 
@@ -4788,10 +4688,10 @@ char * ypaworld_func64__sub7__sub7__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
         a1a = fmt::sprintf("%d", -a5);
     }
 
-    return sub_4E1D6C(yw, cur, x, y, icon, v11, 57, a6a, a7a, a1a);
+    sub_4E1D6C(yw, cur, x, y, icon, v11, 57, a6a, a7a, a1a);
 }
 
-char * ypaworld_func64__sub7__sub7__sub0__sub1(NC_STACK_ypaworld *yw, char *cur, int x, int y, char a4, int a5, int a6, int a7)
+void ypaworld_func64__sub7__sub7__sub0__sub1(NC_STACK_ypaworld *yw, CmdStream *cur, int x, int y, char a4, int a5, int a6, int a7)
 {
     int v16;
     if ( a4 & 1 )
@@ -4831,11 +4731,11 @@ char * ypaworld_func64__sub7__sub7__sub0__sub1(NC_STACK_ypaworld *yw, char *cur,
             a1a = "";
     }
 
-    return sub_4E1D6C(yw, cur, x, y, v16, v10, 0, a6a, 0.0, a1a);
+    sub_4E1D6C(yw, cur, x, y, v16, v10, 0, a6a, 0.0, a1a);
 }
 
 
-char * ypaworld_func64__sub7__sub7__sub0__sub2(NC_STACK_ypaworld *yw, char *cur, int a3, int a2, char a4, int a5, int a6, int a7)
+void ypaworld_func64__sub7__sub7__sub0__sub2(NC_STACK_ypaworld *yw, CmdStream *cur, int a3, int a2, char a4, int a5, int a6, int a7)
 {
     int v18;
     if ( a4 & 4 )
@@ -4876,10 +4776,10 @@ char * ypaworld_func64__sub7__sub7__sub0__sub2(NC_STACK_ypaworld *yw, char *cur,
         a6a = 0.0;
     }
 
-    return sub_4E1D6C(yw, cur, a3, a2, v18, 56, v9, a6a, a7a,  fmt::sprintf("%d", a6 / 100) );
+    sub_4E1D6C(yw, cur, a3, a2, v18, 56, v9, a6a, a7a,  fmt::sprintf("%d", a6 / 100) );
 }
 
-char * ypaworld_func64__sub7__sub7__sub0__sub3(NC_STACK_ypaworld *yw, char *cur, int x, int y, char a4, int a5, int a6, int a7)
+void ypaworld_func64__sub7__sub7__sub0__sub3(NC_STACK_ypaworld *yw, CmdStream *cur, int x, int y, char a4, int a5, int a6, int a7)
 {
     int v18;
     if ( a4 & 8 )
@@ -4917,12 +4817,12 @@ char * ypaworld_func64__sub7__sub7__sub0__sub3(NC_STACK_ypaworld *yw, char *cur,
         a6a = 0.0;
     }
 
-    return sub_4E1D6C(yw, cur, x, y, v18, 56, v9, a6a, a7a,  fmt::sprintf("%d", a6 / 100) );
+    sub_4E1D6C(yw, cur, x, y, v18, 56, v9, a6a, a7a,  fmt::sprintf("%d", a6 / 100) );
 }
 
-char * ypaworld_func64__sub7__sub7__sub0(NC_STACK_ypaworld *yw)
+void ypaworld_func64__sub7__sub7__sub0(NC_STACK_ypaworld *yw)
 {
-    char *pcur = byte_51805C;
+    up_panel.cmdCommands.clear();
 
     if ( yw->_userRobo->_status != BACT_STATUS_DEAD )
     {
@@ -4988,19 +4888,17 @@ char * ypaworld_func64__sub7__sub7__sub0(NC_STACK_ypaworld *yw)
 
         int x = (up_panel.field_1D4 & 0xFFFF) + v3;
 
-        pcur = ypaworld_func64__sub7__sub7__sub0__sub0(yw, pcur, x, y, v13, v32, v38, v11, arg176.field_4);
+        ypaworld_func64__sub7__sub7__sub0__sub0(yw, &up_panel.cmdCommands, x, y, v13, v32, v38, v11, arg176.field_4);
 
         int v18 = v41 + x;
-        pcur = ypaworld_func64__sub7__sub7__sub0__sub1(yw, pcur, v18, y, a4, v34, yw->_userRobo->_energy, v36);
+        ypaworld_func64__sub7__sub7__sub0__sub1(yw, &up_panel.cmdCommands, v18, y, a4, v34, yw->_userRobo->_energy, v36);
 
         int v20 = v41 + v18;
-        pcur = ypaworld_func64__sub7__sub7__sub0__sub2(yw, pcur, v20, y, a4, v37, v29, v36);
-        pcur = ypaworld_func64__sub7__sub7__sub0__sub3(yw, pcur, v41 + v20, y, a4, v35, v28, v36);
+        ypaworld_func64__sub7__sub7__sub0__sub2(yw, &up_panel.cmdCommands, v20, y, a4, v37, v29, v36);
+        ypaworld_func64__sub7__sub7__sub0__sub3(yw, &up_panel.cmdCommands, v41 + v20, y, a4, v35, v28, v36);
     }
 
-    FontUA::set_end(&pcur);
-
-    return pcur;
+    FontUA::set_end(&up_panel.cmdCommands);
 }
 
 void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, TInputState *inpt)
@@ -5061,7 +4959,7 @@ void ypaworld_func64__sub7__sub7(NC_STACK_ypaworld *yw, TInputState *inpt)
 }
 
 
-uint8_t sub_4C7134(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
+char sub_4C7134(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
 {
     uint8_t icon = yw->_vhclProtos[ bact->_vehicleID ].type_icon;
 
@@ -5071,76 +4969,61 @@ uint8_t sub_4C7134(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
     return icon;
 }
 
-char * sub_4C7950(NC_STACK_ypaworld *yw, char *cur, int a4, int a3)
+void sub_4C7950(NC_STACK_ypaworld *yw, CmdStream *cur, int a4, int a3)
 {
-    char *pcur = cur;
-
     if ( a4 > 0 && a3 > 0 )
     {
         if ( a4 + squadron_manager.field_2CC < yw->_screenSize.x )
         {
             if ( a3 + yw->_fontH < yw->_screenSize.y )
             {
-                FontUA::select_tileset(&pcur, 28);
+                FontUA::select_tileset(cur, 28);
 
-                FontUA::set_center_xpos(&pcur, a4 - (yw->_screenSize.x / 2));
-                FontUA::set_center_ypos(&pcur, a3 - (yw->_screenSize.y / 2));
+                FontUA::set_center_xpos(cur, a4 - (yw->_screenSize.x / 2));
+                FontUA::set_center_ypos(cur, a3 - (yw->_screenSize.y / 2));
 
-                FontUA::store_u8(&pcur, sub_4C7134(yw, squadron_manager.field_2BC));
+                FontUA::store_u8(cur, sub_4C7134(yw, squadron_manager.field_2BC));
             }
         }
     }
-    return pcur;
 }
 
-char * ypaworld_func64__sub7__sub3__sub0__sub2(NC_STACK_ypaworld *yw, char *cur)
+void ypaworld_func64__sub7__sub3__sub0__sub2(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
+    FontUA::select_tileset(cur, 0);
 
-    FontUA::select_tileset(&pcur, 0);
+    FontUA::store_u8(cur, 123);
 
-    FontUA::store_u8(&pcur, 123);
+    FontUA::op17(cur, squadron_manager.entryWidth - yw->_fontBorderW);
 
-    FontUA::op17(&pcur, squadron_manager.entryWidth - yw->_fontBorderW);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 125);
-
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::next_line(cur);
 }
 
 
-char * sub_4514F0(TileMap *tyle, char *cur, char *a4, int a3, char a5)
+void sub_4514F0(TileMap *tyle, CmdStream *cur, const std::string &st, int a3, char a5)
 {
-    char *pcur = cur;
-
     int wdth = 0;
     int char_num = 0;
     int neg_wdth = 0;
 
-    char *v6 = a4;
-
-    while ( *v6 && neg_wdth == 0 )
+    for (size_t i = 0; i < st.size() && neg_wdth == 0; i++ )
     {
-        int v18 = (uint8_t)*v6;
+        uint8_t chr = (uint8_t)st[i];
 
-        wdth += tyle->map[v18].w;
+        wdth += tyle->map[chr].w;
 
         if ( wdth <= a3 )
             char_num++;
         else
-            neg_wdth = tyle->map[v18].w - (wdth - a3);
-
-        v6++;
+            neg_wdth = tyle->map[chr].w - (wdth - a3);
     }
 
     for (int i = 0; i < char_num; i++)
-    {
-        *pcur = a4[i];
-        pcur++;
-    }
+        cur->push_back( st[i] );
+
 
     if ( neg_wdth <= 0 )
     {
@@ -5151,30 +5034,26 @@ char * sub_4514F0(TileMap *tyle, char *cur, char *a4, int a3, char a5)
             while( v13 > 0 )
             {
                 if ( v13 <= 255 )
-                    FontUA::op10(&pcur, v13);
+                    FontUA::op10(cur, v13);
                 else
-                    FontUA::op10(&pcur, 255);
+                    FontUA::op10(cur, 255);
 
                 v13 -= 255;
 
-                FontUA::store_u8(&pcur, a5);
+                FontUA::store_u8(cur, a5);
             }
         }
     }
     else
     {
-        FontUA::set_xwidth(&pcur, neg_wdth);
+        FontUA::set_xwidth(cur, neg_wdth);
 
-        FontUA::store_u8(&pcur, a4[char_num]);
+        FontUA::store_u8(cur, st[char_num]);
     }
-
-    return pcur;
 }
 
-char * ypaworld_func64__sub7__sub3__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact, char *cur)
+void ypaworld_func64__sub7__sub3__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact, CmdStream *cur)
 {
-    char *pcur = cur;
-
     char v13[80];
     if ( bact == yw->_userUnit && yw->_timeStamp / 300 & 1 )
     {
@@ -5197,27 +5076,25 @@ char * ypaworld_func64__sub7__sub3__sub0__sub1(NC_STACK_ypaworld *yw, NC_STACK_y
     else
         v4 = 0;
 
-    FontUA::select_tileset(&pcur, 0);
-    FontUA::store_u8(&pcur, 123);
+    FontUA::select_tileset(cur, 0);
+    FontUA::store_u8(cur, 123);
 
-    FontUA::select_tileset(&pcur, v4);
-    FontUA::op17(&pcur, squadron_manager.entryWidth - yw->_fontBorderW);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::select_tileset(cur, v4);
+    FontUA::op17(cur, squadron_manager.entryWidth - yw->_fontBorderW);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::select_tileset(&pcur, 0);
-    FontUA::store_u8(&pcur, 125);
-    FontUA::add_xpos(&pcur, -(squadron_manager.entryWidth - 2 * yw->_fontBorderW + 1));
+    FontUA::select_tileset(cur, 0);
+    FontUA::store_u8(cur, 125);
+    FontUA::add_xpos(cur, -(squadron_manager.entryWidth - 2 * yw->_fontBorderW + 1));
 
-    FontUA::select_tileset(&pcur, 28);
+    FontUA::select_tileset(cur, 28);
 
-    pcur = sub_4514F0(yw->_guiTiles[28], pcur, v13, squadron_manager.entryWidth - 2 * yw->_fontBorderW, 64);
+    sub_4514F0(yw->_guiTiles[28], cur, v13, squadron_manager.entryWidth - 2 * yw->_fontBorderW, 64);
 
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::next_line(cur);
 }
 
-uint8_t ypaworld_func64__sub7__sub3__sub0__sub0__sub0(NC_STACK_ypabact *bact)
+char ypaworld_func64__sub7__sub3__sub0__sub0__sub0(NC_STACK_ypabact *bact)
 {
     if ( bact->_status == BACT_STATUS_NORMAL )
     {
@@ -5243,32 +5120,29 @@ uint8_t ypaworld_func64__sub7__sub3__sub0__sub0__sub0(NC_STACK_ypabact *bact)
     return 97;
 }
 
-char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact, char *cur)
+void ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact, CmdStream *cur)
 {
-    char *pcur = cur;
-
-    char v39[64];
-    char *pv = v39;
-
+    std::string pv;
+    
     int v46 = 0;
     NC_STACK_ypabact *v44 = NULL;
 
     if ( yw->_guiActFlags & 0x20 )
         v44 = yw->_bactOnMouse;
 
-    FontUA::store_u8(&pv, ypaworld_func64__sub7__sub3__sub0__sub0__sub0(bact));
-    FontUA::store_u8(&pv, 64);
+    pv += ypaworld_func64__sub7__sub3__sub0__sub0__sub0(bact);
+    pv += '@'; //64
 
     int ttt = (yw->_timeStamp / 300) & 1;
 
     if ( bact == yw->_userUnit && ttt )
-        FontUA::store_u8(&pv, 33);
+        pv += '!'; //33
     else if ( yw->_lastMsgSender == bact && ttt )
-        FontUA::store_u8(&pv, 34);
+        pv += '"'; //34
     else
-        FontUA::store_u8(&pv, sub_4C7134(yw, bact));
+        pv += sub_4C7134(yw, bact);
 
-    FontUA::store_u8(&pv, 64);
+    pv += '@'; //64
 
     if ( bact == v44 )
         v46 = squadron_manager.field_2D0;
@@ -5280,23 +5154,21 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_y
         if ( kid->_status != BACT_STATUS_DEAD && kid->_status != BACT_STATUS_CREATE && kid->_status != BACT_STATUS_BEAM )
         {
             if ( kid == yw->_userUnit && ttt )
-                FontUA::store_u8(&pv, 33);
+                pv += '!'; //33
             else if ( kid == yw->_lastMsgSender && ttt )
-                FontUA::store_u8(&pv, 34);
+                pv += '"'; //34
             else
-                FontUA::store_u8(&pv, sub_4C7134(yw, kid));
+                pv += sub_4C7134(yw, kid); 
 
             if ( kid == v44 )
                 v46 = v41;
 
             v41 += squadron_manager.field_2CC;
 
-            if ( pv - v39 >= 60 )
+            if ( pv.size() >= 60 )
                 break;
         }
     }
-
-    FontUA::store_u8(&pv, 0);
 
     int v22;
     if ( yw->_activeCmdrRemapIndex == -1 || bact != yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ] || bzda.field_1D0 & 0x20 )
@@ -5304,27 +5176,27 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_y
     else
         v22 = 9;
 
-    FontUA::select_tileset(&pcur, 0);
-    FontUA::store_u8(&pcur, 123);
+    FontUA::select_tileset(cur, 0);
+    FontUA::store_u8(cur, 123);
 
-    FontUA::select_tileset(&pcur, v22);
-    FontUA::op17(&pcur, squadron_manager.entryWidth - yw->_fontBorderW);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::select_tileset(cur, v22);
+    FontUA::op17(cur, squadron_manager.entryWidth - yw->_fontBorderW);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::select_tileset(&pcur, 0);
-    FontUA::store_u8(&pcur, 125);
+    FontUA::select_tileset(cur, 0);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::add_xpos(&pcur, -(squadron_manager.entryWidth - 2 * yw->_fontBorderW + 1));
+    FontUA::add_xpos(cur, -(squadron_manager.entryWidth - 2 * yw->_fontBorderW + 1));
 
-    FontUA::select_tileset(&pcur, 28);
+    FontUA::select_tileset(cur, 28);
 
-    pcur = sub_4514F0(yw->_guiTiles[28], pcur, v39, squadron_manager.entryWidth - 2 * yw->_fontBorderW, 64);
+    sub_4514F0(yw->_guiTiles[28], cur, pv, squadron_manager.entryWidth - 2 * yw->_fontBorderW, 64);
     if ( v46 )
     {
         if ( squadron_manager.entryWidth - squadron_manager.field_2CC - yw->_fontBorderW > v46 )
         {
-            FontUA::add_xpos(&pcur, -(squadron_manager.entryWidth - 2 * yw->_fontBorderW));
-            FontUA::add_xpos(&pcur, v46);
+            FontUA::add_xpos(cur, -(squadron_manager.entryWidth - 2 * yw->_fontBorderW));
+            FontUA::add_xpos(cur, v46);
 
             float v40 = (float)v44->_energy / (float)v44->_energy_max;
 
@@ -5333,95 +5205,91 @@ char * ypaworld_func64__sub7__sub3__sub0__sub0(NC_STACK_ypaworld *yw, NC_STACK_y
                 if ( v40 > 0.5 )
                 {
                     if ( v40 > 0.75 )
-                        FontUA::store_u8(&pcur, 131);
+                        FontUA::store_u8(cur, 131);
                     else
-                        FontUA::store_u8(&pcur, 130);
+                        FontUA::store_u8(cur, 130);
                 }
                 else
                 {
-                    FontUA::store_u8(&pcur, 129);
+                    FontUA::store_u8(cur, 129);
                 }
             }
             else
             {
-                FontUA::store_u8(&pcur, 128);
+                FontUA::store_u8(cur, 128);
             }
         }
     }
 
-    FontUA::next_line(&pcur);
-    return pcur;
+    FontUA::next_line(cur);
 }
 
-char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
+void ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
     int v23 = squadron_manager.entryWidth - yw->_fontBorderW;
 
     if ( yw->_activeCmdrRemapIndex == -1 || bzda.field_1D0 & 0x20 )
     {
-        FontUA::select_tileset(&pcur, 0);
-        FontUA::store_u8(&pcur, '{');
+        FontUA::select_tileset(cur, 0);
+        FontUA::store_u8(cur, '{');
     }
     else
     {
         int v5 = yw->_cmdrsRemap[ yw->_activeCmdrRemapIndex ]->_aggr;
-        FontUA::select_tileset(&pcur, 0);
-        FontUA::store_u8(&pcur, '{');
-        FontUA::store_u8(&pcur, ' ');
+        FontUA::select_tileset(cur, 0);
+        FontUA::store_u8(cur, '{');
+        FontUA::store_u8(cur, ' ');
 
-        FontUA::select_tileset(&pcur, 25);
-        FontUA::store_u8(&pcur, 49);
+        FontUA::select_tileset(cur, 25);
+        FontUA::store_u8(cur, 49);
 
         if (v5 < 25)
-            FontUA::select_tileset(&pcur, 24);
+            FontUA::select_tileset(cur, 24);
 
-        FontUA::store_u8(&pcur, 50);
+        FontUA::store_u8(cur, 50);
 
         if (v5 >= 25 && v5 < 50)
-            FontUA::select_tileset(&pcur, 24);
+            FontUA::select_tileset(cur, 24);
 
-        FontUA::store_u8(&pcur, 51);
+        FontUA::store_u8(cur, 51);
 
         if (v5 >= 50 && v5 < 75)
-            FontUA::select_tileset(&pcur, 24);
+            FontUA::select_tileset(cur, 24);
 
-        FontUA::store_u8(&pcur, 52);
+        FontUA::store_u8(cur, 52);
 
         if (v5 >= 75 && v5 < 100)
-            FontUA::select_tileset(&pcur, 24);
+            FontUA::select_tileset(cur, 24);
 
-        FontUA::store_u8(&pcur, 53);
+        FontUA::store_u8(cur, 53);
 
-        FontUA::select_tileset(&pcur, 0);
+        FontUA::select_tileset(cur, 0);
 
-        FontUA::set_txtColor(&pcur, yw->_iniColors[60].r, yw->_iniColors[60].g, yw->_iniColors[60].b);
+        FontUA::set_txtColor(cur, yw->_iniColors[60].r, yw->_iniColors[60].g, yw->_iniColors[60].b);
 
-        pcur = FontUA::FormateClippedText(yw->_guiTiles[0], pcur, fmt::sprintf(" %d", yw->_activeCmdrKidsCount + 1) , 4 * yw->_guiTiles[0]->map[65].w, 32);
+        FontUA::FormateClippedText(yw->_guiTiles[0], cur, fmt::sprintf(" %d", yw->_activeCmdrKidsCount + 1) , 4 * yw->_guiTiles[0]->map[65].w, 32);
 
-        FontUA::store_u8(&pcur, ' ');
+        FontUA::store_u8(cur, ' ');
 
-        FontUA::select_tileset(&pcur, 0);
+        FontUA::select_tileset(cur, 0);
     }
 
-    FontUA::op17(&pcur, v23);
-    FontUA::store_u8(&pcur, ' ');
-    FontUA::store_u8(&pcur, '}');
+    FontUA::op17(cur, v23);
+    FontUA::store_u8(cur, ' ');
+    FontUA::store_u8(cur, '}');
 
-    FontUA::next_line(&pcur);
+    FontUA::next_line(cur);
 
-    FontUA::reset_tileset(&pcur, 28);
+    FontUA::reset_tileset(cur, 28);
 
-    FontUA::set_yoff(&pcur, yw->_guiTiles[28]->h - yw->_fontBorderH);
+    FontUA::set_yoff(cur, yw->_guiTiles[28]->h - yw->_fontBorderH);
 
-    FontUA::store_u8(&pcur, 38);
+    FontUA::store_u8(cur, 38);
 
-    FontUA::op17(&pcur, squadron_manager.entryWidth - yw->_fontBorderW);
+    FontUA::op17(cur, squadron_manager.entryWidth - yw->_fontBorderW);
 
-    FontUA::store_u8(&pcur, 47);
-    FontUA::store_u8(&pcur, 61);
-
-    return pcur;
+    FontUA::store_u8(cur, 47);
+    FontUA::store_u8(cur, 61);
 }
 
 
@@ -5429,10 +5297,12 @@ char * ypaworld_func64__sub7__sub3__sub0__sub3(NC_STACK_ypaworld *yw, char *cur)
 void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, TInputState *inpt)
 {
     TClickBoxInf *winpt = &inpt->ClickInf;
+    
+    squadron_manager.itemBlock.clear();
 
-    char *pcur = squadron_manager.ItemsPreLayout(yw, squadron_manager.itemBlock, 0, "{ }");
+    squadron_manager.ItemsPreLayout(yw, &squadron_manager.itemBlock, 0, "{ }");
 
-    FontUA::select_tileset(&pcur, 28);
+    FontUA::select_tileset(&squadron_manager.itemBlock, 28);
 
     for (int i = 0; i < squadron_manager.shownEntries; i++)
     {
@@ -5442,36 +5312,36 @@ void ypaworld_func64__sub7__sub3__sub0(NC_STACK_ypaworld *yw, TInputState *inpt)
         {
             if ( v8 == yw->_userRobo )
             {
-                pcur = ypaworld_func64__sub7__sub3__sub0__sub1(yw, v8, pcur);
+                ypaworld_func64__sub7__sub3__sub0__sub1(yw, v8, &squadron_manager.itemBlock);
             }
             else
             {
                 if ( v8->IsParentMyRobo() )
-                    pcur = ypaworld_func64__sub7__sub3__sub0__sub0(yw, v8, pcur);
+                    ypaworld_func64__sub7__sub3__sub0__sub0(yw, v8, &squadron_manager.itemBlock);
                 else
-                    pcur = ypaworld_func64__sub7__sub3__sub0__sub2(yw, pcur);
+                    ypaworld_func64__sub7__sub3__sub0__sub2(yw, &squadron_manager.itemBlock);
             }
         }
         else
         {
-            pcur = ypaworld_func64__sub7__sub3__sub0__sub2(yw, pcur);
+            ypaworld_func64__sub7__sub3__sub0__sub2(yw, &squadron_manager.itemBlock);
         }
     }
 
-    pcur = ypaworld_func64__sub7__sub3__sub0__sub3(yw, pcur);
+    ypaworld_func64__sub7__sub3__sub0__sub3(yw, &squadron_manager.itemBlock);
 
     if ( squadron_manager.field_2A8 & 1 )
     {
         if ( squadron_manager.field_2C8 != winpt->move.ScreenPos.x || squadron_manager.field_2CA != winpt->move.ScreenPos.y )
         {
-            pcur = sub_4C7950(yw, pcur, squadron_manager.field_2C4, squadron_manager.field_2C6);
+            sub_4C7950(yw, &squadron_manager.itemBlock, squadron_manager.field_2C4, squadron_manager.field_2C6);
 
             if ( squadron_manager.field_2A8 & 2 )
-                pcur = sub_4C7950(yw, pcur, squadron_manager.field_2C4 + squadron_manager.field_2CC / 4, squadron_manager.field_2C6 + (yw->_fontH / 4) );
+                sub_4C7950(yw, &squadron_manager.itemBlock, squadron_manager.field_2C4 + squadron_manager.field_2CC / 4, squadron_manager.field_2C6 + (yw->_fontH / 4) );
         }
     }
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&squadron_manager.itemBlock);
 }
 
 void sub_4C707C(NC_STACK_ypaworld *yw)
@@ -6411,7 +6281,7 @@ void  RoboMap_InputHandle(NC_STACK_ypaworld *yw, TInputState *inpt)
     }
 }
 
-char * ypaworld_func64__sub7__sub0__sub0__sub0(NC_STACK_ypaworld *yw, char *cur, int id)
+void ypaworld_func64__sub7__sub0__sub0__sub0(NC_STACK_ypaworld *yw, CmdStream *cur, int id)
 {
     int v5 = id + info_log.field_254 + info_log.firstShownEntries;
 
@@ -6420,28 +6290,26 @@ char * ypaworld_func64__sub7__sub0__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
     else if ( v5 < 0 )
         v5 += 64;
 
-    char *pcur = cur;
+    FontUA::store_u8(cur, 123);
 
-    FontUA::store_u8(&pcur, 123);
+    FontUA::FormateClippedText(yw->_guiTiles[0], cur, info_log.msgs[v5].txt, info_log.entryWidth - 2 * yw->_fontBorderW, 32);
 
-    pcur = FontUA::FormateClippedText(yw->_guiTiles[0], pcur, info_log.msgs[v5].txt, info_log.entryWidth - 2 * yw->_fontBorderW, 32);
-
-    FontUA::store_u8(&pcur, 125);
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::store_u8(cur, 125);
+    FontUA::next_line(cur);
 }
 
 void ypaworld_func64__sub7__sub0__sub0(NC_STACK_ypaworld *yw)
 {
-    char *pcur = info_log.ItemsPreLayout(yw, info_log.itemBlock, 0, "{ }");
+    info_log.itemBlock.clear();
+    
+    info_log.ItemsPreLayout(yw, &info_log.itemBlock, 0, "{ }");
 
     for (int i = 0; i < info_log.shownEntries; i++ )
-        pcur = ypaworld_func64__sub7__sub0__sub0__sub0(yw, pcur, i);
+        ypaworld_func64__sub7__sub0__sub0__sub0(yw, &info_log.itemBlock, i);
 
-    pcur = info_log.ItemsPostLayout(yw, pcur, 0, "xyz");
+    info_log.ItemsPostLayout(yw, &info_log.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&info_log.itemBlock);
 }
 
 void ypaworld_func64__sub7__sub0(NC_STACK_ypaworld *yw, TInputState *inpt)
@@ -6476,57 +6344,52 @@ void NC_STACK_ypaworld::NetSendExitMsg(uint8_t normExit)
     _GameShell->sentAQ = false;
 }
 
-char * sub_451714(TileMap *, char *cur, const std::string &txt, int a2, uint8_t a4)
+void sub_451714(TileMap *, CmdStream *cur, const std::string &txt, int a2, uint8_t a4)
 {
-    char *pcur = cur;
-
     if ( a2 > 0 )
     {
-        FontUA::copy_position(&pcur);
+        FontUA::copy_position(cur);
 
         int v6 = a2;
         while (v6 > 0)
         {
             if ( v6 <= 255 )
-                FontUA::op10(&pcur, v6);
+                FontUA::op10(cur, v6);
             else
-                FontUA::op10(&pcur, 255);
+                FontUA::op10(cur, 255);
 
-            FontUA::store_u8(&pcur, a4);
+            FontUA::store_u8(cur, a4);
 
             v6 -= 255;
         }
 
-        FontUA::add_txt(&pcur, a2, 4, txt);
+        FontUA::add_txt(cur, a2, 4, txt);
     }
-    return pcur;
 }
 
 
-char *sub_4DA8DC(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::string &a5)
+void sub_4DA8DC(NC_STACK_ypaworld *yw, CmdStream *cur, int a4, int a3, const std::string &a5)
 {
     std::string v5 = a5;
 
-    char *pcur = cur;
+    FontUA::set_yheight(cur, dword_5C8B84);
 
-    FontUA::set_yheight(&pcur, dword_5C8B84);
+    FontUA::store_u8(cur, 123);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::store_u8(&pcur, 123);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::op17(cur, dword_5C8B80 + dword_5C8B88);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::op17(&pcur, dword_5C8B80 + dword_5C8B88);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 125);
+    FontUA::next_line(cur);
 
-    FontUA::next_line(&pcur);
-
-    FontUA::store_u8(&pcur, 123);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(cur, 123);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
 
     int v11;
 
@@ -6537,66 +6400,65 @@ char *sub_4DA8DC(NC_STACK_ypaworld *yw, char *cur, int a4, int a3, const std::st
     else
         v11 = 3;
 
-    FontUA::select_tileset(&pcur, v11);
-    FontUA::store_u8(&pcur, 98);
+    FontUA::select_tileset(cur, v11);
+    FontUA::store_u8(cur, 98);
 
     if ( a4 )
         v5 = " ";
 
     if ( a3 )
     {
-        FontUA::set_flag(&pcur, 0x10);
+        FontUA::set_flag(cur, 0x10);
     }
 
-    pcur = sub_451714(yw->_guiTiles[v11], pcur, v5, dword_5C8B88 - 2 * yw->_fontBorderW, 32);
+    sub_451714(yw->_guiTiles[v11], cur, v5, dword_5C8B88 - 2 * yw->_fontBorderW, 32);
 
-    FontUA::unset_flag(&pcur, 0x10);
+    FontUA::unset_flag(cur, 0x10);
 
-    FontUA::store_u8(&pcur, 100);
+    FontUA::store_u8(cur, 100);
 
-    FontUA::select_tileset(&pcur, 0);
+    FontUA::select_tileset(cur, 0);
 
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 125);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::next_line(&pcur);
+    FontUA::next_line(cur);
 
-    FontUA::set_yheight(&pcur, dword_5C8B84);
+    FontUA::set_yheight(cur, dword_5C8B84);
 
-    FontUA::store_u8(&pcur, 123);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(cur, 123);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::op17(&pcur, dword_5C8B80 + dword_5C8B88);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::op17(cur, dword_5C8B80 + dword_5C8B88);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 125);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::next_line(cur);
 }
 
 
 
 void ypaworld_func64__sub7__sub6__sub3(NC_STACK_ypaworld *yw, int a2, int a4)
 {
-    char *pcur = exit_menu.ItemsPreLayout(yw, exit_menu.itemBlock, 0, "{ }");
+    exit_menu.itemBlock.clear();
+    exit_menu.ItemsPreLayout(yw, &exit_menu.itemBlock, 0, "{ }");
 
-    FontUA::set_txtColor(&pcur, yw->_iniColors[68].r, yw->_iniColors[68].g, yw->_iniColors[68].b);
+    FontUA::set_txtColor(&exit_menu.itemBlock, yw->_iniColors[68].r, yw->_iniColors[68].g, yw->_iniColors[68].b);
 
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x100, a2 & 0x100, Locale::Text::Common(Locale::CMN_EXITMISN));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x200, a2 & 0x200, Locale::Text::Common(Locale::CMN_SAVE));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x400, a2 & 0x400, Locale::Text::Common(Locale::CMN_LOAD));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x800, a2 & 0x800, Locale::Text::Common(Locale::CMN_RESTART));
-    pcur = sub_4DA8DC(yw, pcur, a4 & 0x1000, a2 & 0x1000, Locale::Text::Common(Locale::CMN_CONTINUE));
+    sub_4DA8DC(yw, &exit_menu.itemBlock, a4 & 0x100, a2 & 0x100, Locale::Text::Common(Locale::CMN_EXITMISN));
+    sub_4DA8DC(yw, &exit_menu.itemBlock, a4 & 0x200, a2 & 0x200, Locale::Text::Common(Locale::CMN_SAVE));
+    sub_4DA8DC(yw, &exit_menu.itemBlock, a4 & 0x400, a2 & 0x400, Locale::Text::Common(Locale::CMN_LOAD));
+    sub_4DA8DC(yw, &exit_menu.itemBlock, a4 & 0x800, a2 & 0x800, Locale::Text::Common(Locale::CMN_RESTART));
+    sub_4DA8DC(yw, &exit_menu.itemBlock, a4 & 0x1000, a2 & 0x1000, Locale::Text::Common(Locale::CMN_CONTINUE));
 
-    pcur = exit_menu.ItemsPostLayout(yw, pcur, 0, "xyz");
+    exit_menu.ItemsPostLayout(yw, &exit_menu.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&exit_menu.itemBlock);
 }
 
 
@@ -6818,38 +6680,32 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7__sub6(TInputState *inpt)
 
 
 
-char * sub_4C8534(NC_STACK_ypaworld *yw, char *cur, const std::string &a2)
+void sub_4C8534(NC_STACK_ypaworld *yw, CmdStream *cur, const std::string &a2)
 {
-    char *pcur = cur;
+    FontUA::store_u8(cur, 123);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::store_u8(&pcur, 123);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
+    sub_451714(yw->_guiTiles[0], cur, a2, lstvw2.entryWidth - 2 * dword_5BAFA8, 32);
 
-    pcur = sub_451714(yw->_guiTiles[0], pcur, a2, lstvw2.entryWidth - 2 * dword_5BAFA8, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 125);
-
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::next_line(cur);
 }
 
-char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
+void ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, CmdStream *cur, int a3)
 {
-    char *pcur = cur;
-
-    FontUA::store_u8(&pcur, 123);
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(cur, 123);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
 
     int v8;
 
     if ( a3 & 0x100 )
     {
-        FontUA::set_flag(&pcur, 0x10);
+        FontUA::set_flag(cur, 0x10);
         v8 = 8;
     }
     else
@@ -6857,25 +6713,25 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
         v8 = 3;
     }
 
-    FontUA::select_tileset(&pcur, v8);
+    FontUA::select_tileset(cur, v8);
 
-    FontUA::store_u8(&pcur, 98);
+    FontUA::store_u8(cur, 98);
 
-    pcur = sub_451714(yw->_guiTiles[v8], pcur, Locale::Text::Common(Locale::CMN_OK), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
+    sub_451714(yw->_guiTiles[v8], cur, Locale::Text::Common(Locale::CMN_OK), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
 
-    FontUA::unset_flag(&pcur, 0x10);
+    FontUA::unset_flag(cur, 0x10);
 
-    FontUA::store_u8(&pcur, 100);
+    FontUA::store_u8(cur, 100);
 
-    FontUA::select_tileset(&pcur, 0);
+    FontUA::select_tileset(cur, 0);
 
-    FontUA::op10(&pcur, dword_5BAFA4);
+    FontUA::op10(cur, dword_5BAFA4);
 
-    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(cur, 32);
 
     if ( a3 & 0x200 )
     {
-        FontUA::set_flag(&pcur, 0x10);
+        FontUA::set_flag(cur, 0x10);
         v8 = 8;
     }
     else
@@ -6883,43 +6739,42 @@ char * ypaworld_func64__sub7__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur,
         v8 = 3;
     }
 
-    FontUA::select_tileset(&pcur, v8);
+    FontUA::select_tileset(cur, v8);
 
-    FontUA::store_u8(&pcur, 98);
+    FontUA::store_u8(cur, 98);
 
-    pcur = sub_451714(yw->_guiTiles[v8], pcur, Locale::Text::Common(Locale::CMN_CANCEL), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
+    sub_451714(yw->_guiTiles[v8], cur, Locale::Text::Common(Locale::CMN_CANCEL), dword_5BAFA0 - 2 * yw->_fontBorderW, 32);
 
-    FontUA::unset_flag(&pcur, 0x10);
+    FontUA::unset_flag(cur, 0x10);
 
-    FontUA::store_u8(&pcur, 100);
+    FontUA::store_u8(cur, 100);
 
-    FontUA::select_tileset(&pcur, 0);
+    FontUA::select_tileset(cur, 0);
 
-    FontUA::store_u8(&pcur, 32);
-    FontUA::store_u8(&pcur, 32);
+    FontUA::store_u8(cur, 32);
+    FontUA::store_u8(cur, 32);
 
-    FontUA::store_u8(&pcur, 125);
+    FontUA::store_u8(cur, 125);
 
-    FontUA::next_line(&pcur);
-
-    return pcur;
+    FontUA::next_line(cur);
 }
 
 void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4__sub0(int a2)
 {
-    char *pcur = lstvw2.ItemsPreLayout(this, lstvw2.itemBlock, 0, "{ }");
+    lstvw2.itemBlock.clear();
+    lstvw2.ItemsPreLayout(this, &lstvw2.itemBlock, 0, "{ }");
 
-    FontUA::set_txtColor(&pcur, _iniColors[60].r, _iniColors[60].g, _iniColors[60].b);
+    FontUA::set_txtColor(&lstvw2.itemBlock, _iniColors[60].r, _iniColors[60].g, _iniColors[60].b);
 
-    pcur = sub_4C8534(this, pcur, dword_5BAF98);
-    pcur = sub_4C8534(this, pcur, " ");
+    sub_4C8534(this, &lstvw2.itemBlock, dword_5BAF98);
+    sub_4C8534(this, &lstvw2.itemBlock, " ");
 
-    FontUA::set_txtColor(&pcur, _iniColors[68].r, _iniColors[68].g, _iniColors[68].b);
+    FontUA::set_txtColor(&lstvw2.itemBlock, _iniColors[68].r, _iniColors[68].g, _iniColors[68].b);
 
-    pcur = ypaworld_func64__sub7__sub4__sub0__sub0(this, pcur, a2);
-    pcur = lstvw2.ItemsPostLayout(this, pcur, 0, "xyz");
+    ypaworld_func64__sub7__sub4__sub0__sub0(this, &lstvw2.itemBlock, a2);
+    lstvw2.ItemsPostLayout(this, &lstvw2.itemBlock, 0, "xyz");
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&lstvw2.itemBlock);
 }
 
 void NC_STACK_ypaworld::ypaworld_func64__sub7__sub4(TInputState *inpt)
@@ -7132,11 +6987,13 @@ void NC_STACK_ypaworld::ypaworld_func64__sub7(TInputState *inpt)
                     _guiDragElement->y = v15;
                     _guiDragElement->x = v13;
 
-                    char *tmp = &_guiDragElement->cmdstrm.cmdbuf[5];
-                    FontUA::store_s16(&tmp, v13 - (_screenSize.x / 2)); //HACKY UPDATE!
+                    int16_t tmp = v13 - (_screenSize.x / 2);
+                    _guiDragElement->cmdCommands[5] = (tmp >>  8) & 0xFF ; //HACKY UPDATE!
+                    _guiDragElement->cmdCommands[6] = tmp & 0xFF ;
 
-                    tmp = &_guiDragElement->cmdstrm.cmdbuf[9];
-                    FontUA::store_s16(&tmp, v15 - (_screenSize.y / 2)); //HACKY UPDATE!
+                    tmp = v15 - (_screenSize.y / 2); 
+                    _guiDragElement->cmdCommands[9] = (tmp >>  8) & 0xFF ; //HACKY UPDATE!
+                    _guiDragElement->cmdCommands[10] = tmp & 0xFF ;
                 }
             }
 
@@ -8024,7 +7881,9 @@ void NC_STACK_ypaworld::VoiceMessagePlayMsg(NC_STACK_ypabact *unit, int priority
 
 void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
 {
-    char *pcur = byte_5A7650;
+    
+    CmdStream buf;
+    buf.reserve(1024);
 
     if ( yw->_isNetGame )
     {
@@ -8053,13 +7912,13 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
             {
                 if ( yw->_timeStamp / 300 & 1 )
                 {
-                    FontUA::select_tileset(&pcur, 15);
-                    FontUA::set_xpos(&pcur, 0);
-                    FontUA::set_ypos(&pcur, yw->_screenSize.y / 3);
+                    FontUA::select_tileset(&buf, 15);
+                    FontUA::set_xpos(&buf, 0);
+                    FontUA::set_ypos(&buf, yw->_screenSize.y / 3);
 
-                    FontUA::set_txtColor(&pcur, 255, 255, 255);
+                    FontUA::set_txtColor(&buf, 255, 255, 255);
 
-                    pcur = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pcur, str, yw->_screenSize.x);
+                    FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], &buf, str, yw->_screenSize.x);
                 }
             }
             else
@@ -8082,8 +7941,8 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
     if ( v10 > 10 )
         v10 = 10;
 
-    FontUA::select_tileset(&pcur, 15);
-    FontUA::set_ypos(&pcur, up_panel.field_1CC + yw->_fontH / 2);
+    FontUA::select_tileset(&buf, 15);
+    FontUA::set_ypos(&buf, up_panel.field_1CC + yw->_fontH / 2);
 
 
     int v11 = (info_log.msg_count - v10) % 64;
@@ -8147,12 +8006,12 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
 
             if ( v19 > 0 )
             {
-                FontUA::set_xpos(&pcur, 16);
-                FontUA::set_txtColor(&pcur, yw->_iniColors[64].r, yw->_iniColors[64].g, yw->_iniColors[64].b);
+                FontUA::set_xpos(&buf, 16);
+                FontUA::set_txtColor(&buf, yw->_iniColors[64].r, yw->_iniColors[64].g, yw->_iniColors[64].b);
                 // Output ingame messages. From analyzer and other.
-                pcur = FontUA::TextRelWidthItem(yw->_guiTiles[15], pcur, v14->txt, v19, 4);
+                FontUA::TextRelWidthItem(yw->_guiTiles[15], &buf, v14->txt, v19, 4);
 
-                FontUA::next_line(&pcur);
+                FontUA::next_line(&buf);
             }
         }
 
@@ -8162,14 +8021,9 @@ void sb_0x4d7c08__sub0__sub0(NC_STACK_ypaworld *yw)
         v11++;
     }
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&buf);
 
-    w3d_a209 arg;
-
-    arg.cmdbuf = byte_5A7650;
-    arg.includ = 0;
-
-    GFX::Engine.DrawText(&arg);
+    GFX::Engine.ProcessDrawSeq(buf);
 }
 
 
@@ -8299,7 +8153,7 @@ void yw_RenderInfoVehicleWire(NC_STACK_ypaworld *yw, sklt_wis *wis, World::TVhcl
 
 
 
-char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, float y, int value, int maxval, int valCH, int valBG, const std::string &txt1, const std::string &txt2, int flag)
+void sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, float x, float y, int value, int maxval, int valCH, int valBG, const std::string &txt1, const std::string &txt2, int flag = 0)
 {
     int wnd_xpos = 0;
     int wnd_xpos2 = 0;
@@ -8324,9 +8178,7 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
     int v49 = yw->_guiTiles[51]->map[valCH].w * wis->field_9E;
 
 
-    char *pcur = cur;
-
-    FontUA::set_txtColor(&pcur, yw->_iniColors[65].r, yw->_iniColors[65].g, yw->_iniColors[65].b);
+    FontUA::set_txtColor(cur, yw->_iniColors[65].r, yw->_iniColors[65].g, yw->_iniColors[65].b);
 
     v51 -= (wis->field_9A + wis->field_96 + v49) / 2;
 
@@ -8337,21 +8189,21 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
 
         if ( !wnd_vis || v19 <= wnd_xpos || v19 >= wnd_xpos2 || v20 <= wnd_ypos || v20 >= wnd_ypos2 )
         {
-            FontUA::select_tileset(&pcur, 15);
+            FontUA::select_tileset(cur, 15);
 
-            FontUA::set_center_xpos(&pcur, v51);
-            FontUA::set_center_ypos(&pcur, v50 - (yw->_fontH / 2));
+            FontUA::set_center_xpos(cur, v51);
+            FontUA::set_center_ypos(cur, v50 - (yw->_fontH / 2));
 
-            pcur = FontUA::TextRelWidthItem(yw->_guiTiles[15], pcur, txt1, 100, 4);
+            FontUA::TextRelWidthItem(yw->_guiTiles[15], cur, txt1, 100, 4);
         }
     }
 
-    FontUA::select_tileset(&pcur, 51);
+    FontUA::select_tileset(cur, 51);
 
     v51 += wis->field_96;
 
-    FontUA::set_center_xpos(&pcur, v51);
-    FontUA::set_center_ypos(&pcur, v50 - (yw->_guiTiles[51]->h / 2));
+    FontUA::set_center_xpos(cur, v51);
+    FontUA::set_center_ypos(cur, v50 - (yw->_guiTiles[51]->h / 2));
 
     int v29 = v51 + (yw->_guiTiles[51]->map[1].w / 2);
     int v30 = v50 + (yw->_guiTiles[51]->h >> 1);
@@ -8365,16 +8217,16 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
             if ( v35 > value )
             {
                 if ( (flag & 2) == 0 )
-                    FontUA::store_u8(&pcur, valBG);
+                    FontUA::store_u8(cur, valBG);
                 else
-                    FontUA::add_xpos(&pcur, yw->_guiTiles[51]->map[1].w);
+                    FontUA::add_xpos(cur, yw->_guiTiles[51]->map[1].w);
             }
             else
             {
                 if ( (flag & 1) == 0 )
-                    FontUA::store_u8(&pcur, valCH);
+                    FontUA::store_u8(cur, valCH);
                 else
-                    FontUA::add_xpos(&pcur, yw->_guiTiles[51]->map[1].w);
+                    FontUA::add_xpos(cur, yw->_guiTiles[51]->map[1].w);
             }
         }
 
@@ -8390,19 +8242,17 @@ char * sub_4E4F80(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x, floa
 
         if ( !wnd_vis || v37 <= wnd_xpos || v37 >= wnd_xpos2 || v38 <= wnd_ypos || v38 >= wnd_ypos2 )
         {
-            FontUA::select_tileset(&pcur, 15);
+            FontUA::select_tileset(cur, 15);
 
-            FontUA::set_center_xpos(&pcur, v51);
-            FontUA::set_center_ypos(&pcur, v50 - (yw->_fontH / 2));
+            FontUA::set_center_xpos(cur, v51);
+            FontUA::set_center_ypos(cur, v50 - (yw->_fontH / 2));
 
-            pcur = FontUA::TextRelWidthItem(yw->_guiTiles[15], pcur, txt2, 100, 8);
+            FontUA::TextRelWidthItem(yw->_guiTiles[15], cur, txt2, 100, 8);
         }
     }
-
-    return pcur;
 }
 
-char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, float xpos, float ypos)
+void yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, float xpos, float ypos)
 {
     int a6a;
     int v10;
@@ -8418,11 +8268,11 @@ char * yw_RenderInfoLifebar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_
         a6a = vhcl->energy;
     }
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, Locale::Text::HUD(Locale::HUDSTR_EGY), fmt::sprintf("%d", (a6a + 99) / 100));
+    sub_4E4F80(yw, wis, cur, xpos, ypos, a6a, v10, 2, 6, Locale::Text::HUD(Locale::HUDSTR_EGY), fmt::sprintf("%d", (a6a + 99) / 100));
 }
 
 
-char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, float xpos, float ypos)
+void yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, float xpos, float ypos)
 {
     int v10;
 
@@ -8431,15 +8281,13 @@ char * yw_RenderInfoShieldbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
     else
         v10 = vhcl->shield;
 
-    return sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, Locale::Text::HUD(Locale::HUDSTR_AMR), fmt::sprintf("%d%%", v10), 2);
+    sub_4E4F80(yw, wis, cur, xpos, ypos, v10, 100, 1, 5, Locale::Text::HUD(Locale::HUDSTR_AMR), fmt::sprintf("%d%%", v10), 2);
 }
 
 
 
-char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, const std::string &name, float xpos, float ypos)
+void yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, const std::string &name, float xpos, float ypos)
 {
-    char *pcur = cur;
-
     int v29 = (yw->_screenSize.x / 2) * xpos;
     int v33 = (yw->_screenSize.y / 2) * ypos;
 
@@ -8477,14 +8325,14 @@ char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur,
 
     if ( !wnd_vis || v29 <= wnd_xpos || v29 >= wnd_xpos2 || v33 <= wnd_ypos || v33 >= wnd_ypos2 )
     {
-        FontUA::select_tileset(&pcur, 15);
+        FontUA::select_tileset(cur, 15);
 
-        FontUA::set_center_xpos(&pcur, v30);
-        FontUA::set_center_ypos(&pcur, v34);
+        FontUA::set_center_xpos(cur, v30);
+        FontUA::set_center_ypos(cur, v34);
 
-        FontUA::set_txtColor(&pcur,  yw->_iniColors[65].r,  yw->_iniColors[65].g,  yw->_iniColors[65].b);
+        FontUA::set_txtColor(cur,  yw->_iniColors[65].r,  yw->_iniColors[65].g,  yw->_iniColors[65].b);
 
-        pcur = sub_451714(yw->_guiTiles[15], pcur, name, v31, 32);
+        sub_451714(yw->_guiTiles[15], cur, name, v31, 32);
     }
 
     if ( wis->sklts_intern[2] )
@@ -8502,8 +8350,6 @@ char * yw_RenderInfoVehicleName(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur,
 
         yw_RenderVector2D(yw, wis->sklts_intern[2], xpos, a4, 1.0, 0.0, 0.0, 1.0, wis->field_8A, a10, a11, NULL, a13, true);
     }
-
-    return pcur;
 }
 
 
@@ -8540,10 +8386,8 @@ void yw_RenderInfoWeaponWire(NC_STACK_ypaworld *yw, sklt_wis *wis, World::TWeapP
     }
 }
 
-char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TWeapProto *wpn, float xpos, float ypos)
+void yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, NC_STACK_ypabact *bact, World::TWeapProto *wpn, float xpos, float ypos)
 {
-    char *pcur = cur;
-
     if ( wpn )
     {
         int v12;
@@ -8574,15 +8418,12 @@ char * yw_RenderInfoReloadbar(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         else
             txt2 = fmt::sprintf("%d%%", v12);
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, v12, 100, 1, 3, Locale::Text::HUD(Locale::HUDSTR_RLD), txt2);
+        sub_4E4F80(yw, wis, cur, xpos, ypos, v12, 100, 1, 3, Locale::Text::HUD(Locale::HUDSTR_RLD), txt2);
     }
-    return pcur;
 }
 
-char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, World::TWeapProto *weap, float xpos, float ypos)
+void yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, NC_STACK_ypabact *bact, World::TVhclProto *vhcl, World::TWeapProto *weap, float xpos, float ypos)
 {
-    char *pcur = cur;
-
     if ( weap )
     {
         std::string txt2;
@@ -8592,16 +8433,13 @@ char * yw_RenderInfoWeaponInf(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, N
         else
             txt2 = fmt::sprintf("%d x%d", weap->energy / 100, vhcl->num_weapons);
 
-        pcur = sub_4E4F80(yw, wis, pcur, xpos, ypos, weap->energy, 100, 7, 7, Locale::Text::HUD(Locale::HUDSTR_DMG), txt2, 1 | 2);
+        sub_4E4F80(yw, wis, cur, xpos, ypos, weap->energy, 100, 7, 7, Locale::Text::HUD(Locale::HUDSTR_DMG), txt2, 1 | 2);
     }
-
-    return pcur;
 }
 
 
-char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float xpos, float ypos, NC_STACK_ypabact *bact, int vhclid, int flag)
+void yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, float xpos, float ypos, NC_STACK_ypabact *bact, int vhclid, int flag)
 {
-    char *pcur = cur;
 //  yw->GetColor(25);
 //  yw->GetColor(34);
     int v23 = 1;
@@ -8628,7 +8466,7 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
         a6a = (yw->_timeStamp - wis->field_76 - 200) / 180.0;
 
         if ( a6a <= 0.0 )
-            return pcur;
+            return;
     }
     else
     {
@@ -8652,10 +8490,10 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
         yw_RenderInfoVehicleWire(yw, wis, vhcl, xpos, ypos, a6a);
 
     if ( v11 )
-        pcur = yw_RenderInfoLifebar(yw, wis, pcur, bact, vhcl, xpos,   wis->field_92 * 7.0 + ypos  );
+        yw_RenderInfoLifebar(yw, wis, cur, bact, vhcl, xpos,   wis->field_92 * 7.0 + ypos  );
 
     if ( v22 )
-        pcur = yw_RenderInfoShieldbar(yw, wis, pcur, bact, vhcl, xpos,   wis->field_92 * 9.0 + ypos  );
+        yw_RenderInfoShieldbar(yw, wis, cur, bact, vhcl, xpos,   wis->field_92 * 9.0 + ypos  );
 
     if ( v25 )
     {
@@ -8663,7 +8501,7 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
         {
             float v15 = wis->field_92 * 12.0 + ypos;
 
-            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, yw->GetVehicleName(*vhcl), xpos, v15);
+            yw_RenderInfoVehicleName(yw, wis, cur, yw->GetVehicleName(*vhcl), xpos, v15);
         }
     }
 
@@ -8673,18 +8511,15 @@ char * yw_RenderHUDInfo(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float x
         {
             yw_RenderInfoWeaponWire(yw, wis, weap, xpos,   ypos - wis->field_92 * 9.0);
 
-            pcur = yw_RenderInfoReloadbar(yw, wis, pcur, bact, weap, xpos,  ypos - wis->field_92 * 7.0);
+            yw_RenderInfoReloadbar(yw, wis, cur, bact, weap, xpos,  ypos - wis->field_92 * 7.0);
 
-            pcur = yw_RenderInfoWeaponInf(yw, wis, pcur, bact, vhcl, weap, xpos,  ypos - wis->field_92 * 9.0);
+            yw_RenderInfoWeaponInf(yw, wis, cur, bact, vhcl, weap, xpos,  ypos - wis->field_92 * 9.0);
         }
     }
-
-    return pcur;
 }
 
-char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, char *cur, float a4, float a5, int bldId, int a7)
+void sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, CmdStream *cur, float a4, float a5, int bldId, int a7)
 {
-    char *pcur = cur;
     //yw->GetColor(25);
     //yw->GetColor(34);
 
@@ -8698,10 +8533,9 @@ char *sb_0x4d7c08__sub0__sub0__sub0__sub0(NC_STACK_ypaworld *yw, sklt_wis *wis, 
             else
                 bldName = yw->GetBuildingName(bldId, false);
 
-            pcur = yw_RenderInfoVehicleName(yw, wis, pcur, bldName, a4, a5);
+            yw_RenderInfoVehicleName(yw, wis, cur, bldName, a4, a5);
         }
     }
-    return pcur;
 }
 
 int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
@@ -8711,7 +8545,8 @@ int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
 
     sklt_wis *wis = &yw->_hud;
 
-    char *pcur = byte_5C8DB0;
+    CmdStream buf;
+    buf.reserve(1024);
 
     if ( yw->_upgradeId == -1 || yw->_timeStamp - yw->_upgradeTimeStamp >= 10000 || (!yw->_upgradeVehicleId && !yw->_upgradeWeaponId && !yw->_upgradeBuildId) )
         return 0;
@@ -8751,17 +8586,13 @@ int sb_0x4d7c08__sub0__sub0__sub0(NC_STACK_ypaworld *yw)
         a8 |= 8;
 
     if ( v6 )
-        pcur = yw_RenderHUDInfo(yw, wis, pcur, 0.0, -0.5, 0, v6, a8);
+        yw_RenderHUDInfo(yw, wis, &buf, 0.0, -0.5, 0, v6, a8);
     else if ( v14 )
-        pcur = sb_0x4d7c08__sub0__sub0__sub0__sub0(yw, wis, pcur, 0.0, -0.5, v14, a8);
+        sb_0x4d7c08__sub0__sub0__sub0__sub0(yw, wis, &buf, 0.0, -0.5, v14, a8);
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&buf);
 
-    w3d_a209 v13;
-    v13.cmdbuf = byte_5C8DB0;
-    v13.includ = NULL;
-
-    GFX::Engine.raster_func209(&v13);
+    GFX::Engine.ProcessDrawSeq(buf);
 
     return 1;
 }
@@ -9000,9 +8831,8 @@ void yw_RenderHUDCompass(NC_STACK_ypaworld *yw, sklt_wis *wis)
 }
 
 
-char * yw_RenderHUDVectorGFX(NC_STACK_ypaworld *yw, char *cur)
+void yw_RenderHUDVectorGFX(NC_STACK_ypaworld *yw, CmdStream *cur)
 {
-    char *pcur = cur;
     GFX::Engine.raster_func210( Common::FRect(-1.0, -1.0, 1.0, 1.0) );
 
     Common::Rect v7;
@@ -9027,17 +8857,227 @@ char * yw_RenderHUDVectorGFX(NC_STACK_ypaworld *yw, char *cur)
 
     GFX::Engine.raster_func221(v7);
 
-    pcur = yw_RenderHUDInfo(yw, wis, pcur, -0.7, 0.3, yw->_userUnit, -1, 0x10);
+    yw_RenderHUDInfo(yw, wis, cur, -0.7, 0.3, yw->_userUnit, -1, 0x10);
 
     if ( robo_map.IsOpen() )
         GFX::Engine.raster_func221(Common::Rect());
+}
 
-    return pcur;
+void sb_0x4d7c08__sub0__sub4__sub0__sub0(NC_STACK_ypaworld *yw, CmdStream *cur, NC_STACK_ypabact *bact)
+{
+    if ( yw->_GameShell )
+    {
+        if ( yw->_isNetGame )
+        {
+            if ( !yw->_GameShell->netPlayers[bact->_owner].Name.empty() )
+            {
+                float v5 = bact->_position.x - yw->_viewerPosition.x;
+                float v6 = bact->_position.y - yw->_viewerPosition.y;
+                float v10 = bact->_position.z - yw->_viewerPosition.z;
+
+                mat3x3 corrected = yw->_viewerRotation;
+                GFX::Engine.matrixAspectCorrection(corrected, false);
+
+                float v32 = corrected.m00 * v5 + corrected.m01 * v6 + corrected.m02 * v10;
+                float v31 = corrected.m10 * v5 + corrected.m11 * v6 + corrected.m12 * v10;
+                float v26 = corrected.m20 * v5 + corrected.m21 * v6 + corrected.m22 * v10;
+
+                if ( v26 > 30.0 && v32 < v26 )
+                {
+                    if ( v32 > -v26 && v31 < v26 && v31 > -v26 )
+                    {
+                        int v30 = yw->_guiTiles[15]->h;
+
+                        int v27_4 = ((yw->_screenSize.x / 2) * (v32 / v26 + 1.0));
+                        int v15 = (yw->_screenSize.y / 2) * (v31 / v26 + 1.0);
+
+                        int v28 = 96;
+
+                        if ( v27_4 + 96 >= yw->_screenSize.x )
+                            v28 = yw->_screenSize.x - v27_4 - 1;
+
+                        if ( v28 > 0 && v27_4 >= 0 )
+                        {
+                            if ( v28 + v27_4 <  yw->_screenSize.x && v15 >= 0 )
+                            {
+                                if ( v30 + v15 < yw->_screenSize.y )
+                                {
+                                    FontUA::select_tileset(cur, 15);
+                                    FontUA::set_center_xpos(cur, v27_4 - (yw->_screenSize.x / 2) );
+                                    FontUA::set_center_ypos(cur, v15 - (yw->_screenSize.y / 2) );
+
+                                    FontUA::set_txtColor(cur, yw->_iniColors[ bact->_owner ].r, yw->_iniColors[ bact->_owner ].g, yw->_iniColors[ bact->_owner ].b);
+
+                                    FontUA::FormateClippedText(yw->_guiTiles[15], cur,  yw->_GameShell->netPlayers[bact->_owner].Name, v28, 32);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void yw_RenderUnitLifeBar(NC_STACK_ypaworld *yw, CmdStream *cur, NC_STACK_ypabact *bact)
+{
+    // Render fraction triangles above units
+
+    float v6 = bact->_position.x - yw->_viewerPosition.x;
+    float v5 = bact->_position.y - yw->_viewerPosition.y;
+    float v9 = bact->_position.z - yw->_viewerPosition.z;
+
+    mat3x3 corrected = yw->_viewerRotation;
+    GFX::Engine.matrixAspectCorrection(corrected, false);
+
+    float v44 = corrected.m00 * v6 + corrected.m01 * v5 + corrected.m02 * v9;
+    float v46 = corrected.m10 * v6 + corrected.m11 * v5 + corrected.m12 * v9;
+    float v37 = corrected.m20 * v6 + corrected.m21 * v5 + corrected.m22 * v9;
+
+    if ( v37 > 30.0 && v44 < v37 )
+    {
+        if ( v44 > -v37 && v46 < v37 && v46 > -v37 )
+        {
+            int v11 = 0;
+            int v33 = 0;
+            int v34 = 0;
+            int v36 = 0;
+            int v30 = 0;
+
+            if ( robo_map.IsOpen() )
+            {
+                v30 = 1;
+                v11 = robo_map.x;
+                v33 = v11 + robo_map.w;
+                v36 = robo_map.y;
+                v34 = v36 + robo_map.h;
+            }
+
+            float v45 = v44 * (1.0 / v37);
+            float v47 = v46 * (1.0 / v37);
+
+            int v13;
+
+            if ( yw->_screenSize.x >= 512 )
+                v13 = 8;
+            else
+                v13 = 4;
+
+            int v43 = v13 * yw->_guiTiles[50]->map[0].w;
+
+            int v42 = (yw->_screenSize.x / 2) * (v45 + 1.0);
+            int v41 = (yw->_screenSize.y / 2) * (v47 + 1.0);
+
+            if ( !v30 || v42 <= v11 || v42 >= v33 || v41 <= v36 || v41 >= v34 )
+            {
+                v42 -= v43 / 2;
+                v41 -= (yw->_guiTiles[50]->h / 2) + (yw->_screenSize.y / 16);
+
+                if ( v42 >= 0 )
+                {
+                    if ( v42 + v43 < yw->_screenSize.x && v41 >= 0 )
+                    {
+                        if ( yw->_guiTiles[50]->h + v41 < yw->_screenSize.y )
+                        {
+                            FontUA::select_tileset(cur, 50);
+
+                            FontUA::set_center_xpos(cur, v42 - (yw->_screenSize.x / 2) );
+                            FontUA::set_center_ypos(cur, v41 - (yw->_screenSize.y / 2) );
+
+                            int v38 = bact->_energy_max / v13;
+
+                            int v27 = v38 / 2; //v38 - (v38 / 2);
+
+                            for (int i = 1; i <= v13; i++)
+                            {
+                                if ( v27 > bact->_energy )
+                                    FontUA::store_u8(cur, 6);
+                                else
+                                    FontUA::store_u8(cur, 2);
+
+                                v27 += v38;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+void yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, CmdStream *cur)
+{
+    if ( yw->_preferences & World::PREF_ENEMYINDICATOR )
+    {
+        int v5 = yw->_userUnit->_cellId.x - 1;
+        int v16 = yw->_userUnit->_cellId.x + 1;
+        int v17 = yw->_userUnit->_cellId.y - 1;
+        int v14 = yw->_userUnit->_cellId.y + 1;
+
+        if ( v5 < 1 )
+            v5 = 1;
+
+        if ( v17 < 1 )
+            v17 = 1;
+
+        if ( v16 >= yw->_mapSize.x )
+            v16 = yw->_mapSize.x - 1;
+
+        if ( v14 >= yw->_mapSize.y )
+            v14 = yw->_mapSize.y - 1;
+
+        for (int i = v17; i <= v14; i++ )
+        {
+            for (int  j = v5; j <= v16; j++ )
+            {
+                cellArea &v8 = yw->_cells(j, i);
+
+                if ( robo_map.MapViewMask & v8.view_mask )
+                {
+                    for ( NC_STACK_ypabact* &bct : v8.unitsList )
+                    {
+
+                        if ( bct->_bact_type != BACT_TYPES_MISSLE && bct->_bact_type != BACT_TYPES_ROBO )
+                        {
+
+                            if ( bct->_status != BACT_STATUS_CREATE && bct->_status != BACT_STATUS_BEAM && bct->_status != BACT_STATUS_DEAD )
+                            {
+                                if ( bct->_bact_type != BACT_TYPES_GUN )
+                                    yw_RenderCursorOverUnit(yw, bct);
+                                else
+                                {
+                                    NC_STACK_ypagun *gun = (NC_STACK_ypagun *)bct;
+
+                                    if ( !gun->IsRoboGun() )
+                                        yw_RenderCursorOverUnit(yw, bct);
+                                }
+
+                                if ( yw->_isNetGame )
+                                {
+                                    if ( bct->_status_flg & BACT_STFLAG_ISVIEW )
+                                    {
+                                        if ( yw->_GameShell )
+                                            sb_0x4d7c08__sub0__sub4__sub0__sub0(yw, cur, bct);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+
+
+                }
+            }
+        }
+    }
 }
 
 void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
 {
-    char *pcur = byte_5C8DB0;
+    CmdStream buf;
+    buf.reserve(1024);
 
     if ( yw->_userUnit->_status == BACT_STATUS_DEAD )
     {
@@ -9053,13 +9093,13 @@ void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
 
         if ( !msg.empty() && yw->_timeStamp / 500 & 1 )
         {
-            FontUA::select_tileset(&pcur, 15);
-            FontUA::set_xpos(&pcur, 0);
-            FontUA::set_center_ypos(&pcur, -(yw->_fontH / 2));
+            FontUA::select_tileset(&buf, 15);
+            FontUA::set_xpos(&buf, 0);
+            FontUA::set_center_ypos(&buf, -(yw->_fontH / 2));
 
-            FontUA::set_txtColor(&pcur, 255, 255, 255);
+            FontUA::set_txtColor(&buf, 255, 255, 255);
 
-            pcur = FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], pcur, msg, yw->_screenSize.x);
+            FontUA::FormateCenteredSkipableItem(yw->_guiTiles[15], &buf, msg, yw->_screenSize.x);
         }
     }
     else if ( yw->_userUnit != yw->_userRobo && yw->_hud.field_0 )
@@ -9083,27 +9123,23 @@ void sb_0x4d7c08__sub0__sub4(NC_STACK_ypaworld *yw)
         if ( yw->_hud.field_86 >= 1.0 )
             yw->_hud.field_86 = 0;
 
-        pcur = yw_RenderHUDVectorGFX(yw, pcur);
+        yw_RenderHUDVectorGFX(yw, &buf);
     }
 
     if ( yw->_guiActFlags & 0x20 )
     {
         yw_RenderCursorOverUnit(yw, yw->_bactOnMouse);
-        pcur = yw_RenderUnitLifeBar(yw, pcur, yw->_bactOnMouse);
+        yw_RenderUnitLifeBar(yw, &buf, yw->_bactOnMouse);
     }
 
     if ( yw->_guiVisor.field_18 )
-        pcur = yw_RenderUnitLifeBar(yw, pcur, yw->_guiVisor.field_18);
+        yw_RenderUnitLifeBar(yw, &buf, yw->_guiVisor.field_18);
 
-    pcur = yw_RenderOverlayCursors(yw, pcur);
+    yw_RenderOverlayCursors(yw, &buf);
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&buf);
 
-    w3d_a209 v20;
-    v20.cmdbuf = byte_5C8DB0;
-    v20.includ = 0;
-
-    GFX::Engine.DrawText(&v20);
+    GFX::Engine.ProcessDrawSeq(buf);
 
     yw->_guiVisor.field_18 = NULL;
 }
@@ -9404,234 +9440,21 @@ void yw_RenderCursorOverUnit(NC_STACK_ypaworld *yw, NC_STACK_ypabact *bact)
 }
 
 
-char *sb_0x4d7c08__sub0__sub4__sub0__sub0(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact)
-{
-    char *pcur = cur;
-
-    if ( yw->_GameShell )
-    {
-        if ( yw->_isNetGame )
-        {
-            if ( !yw->_GameShell->netPlayers[bact->_owner].Name.empty() )
-            {
-                float v5 = bact->_position.x - yw->_viewerPosition.x;
-                float v6 = bact->_position.y - yw->_viewerPosition.y;
-                float v10 = bact->_position.z - yw->_viewerPosition.z;
-
-                mat3x3 corrected = yw->_viewerRotation;
-                GFX::Engine.matrixAspectCorrection(corrected, false);
-
-                float v32 = corrected.m00 * v5 + corrected.m01 * v6 + corrected.m02 * v10;
-                float v31 = corrected.m10 * v5 + corrected.m11 * v6 + corrected.m12 * v10;
-                float v26 = corrected.m20 * v5 + corrected.m21 * v6 + corrected.m22 * v10;
-
-                if ( v26 > 30.0 && v32 < v26 )
-                {
-                    if ( v32 > -v26 && v31 < v26 && v31 > -v26 )
-                    {
-                        int v30 = yw->_guiTiles[15]->h;
-
-                        int v27_4 = ((yw->_screenSize.x / 2) * (v32 / v26 + 1.0));
-                        int v15 = (yw->_screenSize.y / 2) * (v31 / v26 + 1.0);
-
-                        int v28 = 96;
-
-                        if ( v27_4 + 96 >= yw->_screenSize.x )
-                            v28 = yw->_screenSize.x - v27_4 - 1;
-
-                        if ( v28 > 0 && v27_4 >= 0 )
-                        {
-                            if ( v28 + v27_4 <  yw->_screenSize.x && v15 >= 0 )
-                            {
-                                if ( v30 + v15 < yw->_screenSize.y )
-                                {
-                                    FontUA::select_tileset(&pcur, 15);
-                                    FontUA::set_center_xpos(&pcur, v27_4 - (yw->_screenSize.x / 2) );
-                                    FontUA::set_center_ypos(&pcur, v15 - (yw->_screenSize.y / 2) );
-
-                                    FontUA::set_txtColor(&pcur, yw->_iniColors[ bact->_owner ].r, yw->_iniColors[ bact->_owner ].g, yw->_iniColors[ bact->_owner ].b);
-
-                                    pcur = FontUA::FormateClippedText(yw->_guiTiles[15], pcur,  yw->_GameShell->netPlayers[bact->_owner].Name, v28, 32);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return pcur;
-}
-
-char * yw_RenderOverlayCursors(NC_STACK_ypaworld *yw, char *cur)
-{
-    char *pcur = cur;
-
-    if ( yw->_preferences & World::PREF_ENEMYINDICATOR )
-    {
-        int v5 = yw->_userUnit->_cellId.x - 1;
-        int v16 = yw->_userUnit->_cellId.x + 1;
-        int v17 = yw->_userUnit->_cellId.y - 1;
-        int v14 = yw->_userUnit->_cellId.y + 1;
-
-        if ( v5 < 1 )
-            v5 = 1;
-
-        if ( v17 < 1 )
-            v17 = 1;
-
-        if ( v16 >= yw->_mapSize.x )
-            v16 = yw->_mapSize.x - 1;
-
-        if ( v14 >= yw->_mapSize.y )
-            v14 = yw->_mapSize.y - 1;
-
-        for (int i = v17; i <= v14; i++ )
-        {
-            for (int  j = v5; j <= v16; j++ )
-            {
-                cellArea &v8 = yw->_cells(j, i);
-
-                if ( robo_map.MapViewMask & v8.view_mask )
-                {
-                    for ( NC_STACK_ypabact* &bct : v8.unitsList )
-                    {
-
-                        if ( bct->_bact_type != BACT_TYPES_MISSLE && bct->_bact_type != BACT_TYPES_ROBO )
-                        {
-
-                            if ( bct->_status != BACT_STATUS_CREATE && bct->_status != BACT_STATUS_BEAM && bct->_status != BACT_STATUS_DEAD )
-                            {
-                                if ( bct->_bact_type != BACT_TYPES_GUN )
-                                    yw_RenderCursorOverUnit(yw, bct);
-                                else
-                                {
-                                    NC_STACK_ypagun *gun = (NC_STACK_ypagun *)bct;
-
-                                    if ( !gun->IsRoboGun() )
-                                        yw_RenderCursorOverUnit(yw, bct);
-                                }
-
-                                if ( yw->_isNetGame )
-                                {
-                                    if ( bct->_status_flg & BACT_STFLAG_ISVIEW )
-                                    {
-                                        if ( yw->_GameShell )
-                                            pcur = sb_0x4d7c08__sub0__sub4__sub0__sub0(yw, pcur, bct);
-                                    }
-                                }
-                            }
-
-                        }
-                    }
 
 
 
-                }
-            }
-        }
-    }
-    return pcur;
-}
 
 
-char * yw_RenderUnitLifeBar(NC_STACK_ypaworld *yw, char *cur, NC_STACK_ypabact *bact)
-{
-    // Render fraction triangles above units
-    char *pcur = cur;
 
-    float v6 = bact->_position.x - yw->_viewerPosition.x;
-    float v5 = bact->_position.y - yw->_viewerPosition.y;
-    float v9 = bact->_position.z - yw->_viewerPosition.z;
-
-    mat3x3 corrected = yw->_viewerRotation;
-    GFX::Engine.matrixAspectCorrection(corrected, false);
-
-    float v44 = corrected.m00 * v6 + corrected.m01 * v5 + corrected.m02 * v9;
-    float v46 = corrected.m10 * v6 + corrected.m11 * v5 + corrected.m12 * v9;
-    float v37 = corrected.m20 * v6 + corrected.m21 * v5 + corrected.m22 * v9;
-
-    if ( v37 > 30.0 && v44 < v37 )
-    {
-        if ( v44 > -v37 && v46 < v37 && v46 > -v37 )
-        {
-            int v11 = 0;
-            int v33 = 0;
-            int v34 = 0;
-            int v36 = 0;
-            int v30 = 0;
-
-            if ( robo_map.IsOpen() )
-            {
-                v30 = 1;
-                v11 = robo_map.x;
-                v33 = v11 + robo_map.w;
-                v36 = robo_map.y;
-                v34 = v36 + robo_map.h;
-            }
-
-            float v45 = v44 * (1.0 / v37);
-            float v47 = v46 * (1.0 / v37);
-
-            int v13;
-
-            if ( yw->_screenSize.x >= 512 )
-                v13 = 8;
-            else
-                v13 = 4;
-
-            int v43 = v13 * yw->_guiTiles[50]->map[0].w;
-
-            int v42 = (yw->_screenSize.x / 2) * (v45 + 1.0);
-            int v41 = (yw->_screenSize.y / 2) * (v47 + 1.0);
-
-            if ( !v30 || v42 <= v11 || v42 >= v33 || v41 <= v36 || v41 >= v34 )
-            {
-                v42 -= v43 / 2;
-                v41 -= (yw->_guiTiles[50]->h / 2) + (yw->_screenSize.y / 16);
-
-                if ( v42 >= 0 )
-                {
-                    if ( v42 + v43 < yw->_screenSize.x && v41 >= 0 )
-                    {
-                        if ( yw->_guiTiles[50]->h + v41 < yw->_screenSize.y )
-                        {
-                            FontUA::select_tileset(&pcur, 50);
-
-                            FontUA::set_center_xpos(&pcur, v42 - (yw->_screenSize.x / 2) );
-                            FontUA::set_center_ypos(&pcur, v41 - (yw->_screenSize.y / 2) );
-
-                            int v38 = bact->_energy_max / v13;
-
-                            int v27 = v38 / 2; //v38 - (v38 / 2);
-
-                            for (int i = 1; i <= v13; i++)
-                            {
-                                if ( v27 > bact->_energy )
-                                    FontUA::store_u8(&pcur, 6);
-                                else
-                                    FontUA::store_u8(&pcur, 2);
-
-                                v27 += v38;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return pcur;
-}
 
 void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
 {
     // Render units on radare
-    w3d_a209 post_rndr;
-    post_rndr.cmdbuf = byte_5FFF80;
-    post_rndr.includ = NULL;
 
-    char *pcur = byte_5FFF80;
-    FontUA::select_tileset(&pcur, 61);
+    CmdStream buf;
+    buf.reserve(8192);
+    
+    FontUA::select_tileset(&buf, 61);
 
     float v6 = yw->_screenSize.x / 2;
     float v7 = yw->_screenSize.y / 2;
@@ -9700,11 +9523,11 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
                         {
                             if ( !v19 )
                             {
-                                FontUA::select_tileset(&pcur, 1);
+                                FontUA::select_tileset(&buf, 1);
 
-                                pcur = sub_4F6DFC(yw, pcur, yw->_guiTiles[1]->h, yw->_guiTiles[1]->map[24].w, bact, 0);
+                                sub_4F6DFC(yw, &buf, yw->_guiTiles[1]->h, yw->_guiTiles[1]->map[24].w, bact, 0);
 
-                                FontUA::select_tileset(&pcur, 61);
+                                FontUA::select_tileset(&buf, 61);
 
                                 v38++;
                             }
@@ -9715,14 +9538,14 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
 
                             if ( (!gun->IsRoboGun() || bact == yw->_userUnit) && !v19 )
                             {
-                                pcur = sub_4F6DFC(yw, pcur, 7, 7, bact, 0);
+                                sub_4F6DFC(yw, &buf, 7, 7, bact, 0);
 
                                 v38++;
                             }
                         }
                         else if ( !v19 )
                         {
-                            pcur = sub_4F6DFC(yw, pcur, 7, 7, bact, 0);
+                            sub_4F6DFC(yw, &buf, 7, 7, bact, 0);
 
                             v38++;
                         }
@@ -9732,9 +9555,9 @@ void sb_0x4d7c08__sub0__sub4__sub2__sub0(NC_STACK_ypaworld *yw)
         }
     }
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&buf);
 
-    GFX::Engine.DrawText(&post_rndr);
+    GFX::Engine.ProcessDrawSeq(buf);
 }
 
 void yw_RenderHUDRadare(NC_STACK_ypaworld *yw)
@@ -9802,10 +9625,8 @@ int sub_47F360(const void *a1, const void *a2)
     return (((const aab *)a2)->b) - (((const aab *)a1)->b);
 }
 
-char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std::array<World::TPlayerStatus, World::CVFractionsCount> &statuses, int a3)
+void sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, CmdStream *cur, const std::array<World::TPlayerStatus, World::CVFractionsCount> &statuses, int a3)
 {
-    char *pcur = cur;
-
     if ( yw->_isNetGame )
     {
         aab v25[8];
@@ -9868,7 +9689,7 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
                 break;
             }
 
-            FontUA::set_txtColor(&pcur, yw->_iniColors[clrid].r, yw->_iniColors[clrid].g, yw->_iniColors[clrid].b);
+            FontUA::set_txtColor(cur, yw->_iniColors[clrid].r, yw->_iniColors[clrid].g, yw->_iniColors[clrid].b);
 
             a4a[0].spaceChar = 32;
             a4a[0].prefixChar = 0;
@@ -9885,27 +9706,24 @@ char *sb_0x4d7c08__sub0__sub2__sub1(NC_STACK_ypaworld *yw, char *cur, const std:
             a4a[1].prefixChar = 0;
             a4a[1].postfixChar = 0;
 
-            pcur = FormateColumnItem(yw, pcur, 2, a4a);
+            FormateColumnItem(yw, cur, 2, a4a);
 
-            FontUA::next_line(&pcur);
+            FontUA::next_line(cur);
         }
 
-        FontUA::next_line(&pcur);
+        FontUA::next_line(cur);
     }
-    return pcur;
 }
 
 
-char * sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
+void sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, CmdStream *cur, int a3)
 {
-    char *pcur = cur;
-
     if ( yw->_isNetGame )
     {
         if ( yw->_countUnitsPerOwner[ yw->_userRobo->_owner ] <= yw->_levelUnitLimit )
-            FontUA::set_txtColor(&pcur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
+            FontUA::set_txtColor(cur, yw->_iniColors[63].r, yw->_iniColors[63].g, yw->_iniColors[63].b);
         else
-            FontUA::set_txtColor(&pcur, yw->_iniColors[6].r, yw->_iniColors[6].g, yw->_iniColors[6].b);
+            FontUA::set_txtColor(cur, yw->_iniColors[6].r, yw->_iniColors[6].g, yw->_iniColors[6].b);
 
         FontUA::ColumnItem a4[2];
 
@@ -9925,27 +9743,26 @@ char * sb_0x4d7c08__sub0__sub2__sub0(NC_STACK_ypaworld *yw, char *cur, int a3)
         a4[1].flags = 36;
         a4[1].prefixChar = 0;
 
-        pcur = FormateColumnItem(yw, pcur, 2, a4);
+        FormateColumnItem(yw, cur, 2, a4);
 
-        FontUA::next_line(&pcur);
+        FontUA::next_line(cur);
     }
-    return pcur;
 }
 
 void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
 {
-    char buf[1024];
-    char *pcur = buf;
+    CmdStream buf;
+    buf.reserve(1024);
 
     int v25 = 2 * yw->_screenSize.x / 3;
     int v2 = yw->_screenSize.x - v25;
 
-    FontUA::select_tileset(&pcur, 15);
-    FontUA::set_xpos(&pcur, v25);
-    FontUA::set_ypos(&pcur, up_panel.field_1CC + (yw->_fontH / 2));
+    FontUA::select_tileset(&buf, 15);
+    FontUA::set_xpos(&buf, v25);
+    FontUA::set_ypos(&buf, up_panel.field_1CC + (yw->_fontH / 2));
 
-    pcur = sb_0x4d7c08__sub0__sub2__sub0(yw, pcur, v2);
-    pcur = sb_0x4d7c08__sub0__sub2__sub1(yw, pcur, yw->_gameplayStats, v2);
+    sb_0x4d7c08__sub0__sub2__sub0(yw, &buf, v2);
+    sb_0x4d7c08__sub0__sub2__sub1(yw, &buf, yw->_gameplayStats, v2);
 
     for (const TMapSuperItem &sitem : yw->_levelInfo.SuperItems)
     {
@@ -9981,24 +9798,20 @@ void sb_0x4d7c08__sub0__sub2(NC_STACK_ypaworld *yw)
 
             if ( v23 )
             {
-                FontUA::set_xpos(&pcur, v25);
+                FontUA::set_xpos(&buf, v25);
 
-                FontUA::set_txtColor(&pcur, yw->_iniColors[sitem.ActivateOwner].r, yw->_iniColors[sitem.ActivateOwner].g, yw->_iniColors[sitem.ActivateOwner].b);
+                FontUA::set_txtColor(&buf, yw->_iniColors[sitem.ActivateOwner].r, yw->_iniColors[sitem.ActivateOwner].g, yw->_iniColors[sitem.ActivateOwner].b);
 
-                pcur = FontUA::FormateClippedText(yw->_guiTiles[15], pcur, timeStr.c_str(), yw->_screenSize.x - v25, 32);
+                FontUA::FormateClippedText(yw->_guiTiles[15], &buf, timeStr.c_str(), yw->_screenSize.x - v25, 32);
 
-                FontUA::next_line(&pcur);
+                FontUA::next_line(&buf);
             }
         }
     }
 
-    FontUA::set_end(&pcur);
+    FontUA::set_end(&buf);
 
-    w3d_a209 a209;
-    a209.cmdbuf = buf;
-    a209.includ = NULL;
-
-    GFX::Engine.raster_func209(&a209);
+    GFX::Engine.ProcessDrawSeq(buf);
 }
 
 

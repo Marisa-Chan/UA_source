@@ -4,297 +4,216 @@
 
 
 
-void FontUA::store_u32(char **pos, uint32_t val)
+void FontUA::store_u32(CmdStream *pos, uint32_t val)
 {
-    uint8_t *ppos = *(uint8_t **)pos;
-    ppos[0] = (val >> 24) & 0xFF;
-    ppos[1] = (val >> 16) & 0xFF;
-    ppos[2] = (val >>  8) & 0xFF;
-    ppos[3] = (val      ) & 0xFF;
-
-    *pos += 4;
+    pos->push_back( (val >> 24) & 0xFF );
+    pos->push_back( (val >> 16) & 0xFF );
+    pos->push_back( (val >>  8) & 0xFF );
+    pos->push_back( (val      ) & 0xFF );
 }
 
 
-void FontUA::store_s32(char **pos, int32_t val)
+void FontUA::store_s32(CmdStream *pos, int32_t val)
 {
-    int8_t *ppos = *(int8_t **)pos;
-    ppos[0] = (val >> 24) & 0xFF;
-    ppos[1] = (val >> 16) & 0xFF;
-    ppos[2] = (val >>  8) & 0xFF;
-    ppos[3] = (val      ) & 0xFF;
-
-    *pos += 4;
+    pos->push_back( (val >> 24) & 0xFF );
+    pos->push_back( (val >> 16) & 0xFF );
+    pos->push_back( (val >>  8) & 0xFF );
+    pos->push_back( (val      ) & 0xFF );
 }
 
-void FontUA::store_u16(char **pos, uint16_t val)
+void FontUA::store_u16(CmdStream *pos, uint16_t val)
 {
-    uint8_t *ppos = *(uint8_t **)pos;
-    ppos[0] = (val >> 8) & 0xFF;
-    ppos[1] = (val     ) & 0xFF;
-
-    *pos += 2;
+    pos->push_back( (val >>  8) & 0xFF );
+    pos->push_back( (val      ) & 0xFF );
 }
 
-void FontUA::store_s16(char **pos, int16_t val)
+void FontUA::store_s16(CmdStream *pos, int16_t val)
 {
-    int8_t *ppos = *(int8_t **)pos;
-    ppos[0] = (val >> 8) & 0xFF;
-    ppos[1] = (val     ) & 0xFF;
-
-    *pos += 2;
+    pos->push_back( (val >>  8) & 0xFF );
+    pos->push_back( (val      ) & 0xFF );
 }
 
-void FontUA::store_u8(char **pos, uint8_t val)
+void FontUA::store_u8(CmdStream *pos, uint8_t val)
 {
-    uint8_t *ppos = *(uint8_t **)pos;
-    ppos[0] = val;
-
-    *pos += 1;
+    pos->push_back( val & 0xFF );
 }
 
-void FontUA::store_s8(char **pos, int8_t val)
+void FontUA::store_s8(CmdStream *pos, int8_t val)
 {
-    int8_t *ppos = *(int8_t **)pos;
-    ppos[0] = val;
-
-    *pos += 1;
+    pos->push_back( val & 0xFF );
 }
 
-void FontUA::store_string(char **pos, const char *string)
+void FontUA::store_string(CmdStream *pos, const std::string &string)
 {
-    char *ppos = *pos;
-    strcpy(ppos, string);
-
-    *pos += strlen(string) + 1;
+    pos->insert(pos->end(), string.begin(), string.end());
+    pos->push_back(0);
 }
 
-uint32_t FontUA::get_u32(char **pos)
+uint16_t FontUA::get_u16(const CmdStream &stream, int32_t *pos)
 {
-    uint32_t tmp = 0;
+    uint16_t tmp = (stream.at((*pos) + 1)  ) & 0xFF;
 
-    uint8_t *ppos = *(uint8_t **)pos;
+    tmp |= (stream.at(*pos) <<  8) & 0xFF00;
+    
+    (*pos) += 2;
+    
+    return tmp;
+}
 
-    tmp |= (ppos[0] << 24) & 0xFF000000;
-    tmp |= (ppos[1] << 16) & 0xFF0000;
-    tmp |= (ppos[2] <<  8) & 0xFF00;
-    tmp |= (ppos[3]      ) & 0xFF;
+int16_t FontUA::get_s16(const CmdStream &stream, int32_t *pos)
+{
+    int16_t tmp = (stream.at((*pos) + 1)  ) & 0xFF;
 
-    *pos += 4;
+    tmp |= (stream.at(*pos) <<  8) & 0xFF00;
+    
+    (*pos) += 2;
 
     return tmp;
 }
 
-int32_t FontUA::get_s32(char **pos)
+uint8_t FontUA::get_u8(const CmdStream &stream, int32_t *pos)
 {
-    int32_t tmp = 0;
-
-    uint8_t *ppos = *(uint8_t **)pos;
-
-    tmp |= (ppos[0] << 24) & 0xFF000000;
-    tmp |= (ppos[1] << 16) & 0xFF0000;
-    tmp |= (ppos[2] <<  8) & 0xFF00;
-    tmp |= (ppos[3]      ) & 0xFF;
-
-    *pos += 4;
+    uint8_t tmp = stream.at(*pos) & 0xFF;
+    
+    (*pos)++;
 
     return tmp;
 }
 
-uint16_t FontUA::get_u16(char **pos)
-{
-    uint16_t tmp = 0;
 
-    uint8_t *ppos = *(uint8_t **)pos;
-
-    tmp |= (ppos[0] <<  8) & 0xFF00;
-    tmp |= (ppos[1]      ) & 0xFF;
-
-    *pos += 2;
-
-    return tmp;
-}
-
-int16_t FontUA::get_s16(char **pos)
-{
-    int16_t tmp = 0;
-
-    uint8_t *ppos = *(uint8_t **)pos;
-
-    tmp |= (ppos[0] <<  8) & 0xFF00;
-    tmp |= (ppos[1]      ) & 0xFF;
-
-    *pos += 2;
-
-    return tmp;
-}
-
-uint8_t FontUA::get_u8(char **pos)
-{
-    uint8_t tmp = 0;
-
-    uint8_t *ppos = *(uint8_t **)pos;
-
-    tmp |= ppos[0] & 0xFF;
-
-    *pos += 1;
-
-    return tmp;
-}
-
-int8_t FontUA::get_s8(char **pos)
-{
-    int8_t tmp = 0;
-
-    uint8_t *ppos = *(uint8_t **)pos;
-
-    tmp |= ppos[0] & 0xFF;
-
-    *pos += 1;
-
-    return tmp;
-}
-
-void FontUA::get_string(char **pos, char *buf)
-{
-    char *ppos = *pos;
-    strcpy(buf, ppos);
-
-    *pos += strlen(buf) + 1;
-}
-
-void FontUA::set_end(char **pos)
+void FontUA::set_end(CmdStream *pos)
 {
     FontUA::store_u16(pos, 0);
 }
 
-void FontUA::set_center_xpos(char **pos, int16_t xpos)
+void FontUA::set_center_xpos(CmdStream *pos, int16_t xpos)
 {
     FontUA::store_u16(pos, 1);
     FontUA::store_s16(pos, xpos);
 }
 
-void FontUA::set_center_ypos(char **pos, int16_t ypos)
+void FontUA::set_center_ypos(CmdStream *pos, int16_t ypos)
 {
     FontUA::store_u16(pos, 2);
     FontUA::store_s16(pos, ypos);
 }
 
-void FontUA::set_xpos(char **pos, int16_t xpos)
+void FontUA::set_xpos(CmdStream *pos, int16_t xpos)
 {
     FontUA::store_u16(pos, 3);
     FontUA::store_s16(pos, xpos);
 }
 
-void FontUA::set_ypos(char **pos, int16_t ypos)
+void FontUA::set_ypos(CmdStream *pos, int16_t ypos)
 {
     FontUA::store_u16(pos, 4);
     FontUA::store_s16(pos, ypos);
 }
 
-void FontUA::add_xpos(char **pos, int16_t xpos)
+void FontUA::add_xpos(CmdStream *pos, int16_t xpos)
 {
     FontUA::store_u16(pos, 5);
     FontUA::store_s16(pos, xpos);
 }
 
-void FontUA::add_ypos(char **pos, int16_t ypos)
+void FontUA::add_ypos(CmdStream *pos, int16_t ypos)
 {
     FontUA::store_u16(pos, 6);
     FontUA::store_s16(pos, ypos);
 }
 
-void FontUA::next_line(char **pos)
+void FontUA::next_line(CmdStream *pos)
 {
     FontUA::store_u16(pos, 7);
 }
 
-void FontUA::select_tileset(char **pos, uint8_t tileset)
+void FontUA::select_tileset(CmdStream *pos, uint8_t tileset)
 {
     FontUA::store_u16(pos, 8);
     FontUA::store_u8(pos, tileset);
 }
 
-void FontUA::include(char **pos, uint8_t cmdstream_id)
+void FontUA::include(CmdStream *pos, uint8_t cmdstream_id)
 {
     FontUA::store_u16(pos, 9);
     FontUA::store_u8(pos, cmdstream_id);
 }
 
-void FontUA::op10(char **pos, uint8_t arg)
+void FontUA::op10(CmdStream *pos, uint8_t arg)
 {
     FontUA::store_u16(pos, 10);
     FontUA::store_u8(pos, arg);
 }
 
-void FontUA::op11(char **pos, uint8_t arg)
+void FontUA::op11(CmdStream *pos, uint8_t arg)
 {
     FontUA::store_u16(pos, 11);
     FontUA::store_u8(pos, arg);
 }
 
-void FontUA::set_xoff(char **pos, uint8_t xoff)
+void FontUA::set_xoff(CmdStream *pos, uint8_t xoff)
 {
     FontUA::store_u16(pos, 12);
     FontUA::store_u8(pos, xoff);
 }
 
-void FontUA::set_xwidth(char **pos, uint8_t xwidth)
+void FontUA::set_xwidth(CmdStream *pos, uint8_t xwidth)
 {
     FontUA::store_u16(pos, 13);
     FontUA::store_u8(pos, xwidth);
 }
 
-void FontUA::set_yoff(char **pos, uint8_t yoff)
+void FontUA::set_yoff(CmdStream *pos, uint8_t yoff)
 {
     FontUA::store_u16(pos, 14);
     FontUA::store_u8(pos, yoff);
 }
 
-void FontUA::set_yheight(char **pos, uint8_t yheight)
+void FontUA::set_yheight(CmdStream *pos, uint8_t yheight)
 {
     FontUA::store_u16(pos, 15);
     FontUA::store_u8(pos, yheight);
 }
 
-void FontUA::reset_tileset(char **pos, uint8_t tileset)
+void FontUA::reset_tileset(CmdStream *pos, uint8_t tileset)
 {
     FontUA::store_u16(pos, 16);
     FontUA::store_u8(pos, tileset);
 }
 
-void FontUA::op17(char **pos, int16_t arg)
+void FontUA::op17(CmdStream *pos, int16_t arg)
 {
     FontUA::store_u16(pos, 17);
     FontUA::store_s16(pos, arg);
 }
 
-void FontUA::add_txt(char **pos, int16_t block_width, uint16_t flag, const std::string &string)
+void FontUA::add_txt(CmdStream *pos, int16_t block_width, uint16_t flag, const std::string &string)
 {
     FontUA::store_u16(pos, 18);
     FontUA::store_s16(pos, block_width);
     FontUA::store_u16(pos, flag);
-    FontUA::store_string(pos, string.c_str());
+    FontUA::store_u16(pos, string.size());
+    FontUA::store_string(pos, string);
 }
 
-void FontUA::copy_position(char **pos)
+void FontUA::copy_position(CmdStream *pos)
 {
     FontUA::store_u16(pos, 19);
 }
 
-void FontUA::set_flag(char **pos, uint16_t flag)
+void FontUA::set_flag(CmdStream *pos, uint16_t flag)
 {
     FontUA::store_u16(pos, 20);
     FontUA::store_u16(pos, flag);
 }
 
-void FontUA::unset_flag(char **pos, uint16_t flag)
+void FontUA::unset_flag(CmdStream *pos, uint16_t flag)
 {
     FontUA::store_u16(pos, 21);
     FontUA::store_u16(pos, flag);
 }
 
-void FontUA::set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
+void FontUA::set_txtColor(CmdStream *pos, uint8_t r, uint8_t g, uint8_t b)
 {
     FontUA::store_u16(pos, 22);
     FontUA::store_u16(pos, r);
@@ -310,13 +229,11 @@ void FontUA::set_txtColor(char **pos, uint8_t r, uint8_t g, uint8_t b)
 
 // Funcs
 
-char * FontUA::FormateClippedText(TileMap *, char *curpos, const std::string &str, int width_space, char space_chr)
+void FontUA::FormateClippedText(TileMap *, CmdStream *pos, const std::string &str, int width_space, char space_chr)
 {
-    char *tmp = curpos;
-
     if ( width_space > 0 )
     {
-        FontUA::copy_position(&tmp);
+        FontUA::copy_position(pos);
 
         int v6 = width_space;
 
@@ -324,39 +241,34 @@ char * FontUA::FormateClippedText(TileMap *, char *curpos, const std::string &st
         {
             if ( v6 <= 255 )
             {
-                FontUA::op10(&tmp, v6);
+                FontUA::op10(pos, v6);
             }
             else
             {
-                FontUA::op10(&tmp, 255);
+                FontUA::op10(pos, 255);
             }
 
-            FontUA::store_s8(&tmp, space_chr);
+            FontUA::store_s8(pos, space_chr);
 
             v6 -= 255;
         }
 
-        FontUA::add_txt(&tmp, width_space, 1, str);
+        FontUA::add_txt(pos, width_space, 1, str);
     }
-    return tmp;
 }
 
-char * FontUA::FormateCenteredSkipableItem(TileMap *, char *in, const std::string &str, int width)
+void FontUA::FormateCenteredSkipableItem(TileMap *, CmdStream *in, const std::string &str, int width)
 {
-    char *cur = in;
     if ( width > 0 )
     {
-        FontUA::copy_position(&cur);
-        FontUA::add_txt(&cur, width, 4, str);
+        FontUA::copy_position(in);
+        FontUA::add_txt(in, width, 4, str);
     }
-    return cur;
 }
 
-char * FontUA::TextRelWidthItem(TileMap *, char *pos, const std::string &txt, int wdth, int arg)
+void FontUA::TextRelWidthItem(TileMap *, CmdStream *pos, const std::string &txt, int wdth, int arg)
 {
-    char *tmp = pos;
-
-    FontUA::copy_position(&tmp);
+    FontUA::copy_position(pos);
 
     int flag;
 
@@ -367,14 +279,12 @@ char * FontUA::TextRelWidthItem(TileMap *, char *pos, const std::string &txt, in
     else
         flag = 12;
 
-    FontUA::add_txt(&tmp, wdth, flag, txt);
-
-    return tmp;
+    FontUA::add_txt(pos, wdth, flag, txt);
 }
 
 
 
-char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+void FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, ColumnItem *arg)
 {
     TileMap *v3 = yw->_guiTiles[ arg->fontID ];
 
@@ -386,16 +296,15 @@ char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdb
     if ( arg->flags & 2 )
         v4 -= v3->map[arg->postfixChar].w;
 
-    char *tmp = cmdbuf;
-    FontUA::select_tileset(&tmp, arg->fontID);
+    FontUA::select_tileset(cmdbuf, arg->fontID);
 
 
     if ( arg->flags & 1 )
-        FontUA::store_s8(&tmp, arg->prefixChar);
+        FontUA::store_s8(cmdbuf, arg->prefixChar);
 
     if ( v4 > 0 )
     {
-        FontUA::copy_position(&tmp);
+        FontUA::copy_position(cmdbuf);
 
         int v8 = v4;
 
@@ -403,14 +312,14 @@ char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdb
         {
             if ( v8 <= 255 )
             {
-                FontUA::op10(&tmp, v8);
+                FontUA::op10(cmdbuf, v8);
             }
             else
             {
-                FontUA::op10(&tmp, 255);
+                FontUA::op10(cmdbuf, 255);
             }
 
-            FontUA::store_u8(&tmp, arg->spaceChar);
+            FontUA::store_u8(cmdbuf, arg->spaceChar);
             v8 -= 255;
         }
 
@@ -429,17 +338,16 @@ char * FontUA::FormateTextAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdb
             v20 = 4;
         }
 
-        FontUA::add_txt(&tmp, v4, v20, arg->txt);
+        FontUA::add_txt(cmdbuf, v4, v20, arg->txt);
     }
 
     if ( arg->flags & 2 )
     {
-        FontUA::store_s8(&tmp, arg->postfixChar);
+        FontUA::store_s8(cmdbuf, arg->postfixChar);
     }
-    return tmp;
 }
 
-char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, ColumnItem *arg)
+void FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, ColumnItem *arg)
 {
     TileMap *tset = yw->_guiTiles[ arg->fontID ];
 
@@ -458,8 +366,7 @@ char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, C
     if ( arg->flags & 2 )
         freeWidth -= tset->GetWidth(arg->postfixChar);
 
-    char *tmp = cmdbuf;
-    FontUA::select_tileset(&tmp, arg->fontID);
+    FontUA::select_tileset(cmdbuf, arg->fontID);
 
     if ( freeWidth <= 0 )
     {
@@ -500,7 +407,7 @@ char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, C
     int v16 = txtWidth - v29 - v28;
 
     if ( arg->flags & 1 )
-        FontUA::store_u8(&tmp, arg->prefixChar);
+        FontUA::store_u8(cmdbuf, arg->prefixChar);
 
     int chr = 0;
 
@@ -515,23 +422,23 @@ char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, C
 
     if ( v28 < 0 )
     {
-        FontUA::set_xoff(&tmp, v28 + tset->GetWidth(chr));
-        FontUA::store_u8(&tmp, chr);
+        FontUA::set_xoff(cmdbuf, v28 + tset->GetWidth(chr));
+        FontUA::store_u8(cmdbuf, chr);
     }
 
     if ( v27 > 0 )
     {
         while ( v27 > 255 )
         {
-            FontUA::op10(&tmp, 255);
-            FontUA::store_u8(&tmp, arg->spaceChar);
+            FontUA::op10(cmdbuf, 255);
+            FontUA::store_u8(cmdbuf, arg->spaceChar);
             v27 -= 255;
         }
 
         if ( v27 > 0 )
         {
-            FontUA::op10(&tmp, v27);
-            FontUA::store_u8(&tmp, arg->spaceChar);
+            FontUA::op10(cmdbuf, v27);
+            FontUA::store_u8(cmdbuf, arg->spaceChar);
         }
     }
 
@@ -550,12 +457,12 @@ char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, C
             cI++;
 
             v16 -= tset->GetWidth(chr);
-            FontUA::store_u8(&tmp, chr);
+            FontUA::store_u8(cmdbuf, chr);
         }
         if (chr)
         {
-            FontUA::set_xwidth(&tmp, v16 + tset->GetWidth(chr));
-            FontUA::store_u8(&tmp, chr);
+            FontUA::set_xwidth(cmdbuf, v16 + tset->GetWidth(chr));
+            FontUA::store_u8(cmdbuf, chr);
         }
     }
 
@@ -563,33 +470,29 @@ char *FontUA::FormateAlignedClippedString(NC_STACK_ypaworld *yw, char *cmdbuf, C
     {
         while ( v26 > 255 )
         {
-            FontUA::op10(&tmp, 255);
-            FontUA::store_u8(&tmp, arg->spaceChar);
+            FontUA::op10(cmdbuf, 255);
+            FontUA::store_u8(cmdbuf, arg->spaceChar);
             v26 -= 255;
         }
         if ( v26 > 0 )
         {
-            FontUA::op10(&tmp, v26);
-            FontUA::store_u8(&tmp, arg->spaceChar);
+            FontUA::op10(cmdbuf, v26);
+            FontUA::store_u8(cmdbuf, arg->spaceChar);
         }
     }
     if ( arg->flags & 2 )
-        FontUA::store_u8(&tmp, arg->postfixChar);
+        FontUA::store_u8(cmdbuf, arg->postfixChar);
 
-    return tmp;
 }
 
 
-char * FontUA::FormateColumnItem(NC_STACK_ypaworld *yw, char *cmdbuf, int num, ColumnItem *a4)
+void FontUA::FormateColumnItem(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int num, ColumnItem *a4)
 {
-    char *tmp = cmdbuf;
     for (int i = 0; i < num; i++)
         if (a4[i].flags & 0x20)
-            tmp = FormateTextAlignedClippedString(yw, tmp, &a4[i]);
+            FormateTextAlignedClippedString(yw, cmdbuf, &a4[i]);
         else
-            tmp = FormateAlignedClippedString(yw, tmp, &a4[i]);
-
-    return tmp;
+            FormateAlignedClippedString(yw, cmdbuf, &a4[i]);
 }
 
 

@@ -3,6 +3,8 @@
 
 #include <list>
 
+#include "system/gfx.h"
+
 class NC_STACK_ypaworld;
 
 class GuiBase;
@@ -13,8 +15,11 @@ class GuiBase : public ClickBox
 public:
     int flags = 0;
     ClickBox iconBox;
-    char *iconString = NULL;
-    w3d_a209 cmdstrm;
+    CmdStream iconString;
+    
+    CmdStream cmdCommands;
+    CmdIncludes cmdInclude;
+    
     void (*postDraw)(NC_STACK_ypaworld *) = NULL;
 
     enum FLAG
@@ -33,7 +38,7 @@ public:
     void Detach();
     void Attach(GuiBaseList &);
 
-    static char * FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, char *in, uint8_t postf_char, int flag);
+    static void FormateTitle(NC_STACK_ypaworld *yw, int xpos, int ypos, int w, const std::string &title, CmdStream *in, uint8_t postf_char, int flag);
 
     inline bool IsClosed() const {
         return ((flags & FLAG_CLOSED) != 0);
@@ -66,8 +71,8 @@ public:
     int16_t minEntryWidth = 0;
     int16_t maxEntryWidth = 0;
     char title[64] = {0};
-    char *scrollbar = NULL;
-    char *itemBlock = NULL;
+    CmdStream scrollbar;
+    CmdStream itemBlock;
     int16_t rszX = 0;
     int16_t rszY = 0;
     int16_t scrlX = 0;
@@ -140,8 +145,8 @@ public:
 
     void PosOnSelected(int a2);
 
-    char *ItemsPreLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
-    char *ItemsPostLayout(NC_STACK_ypaworld *yw, char *cmdbuf, int tileset, const char *a5);
+    void ItemsPreLayout(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int tileset, const char *a5);
+    void ItemsPostLayout(NC_STACK_ypaworld *yw, CmdStream *cmdbuf, int tileset, const char *a5);
 };
 
 

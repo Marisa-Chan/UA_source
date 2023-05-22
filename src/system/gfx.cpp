@@ -5,6 +5,7 @@
 #include <OpenGL/glext.h>
 #else
 #include <GL/glext.h>
+#include <queue>
 #endif
 
 #include "gfx.h"
@@ -193,16 +194,14 @@ void GFXEngine::DrawTextEntry(const ScreenText *txt)
         }
         else
         {
-            int len = strlen(txt->string);
-
-            if (len)
+            if (!txt->string.empty())
             {
 
                 int cx = 0, cy = 0;
 
                 if ( txt->flag & 0xE )
                 {
-                    TTF_SizeUTF8(_font.ttfFont, txt->string, &cx, &cy);
+                    TTF_SizeUTF8(_font.ttfFont, txt->string.c_str(), &cx, &cy);
                 }
 
                 int p1 = txt->p1;
@@ -267,55 +266,58 @@ void GFXEngine::DrawTextEntry(const ScreenText *txt)
 
                 if (_solidFont)
                 {
-                    tmp = TTF_RenderUTF8_Solid(_font.ttfFont, txt->string, clr);
+                    tmp = TTF_RenderUTF8_Solid(_font.ttfFont, txt->string.c_str(), clr);
                     SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_NONE);
                 }
                 else
                 {
-                    tmp = TTF_RenderUTF8_Blended(_font.ttfFont, txt->string, clr);
+                    tmp = TTF_RenderUTF8_Blended(_font.ttfFont, txt->string.c_str(), clr);
                     SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
                 }
-
-                SDL_Rect want;
-                want.w = tmp->w;
-                want.h = tmp->h;
-                want.x = p1 + 2;
-                want.y = v10 + 1;
-
-                SDL_BlitSurface(tmp, NULL, Screen(), &want);
-
-                clr.a = 255;
-                clr.r = _font.r;
-                clr.g = _font.g;
-                clr.b = _font.b;
-
-                if (_solidFont)
+                
+                if (tmp)
                 {
-                    SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
-                }
-                else
-                {
+                    SDL_Rect want;
+                    want.w = tmp->w;
+                    want.h = tmp->h;
+                    want.x = p1 + 2;
+                    want.y = v10 + 1;
+
+                    SDL_BlitSurface(tmp, NULL, Screen(), &want);
+
+                    clr.a = 255;
+                    clr.r = _font.r;
+                    clr.g = _font.g;
+                    clr.b = _font.b;
+
+                    if (_solidFont)
+                    {
+                        SDL_SetPaletteColors(tmp->format->palette, &clr, 1, 1);
+                    }
+                    else
+                    {
+                        SDL_FreeSurface(tmp);
+                        tmp = TTF_RenderUTF8_Blended(_font.ttfFont, txt->string.c_str(), clr);
+                        SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
+                    }
+
+                    want.w = tmp->w;
+                    want.h = tmp->h;
+                    want.x = p1 + 1;
+                    want.y = v10;
+
+                    SDL_BlitSurface(tmp, NULL, Screen(), &want);
                     SDL_FreeSurface(tmp);
-                    tmp = TTF_RenderUTF8_Blended(_font.ttfFont, txt->string, clr);
-                    SDL_SetSurfaceBlendMode(tmp, SDL_BLENDMODE_BLEND);
+
+
+                    SDL_SetClipRect(Screen(), NULL);
                 }
-
-                want.w = tmp->w;
-                want.h = tmp->h;
-                want.x = p1 + 1;
-                want.y = v10;
-
-                SDL_BlitSurface(tmp, NULL, Screen(), &want);
-                SDL_FreeSurface(tmp);
-
-
-                SDL_SetClipRect(Screen(), NULL);
             }
         }
     }
 }
 
-void GFXEngine::AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag)
+void GFXEngine::AddScreenText(const std::string &string, int p1, int p2, int p3, int p4, int flag)
 {
     ScreenText *v8 = new ScreenText;
     v8->string = string;
@@ -1424,13 +1426,21 @@ int GFXEngine::raster_func208(TileMap *t)
     return -1;
 }
 
-void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
+void GFXEngine::ProcessDrawSeq(const CmdStream &drawSeq, const CmdIncludes *includes)
 {
+    struct CmdStkEntr
+    {
+        const CmdStream &seq;
+        const int32_t pos;
+    };
+    
     int v11;
 
     int bytesPerColor = Screen()->format->BytesPerPixel;
 
-    char *curpos = cmdline;
+    int32_t curPos = 0;
+    const CmdStream *curStream = &drawSeq;
+    
     int w_pixels = Screen()->pitch / bytesPerColor;
     TileMap *tile = NULL;
 
@@ -1458,16 +1468,11 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
     int x_off = 0;
     int y_off = 0;
 
-
-    char *positions[64];
-    int position_idx = 0;
-
-    positions[position_idx] = NULL;
-    position_idx++;
+    std::stack<CmdStkEntr> Stack;
 
     while ( 1 )
     {
-        int v13 = FontUA::get_u8(&curpos);
+        int v13 = FontUA::get_u8(*curStream, &curPos);
 
         if ( v13 )
         {
@@ -1521,22 +1526,26 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
         }
         else // 0
         {
-            int opcode = FontUA::get_u8(&curpos);
+            int opcode = FontUA::get_u8(*curStream, &curPos);
 
             switch ( opcode )
             {
             case 0: // End
-                position_idx--;
-
-                curpos = positions[position_idx];
-                if ( curpos )
-                    break;
-
-                DrawScreenText();
-                return;
+                
+                if (Stack.empty())
+                {
+                    DrawScreenText();
+                    return;
+                }
+                
+                curPos = Stack.top().pos;
+                curStream = &Stack.top().seq;
+                
+                Stack.pop();
+                break;
 
             case 1: // x pos from center
-                x_out = halfWidth + FontUA::get_s16(&curpos);
+                x_out = halfWidth + FontUA::get_s16(*curStream, &curPos);
                 x_pos_line = x_out;
 
                 y_pos_line = y_out;
@@ -1546,7 +1555,7 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 2: // y pos from center
-                y_out = halfHeight + FontUA::get_s16(&curpos);
+                y_out = halfHeight + FontUA::get_s16(*curStream, &curPos);
                 x_pos_line = x_out;
 
                 y_pos_line = y_out;
@@ -1556,7 +1565,7 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 3: //xpos
-                x_out = FontUA::get_s16(&curpos);
+                x_out = FontUA::get_s16(*curStream, &curPos);
                 if ( x_out < 0 )
                     x_out += w_pixels;
 
@@ -1568,7 +1577,7 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 4: //ypos
-                y_out = FontUA::get_s16(&curpos);
+                y_out = FontUA::get_s16(*curStream, &curPos);
                 if ( y_out < 0 )
                     y_out += _resolution.y;
 
@@ -1580,11 +1589,11 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 5: //add to x pos
-                x_out += FontUA::get_s16(&curpos);
+                x_out += FontUA::get_s16(*curStream, &curPos);
                 break;
 
             case 6: //add to y pos
-                y_out += FontUA::get_s16(&curpos);
+                y_out += FontUA::get_s16(*curStream, &curPos);
                 break;
 
             case 7: //next line
@@ -1597,20 +1606,20 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 8: // Select tileset
-                tile = _tiles[FontUA::get_u8(&curpos)];
+                tile = _tiles[FontUA::get_u8(*curStream, &curPos)];
                 break;
 
             case 9: // Include another cmdlist source
             {
-                int azaza = FontUA::get_u8(&curpos);
-                positions[position_idx] = curpos;
-                position_idx++;
-                curpos = arr[azaza];
+                int azaza = FontUA::get_u8(*curStream, &curPos);
+                Stack.push( {*curStream, curPos} );
+                curPos = 0;
+                curStream = includes->at(azaza);
             }
             break;
 
             case 10:
-                line_width = FontUA::get_u8(&curpos);
+                line_width = FontUA::get_u8(*curStream, &curPos);
 
                 v11 = 0;
                 x_off = 0;
@@ -1619,7 +1628,7 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
 
             case 11:
 
-                line_width = FontUA::get_u8(&curpos);
+                line_width = FontUA::get_u8(*curStream, &curPos);
 
                 v11 = 0;
                 x_off = 0;
@@ -1628,29 +1637,29 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 12: // Set x offset
-                x_off = FontUA::get_u8(&curpos);
+                x_off = FontUA::get_u8(*curStream, &curPos);
                 break;
 
             case 13: // Set x width
-                line_width = FontUA::get_u8(&curpos);
+                line_width = FontUA::get_u8(*curStream, &curPos);
                 break;
 
             case 14: // Set y offset
-                y_off = FontUA::get_u8(&curpos);
+                y_off = FontUA::get_u8(*curStream, &curPos);
                 break;
 
             case 15: // Set y height
-                line_height = FontUA::get_u8(&curpos);
+                line_height = FontUA::get_u8(*curStream, &curPos);
                 break;
 
             case 16: // Full reset tileset
-                tile = _tiles[FontUA::get_u8(&curpos)];
+                tile = _tiles[FontUA::get_u8(*curStream, &curPos)];
                 line_height = tile->h;
                 y_off = 0;
                 break;
 
             case 17:
-                line_width = FontUA::get_s16(&curpos);
+                line_width = FontUA::get_s16(*curStream, &curPos);
                 v11 = 0;
                 x_off = 0;
                 line_width -= (x_out - x_pos_line);
@@ -1658,13 +1667,17 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
 
             case 18: // Add text
             {
-                int block_width = FontUA::get_s16(&curpos);
-                int flag = txt_flag | FontUA::get_u16(&curpos);
+                int block_width = FontUA::get_s16(*curStream, &curPos);
+                int flag = txt_flag | FontUA::get_u16(*curStream, &curPos);
+                
+                int32_t sz = FontUA::get_u16(*curStream, &curPos);
 
-                char *txtpos = (char *)curpos;
+                std::string txt;
+                txt.assign((const char *)(curStream->data()) + curPos, sz);
+                
 
-                curpos += strlen(txtpos) + 1;
-                AddScreenText(txtpos, x_out_txt, y_out_txt, block_width, tile->h, flag);
+                curPos += sz + 1;
+                AddScreenText(txt, x_out_txt, y_out_txt, block_width, tile->h, flag);
             }
             break;
 
@@ -1674,22 +1687,22 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
                 break;
 
             case 20: // Add txtout flag
-                txt_flag |= FontUA::get_u16(&curpos);
+                txt_flag |= FontUA::get_u16(*curStream, &curPos);
                 break;
 
             case 21: // Delete txtout flag
-                txt_flag &= ~(FontUA::get_u16(&curpos));
+                txt_flag &= ~(FontUA::get_u16(*curStream, &curPos));
                 break;
 
             case 22: // set color for font
             {
-                int r = FontUA::get_u16(&curpos);
+                int r = FontUA::get_u16(*curStream, &curPos);
 
-                int g = FontUA::get_u16(&curpos);
+                int g = FontUA::get_u16(*curStream, &curPos);
 
-                int b = FontUA::get_u16(&curpos);
+                int b = FontUA::get_u16(*curStream, &curPos);
 
-                AddScreenText(0, r, g, b, 0, 0x20);
+                AddScreenText("", r, g, b, 0, 0x20);
             }
             break;
             }
@@ -1697,10 +1710,6 @@ void GFXEngine::win3d_func209__sub0(char *cmdline, char **arr)
     }
 }
 
-void GFXEngine::raster_func209(w3d_a209 *arg)
-{
-    win3d_func209__sub0(arg->cmdbuf, arg->includ);
-}
 
 void GFXEngine::raster_func210(const Common::FRect &arg)
 {
@@ -3074,13 +3083,6 @@ GfxMode GFXEngine::GetGfxMode()
 TileMap * GFXEngine::GetTileset(int id)
 {
     return raster_func208(id);
-}
-
-void GFXEngine::DrawText(w3d_a209 *arg)
-{
-    w3d_a209 arg209;
-    arg209 = *arg;
-    raster_func209(&arg209);
 }
 
 void GFXEngine::SetTileset(TileMap *tileset, int id)

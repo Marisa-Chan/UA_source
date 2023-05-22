@@ -32,7 +32,8 @@ struct ResBitmap
     GLuint hwTex = 0;
 };
 
-
+typedef std::vector<uint8_t> CmdStream;
+typedef std::vector< CmdStream* > CmdIncludes;
 
 struct TileMap
 {
@@ -409,7 +410,7 @@ struct TGFXDeviceInfo
 
 struct ScreenText
 {
-    const char *string;
+    std::string string;
     int p1;
     int p2;
     int p3;
@@ -553,8 +554,6 @@ public:
     void SetTileset(TileMap *tileset, int id);
     TileMap * GetTileset(int id);
 
-    void DrawText(w3d_a209 *arg);
-
     bool LoadPalette(const std::string &palette_ilbm);
     SDL_Cursor *LoadCursor(const std::string &name);
     
@@ -603,7 +602,9 @@ public:
     virtual void raster_func207(int id, TileMap *tiles);
     virtual TileMap *raster_func208(int id);
     virtual int raster_func208(TileMap *tiles);
-    virtual void raster_func209(w3d_a209 *arg);
+    
+    virtual void ProcessDrawSeq(const CmdStream &cmdline, const CmdIncludes *arr = NULL);
+    
     virtual void raster_func210(const Common::FRect &arg);
     virtual void raster_func211(const Common::Rect &arg);
     virtual void BeginScene();
@@ -717,10 +718,10 @@ protected:
     void initPolyEngine();
 
     void DrawScreenText();
-    void AddScreenText(const char *string, int p1, int p2, int p3, int p4, int flag);
+    void AddScreenText(const std::string &string, int p1, int p2, int p3, int p4, int flag);
     void DrawTextEntry(const ScreenText *txt);
 
-    void win3d_func209__sub0(char *cmdline, char **arr);
+    
     void win3d_func274__sub0(FSMgr::FileHandle *fil);
 
     static SDL_Cursor *wrapLoadCursor(const char *name);
