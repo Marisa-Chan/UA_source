@@ -2072,7 +2072,7 @@ bool NC_STACK_ypaworld::InitGameShell(UserData *usr)
     LoadKeyNames();
 
     listSaveDir("save:");
-    listLocaleDir(usr, "locale");
+    listLocaleDir(usr, "locale:");
 
 
     usr->userNameDir = "NEWUSER";
