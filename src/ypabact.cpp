@@ -5148,8 +5148,8 @@ void NC_STACK_ypabact::MarkSectorsForView()
                         {
                             if ( _cellId.x > 1 )
                             {
-                                _world->SectorAt(_cellId.x - 1, _cellId.y).AddToViewMask(_owner);
-                                _world->SectorAt(_cellId.x - 1, _cellId.y).AddUnhideMask(_owner);
+                                _world->SectorAt(_cellId.x - 1, yy).AddToViewMask(_owner);
+                                _world->SectorAt(_cellId.x - 1, yy).AddUnhideMask(_owner);
                             }
 
                             _world->SectorAt(_cellId.x, yy).AddToViewMask(_owner);
@@ -5164,7 +5164,7 @@ void NC_STACK_ypabact::MarkSectorsForView()
                         else
                         {
                             if ( _cellId.x > 1 )
-                                _world->SectorAt(_cellId.x - 1, _cellId.y).AddToViewMask(_owner);
+                                _world->SectorAt(_cellId.x - 1, yy).AddToViewMask(_owner);
 
                             _world->SectorAt(_cellId.x, yy).AddToViewMask(_owner);
 
