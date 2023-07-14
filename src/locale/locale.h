@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <inttypes.h>
 
 #include "strid.h"
 #include "default.h"
