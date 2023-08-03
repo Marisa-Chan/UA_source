@@ -2468,7 +2468,7 @@ public:
     bool _gamePaused = false;
     uint32_t _gamePausedTimeStamp = 0;
     
-    uint32_t _timeStamp = 0;
+    int32_t _timeStamp = 0;
     int32_t _frameTime = 0;
     uint32_t _framesElapsed = 0;
     
