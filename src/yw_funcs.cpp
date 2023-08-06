@@ -1710,7 +1710,7 @@ bool NC_STACK_ypaworld::InitDebrief()
         "wireless/db_death.sklt",
         "wireless/db_sec.sklt"
     };
-    TBkgPicInfo *mapImg;
+    TBkgPicInfo *mapImg = NULL;
     
     _briefScreen.Clear();
     
@@ -1743,11 +1743,17 @@ bool NC_STACK_ypaworld::InitDebrief()
         goto ON_ERR;
 
     if (_briefScreen.Desc.Dbmaps.empty())
-        mapImg = &_briefScreen.Desc.Mbmaps[0];
+    {
+        if (!_briefScreen.Desc.Mbmaps.empty())
+            mapImg = &_briefScreen.Desc.Mbmaps[0];
+    }
     else
-        mapImg = &_briefScreen.Desc.Dbmaps[0];
+    {
+        if (!_briefScreen.Desc.Dbmaps.empty())
+            mapImg = &_briefScreen.Desc.Dbmaps[0];
+    }
 
-    if ( mapImg->PicName.empty() )
+    if ( !mapImg || mapImg->PicName.empty() )
         goto ON_ERR;
 
     Common::Env.SetPrefix("rsrc", "levels:");
