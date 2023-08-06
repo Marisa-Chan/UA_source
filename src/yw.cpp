@@ -2664,7 +2664,7 @@ bool NC_STACK_ypaworld::CreateSubBarControls(){
     btn_64arg.tileset_up = 18;
     btn_64arg.xpos = dword_5A50B6_h + buttonsSpace;
     btn_64arg.width = dword_5A50B6_h;
-    btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_GOBACK);
+    btn_64arg.caption = Locale::Text::GlobMap(Locale::GLOBMAP_REWIND);
     btn_64arg.caption2.clear();
     btn_64arg.downCode = 1251;
     btn_64arg.pressedCode = 0;
