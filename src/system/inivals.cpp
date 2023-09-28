@@ -1,4 +1,5 @@
 #include "inivals.h"
+#include <cstdint>
 
 namespace System 
 {

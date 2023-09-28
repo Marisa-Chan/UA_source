@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include "listnode.h"
+#include <cstdint>
 
 
 struct cellArea;
