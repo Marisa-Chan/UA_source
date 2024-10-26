@@ -1,7 +1,6 @@
 CDEFS = 
 CFLAGS += -std=c++14 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I. -I "$(PWD)"
 TARGET = UA_source
-LDFLAGS = 
 OBJDIR := obj
 WINDRES = 
 
