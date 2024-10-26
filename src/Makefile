@@ -1,7 +1,6 @@
 CDEFS = 
 CFLAGS += -std=c++14 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I. -I "$(PWD)"
 TARGET = UA_source
-OBJDIR := obj
 WINDRES = 
 
 nix: CXX = g++
@@ -137,35 +136,33 @@ OBJS =  \
 
 CCFILES     := $(filter %.cc, $(OBJS))
 CPPFILES    := $(filter %.cpp, $(OBJS))
-CCOBJFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.o))
-CPPOBJFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.o))
+CCOBJFILES  := $(CCFILES:.cc=.o)
+CPPOBJFILES := $(CPPFILES:.cpp=.o)
 OBJFILES    := $(CCOBJFILES) $(CPPOBJFILES)
 
-CCDEPFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.d))
-CPPDEPFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.d))
+CCDEPFILES  := $(CCFILES:.cc=.d)
+CPPDEPFILES := $(CPPFILES:.cpp=.d)
 DEPFILES    := $(CCDEPFILES) $(CPPDEPFILES)
 
-$(CCOBJFILES): $(OBJDIR)/%.o: %.cc
-$(CPPOBJFILES): $(OBJDIR)/%.o: %.cpp
+$(CCOBJFILES): %.o: %.cc
+$(CPPOBJFILES): %.o: %.cpp
 $(OBJFILES):
 	mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(CDEFS) -c $< -o $@
 
-$(CCDEPFILES): $(OBJDIR)/%.d: %.cc
-$(CPPDEPFILES): $(OBJDIR)/%.d: %.cpp
+$(CCDEPFILES): %.d: %.cc
+$(CPPDEPFILES): %.d: %.cpp
 
 $(DEPFILES):
-	mkdir -p $(@D)
-	printf "$(OBJDIR)/" > $@
-	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM >> $@
+	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM > $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPFILES)
 endif
 
 win32 msys msys_xp: $(OBJFILES)	
-	$(WINDRES) ../svg/icon/icon.rc -O coff -o $(OBJDIR)/icon.res
-	$(CXX) $(OBJFILES) $(OBJDIR)/icon.res $(LDFLAGS) $(LIBS) -o $(TARGET)
+	$(WINDRES) ../svg/icon/icon.rc -O coff -o icon.res
+	$(CXX) $(OBJFILES) icon.res $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 nix mac: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)
