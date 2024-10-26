@@ -1,5 +1,5 @@
 #include "luascript.h"
-#include "../fmtlib/printf.h"
+#include <fmt/printf.h>
 
 namespace System
 {

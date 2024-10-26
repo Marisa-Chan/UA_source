@@ -9,8 +9,8 @@
 #include <inttypes.h>
 
 #include <string>
-#include "fmtlib/core.h"
-#include "fmtlib/printf.h"
+#include <fmt/core.h>
+#include <fmt/printf.h>
 
 #include "types.h"
 

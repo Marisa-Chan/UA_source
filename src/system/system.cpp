@@ -2,7 +2,7 @@
 #include <list>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_net.h>
-#include "../fmtlib/printf.h"
+#include <fmt/printf.h>
 
 #include "system.h"
 #include "fsmgr.h"
