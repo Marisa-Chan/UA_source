@@ -1,5 +1,6 @@
 #include "glfuncs.h"
 #include <stdexcept>
+#include <string>
 
 namespace GFX
 {   
