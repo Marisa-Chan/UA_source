@@ -1,4 +1,4 @@
-#version 140
+#version 410
 
 layout(std140) uniform Parameters
 {
@@ -18,8 +18,10 @@ in vec2 texCoords;
 uniform vec3 normclr;
 uniform vec3 invclr;
 
+out vec4 fragColor;
+
 void main()
 {
     vec4 clr = texture2D(texture, texCoords);
-    gl_FragColor = vec4( clr.xyz * normclr + (1.0 - clr.xyz) * invclr, clr.w);
+    fragColor = vec4( clr.xyz * normclr + (1.0 - clr.xyz) * invclr, clr.w);
 }

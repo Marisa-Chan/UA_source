@@ -1,4 +1,4 @@
-#version 140
+#version 410
 
 layout(std140) uniform Parameters
 {
@@ -11,9 +11,9 @@ layout(std140) uniform Parameters
     bool ATest;
 };
 
-attribute vec3 vPos;
-attribute vec4 vColor;
-attribute vec2 vUV;
+in vec3 vPos;
+in vec4 vColor;
+in vec2 vUV;
 
 out vec4 smoothColor;
 out vec2 texCoords;
