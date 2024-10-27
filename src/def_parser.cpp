@@ -4,7 +4,7 @@
 #include "def_parser.h"
 #include "utils.h"
 #include "log.h"
-#include "fmtlib/printf.h"
+#include <fmt/printf.h>
 
 namespace ScriptParser
 {

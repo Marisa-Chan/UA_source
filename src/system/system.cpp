@@ -2,7 +2,7 @@
 #include <list>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_net.h>
-#include "../fmtlib/printf.h"
+#include <fmt/printf.h>
 
 #include "system.h"
 #include "fsmgr.h"
@@ -232,10 +232,10 @@ void Init(bool oldGL)
     }
     else
     {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     }
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     window = SDL_CreateWindow("OpenUA (Urban Assault)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winRes.W, winRes.H, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 

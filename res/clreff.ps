@@ -1,9 +1,10 @@
-#version 120
+#version 410
 uniform sampler2D texture;
 uniform vec3 normclr;
 uniform vec3 invclr;
+out vec4 fragColor
 void main()
 {
-    vec4 clr = texture2D(texture, gl_TexCoord[0].xy);
-    gl_FragColor = vec4( clr.xyz * normclr + (1.0 - clr.xyz) * invclr, clr.w);
+    vec4 clr = texture(texture, gl_TexCoord[0].xy);
+    fragColor = vec4( clr.xyz * normclr + (1.0 - clr.xyz) * invclr, clr.w);
 }

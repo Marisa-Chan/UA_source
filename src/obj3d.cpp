@@ -3,7 +3,7 @@
 #include "env.h"
 #include "system/inivals.h"
 #include "loaders.h"
-#include "fmtlib/printf.h"
+#include <fmt/printf.h>
 
 
 NC_STACK_Obj3D::NC_STACK_Obj3D()

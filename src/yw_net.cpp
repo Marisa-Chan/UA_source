@@ -11,7 +11,7 @@
 #include "ypamissile.h"
 #include "font.h"
 #include "windp.h"
-#include "fmtlib/printf.h"
+#include <fmt/printf.h>
 #include "system/inivals.h"
 
 #define C_2PI_127       0.04947390005653217698   // (2PI / 127)

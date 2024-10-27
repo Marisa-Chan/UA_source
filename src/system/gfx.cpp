@@ -1,8 +1,9 @@
-#include "../fmtlib/printf.h"
+#include <fmt/printf.h>
 #include <SDL2/SDL_opengl.h>
 
 #if defined(__APPLE__) && defined(__MACH__)
 #include <OpenGL/glext.h>
+#include <stack>
 #else
 #include <GL/glext.h>
 #include <queue>

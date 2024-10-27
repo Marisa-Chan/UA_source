@@ -1,20 +1,18 @@
 CDEFS = 
-CFLAGS = -std=c++14 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I. -I "$(PWD)"
+CFLAGS += -std=c++14 -O0 -g -fexceptions -Wall -Woverloaded-virtual -Wshadow -I. -I "$(PWD)"
 TARGET = UA_source
-LDFLAGS = 
-OBJDIR := obj
 WINDRES = 
 
 nix: CXX = g++
 nix: CC = gcc
-nix: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3
+nix: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lGL -lopenal -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3 -lfmt
 
 win32: MINGW = /usr/i686-w64-mingw32
 win32: CXX = i686-w64-mingw32-g++
 win32: CC = i686-w64-mingw32-gcc
 win32: CDEFS = -DWIN32
 win32: TARGET := $(TARGET).exe
-win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3
+win32: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lOpenAL32 -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3 -lfmt
 win32: LDFLAGS = -L$(MINGW)/lib/
 win32: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 win32: WINDRES = i686-w64-mingw32-windres
@@ -24,7 +22,7 @@ msys: CXX = i686-w64-mingw32-g++
 msys: CC = i686-w64-mingw32-gcc
 msys: CDEFS = -DWIN32 -DNOLUAVERSION
 msys: TARGET := $(TARGET).exe
-msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
+msys: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua -lfmt
 msys: LDFLAGS = -L$(MINGW)/lib/
 msys: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
@@ -33,7 +31,7 @@ msys_xp: CXX = clang++
 msys_xp: CC = clang
 msys_xp: CDEFS = -DWIN32 -DNOLUAVERSION
 msys_xp: TARGET := $(TARGET).exe
-msys_xp: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua
+msys_xp: LIBS = -lmingw32 -mwindows -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -lopenal -lopengl32 -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua -lfmt
 msys_xp: LDFLAGS = -L$(MINGW)/lib/
 msys_xp: CFLAGS := $(CFLAGS) -I$(MINGW)/include/
 
@@ -41,7 +39,7 @@ msys msys_xp:  WINDRES = windres
 
 mac: CXX = clang++
 mac: CC = clang
-mac: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3
+mac: LIBS = -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_net -framework OpenGL -framework OpenAL -lvorbisfile -lavformat -lavcodec -lavutil -lswscale -lswresample -llua5.3 -lfmt
 
 OBJS =  \
 	3ds.cpp\
@@ -56,7 +54,6 @@ OBJS =  \
 	def_parser.cpp\
 	embed.cpp\
 	env.cpp\
-	fmtlib/format.cc\
 	font.cpp\
 	gui/root.cpp\
 	gui/uabutton.cpp\
@@ -136,37 +133,26 @@ OBJS =  \
 	ypatank.cpp\
 	ypaufo.cpp
 
-CCFILES     := $(filter %.cc, $(OBJS))
 CPPFILES    := $(filter %.cpp, $(OBJS))
-CCOBJFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.o))
-CPPOBJFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.o))
-OBJFILES    := $(CCOBJFILES) $(CPPOBJFILES)
+OBJFILES 	:= $(CPPFILES:.cpp=.o)
+DEPFILES 	:= $(CPPFILES:.cpp=.d)
 
-CCDEPFILES  := $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.d))
-CPPDEPFILES := $(addprefix $(OBJDIR)/,$(CPPFILES:.cpp=.d))
-DEPFILES    := $(CCDEPFILES) $(CPPDEPFILES)
-
-$(CCOBJFILES): $(OBJDIR)/%.o: %.cc
-$(CPPOBJFILES): $(OBJDIR)/%.o: %.cpp
+$(OBJFILES): %.o: %.cpp
 $(OBJFILES):
 	mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(CDEFS) -c $< -o $@
 
-$(CCDEPFILES): $(OBJDIR)/%.d: %.cc
-$(CPPDEPFILES): $(OBJDIR)/%.d: %.cpp
-
+$(DEPFILES): %.d: %.cpp
 $(DEPFILES):
-	mkdir -p $(@D)
-	printf "$(OBJDIR)/" > $@
-	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM >> $@
+	$(CXX) $(CFLAGS) $(CDEFS) -c $< -MM > $@
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(DEPFILES)
 endif
 
 win32 msys msys_xp: $(OBJFILES)	
-	$(WINDRES) ../svg/icon/icon.rc -O coff -o $(OBJDIR)/icon.res
-	$(CXX) $(OBJFILES) $(OBJDIR)/icon.res $(LDFLAGS) $(LIBS) -o $(TARGET)
+	$(WINDRES) ../svg/icon/icon.rc -O coff -o icon.res
+	$(CXX) $(OBJFILES) icon.res $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 nix mac: $(OBJFILES)
 	$(CXX) $(OBJFILES) $(LDFLAGS) $(LIBS) -o $(TARGET)

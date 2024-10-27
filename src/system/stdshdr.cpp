@@ -6,7 +6,7 @@ namespace GFX
 
 const std::string GFXEngine:: _stdPShaderText =
 "\
-#version 140\n\
+#version 410 core\n\
 layout(std140) uniform Parameters\
 {\
     mat4 MProj;\
@@ -17,26 +17,26 @@ layout(std140) uniform Parameters\
     bool Flat;\
     bool ATest;\
 };\
-uniform sampler2D texture;\
+uniform sampler2D texSample;\
 in vec4 smoothColor;\
 flat in vec4 flatColor;\
 in vec2 texCoords;\
+out vec4 fragColor;\
 void main()\
 {\
     vec4 clr;\
     if (Flat) clr = flatColor; else clr = smoothColor;\
     if (Textured)\
-        gl_FragColor = texture2D(texture, texCoords) * clr;\
-    else\
-        gl_FragColor = clr;\
-    if (ATest && gl_FragColor.w <= 0.0)\
+        clr = texture(texSample, texCoords) * clr;\
+    if (ATest && clr.w <= 0.0)\
         discard;\
+    fragColor = clr;\
 }";
 
 
 const std::string GFXEngine:: _stdVShaderText =
 "\
-#version 140\n\
+#version 410 core\n\
 layout(std140) uniform Parameters\
 {\
     mat4 MProj;\
@@ -47,9 +47,9 @@ layout(std140) uniform Parameters\
     bool Flat;\
     bool ATest;\
 };\
-attribute vec3 vPos;\
-attribute vec4 vColor;\
-attribute vec2 vUV;\
+in vec3 vPos;\
+in vec4 vColor;\
+in vec2 vUV;\
 \
 out vec4 smoothColor;\
 flat out vec4 flatColor;\
@@ -78,5 +78,5 @@ void main()\
     smoothColor = clr;\
     if (Textured) texCoords = vUV;\
 }";
- 
+
 }
