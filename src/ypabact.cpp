@@ -7923,13 +7923,7 @@ void NC_STACK_ypabact::CleanAttackersTarget()
 
 void NC_STACK_ypabact::DeleteAttacker(NC_STACK_ypabact *bact, int tgtType)
 {
-    for(auto it = _attackersList.begin(); it != _attackersList.end();)
-    {
-        if (it->type == tgtType && it->attacker == bact)
-            it = _attackersList.erase(it);
-        else
-            it++;
-    }
+    _attackersList.remove( TBactAttacker(tgtType, bact) );
 }
 
 void NC_STACK_ypabact::AddAttacker(NC_STACK_ypabact *bact, int tgtType)

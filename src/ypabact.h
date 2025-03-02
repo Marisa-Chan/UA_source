@@ -348,6 +348,16 @@ struct TBactAttacker
 
     TBactAttacker(int t = 0, NC_STACK_ypabact *bact = NULL)
     : type(t), attacker(bact) {};
+
+    inline bool operator==(const TBactAttacker &b)
+    {
+        if (type != b.type)
+            return false;
+        
+        if (attacker != b.attacker)
+            return false;
+        return true;
+    }
 };
 
 
