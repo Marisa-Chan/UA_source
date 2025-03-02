@@ -736,7 +736,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
     else if ( arg->priority )
     {
         if ( _secndTtype == BACT_TGT_TYPE_UNIT )
-            _secndT.pbact->_attackersList.remove(this);
+            _secndT.pbact->DeleteAttacker(this, 1);
 
         switch ( arg->tgt_type )
         {
@@ -788,7 +788,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
                 else
                 {
                     _sencdTpos = _secndT.pbact->_position;
-                    _secndT.pbact->_attackersList.push_back(this);
+                    _secndT.pbact->AddAttacker(this, 1);
                 }
             }
             else
@@ -816,7 +816,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
     else
     {
         if ( _primTtype == BACT_TGT_TYPE_UNIT )
-            _primT.pbact->_attackersList.remove(this);
+            _primT.pbact->DeleteAttacker(this, 0);
 
         switch ( arg->tgt_type )
         {
@@ -870,7 +870,7 @@ void NC_STACK_ypabact::SetTarget(setTarget_msg *arg)
 
                 _primTpos = _primT.pbact->_position;
 
-                _primT.pbact->_attackersList.push_back(this);
+                _primT.pbact->AddAttacker(this, 0);
 
                 _primT_cmdID = arg->tgt.pbact->_commandID;
             }
@@ -3138,10 +3138,10 @@ void NC_STACK_ypabact::Die()
     
 
     if ( _secndTtype == BACT_TGT_TYPE_UNIT )
-        _secndT.pbact->_attackersList.remove(this);
+        _secndT.pbact->DeleteAttacker(this, 1);
 
     if ( _primTtype == BACT_TGT_TYPE_UNIT )
-        _primT.pbact->_attackersList.remove(this);
+        _primT.pbact->DeleteAttacker(this, 0);
 
 
     _secndTtype = BACT_TGT_TYPE_NONE;
@@ -4413,11 +4413,11 @@ NC_STACK_ypabact * NC_STACK_ypabact::GetEnemyCandidateInSector(const cellArea &c
             {
                 int countOwnAttackers = 0;
 
-                for ( NC_STACK_ypabact *attackerUnit : cel_unit->_attackersList )
+                for ( const TBactAttacker &ainf : cel_unit->_attackersList )
                 {
-                    if ( attackerUnit->_secndTtype == BACT_TGT_TYPE_UNIT &&
-                         attackerUnit->_secndT.pbact == cel_unit && 
-                         attackerUnit->_owner == _owner )
+                    if ( ainf.attacker->_secndTtype == BACT_TGT_TYPE_UNIT &&
+                         ainf.attacker->_secndT.pbact == cel_unit && 
+                         ainf.attacker->_owner == _owner )
                         countOwnAttackers++;
 
                     if ( countOwnAttackers > 1 ) // if more than 1 do break already
@@ -6324,11 +6324,11 @@ size_t NC_STACK_ypabact::TargetAssess(bact_arg110 *arg)
             {
                 int v28 = 0;
 
-                for( NC_STACK_ypabact *v43 : _secndT.pbact->_attackersList )
+                for( const TBactAttacker &ainf : _secndT.pbact->_attackersList )
                 {
-                    if ( v43->_secndTtype == BACT_TGT_TYPE_UNIT &&
-                         v43->_secndT.pbact == _secndT.pbact &&
-                         v43->_owner == _owner )
+                    if ( ainf.attacker->_secndTtype == BACT_TGT_TYPE_UNIT &&
+                         ainf.attacker->_secndT.pbact == _secndT.pbact &&
+                         ainf.attacker->_owner == _owner )
                         v28++;
 
                     if ( v28 > 2 )
@@ -7897,11 +7897,11 @@ bool NC_STACK_ypabact::IsNeedsWaypoints() const
 
 void NC_STACK_ypabact::CleanAttackersTarget()
 {
-    for(World::BactList::iterator it = _attackersList.begin();
+    for(auto it = _attackersList.begin();
         it != _attackersList.end();
         it = _attackersList.erase(it))
     {
-        NC_STACK_ypabact *attacker = *it;
+        NC_STACK_ypabact *attacker = it->attacker;
 
         if ( attacker->_primTtype == BACT_TGT_TYPE_UNIT &&
              attacker->_primT.pbact == this )
@@ -7919,6 +7919,22 @@ void NC_STACK_ypabact::CleanAttackersTarget()
             attacker->_assess_time = 0;
         }
     }
+}
+
+void NC_STACK_ypabact::DeleteAttacker(NC_STACK_ypabact *bact, int tgtType)
+{
+    for(auto it = _attackersList.begin(); it != _attackersList.end();)
+    {
+        if (it->type == tgtType && it->attacker == bact)
+            it = _attackersList.erase(it);
+        else
+            it++;
+    }
+}
+
+void NC_STACK_ypabact::AddAttacker(NC_STACK_ypabact *bact, int tgtType)
+{
+    _attackersList.push_back(TBactAttacker(tgtType, bact));
 }
 
 bool NC_STACK_ypabact::IsParentMyRobo() const

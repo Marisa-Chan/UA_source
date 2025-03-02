@@ -341,6 +341,15 @@ struct bact_arg83
     float mass;
 };
 
+struct TBactAttacker
+{
+	int type = 0; // primary / secondary
+	NC_STACK_ypabact *attacker = NULL;
+
+    TBactAttacker(int t = 0, NC_STACK_ypabact *bact = NULL)
+    : type(t), attacker(bact) {};
+};
+
 
 class NC_STACK_ypabact: public NC_STACK_nucleus
 {
@@ -524,6 +533,9 @@ public:
     void FixSectorFall();
     void FixBeyondTheWorld();
     void CleanAttackersTarget();
+
+    void DeleteAttacker(NC_STACK_ypabact *bact, int tgtType);
+    void AddAttacker(NC_STACK_ypabact *bact, int tgtType);
     
     void CopyTargetOf(NC_STACK_ypabact *commander);
     
@@ -712,7 +724,7 @@ public:
     int _oflags;
     NC_STACK_ypaworld *_yw;
     NC_STACK_base::Instance *_current_vp = NULL;
-    World::BactList _attackersList;
+    std::list<TBactAttacker> _attackersList;
     int _yls_time;  
     
     bool _hidden = false;

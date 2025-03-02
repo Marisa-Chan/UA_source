@@ -3532,26 +3532,27 @@ void NC_STACK_yparobo::checkCommander()
             }
             else
             {
-                for ( NC_STACK_ypabact *v33 : commander->_attackersList )
+                for ( const TBactAttacker &ainf : commander->_attackersList )
                 {
-                    if (_world->_userRobo->_owner == v33->_owner)
-                    {                                       
-                        if ( v33->_bact_type == BACT_TYPES_MISSLE ) //If missile
+                    if (_world->_userRobo->_owner == ainf.attacker->_owner)
+                    {                     
+                        NC_STACK_ypabact *realbact = ainf.attacker;                  
+                        if ( realbact->_bact_type == BACT_TYPES_MISSLE ) //If missile
                         {
-                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(v33);
-                            v33 = miss->GetLauncherBact(); //Get emitter bact
+                            NC_STACK_ypamissile *miss = dynamic_cast<NC_STACK_ypamissile *>(realbact);
+                            realbact = miss->GetLauncherBact(); //Get emitter bact
                         }
 
-                        if ( v33->_host_station != v33->_parent &&
-                             v33->_parent )
-                            v33 = v33->_parent;
+                        if ( realbact->_host_station != realbact->_parent &&
+                             realbact->_parent )
+                            realbact = realbact->_parent;
 
                         robo_arg134 arg134;
                         arg134.field_8 = 0;
                         arg134.field_10 = 0;
                         arg134.field_C = 0;
                         arg134.field_4 = 19;
-                        arg134.unit = v33;
+                        arg134.unit = realbact;
                         arg134.field_14 = 34;
                         placeMessage(&arg134);
                         break;

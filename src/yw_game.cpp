@@ -3409,7 +3409,7 @@ void NC_STACK_ypaworld::NetReleaseMissiles(NC_STACK_ypabact *bact)
         
         if ( misl->_primTtype == BACT_TGT_TYPE_UNIT )
         {
-            misl->_primT.pbact->_attackersList.remove( misl );
+            misl->_primT.pbact->DeleteAttacker(misl, 0);
             misl->_primTtype = BACT_TGT_TYPE_NONE;
         }
 
