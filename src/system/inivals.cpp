@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include "inivals.h"
 
 namespace System 
