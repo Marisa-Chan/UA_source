@@ -1,3 +1,5 @@
+#include <inttypes.h>
+
 #include "ini.h"
 #include "env.h"
 #include "utils.h"

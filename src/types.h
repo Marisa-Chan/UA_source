@@ -1,6 +1,7 @@
 #ifndef TYPES_H_INCLUDED
 #define TYPES_H_INCLUDED
 
+#include <inttypes.h>
 #include <string>
 #include <list>
 #include "listnode.h"
