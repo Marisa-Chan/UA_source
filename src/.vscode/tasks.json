@@ -1,0 +1,29 @@
+{
+    "tasks": [
+        {
+            "label": "cmake Debug",
+            "type": "shell",
+            "command": "cmake -DCMAKE_BUILD_TYPE=Debug -B Debug",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "label": "Build Debug",
+            "type": "shell",
+            "command": "cmake --build Debug -j6",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "cmake Debug"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "version": "2.0.0"
+}
