@@ -239,9 +239,6 @@ void Init(bool oldGL)
 
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    //Fix mouse title bar menu issue (release of right button on it)
-    SDL_SetHint("SDL_MOUSE_AUTO_CAPTURE", "0");
-
     window = SDL_CreateWindow("OpenUA (Urban Assault)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winRes.W, winRes.H, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
     if (!window)
