@@ -345,9 +345,9 @@
 393  = <>
 394  = <>
 395  = LANGUAGE
-396  = Select DLL in the list.
-397  = <OBSOLETE>
-398  = <OBSOLETE>
+396  = Select a language in the list.
+397  = 
+398  = 
 399  = >>> Multiplayer Dialog <<<
 400  = 次へ
 401  = バトルフィールド変更
@@ -834,7 +834,7 @@
 921  = オプション画面へ
 922  = オプション画面へ
 923  = 保存/読み込み画面へ
-924  = <OBSOLETE>
+924  = Go To Language Select Screen
 925  = <OBSOLETE>
 926  = <OBSOLETE>
 927  = プレイ中に保存したミッションの読み込み

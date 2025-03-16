@@ -344,10 +344,10 @@
 392  = <>
 393  = <>
 394  = <>
-395  = <OBSOLETE>
-396  = <OBSOLETE>
-397  = <OBSOLETE>
-398  = <OBSOLETE>
+395  = Langues
+396  = Choisir une langue dans la liste.
+397  = 
+398  = 
 399  = >>> Multiplayer Dialog <<<
 400  = Suite
 401  = Changer de niveau
@@ -834,7 +834,7 @@
 921  = Aller à l'écran Options
 922  = Aller à l'écran Options
 923  = Aller à l'écran Enregistrer-Charger
-924  = <OBSOLETE>
+924  = Aller à l'écran Sélection de la langue
 925  = <OBSOLETE>
 926  = <OBSOLETE>
 927  = Charger la dernière partie enregistrée en cours
