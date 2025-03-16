@@ -60,7 +60,7 @@ void ypaworld_func158__sub4__sub1__sub4__sub3(NC_STACK_ypaworld *yw, TInputState
 
 void ypaworld_func158__sub4__sub1__sub4__sub4(NC_STACK_ypaworld *yw, TInputState *inpt, TBriefengScreen *brf)
 {
-    int v5 = brf->CurrTime - brf->StartTime;
+    int v5 = (brf->CurrTime - brf->StartTime) * 1.5;
 
     if ( v5 >= 600 )
     {
@@ -635,7 +635,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
         }
 
         int v34 = brf->CurrTime - brf->TextTime;
-        int v33 = 100 * v34;
+        int v33 = 150 * v34;
 
         stru_5C91D0.numEntries = numLines;
 
@@ -718,7 +718,7 @@ void sub_4ED434(NC_STACK_ypaworld *yw, TBriefengScreen *brf)
             v24 = 100;
         else
         {
-            v24 = 100 * v20 / 600;
+            v24 = 150 * v20 / 600;
 
             if ( v24 < 0 )
                 v24 = 0;
