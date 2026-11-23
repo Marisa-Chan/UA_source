@@ -3176,10 +3176,14 @@ void UserData::GameShellUiHandleInput()
             {
                 if ( !StriCmp(tmp, it->name.substr(0, tmp.size())) )
                 {
-                    int n = std::stoi( it->name.substr(tmp.size()) );
+                    std::string suffix = it->name.substr(tmp.size());
+                    if (!suffix.empty() && StrIsDigitsOnly(suffix))
+                    {
+                        int n = std::stoi( suffix );
 
-                    if ( n > maxN )
-                        maxN = n;
+                        if ( n > maxN )
+                            maxN = n;
+                    }
                 }
             }
 

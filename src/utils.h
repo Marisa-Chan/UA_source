@@ -164,6 +164,16 @@ std::string correctSeparatorAndExt(std::string str);
 int StriCmp(const std::string &a, const std::string &b);
 bool StrGetBool(const std::string &str);
 
+inline bool StrIsDigitsOnly(const std::string &s)
+{
+    for (auto a: s)
+    {
+        if (a < '0' || a > '9')
+            return false;
+    }
+    return true;
+}
+
 
 
 
