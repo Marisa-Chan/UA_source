@@ -1,5 +1,6 @@
 #include <inttypes.h>
 #include "inivals.h"
+#include <cstdint>
 
 namespace System 
 {
