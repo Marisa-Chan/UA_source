@@ -84,7 +84,7 @@
 83  = Eingabegeräte-Konfiguration
 84  = Optionen
 85  = Speichern/Laden
-86  = <OBSOLETE>
+86  = Language
 87  = Hilfe
 88  = Urban Assault beenden
 89  = <>
@@ -344,10 +344,10 @@
 392  = <>
 393  = <>
 394  = <>
-395  = <OBSOLETE>
-396  = <OBSOLETE>
-397  = <OBSOLETE>
-398  = <OBSOLETE>
+395  = Language
+396  = Select a language in the list.
+397  = 
+398  = 
 399  = >>> Multiplayer Dialog <<<
 400  = Weiter
 401  = Level ändern
@@ -834,7 +834,7 @@
 921  = Zum Bildschirm 'Optionen'
 922  = Zum Bildschirm 'Optionen'
 923  = Zum Bildschirm 'Speichern/Laden'
-924  = <OBSOLETE>
+924  = Go To Language Select Screen
 925  = <ÜBERHOLT>
 926  = <ÜBERHOLT>
 927  = Letztes Spiel laden, das Sie 'Im Spiel' gespeichert haben
