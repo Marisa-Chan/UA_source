@@ -174,6 +174,13 @@ inline bool StrIsDigitsOnly(const std::string &s)
     return true;
 }
 
+inline bool CheckValidUsername(const std::string &s)
+{
+    if (s == "." || s == "..")
+        return false;
+    return true;
+}
+
 
 
 

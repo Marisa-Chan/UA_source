@@ -3027,44 +3027,46 @@ void UserData::GameShellUiHandleInput()
                 }
                 else if ( Input->KbdLastHit == Input::KC_RETURN )
                 {
-                                printf("Line = %d\n", __LINE__);
-
-                    switch ( diskScreenMode )
+//                                printf("Line = %d\n", __LINE__);
+                    if (CheckValidUsername(userNameDir))
                     {
-                    case 1:
-                        if ( diskListActiveElement )
+                        switch ( diskScreenMode )
                         {
-                            ShowConfirmDialog(3, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
-                                        , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
-                        }
-                        else if (userNameDir.size() > 0)
-                        {
-                            sb_0x46ca74();
-                        }
-                        break;
+                        case 1:
+                            if ( diskListActiveElement )
+                            {
+                                ShowConfirmDialog(3, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                            , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
+                            }
+                            else if (userNameDir.size() > 0)
+                            {
+                                sb_0x46ca74();
+                            }
+                            break;
 
-                    case 2:
-                        sub_46C914();
-                        break;
+                        case 2:
+                            sub_46C914();
+                            break;
 
-                    case 3:
-                        if ( diskListActiveElement )
-                        {
-                            ShowConfirmDialog(6, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
-                                        , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
+                        case 3:
+                            if ( diskListActiveElement )
+                            {
+                                ShowConfirmDialog(6, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                            , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
+                            }
+                            else if (userNameDir.size() > 0)
+                            {
+                                sb_0x46cdf8();
+                            }
+                            break;
+
+                        case 4:
+                            sub_46C748();
+                            break;
+
+                        default:
+                            break;
                         }
-                        else if (userNameDir.size() > 0)
-                        {
-                            sb_0x46cdf8();
-                        }
-                        break;
-
-                    case 4:
-                        sub_46C748();
-                        break;
-
-                    default:
-                        break;
                     }
                 }
                 else if ( Input->KbdLastHit == Input::KC_ESCAPE )
@@ -3207,38 +3209,41 @@ void UserData::GameShellUiHandleInput()
         }
         else if ( r.code == 1164)
         {
-            switch ( diskScreenMode )
+            if (CheckValidUsername(userNameDir))
             {
-            case 1:
-                if ( diskListActiveElement )
+                switch ( diskScreenMode )
                 {
-                    ShowConfirmDialog(3, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
-                                , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
+                case 1:
+                    if ( diskListActiveElement )
+                    {
+                        ShowConfirmDialog(3, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                    , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
+                    }
+                    else
+                    {
+                        sb_0x46ca74();
+                    }
+                    break;
+                case 2:
+                    sub_46C914();
+                    break;
+                case 3:
+                    if ( diskListActiveElement )
+                    {
+                        ShowConfirmDialog(6, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
+                                    , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
+                    }
+                    else
+                    {
+                        sb_0x46cdf8();
+                    }
+                    break;
+                case 4:
+                    sub_46C748();
+                    break;
+                default:
+                    break;
                 }
-                else
-                {
-                    sb_0x46ca74();
-                }
-                break;
-            case 2:
-                sub_46C914();
-                break;
-            case 3:
-                if ( diskListActiveElement )
-                {
-                    ShowConfirmDialog(6, Locale::Text::Advanced(Locale::ADV_WANTOVERWRITE)
-                                , Locale::Text::Advanced(Locale::ADV_EXISTSAVEDGAME), 0);
-                }
-                else
-                {
-                    sb_0x46cdf8();
-                }
-                break;
-            case 4:
-                sub_46C748();
-                break;
-            default:
-                break;
             }
         }
         else if (r.code == 1165)
